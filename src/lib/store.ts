@@ -965,7 +965,7 @@ export const XeniosStore = {
       estimatedCostUSD: 0.024,
       lastQueryTokens: 0,
       lastQuerySaved: 0,
-      lastQuerySource: 'gemini_2_5_flash',
+      lastQuerySource: 'gemini_3_6_flash',
       updatedAt: new Date().toISOString()
     };
 
@@ -986,7 +986,7 @@ export const XeniosStore = {
     const saved = Number(usage.cachedTokensSaved) || 0;
     const isCacheHit = usage.source === 'cache_hit' || usage.source === 'instant_knowledge';
 
-    // Gemini 2.5 Flash pricing: $0.075 / 1M prompt, $0.30 / 1M output
+    // Gemini pricing: $0.075 / 1M prompt, $0.30 / 1M output
     const costIncrement = ((promptTokens * 0.075) + (completionTokens * 0.30)) / 1000000;
 
     const updated: AiTokenStats = {
@@ -999,7 +999,7 @@ export const XeniosStore = {
       estimatedCostUSD: +(current.estimatedCostUSD + costIncrement).toFixed(5),
       lastQueryTokens: totalTokens,
       lastQuerySaved: saved,
-      lastQuerySource: usage.source || 'gemini_2_5_flash',
+      lastQuerySource: usage.source || 'gemini_3_6_flash',
       updatedAt: new Date().toISOString()
     };
 

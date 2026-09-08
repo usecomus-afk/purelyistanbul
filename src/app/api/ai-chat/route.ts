@@ -166,7 +166,7 @@ export async function POST(req: Request) {
         ];
 
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.6-flash',
           contents,
           config: {
             systemInstruction: fullSystemPrompt,
@@ -286,14 +286,14 @@ export async function POST(req: Request) {
       actions,
       recommendations,
       negative_locked_categories: updatedLockedCategories.length > 0 ? updatedLockedCategories : undefined,
-      source: isLiveGemini ? 'gemini_2_5_flash' : 'local_fallback',
+      source: isLiveGemini ? 'gemini_3_6_flash' : 'local_fallback',
       tokenUsage: {
         promptTokens,
         completionTokens,
         totalTokens,
         cachedTokensSaved: isLiveGemini ? 0 : 500,
         estimatedCostUSD,
-        source: isLiveGemini ? 'gemini_2_5_flash' : 'local_fallback'
+        source: isLiveGemini ? 'gemini_3_6_flash' : 'local_fallback'
       }
     };
 

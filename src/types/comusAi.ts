@@ -90,7 +90,7 @@ export interface ComusAiChatResponse {
   }>;
   itinerary_update?: any;
   negative_locked_categories?: string[];
-  source: 'gemini_2_5_flash' | 'instant_knowledge' | 'cache_hit' | 'local_fallback' | 'error_fallback';
+  source: 'gemini_3_6_flash' | 'gemini_2_5_flash' | 'instant_knowledge' | 'cache_hit' | 'local_fallback' | 'error_fallback';
   tokensSaved?: boolean;
   tokenUsage?: {
     promptTokens: number;

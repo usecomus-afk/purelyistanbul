@@ -318,7 +318,7 @@ export interface TokenUsageInfo {
   totalTokens: number;
   cachedTokensSaved: number;
   estimatedCostUSD: number;
-  source: 'gemini_2_5_flash' | 'instant_knowledge' | 'cache_hit' | 'local_fallback';
+  source: 'gemini_3_6_flash' | 'gemini_2_5_flash' | 'instant_knowledge' | 'cache_hit' | 'local_fallback';
 }
 
 export interface AiTokenStats {
