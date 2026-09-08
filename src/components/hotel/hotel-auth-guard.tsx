@@ -48,11 +48,19 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
     };
     check();
 
-    // Auto load saved username if available
+    // Auto load saved username and password if available
     if (typeof window !== 'undefined') {
+      const isRemembered = localStorage.getItem('xenios_hotel_remember_me') === 'true';
+      if (localStorage.getItem('xenios_hotel_remember_me') !== null) {
+        setRememberMe(isRemembered);
+      }
       const savedUser = localStorage.getItem('xenios_hotel_saved_user');
+      const savedPass = localStorage.getItem('xenios_hotel_saved_pass');
       if (savedUser) {
         setHotelEmailOrUser(savedUser);
+      }
+      if (savedPass) {
+        setPassword(savedPass);
       }
     }
 
@@ -82,8 +90,11 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
           if (rememberMe) {
             localStorage.setItem('xenios_hotel_remember_me', 'true');
             localStorage.setItem('xenios_hotel_saved_user', input);
+            localStorage.setItem('xenios_hotel_saved_pass', password);
           } else {
             localStorage.removeItem('xenios_hotel_remember_me');
+            localStorage.removeItem('xenios_hotel_saved_user');
+            localStorage.removeItem('xenios_hotel_saved_pass');
           }
         }
         toast.success(`${currentHotel.name} Yönetim Paneline giriş yapıldı!`, {

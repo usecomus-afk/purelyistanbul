@@ -64,7 +64,7 @@ export function AppIntroSplash() {
       <div className="absolute w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
       <div className="absolute w-64 h-64 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
 
-      {/* 2. Fullscreen Atmospheric Video Layer (blends over background if playable) */}
+      {/* Fullscreen Video Animation Layer */}
       <video
         ref={videoRef}
         autoPlay
@@ -74,53 +74,13 @@ export function AppIntroSplash() {
         preload="auto"
         controls={false}
         disablePictureInPicture
-        className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       >
         <source src="/xenios1618.mp4" type="video/mp4" />
         <source src="/intro.mp4" type="video/mp4" />
       </video>
 
-      {/* 3. Centered Premium Brand Logo & Animation */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 animate-in fade-in zoom-in-90 duration-700">
-        
-        {/* Glowing Halo Ring */}
-        <div className="relative mb-5 flex items-center justify-center">
-          <div className="absolute -inset-3 rounded-3xl bg-gradient-to-r from-amber-500/30 to-amber-300/30 blur-lg animate-pulse" />
-          
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-zinc-950/90 border-2 border-amber-400/60 p-3.5 shadow-[0_0_35px_rgba(245,158,11,0.35)] backdrop-blur-xl flex items-center justify-center overflow-hidden">
-            <Image
-              src="/logo.png"
-              alt="Xenios"
-              width={88}
-              height={88}
-              className="object-contain w-full h-full drop-shadow-md"
-              priority
-              unoptimized
-            />
-          </div>
-        </div>
-
-        {/* Brand Title */}
-        <h1 className="font-serif text-3xl sm:text-4xl font-extrabold tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 drop-shadow-[0_2px_15px_rgba(245,158,11,0.5)]">
-          XENIOS
-        </h1>
-
-        {/* Subtitle Badge */}
-        <div className="mt-2 flex items-center gap-2">
-          <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-amber-400/60" />
-          <span className="px-3 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[10px] tracking-[0.3em] font-mono font-bold uppercase shadow-xs">
-            İSTANBUL
-          </span>
-          <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-amber-400/60" />
-        </div>
-
-        {/* Tagline */}
-        <p className="mt-2 text-[11px] sm:text-xs text-amber-100/75 font-serif italic tracking-wide">
-          Digital Guest Directory & Concierge
-        </p>
-      </div>
-
-      {/* 4. Bottom Progress Bar */}
+      {/* Bottom Progress Bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60 z-20 pointer-events-none overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-amber-600 via-amber-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]"

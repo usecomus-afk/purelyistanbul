@@ -66,6 +66,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Pasaport ve kimlik belgelerinizi otomatik tarayarak online check-in yapabilmeniz için kamera erişimi gereklidir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pasaport ve kimlik fotoğraflarınızı yüklemek için fotoğraf galerisi erişimi gereklidir.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Biniş kartı ve rezervasyon belgelerinizi kaydetmek için fotoğraf galerisine yazma izni gereklidir.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ComusAI sesli asistan özelliği için mikrofon izni gereklidir.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

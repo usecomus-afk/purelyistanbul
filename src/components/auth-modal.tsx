@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   X, 
   User, 
@@ -33,6 +33,20 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [hotelCode, setHotelCode] = useState('FATIH-HERITAGE-01');
+  const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      const isRemembered = localStorage.getItem('xenios_remember_me') === 'true' || localStorage.getItem('xenios_hotel_remember_me') === 'true';
+      if (localStorage.getItem('xenios_remember_me') !== null || localStorage.getItem('xenios_hotel_remember_me') !== null) {
+        setRememberMe(isRemembered);
+      }
+      const savedUser = localStorage.getItem('xenios_hotel_saved_user') || localStorage.getItem('xenios_saved_email');
+      const savedPass = localStorage.getItem('xenios_hotel_saved_pass') || localStorage.getItem('xenios_saved_pass');
+      if (savedUser) setEmail(savedUser);
+      if (savedPass) setPassword(savedPass);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -60,6 +74,29 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
     };
 
     XeniosStore.setUser(user);
+
+    if (typeof window !== 'undefined') {
+      if (rememberMe) {
+        localStorage.setItem('xenios_remember_me', 'true');
+        localStorage.setItem('xenios_saved_email', inputEmail);
+        localStorage.setItem('xenios_saved_pass', password);
+        if (role === 'hotel') {
+          localStorage.setItem('xenios_hotel_remember_me', 'true');
+          localStorage.setItem('xenios_hotel_saved_user', inputEmail);
+          localStorage.setItem('xenios_hotel_saved_pass', password);
+          localStorage.setItem('xenios_app_role', 'hotel');
+        }
+      } else {
+        localStorage.removeItem('xenios_remember_me');
+        localStorage.removeItem('xenios_saved_email');
+        localStorage.removeItem('xenios_saved_pass');
+        if (role === 'hotel') {
+          localStorage.removeItem('xenios_hotel_remember_me');
+          localStorage.removeItem('xenios_hotel_saved_user');
+          localStorage.removeItem('xenios_hotel_saved_pass');
+        }
+      }
+    }
 
     if (mode === 'login') {
       if (role === 'hotel') {
@@ -268,6 +305,18 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 className="w-full pl-9 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40"
               />
             </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 accent-amber-500 cursor-pointer"
+              />
+              <span className="text-xs font-semibold text-zinc-700">Beni Hatırla</span>
+            </label>
           </div>
 
           <button
