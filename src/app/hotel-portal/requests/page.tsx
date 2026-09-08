@@ -6,20 +6,11 @@ import { ServiceRequest } from '@/lib/types';
 import {
   BellRing,
   CheckCircle2,
-  Clock,
-  Filter,
   Check,
-  Building2,
   Search,
-  Sparkles,
-  AlertTriangle,
-  EyeOff,
-  Volume2,
-  VolumeX,
-  Play
+  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { HotelAudioNotification } from '@/lib/hotel-audio-notification';
 import { FirestoreService } from '@/lib/firestore-service';
 
 export default function HotelLiveRequestsPage() {
@@ -31,19 +22,14 @@ export default function HotelLiveRequestsPage() {
   const [filterDept, setFilterDept] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
-  const [audioEnabled, setAudioEnabled] = useState(() => HotelAudioNotification.getPreferences().soundEnabled);
 
   useEffect(() => {
-    const handlePrefs = () => setAudioEnabled(HotelAudioNotification.getPreferences().soundEnabled);
-    window.addEventListener('xenios_hotel_audio_prefs_updated', handlePrefs);
-
     // Subscribe to Cloud Firestore in real-time across all devices!
     const unsubscribe = FirestoreService.subscribeToLiveRequests(currentHotel.id, (liveList) => {
       setRequests(liveList);
     });
 
     return () => {
-      window.removeEventListener('xenios_hotel_audio_prefs_updated', handlePrefs);
       unsubscribe();
     };
   }, [currentHotel.id]);
@@ -51,40 +37,6 @@ export default function HotelLiveRequestsPage() {
   const handleUpdateStatus = async (id: string, status: ServiceRequest['status']) => {
     await FirestoreService.updateRequestStatus(id, status);
     toast.success('Talep durumu güncellendi.');
-  };
-
-  const handleSimulateRequest = async () => {
-    const services = [
-      { key: 'breakfast', title: 'Odaya Sıcak Kahvaltı', dept: 'Room Service (Mutfak KDS)', note: '2 Kişilik Türk Kahvaltısı · Saat: 09:00' },
-      { key: 'towels', title: 'Ekstra Banyo Havlusu', dept: 'Housekeeping', note: '2 Adet Büyük Banyo Havlusu Talebi' },
-      { key: 'cleaning', title: 'Oda Temizliği & Havalandırma', dept: 'Housekeeping', note: 'Acil temizlik rica edildi' },
-      { key: 'taxi', title: 'Kapıya Sarı Taksi', dept: 'Concierge / Bellboy', note: 'İstanbul Havalimanı transferi için' }
-    ];
-    const pick = services[Math.floor(Math.random() * services.length)];
-    const randomRoom = currentHotel.rooms[Math.floor(Math.random() * currentHotel.rooms.length)]?.number || '204';
-    const isUrgent = Math.random() > 0.6;
-
-    await FirestoreService.addRequest({
-      hotelId: currentHotel.id,
-      hotelName: currentHotel.name,
-      roomNumber: randomRoom,
-      serviceKey: pick.key,
-      serviceTitle: pick.title,
-      notes: pick.note,
-      status: 'pending',
-      department: pick.dept,
-      priority: isUrgent ? 'acil' : 'standart',
-      stage: 'Beklemede'
-    });
-
-    toast.info(`Simülasyon: Oda ${randomRoom} için yeni talep oluşturuldu!`, {
-      description: `${pick.title} (${pick.dept})`
-    });
-  };
-
-  const handleTestChime = () => {
-    HotelAudioNotification.play();
-    toast.info("🔔 Resepsiyon çanı çalındı!");
   };
 
   const filtered = requests.filter((r) => {
@@ -112,25 +64,6 @@ export default function HotelLiveRequestsPage() {
           <p className="text-xs text-zinc-500 mt-0.5">
             Misafir odalarından gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleTestChime}
-            className="px-3.5 py-2 bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-            title="Zil Sesini Çal & Test Et"
-          >
-            <Play className="w-3.5 h-3.5 fill-amber-700 text-amber-700" />
-            <span>Zili Test Et</span>
-          </button>
-
-          <button
-            onClick={handleSimulateRequest}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-zinc-950 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>+ Test Canlı Talep Gönder</span>
-          </button>
         </div>
       </div>
 

@@ -1,16 +1,28 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function AppIntroSplash() {
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window !== "undefined") {
+      const alreadyPlayed = sessionStorage.getItem("xenios_splash_played");
+      if (alreadyPlayed || window.location.pathname.startsWith("/hotel-portal")) {
+        return false;
+      }
+    }
+    return true;
+  });
   const [isFadingOut, setIsFadingOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleDismiss = useCallback(() => {
     setIsFadingOut(true);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("xenios_splash_played", "true");
+    }
     setTimeout(() => {
       setIsVisible(false);
     }, 450);
@@ -18,6 +30,13 @@ export function AppIntroSplash() {
 
   useEffect(() => {
     setMounted(true);
+
+    if (sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal")) {
+      setIsVisible(false);
+      return;
+    }
+
+    sessionStorage.setItem("xenios_splash_played", "true");
 
     // 1. Force video attributes for strict iOS WKWebView autoplay
     const vid = videoRef.current;
@@ -43,7 +62,7 @@ export function AppIntroSplash() {
     }, 2600);
 
     return () => clearTimeout(timer);
-  }, [handleDismiss]);
+  }, [handleDismiss, pathname]);
 
   if (!mounted || !isVisible) return null;
 

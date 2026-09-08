@@ -92,7 +92,7 @@ export default function HotelPortalLayout({
             {/* Left: Brand & Title / Back Button */}
             <div className="flex items-center gap-3 min-w-0">
               <Link href="/hotel-portal" className="flex items-center gap-2.5 shrink-0">
-                <BrandMark size={32} showText={false} theme="light" />
+                <BrandMark size={32} showText={false} theme="light" asDiv />
                 <div className="hidden xs:block">
                   <span className="font-serif font-extrabold text-sm sm:text-base text-zinc-900 tracking-tight block leading-tight">
                     XENIOS

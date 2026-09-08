@@ -5,11 +5,21 @@ interface BrandMarkProps {
   size?: number;
   showText?: boolean;
   theme?: 'sand' | 'dark' | 'light';
+  href?: string;
+  asDiv?: boolean;
+  className?: string;
 }
 
-export function BrandMark({ size = 44, showText = true, theme = 'sand' }: BrandMarkProps) {
-  return (
-    <Link href="/" className="inline-flex items-center gap-3 group">
+export function BrandMark({
+  size = 44,
+  showText = true,
+  theme = 'sand',
+  href = '/',
+  asDiv = false,
+  className = '',
+}: BrandMarkProps) {
+  const content = (
+    <>
       <div 
         className={`relative overflow-hidden rounded-xl shadow-xs transition-transform group-hover:scale-105 ${
           theme === 'dark' ? 'bg-zinc-800/80 ring-1 ring-amber-500/30' : 'bg-white ring-1 ring-amber-200/70'
@@ -40,6 +50,20 @@ export function BrandMark({ size = 44, showText = true, theme = 'sand' }: BrandM
           </span>
         </div>
       )}
+    </>
+  );
+
+  if (asDiv) {
+    return (
+      <div className={`inline-flex items-center gap-3 group ${className}`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={href} className={`inline-flex items-center gap-3 group ${className}`}>
+      {content}
     </Link>
   );
 }

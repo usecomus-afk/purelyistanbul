@@ -76,7 +76,7 @@ export function HotelSideNav({ isOpen, onClose }: HotelSideNavProps) {
       {/* Brand Header */}
       <div className="border-b border-amber-100 px-5 py-4 flex items-center justify-between">
         <div>
-          <BrandMark size={34} showText={true} theme="light" />
+          <BrandMark size={34} showText={true} theme="light" href="/hotel-portal" />
           <p className="text-[10px] text-amber-800 font-mono tracking-wider mt-1 uppercase font-bold">
             Partner Otel Yönetim Portalı
           </p>
