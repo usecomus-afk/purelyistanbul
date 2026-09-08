@@ -149,7 +149,7 @@ export default function GuestPage() {
     { key: t.categoriesList.shopping.title, rawKey: "Alışveriş & Çarşılar", targetCategory: "9. Alışveriş, Stilist & Pazarlık Asistanlığı", iconPath: '/icons/categories/alisveris-carsilar.png', count: 4, desc: t.categoriesList.shopping.desc },
     { key: t.categoriesList.art.title, rawKey: "Sanat & Semazen", targetCategory: "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri", iconPath: '/icons/categories/sanat-semazen.png', count: 4, desc: t.categoriesList.art.desc },
     { key: t.categoriesList.culture.title, rawKey: "Kültürel Miras", targetCategory: "12. Mistik, İnanç & Çok Kültürlü Miras Rotaları", iconPath: '/icons/categories/kulturel-miras.png', count: 5, desc: t.categoriesList.culture.desc },
-    { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 5, desc: t.categoriesList.transfer.desc },
+    { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
     { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "14. Medikal Estetik & Güzellik", targetCategory: "14. Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" }
   ];
 

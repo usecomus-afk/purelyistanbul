@@ -56,9 +56,9 @@ export interface UserPreferences {
 
 export interface AiActionItem {
   id: string;
-  type: 'BOOK_APPOINTMENT' | 'VIEW_ITINERARY' | 'GET_DIRECTIONS' | 'VIEW_LISTING';
+  type: 'BOOK_APPOINTMENT' | 'VIEW_ITINERARY' | 'GET_DIRECTIONS' | 'VIEW_LISTING' | 'OPEN_SURVEY';
   label: string;
-  payload: {
+  payload?: {
     listing_id?: string;
     service_title?: string;
     preferred_date?: string;

@@ -483,52 +483,6 @@
     "image": "/images/experiences/exp-21.jpg"
   },
   {
-    "id": "exp-22",
-    "category": "6. Ulaşım, Transfer & Şehir Kartları",
-    "provider": "Istanbul Welcome Card",
-    "title": "Public Transport Card & Museum Fast Pass",
-    "location": "Sultanahmet / Havalimanı",
-    "phone": "+90 212 963 10 90",
-    "website": "https://istanbulwelcomecard.com",
-    "agentNote": "Toplu taşıma kartı, vapur turları ve dijital sesli rehber",
-    "scoreStr": "4.8/5",
-    "price": 50,
-    "currency": "EUR",
-    "duration": "45 Dk",
-    "rating": 4.8,
-    "coords": {
-      "lat": 41.0054,
-      "lng": 28.9768
-    },
-    "categoryTag": "Transfer",
-    "iconName": "Car",
-    "featured": false,
-    "image": "/images/experiences/exp-22.jpg"
-  },
-  {
-    "id": "exp-23",
-    "category": "6. Ulaşım, Transfer & Şehir Kartları",
-    "provider": "Istanbul Tourist Pass®",
-    "title": "All-Inclusive City Pass (100+ Attractions)",
-    "location": "Karaköy, Beyoğlu",
-    "phone": "+90 850 304 87 26",
-    "website": "https://www.istanbultouristpass.com",
-    "agentNote": "Dijital biletleme ve şehir kartı ekosistemi",
-    "scoreStr": "4.7/5",
-    "price": 50,
-    "currency": "EUR",
-    "duration": "45 Dk",
-    "rating": 4.8,
-    "coords": {
-      "lat": 41.0369,
-      "lng": 28.9775
-    },
-    "categoryTag": "Transfer",
-    "iconName": "Car",
-    "featured": false,
-    "image": "/images/experiences/exp-23.jpg"
-  },
-  {
     "id": "exp-24",
     "category": "6. Ulaşım, Transfer & Şehir Kartları",
     "provider": "Vip Tours İstanbul Transfer",

@@ -242,7 +242,7 @@ export const translations = {
     "knowMeBtn": "Beni Tanı",
     "myPreferencesBtn": "Tercihlerim",
     "knowMeChip": "✨ Beni Tanı (Kişisel Öneriler)",
-    "aiGreeting": "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.",
+    "aiGreeting": "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.\n\n✨ 'Beni Tanı' butonuna tıklayarak size özel rehberlik etmemi özelleştirebilirsiniz.",
     "quickChips": [
       "Sultanahmet'te 3 saatim var, ne yapmalıyım?",
       "En iyi Boğaz manzaralı akşam yemeği nerede?",
@@ -525,7 +525,7 @@ export const translations = {
     "knowMeBtn": "Get to Know Me",
     "myPreferencesBtn": "My Preferences",
     "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Hello! I am comus, your personal Istanbul guide. Feel free to ask about sunset boat tours, hidden culinary gems of the Historic Peninsula, investing in Istanbul, or tailored itineraries just for you.",
+    "aiGreeting": "Hello! I am comus, your personal Istanbul guide. Feel free to ask about sunset boat tours, hidden culinary gems of the Historic Peninsula, investing in Istanbul, or tailored itineraries just for you.\n\n✨ Click the 'Get to Know Me' button to personalize my recommendations for you.",
     "quickChips": [
       "I have 3 hours in Sultanahmet, what should I do?",
       "Where is the best sunset dinner with Bosphorus view?",
@@ -808,7 +808,7 @@ export const translations = {
     "knowMeBtn": "Get to Know Me",
     "myPreferencesBtn": "My Preferences",
     "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "مرحبًا! أنا comus، مرشدكم الشخصي في إسطنبول. لا تترددوا في السؤال عن جولات القوارب وقت الغروب، أو المأكولات الخفية في شبه الجزيرة التاريخية، أو الاستثمار في إسطنبول، أو مسارات مخصصة لكم.",
+    "aiGreeting": "مرحبًا! أنا comus، مرشدكم الشخصي في إسطنبول. لا تترددوا في السؤال عن جولات القوارب وقت الغروب، أو المأكولات الخفية في شبه الجزيرة التاريخية، أو الاستثمار في إسطنبول، أو مسارات مخصصة لكم.\n\n✨ انقر على زر 'تفضيلاتي (Beni Tanı)' لتخصيص الإرشادات وفقاً لاهتماماتك.",
     "quickChips": [
       "I have 3 hours in Sultanahmet, what should I do?",
       "Where is the best sunset dinner with Bosphorus view?",
@@ -1090,7 +1090,7 @@ export const translations = {
     "knowMeBtn": "Get to Know Me",
     "myPreferencesBtn": "My Preferences",
     "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Здравствуйте! Я comus, ваш персональный гид по Стамбулу. Спрашивайте меня о прогулках на катере на закате, скрытых гастрономических жемчужинах Исторического полуострова, инвестициях в Стамбуле или индивидуальных маршрутах.",
+    "aiGreeting": "Здравствуйте! Я comus, ваш персональный гид по Стамбулу. Спрашивайте меня о прогулках на катере на закате, скрытых гастрономических жемчужинах Исторического полуострова, инвестициях в Стамбуле или индивидуальных маршрутах.\n\n✨ Нажмите кнопку «Познакомьтесь со мной» (Beni Tanı), чтобы персонализировать мои рекомендации.",
     "quickChips": [
       "I have 3 hours in Sultanahmet, what should I do?",
       "Where is the best sunset dinner with Bosphorus view?",
@@ -1372,7 +1372,7 @@ export const translations = {
     "knowMeBtn": "Get to Know Me",
     "myPreferencesBtn": "My Preferences",
     "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Hallo! Ich bin comus, Ihr persönlicher Istanbul-Guide. Fragen Sie mich gerne nach Bootstouren zum Sonnenuntergang, versteckten kulinarischen Schätzen der Historischen Halbinsel, Immobilieninvestitionen in Istanbul oder maßgeschneiderten Routen.",
+    "aiGreeting": "Hallo! Ich bin comus, Ihr persönlicher Istanbul-Guide. Fragen Sie mich gerne nach Bootstouren zum Sonnenuntergang, versteckten kulinarischen Schätzen der Historischen Halbinsel, Immobilieninvestitionen in Istanbul oder maßgeschneiderten Routen.\n\n✨ Klicken Sie auf die Schaltfläche 'Beni Tanı' (Get to Know Me), um meine Empfehlungen ganz auf Sie abzustimmen.",
     "quickChips": [
       "I have 3 hours in Sultanahmet, what should I do?",
       "Where is the best sunset dinner with Bosphorus view?",
@@ -1654,7 +1654,7 @@ export const translations = {
     "knowMeBtn": "Get to Know Me",
     "myPreferencesBtn": "My Preferences",
     "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Bonjour ! Je suis comus, votre guide personnel d'Istanbul. N'hésitez pas à me poser des questions sur les croisières au coucher du soleil, les secrets culinaires de la Péninsule Historique, les investissements à Istanbul ou des itinéraires sur mesure.",
+    "aiGreeting": "Bonjour ! Je suis comus, votre guide personnel d'Istanbul. N'hésitez pas à me poser des questions sur les croisières au coucher du soleil, les secrets culinaires de la Péninsule Historique, les investissements à Istanbul ou des itinéraires sur mesure.\n\n✨ Cliquez sur le bouton « Apprenez à me connaître » (Beni Tanı) pour personnaliser mes recommandations selon vos préférences.",
     "quickChips": [
       "I have 3 hours in Sultanahmet, what should I do?",
       "Where is the best sunset dinner with Bosphorus view?",

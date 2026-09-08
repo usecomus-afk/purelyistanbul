@@ -17,7 +17,7 @@ interface AiChatDrawerProps {
   onClose: () => void;
 }
 
-const DEFAULT_GREETING_TR = "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.";
+const DEFAULT_GREETING_TR = "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.\n\n✨ 'Beni Tanı' butonuna tıklayarak size özel rehberlik etmemi özelleştirebilirsiniz.";
 
 export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiChatDrawerProps) {
   const t = getT(lang);
@@ -32,6 +32,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       sender: 'assistant',
       text: t.aiGreeting || DEFAULT_GREETING_TR,
       time: 'Now',
+      actions: [
+        {
+          id: 'act-know-me',
+          label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
+          type: 'OPEN_SURVEY'
+        }
+      ],
       recommendations: [
         { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
         { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
@@ -66,6 +73,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
           sender: 'assistant',
           text: t.aiGreeting || DEFAULT_GREETING_TR,
           time: 'Now',
+          actions: [
+            {
+              id: 'act-know-me',
+              label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
+              type: 'OPEN_SURVEY'
+            }
+          ],
           recommendations: [
             { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
             { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
@@ -123,6 +137,11 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
   };
 
   const handleExecuteAction = (action: any) => {
+    if (action.type === 'OPEN_SURVEY') {
+      setShowSurvey(true);
+      return;
+    }
+
     if (action.type === 'BOOK_APPOINTMENT') {
       const payload = action.payload || {};
       const serviceTitle = payload.service_title || 'Seçili Hizmet';
@@ -168,18 +187,18 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white w-full sm:max-w-lg h-[92vh] sm:h-[82vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900"
+        className="bg-white w-full sm:max-w-lg h-[88dvh] sm:h-[82vh] max-h-[88dvh] sm:max-h-[82vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="px-4 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-md">
+        <div className="px-4 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-md shrink-0">
           <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
             <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xs overflow-hidden p-1.5 shrink-0">
               <Image
@@ -225,7 +244,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
         {/* Survey Drawer Overlay if open */}
         {showSurvey ? (
-          <div className="flex-1 overflow-y-auto p-4 bg-[#fbf8f1] overscroll-contain">
+          <div className="flex-1 overflow-y-auto p-4 pb-[max(2rem,env(safe-area-inset-bottom))] bg-[#fbf8f1] overscroll-contain">
             <GuestPreferenceSurvey
               initialProfile={profile}
               lang={lang}
@@ -314,7 +333,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
             </div>
 
             {/* Quick Suggestion Chips */}
-            <div className="p-2.5 bg-white border-t border-amber-100 overflow-x-auto flex items-center gap-1.5 no-scrollbar">
+            <div className="p-2.5 bg-white border-t border-amber-100 overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
               {(t.quickChips || []).map((chip, idx) => (
                 <button
                   key={idx}
@@ -332,14 +351,14 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 e.preventDefault();
                 handleSend();
               }}
-              className="p-3 bg-white border-t border-amber-200 flex items-center gap-2"
+              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white border-t border-amber-200 flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t.aiPlaceholder}
-                className="flex-1 text-xs p-3 rounded-2xl border border-amber-200 bg-[#fbf8f1] focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                className="flex-1 text-xs p-3 rounded-2xl border border-amber-200 bg-[#fbf8f1] focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 placeholder:text-zinc-400"
               />
               <button
                 type="submit"
