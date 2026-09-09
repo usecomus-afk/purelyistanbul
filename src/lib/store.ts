@@ -301,6 +301,23 @@ export const XeniosStore = {
   },
 
   // Active Session
+  /**
+   * True only if a hotel/room session was explicitly established (QR scan via
+   * /stay/[hotelId]/[roomId], or a prior session in this browser) — unlike
+   * getActiveHotelId(), this never falls back to a default demo hotel.
+   * Used to tell an organic public website visitor apart from an actual
+   * hotel guest, so the marketing site doesn't show in-room concierge
+   * features (or the app-only intro splash) to the general public.
+   */
+  hasActiveHotelSession(): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+      return !!window.localStorage.getItem(STORAGE_KEYS.CURRENT_HOTEL);
+    } catch {
+      return false;
+    }
+  },
+
   getActiveHotelId(): string {
     return safeGet(STORAGE_KEYS.CURRENT_HOTEL, hotelsData[0]?.id || 'hotel-1');
   },

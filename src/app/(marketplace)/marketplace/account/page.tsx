@@ -1,19 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const AGREEMENT_VERSION = "2026-09-v1";
 
 /**
- * Giriş/kayıt + hesap özeti. Ana vitrin artık /marketplace (grid); bu sayfa
- * sadece kimlik doğrulama ve host durumu için kullanılır.
+ * Giriş/kayıt + hesap özeti. Ana vitrin artık "/" (grid); bu sayfa sadece
+ * kimlik doğrulama ve host durumu için kullanılır. Header'daki "Kayıt Ol"
+ * butonu ?mode=register ile doğrudan kayıt formunu açar.
  */
 export default function MarketplaceAccountPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-sm text-ink-muted">Yükleniyor...</div>}>
+      <MarketplaceAccountForm />
+    </Suspense>
+  );
+}
+
+function MarketplaceAccountForm() {
   const { user, profile, loading, signUp, signIn, logout } = useAuth();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const searchParams = useSearchParams();
+  const [mode, setMode] = useState<"login" | "register">(
+    searchParams.get("mode") === "register" ? "register" : "login"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");

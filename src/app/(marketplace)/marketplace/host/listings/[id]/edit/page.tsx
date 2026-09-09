@@ -20,6 +20,7 @@ import {
   withdrawListingToDraft
 } from "@/lib/marketplace/listings";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
+import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
 
 const CURRENCIES = ["TRY", "USD", "EUR"];
 
@@ -114,8 +115,8 @@ function EditListingInner() {
   }
 
   async function handleSubmitForReview() {
-    if (!title || !description || !district || basePrice <= 0 || listing!.images.length === 0) {
-      toast.error("Yayına göndermeden önce başlık, açıklama, bölge, fiyat ve en az 1 fotoğraf gerekli.");
+    if (!title || !description || !district || !category || basePrice <= 0 || listing!.images.length === 0) {
+      toast.error("Yayına göndermeden önce başlık, açıklama, bölge, kategori, fiyat ve en az 1 fotoğraf gerekli.");
       return;
     }
     await handleSave();
@@ -239,11 +240,24 @@ function EditListingInner() {
           </div>
           <div>
             <label className="block text-xs font-semibold text-ink-muted mb-1.5">Kategori</label>
-            <input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
-            />
+            {listing.type === "stay" ? (
+              <div className="w-full rounded-xl border border-sand-border bg-sand-card px-4 py-2.5 text-sm text-ink-muted">
+                Konaklama
+              </div>
+            ) : (
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              >
+                <option value="">Kategori seçin</option>
+                {MARKETPLACE_CATEGORIES.filter((c) => c.type === "experience").map((c) => (
+                  <option key={c.key} value={c.key}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 

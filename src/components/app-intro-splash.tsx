@@ -2,16 +2,31 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { XeniosStore } from "@/lib/store";
+
+/**
+ * This intro video is for the hotel-guest PWA/app experience only (opened by
+ * scanning an in-room QR code) — never for an organic visit to the public
+ * marketing/marketplace website, even at "/".
+ */
+function shouldSkipSplash(pathname: string | null | undefined): boolean {
+  const alreadyPlayed =
+    typeof window !== "undefined" &&
+    (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played"));
+  return Boolean(
+    alreadyPlayed ||
+      pathname?.startsWith("/hotel-portal") ||
+      pathname?.startsWith("/marketplace") ||
+      !XeniosStore.hasActiveHotelSession()
+  );
+}
 
 export function AppIntroSplash() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(() => {
     if (typeof window !== "undefined") {
-      const alreadyPlayed = sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played");
-      if (alreadyPlayed || window.location.pathname.startsWith("/hotel-portal")) {
-        return false;
-      }
+      return !shouldSkipSplash(window.location.pathname);
     }
     return true;
   });
@@ -31,11 +46,18 @@ export function AppIntroSplash() {
   useEffect(() => {
     setMounted(true);
 
-    if (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal")) {
+    if (shouldSkipSplash(pathname)) {
       setIsVisible(false);
       return;
     }
 
+    // Bu instance kalıcı kök layout'ta yaşar ve rota değişiminde REMOUNT OLMAZ.
+    // Otel oturumu QR akışında (/stay/[hotelId]/[roomId] -> /) bu efekt İKİNCİ
+    // kez, ilk mount'tan SONRA kurulur; ilk mount'ta oturum henüz yokken
+    // isVisible zaten false'a çekilmiş olabilir — bu yüzden burada açıkça
+    // true'ya geri almak gerekir.
+    setIsVisible(true);
+    setIsFadingOut(false);
     sessionStorage.setItem("purely_splash_played", "true");
 
     // 1. Force video attributes for strict iOS WKWebView autoplay

@@ -19,6 +19,7 @@ import {
 import { db } from '@/lib/firebase';
 import { MARKETPLACE_COLLECTIONS } from './collections';
 import { deleteListingImage } from './storage';
+import { getSeedListing, isSeedListingId } from './seed-listings';
 import type { ListingImage, ListingType, MarketplaceListing } from './types';
 
 function requireDb() {
@@ -42,7 +43,7 @@ export async function createDraftListing(hostId: string, type: ListingType): Pro
     type,
     title: '',
     description: '',
-    category: type === 'stay' ? 'Konaklama' : 'Deneyim',
+    category: type === 'stay' ? 'konaklama' : '',
     images: [],
     district: '',
     pricing: { basePrice: 0, currency: 'TRY' },
@@ -58,6 +59,7 @@ export async function createDraftListing(hostId: string, type: ListingType): Pro
 }
 
 export async function getListing(id: string): Promise<MarketplaceListing | null> {
+  if (isSeedListingId(id)) return getSeedListing(id);
   const snap = await getDoc(doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id));
   return snap.exists() ? toListing(snap.id, snap.data() as Omit<MarketplaceListing, 'id'>) : null;
 }
@@ -67,6 +69,10 @@ export function watchListing(
   cb: (listing: MarketplaceListing | null) => void,
   onError?: (err: Error) => void
 ): Unsubscribe {
+  if (isSeedListingId(id)) {
+    cb(getSeedListing(id));
+    return () => {};
+  }
   return onSnapshot(
     doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id),
     (snap) => cb(snap.exists() ? toListing(snap.id, snap.data() as Omit<MarketplaceListing, 'id'>) : null),
@@ -186,5 +192,6 @@ export async function bumpListingStat(
   stat: 'viewCount' | 'clickCount' | 'favoriteCount' | 'bookingCount',
   delta = 1
 ): Promise<void> {
+  if (isSeedListingId(id)) return; // örnek ilanlar Firestore'da yok, sayaç tutulmaz
   await updateDoc(doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id), { [`stats.${stat}`]: increment(delta) });
 }

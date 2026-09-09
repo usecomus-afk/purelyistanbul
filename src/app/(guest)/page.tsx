@@ -18,6 +18,10 @@ import { InvestInIstanbul } from '@/components/guest/invest-in-istanbul';
 import { RestaurantReservationModal } from '@/components/guest/restaurant-reservation-modal';
 import { AestheticBookingModal } from '@/components/guest/aesthetic-booking-modal';
 import { AestheticInquiryModal } from '@/components/guest/aesthetic-inquiry-modal';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { MarketplaceHeader } from '@/components/marketplace/MarketplaceHeader';
+import { MarketplaceHome } from '@/components/marketplace/MarketplaceHome';
+import { marketplaceFont } from '@/lib/marketplace/font';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -35,6 +39,10 @@ import {
 export default function GuestPage() {
   const hotels = XeniosStore.getHotels();
   const allExperiences = XeniosStore.getExperiences() as Experience[];
+
+  // "/" herkese açık pazaryeri vitrinidir; sadece bir otel QR koduyla (bkz.
+  // /stay/[hotelId]/[roomId]) gelen misafirlerde otel içi concierge gösterilir.
+  const [hasHotelSession] = useState(() => XeniosStore.hasActiveHotelSession());
 
   const [activeHotelId, setActiveHotelId] = useState(XeniosStore.getActiveHotelId());
   const [activeRoomNumber, setActiveRoomNumber] = useState(XeniosStore.getActiveRoomId());
@@ -170,6 +178,17 @@ export default function GuestPage() {
   };
 
   const activePendingRequests = requests.filter(r => r.status !== 'completed');
+
+  if (!hasHotelSession) {
+    return (
+      <AuthProvider>
+        <div className={`min-h-screen bg-sand-bg text-ink -mb-28 ${marketplaceFont.className}`}>
+          <MarketplaceHeader />
+          <MarketplaceHome />
+        </div>
+      </AuthProvider>
+    );
+  }
 
   return (
     <div className="w-full text-zinc-900">

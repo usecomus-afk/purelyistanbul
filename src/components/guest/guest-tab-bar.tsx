@@ -6,7 +6,8 @@ import { getT, detectBrowserLanguage } from '@/lib/i18n';
 import { XeniosStore } from '@/lib/store';
 import { Home, Compass, LayoutGrid, Building2 } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+
 
 type TabId = 'services' | 'experiences' | 'categories' | 'ai' | 'practical' | 'invest';
 
@@ -22,8 +23,19 @@ export function GuestTabBar({
   lang: propLang 
 }: GuestTabBarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [currentTab, setCurrentTab] = useState<TabId>(() => propActiveTab || 'services');
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
+  const [hasHotelSession, setHasHotelSession] = useState(() => XeniosStore.hasActiveHotelSession());
+
+  // GuestTabBar mount'ı (guest)/layout.tsx seviyesinde kalıcıdır ve rota
+  // değişimlerinde REMOUNT OLMAZ (örn. /stay/[hotelId]/[roomId] -> / geçişinde
+  // aynı layout paylaşılır). Bu yüzden oturum durumunu her pathname
+  // değişiminde yeniden okumak gerekir — yoksa /stay QR akışından hemen sonra
+  // ilk mount'taki (henüz oturum kurulmamış) eski değerde donup kalır.
+  useEffect(() => {
+    setHasHotelSession(XeniosStore.hasActiveHotelSession());
+  }, [pathname]);
 
   // Sync prop changes
   useEffect(() => {
@@ -79,8 +91,10 @@ export function GuestTabBar({
     }
   };
 
+  if (!hasHotelSession) return null;
+
   return (
-    <nav 
+    <nav
       className="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
       style={{
         position: 'fixed',
