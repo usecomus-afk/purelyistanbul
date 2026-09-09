@@ -10,6 +10,17 @@ export function MarketplaceHeader() {
   const { user, profile, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hotelSession, setHotelSession] = useState<{ hotelId: string; roomId: string } | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hId = localStorage.getItem('xenios_hotel_id');
+      const rId = localStorage.getItem('xenios_room_id');
+      if (hId && rId) {
+        setHotelSession({ hotelId: hId, roomId: rId });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -35,6 +46,17 @@ export function MarketplaceHeader() {
         </Link>
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
+          {hotelSession && (
+            <Link
+              href={`/stay/${hotelSession.hotelId}/${hotelSession.roomId}`}
+              className="inline-flex items-center gap-1.5 text-[11px] sm:text-[12.5px] font-semibold text-amber-900 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 px-3 py-1.5 rounded-full transition shadow-2xs shrink-0"
+            >
+              <span>🏨</span>
+              <span className="hidden sm:inline">Odanıza Dönün</span>
+              <span className="font-mono text-amber-950 font-bold">(Oda {hotelSession.roomId})</span>
+            </Link>
+          )}
+
           {profile?.roles.host ? (
             <Link
               href="/marketplace/host/listings"

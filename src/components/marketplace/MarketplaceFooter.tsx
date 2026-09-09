@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export function MarketplaceFooter() {
   return (
@@ -14,6 +15,15 @@ export function MarketplaceFooter() {
         </div>
 
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px] text-ink-muted">
+          <Link href="/marketplace/become-a-host" className="hover:text-ink transition">
+            İlanınızı Verin
+          </Link>
+          <Link href="/marketplace/account" className="hover:text-ink transition">
+            Giriş Yap
+          </Link>
+          <Link href="/hotel-portal" className="hover:text-ink transition">
+            Otel Portalı
+          </Link>
           <span>Istanbul, Türkiye</span>
         </nav>
 

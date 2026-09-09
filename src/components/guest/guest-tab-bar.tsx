@@ -26,6 +26,13 @@ export function GuestTabBar({
   const pathname = usePathname();
   const [currentTab, setCurrentTab] = useState<TabId>(() => propActiveTab || 'services');
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
+  const [shouldShow, setShouldShow] = useState(false);
+
+  useEffect(() => {
+    const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
+    const isGuestRoute = pathname?.startsWith('/stay') || pathname?.startsWith('/guest');
+    setShouldShow(isNative || isGuestRoute);
+  }, [pathname]);
 
 
   // Sync prop changes
@@ -81,6 +88,8 @@ export function GuestTabBar({
       }
     }
   };
+
+  if (!shouldShow) return null;
 
   return (
     <nav
