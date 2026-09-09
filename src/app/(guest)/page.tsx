@@ -21,6 +21,7 @@ import { AestheticInquiryModal } from '@/components/guest/aesthetic-inquiry-moda
 import { AuthProvider } from '@/contexts/AuthContext';
 import { MarketplaceHeader } from '@/components/marketplace/MarketplaceHeader';
 import { MarketplaceHome } from '@/components/marketplace/MarketplaceHome';
+import { marketplaceFont } from '@/lib/marketplace/font';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -181,7 +182,7 @@ export default function GuestPage() {
   if (!hasHotelSession) {
     return (
       <AuthProvider>
-        <div className="min-h-screen bg-sand-bg text-ink font-light -mb-28">
+        <div className={`min-h-screen bg-sand-bg text-ink -mb-28 ${marketplaceFont.className}`}>
           <MarketplaceHeader />
           <MarketplaceHome />
         </div>

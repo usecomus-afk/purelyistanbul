@@ -64,20 +64,20 @@ export default function ListingDetailPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-5 md:px-8 py-8">
-      <h1 className="text-2xl md:text-[26px] font-light tracking-tight text-ink mb-1">{listing.title}</h1>
-      <p className="text-sm text-ink-muted flex items-center gap-1 mb-6">
-        <MapPin className="w-3.5 h-3.5" /> {listing.district}
+    <div className="max-w-6xl mx-auto px-5 md:px-8 py-10">
+      <h1 className="text-[26px] md:text-3xl font-light tracking-tight text-ink mb-1.5">{listing.title}</h1>
+      <p className="text-[13.5px] text-ink-muted flex items-center gap-1.5 mb-7">
+        <MapPin className="w-3.5 h-3.5" strokeWidth={1.75} /> {listing.district}
       </p>
 
       {/* Fotoğraf galerisi */}
-      <div className="grid grid-cols-4 grid-rows-2 gap-2 rounded-2xl overflow-hidden mb-10 h-[340px] md:h-[420px]">
+      <div className="grid grid-cols-4 grid-rows-2 gap-1.5 rounded-3xl overflow-hidden mb-12 h-[340px] md:h-[440px] ring-1 ring-inset ring-black/[0.04]">
         <div className="relative col-span-4 row-span-2 md:col-span-2 md:row-span-2 bg-sand-card">
           {gallery[0] ? (
             <Image src={gallery[0].url} alt={listing.title} fill className="object-cover" sizes="50vw" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-ink-muted">
-              <ImageOff className="w-8 h-8" />
+            <div className="w-full h-full flex items-center justify-center text-ink-muted/50">
+              <ImageOff className="w-7 h-7" strokeWidth={1.5} />
             </div>
           )}
         </div>
@@ -90,29 +90,29 @@ export default function ListingDetailPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
         {/* Sol: detaylar */}
-        <div className="space-y-8">
-          <div className="flex items-center gap-2 text-sm text-ink-muted border-b border-sand-border pb-6">
-            <Users className="w-4 h-4" />
+        <div className="space-y-9">
+          <div className="flex items-center gap-2 text-[13.5px] text-ink-muted border-b border-sand-border/70 pb-7">
+            <Users className="w-4 h-4" strokeWidth={1.75} />
             {listing.capacity} misafire kadar · {listing.type === "stay" ? "Konaklama" : "Deneyim"}
             {listing.category ? ` · ${getCategoryByKey(listing.category)?.label ?? listing.category}` : ""}
           </div>
 
           <div>
-            <h2 className="text-lg font-medium text-ink mb-2">Bu ilan hakkında</h2>
-            <p className="text-sm text-ink-muted leading-relaxed whitespace-pre-line">
+            <h2 className="text-[17px] font-medium text-ink mb-3">Bu ilan hakkında</h2>
+            <p className="text-[14px] text-ink-muted leading-relaxed whitespace-pre-line">
               {listing.description || "Açıklama henüz eklenmedi."}
             </p>
           </div>
 
           {listing.amenities.length > 0 && (
             <div>
-              <h2 className="text-lg font-medium text-ink mb-3">Sunulan olanaklar</h2>
-              <div className="grid grid-cols-2 gap-y-2.5 text-sm text-ink-muted">
+              <h2 className="text-[17px] font-medium text-ink mb-4">Sunulan olanaklar</h2>
+              <div className="grid grid-cols-2 gap-y-3 text-[14px] text-ink-muted">
                 {listing.amenities.map((a) => (
-                  <div key={a} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-terracotta" /> {a}
+                  <div key={a} className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-terracotta" strokeWidth={1.75} /> {a}
                   </div>
                 ))}
               </div>
@@ -121,69 +121,69 @@ export default function ListingDetailPage() {
         </div>
 
         {/* Sağ: sticky rezervasyon kutusu */}
-        <div className="lg:self-start lg:sticky lg:top-24">
-          <div className="rounded-2xl border border-sand-border bg-white shadow-md p-5 space-y-4">
-            <p className="text-lg">
-              <span className="font-semibold">
+        <div className="lg:self-start lg:sticky lg:top-28">
+          <div className="rounded-3xl border border-sand-border bg-white shadow-[0_4px_24px_rgba(30,33,41,0.07)] p-6 space-y-5">
+            <p className="text-[19px]">
+              <span className="font-semibold text-ink">
                 {listing.pricing.basePrice.toLocaleString("tr-TR")} {listing.pricing.currency}
               </span>{" "}
-              <span className="text-sm text-ink-muted">/ {priceUnit}</span>
+              <span className="text-[13.5px] text-ink-muted">/ {priceUnit}</span>
             </p>
 
             {listing.type === "stay" ? (
               <div className="grid grid-cols-2 gap-2">
-                <label className="border border-sand-border rounded-xl px-3 py-2">
-                  <span className="block text-[10px] uppercase text-ink-muted">Giriş</span>
+                <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
+                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Giriş</span>
                   <input
                     type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full text-xs outline-none"
+                    className="w-full text-[12.5px] outline-none mt-0.5"
                   />
                 </label>
-                <label className="border border-sand-border rounded-xl px-3 py-2">
-                  <span className="block text-[10px] uppercase text-ink-muted">Çıkış</span>
+                <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
+                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Çıkış</span>
                   <input
                     type="date"
                     value={checkOut}
                     onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full text-xs outline-none"
+                    className="w-full text-[12.5px] outline-none mt-0.5"
                   />
                 </label>
               </div>
             ) : (
-              <label className="block border border-sand-border rounded-xl px-3 py-2">
-                <span className="block text-[10px] uppercase text-ink-muted">Tarih</span>
+              <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
+                <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Tarih</span>
                 <input
                   type="date"
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full text-xs outline-none"
+                  className="w-full text-[12.5px] outline-none mt-0.5"
                 />
               </label>
             )}
 
-            <label className="block border border-sand-border rounded-xl px-3 py-2">
-              <span className="block text-[10px] uppercase text-ink-muted">Misafir Sayısı</span>
+            <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
+              <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Misafir Sayısı</span>
               <input
                 type="number"
                 min={1}
                 max={listing.capacity}
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
-                className="w-full text-xs outline-none"
+                className="w-full text-[12.5px] outline-none mt-0.5"
               />
             </label>
 
             <button
               onClick={handleReserve}
               disabled={!checkIn || (listing.type === "stay" && !checkOut)}
-              className="w-full rounded-full bg-terracotta text-white font-semibold py-3 text-sm hover:bg-terracotta/90 transition disabled:opacity-50"
+              className="w-full rounded-full bg-ink text-white font-medium py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40"
             >
               Rezervasyon Yap
             </button>
 
-            <div className="text-xs text-ink-muted flex justify-between pt-1 border-t border-sand-border">
+            <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
               <span>Toplam (tahmini)</span>
               <span className="font-semibold text-ink">
                 {total.toLocaleString("tr-TR")} {listing.pricing.currency}

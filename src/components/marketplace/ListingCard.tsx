@@ -17,18 +17,18 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
   return (
     <div className="group">
       <Link href={`/marketplace/listing/${listing.id}`} className="block">
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-sand-card">
+        <div className="relative aspect-[6/5] rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.04]">
           {listing.coverImageUrl ? (
             <Image
               src={listing.coverImageUrl}
               alt={listing.title}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-ink-muted">
-              <ImageOff className="w-6 h-6" />
+            <div className="w-full h-full flex items-center justify-center text-ink-muted/50">
+              <ImageOff className="w-5 h-5" strokeWidth={1.5} />
             </div>
           )}
 
@@ -39,21 +39,24 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
                 onToggleFavorite(listing);
               }}
               aria-label="Favorilere ekle"
-              className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white/85 backdrop-blur-sm hover:bg-white transition"
+              className="absolute top-3 right-3 p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-110 transition"
             >
-              <Heart className={`w-4 h-4 ${isFavorite ? "fill-terracotta text-terracotta" : "text-ink/70"}`} />
+              <Heart
+                className={`w-[17px] h-[17px] ${isFavorite ? "fill-terracotta text-terracotta" : "text-ink/60"}`}
+                strokeWidth={1.75}
+              />
             </button>
           )}
         </div>
 
-        <div className="mt-2.5 space-y-0.5">
-          <p className="text-[13px] text-ink-muted">{listing.district}</p>
-          <p className="text-sm font-medium text-ink truncate">{listing.title || "İsimsiz ilan"}</p>
-          <p className="text-sm text-ink">
+        <div className="mt-3 space-y-0.5">
+          <p className="text-[12px] text-ink-muted tracking-wide uppercase">{listing.district}</p>
+          <p className="text-[14.5px] font-medium text-ink truncate leading-snug">{listing.title || "İsimsiz ilan"}</p>
+          <p className="text-[13.5px] text-ink pt-0.5">
             <span className="font-semibold">
               {listing.pricing.basePrice.toLocaleString("tr-TR")} {listing.pricing.currency}
             </span>{" "}
-            <span className="text-ink-muted">/ {priceUnit}</span>
+            <span className="text-ink-muted font-normal">/ {priceUnit}</span>
           </p>
         </div>
       </Link>

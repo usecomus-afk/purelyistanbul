@@ -2,6 +2,8 @@
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
+import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
+import { marketplaceFont } from "@/lib/marketplace/font";
 
 /**
  * Purely Istanbul Marketplace route grubu. Mevcut (guest)/(cockpit)/hotel-portal
@@ -11,9 +13,10 @@ import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 export default function MarketplaceLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-sand-bg text-ink font-light">
+      <div className={`min-h-screen bg-sand-bg text-ink ${marketplaceFont.className}`}>
         <MarketplaceHeader />
         {children}
+        <MarketplaceFooter />
       </div>
     </AuthProvider>
   );
