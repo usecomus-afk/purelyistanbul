@@ -24,10 +24,10 @@ export function MarketplaceHeader() {
         scrolled ? "shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : ""
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-5 md:px-8 h-[72px]">
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="relative h-7 w-[70px] shrink-0">
-            <Image src="/logo-header.png" alt="" fill className="object-contain object-left" priority />
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-5 md:px-8 h-[84px]">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <span className="relative h-11 md:h-12 w-[130px] md:w-[145px] shrink-0">
+            <Image src="/logo-header.png" alt="Purely Istanbul" fill className="object-contain object-left" priority />
           </span>
           <span className="text-[16px] tracking-tight text-ink leading-none">
             purely <span className="font-semibold text-terracotta">istanbul</span>

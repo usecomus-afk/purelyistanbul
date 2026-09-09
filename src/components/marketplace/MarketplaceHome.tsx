@@ -9,6 +9,7 @@ import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 import { getCategoryByKey } from "@/lib/marketplace/categories";
+import { SEED_LISTINGS, isSeedListingId } from "@/lib/marketplace/seed-listings";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 import { toast } from "sonner";
 
@@ -35,14 +36,19 @@ export function MarketplaceHome() {
     return () => unsub();
   }, []);
 
+  // Henüz onaylı gerçek host ilanı yokken vitrin boş görünmesin diye markanın
+  // kendi örnek ilanları gösterilir; gerçek bir ilan onaylandığı an bunlar
+  // otomatik olarak devre dışı kalır.
+  const source = !loading && listings.length === 0 ? SEED_LISTINGS : listings;
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return listings.filter((l) => {
+    return source.filter((l) => {
       const matchesCategory = category === "all" ? true : l.category === category;
       const matchesSearch = !q || l.title.toLowerCase().includes(q) || l.district.toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
-  }, [listings, category, search]);
+  }, [source, category, search]);
 
   const activeCategoryLabel = category === "all" ? null : getCategoryByKey(category)?.label;
 
@@ -63,18 +69,12 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero */}
-      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-16 md:pt-24 pb-12 md:pb-16 text-center">
-        <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-terracotta mb-5">
-          Bir host topluluğu, bir şehir
-        </p>
+      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-14 md:pt-20 pb-12 md:pb-16 text-center">
         <h1 className="text-[2.6rem] leading-[1.05] md:text-6xl font-light tracking-tight text-ink">
           <span className="font-light text-ink-muted">Nothing but</span>
           <br />
           <span className="font-semibold text-ink">İstanbul.</span>
         </h1>
-        <p className="mt-6 text-[15px] text-ink-muted max-w-md mx-auto leading-relaxed">
-          Konaklama ve şehir deneyimlerini, doğrudan yerel host'lardan keşfedin.
-        </p>
 
         <div className="mt-9 flex items-center gap-2 max-w-lg mx-auto rounded-full border border-sand-border bg-white shadow-[0_2px_16px_rgba(30,33,41,0.06)] p-1.5 pl-5">
           <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
@@ -103,7 +103,7 @@ export function MarketplaceHome() {
           <p className="text-sm text-ink-muted">Yükleniyor...</p>
         ) : visible.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-sand-border rounded-2xl">
-            <p className="text-sm text-ink-muted">Bu aramayla eşleşen ilan yok. Yakında burada olacak.</p>
+            <p className="text-sm text-ink-muted">Bu aramayla eşleşen ilan yok.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">

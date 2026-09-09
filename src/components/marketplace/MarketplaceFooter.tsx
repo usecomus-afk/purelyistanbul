@@ -6,7 +6,7 @@ export function MarketplaceFooter() {
     <footer className="border-t border-sand-border mt-16">
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-2 opacity-80">
-          <span className="relative h-5 w-[52px] shrink-0">
+          <span className="relative h-7 w-[75px] shrink-0">
             <Image src="/logo-header.png" alt="" fill className="object-contain object-left" />
           </span>
           <span className="text-[13px] tracking-tight text-ink leading-none">

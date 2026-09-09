@@ -12,7 +12,7 @@ interface CategoryFilterBarProps {
 /** Header'ın altında yer alan, kategori başlıklarının yan yana sıralandığı ince gezinme çubuğu. */
 export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
   return (
-    <div className="sticky top-[72px] z-30 bg-sand-bg/90 backdrop-blur-md border-b border-sand-border/70">
+    <div className="sticky top-[84px] z-30 bg-sand-bg/90 backdrop-blur-md border-b border-sand-border/70">
       <div className="max-w-6xl mx-auto px-5 md:px-8">
         <div className="flex items-center gap-7 overflow-x-auto py-4">
           <button
