@@ -123,6 +123,7 @@ export function MarketplaceHome() {
               key={c.key}
               id={`shelf-${c.key}`}
               title={c.label}
+              icon={c.icon}
               listings={withCover.filter((l) => l.category === c.key)}
               favoriteIds={favoriteIds}
               onToggleFavorite={handleToggleFavorite}
