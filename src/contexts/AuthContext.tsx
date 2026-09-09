@@ -18,9 +18,11 @@ import {
 } from 'react';
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
   type User
@@ -57,6 +59,7 @@ interface AuthContextValue {
     consents: RequiredConsents;
   }) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   /** Misafir -> host geçişi: rol hemen açılmaz, başvuru admin onayına düşer. */
@@ -97,6 +100,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setHostApplication(null);
       return;
     }
+    // Kayıt sırasında (veya Google ile ilk girişte) profil oluşturma başarısız
+    // kalmışsa kullanıcıyı sonsuza kadar profilsiz bırakmamak için her girişte
+    // idempotent şekilde profil varlığı garanti edilir (zaten varsa dokunmaz).
+    ensureUserProfile({
+      uid: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName || user.email?.split('@')[0] || 'Kullanıcı'
+    }).catch(() => {});
     const unsubProfile = watchUserProfile(user.uid, setProfile);
     const unsubApp = watchOwnHostApplication(user.uid, setHostApplication);
     touchLastActive(user.uid).catch(() => {});
@@ -126,6 +137,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signIn(email, password) {
         if (!auth) throw new Error('Firebase Authentication yapılandırılmamış.');
         await signInWithEmailAndPassword(auth, email, password);
+      },
+      async signInWithGoogle() {
+        if (!auth) throw new Error('Firebase Authentication yapılandırılmamış.');
+        await signInWithPopup(auth, new GoogleAuthProvider());
       },
       async logout() {
         if (!auth) return;

@@ -47,7 +47,7 @@ export async function ensureUserProfile(params: {
     uid: params.uid,
     email: params.email,
     displayName: params.displayName,
-    phone: params.phone,
+    ...(params.phone ? { phone: params.phone } : {}),
     roles: { guest: true, host: false },
     activeRole: 'guest',
     lastActiveAt: now,
