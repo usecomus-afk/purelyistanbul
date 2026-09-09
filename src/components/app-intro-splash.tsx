@@ -61,10 +61,10 @@ export function AppIntroSplash() {
     setIsFadingOut(false);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    // Smooth 3.5s display timer for GIF animation
+    // Smooth 5s display timer for new GIF animation
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 3500);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [handleDismiss, pathname]);
@@ -104,7 +104,7 @@ export function AppIntroSplash() {
         <div
           className="h-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 shadow-[0_0_12px_rgba(220,38,38,0.5)]"
           style={{
-            animation: "progressFill 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            animation: "progressFill 5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         />
       </div>
