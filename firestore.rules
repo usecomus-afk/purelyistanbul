@@ -168,5 +168,17 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // 15. İletişim Formu Gönderimleri — herkes (giriş şart değil) mesaj bırakabilir;
+    // sadece admin okur/yönetir, spam/kötüye kullanımı önlemek için alan doğrulaması yapılır.
+    match /marketplace_contact_messages/{messageId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 200 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 320 &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 4000;
+    }
   }
 }
