@@ -79,9 +79,23 @@ jobs:
           APP_PATH=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -n 1)
           echo "Found app at: $APP_PATH"
           cp -r "$APP_PATH" build/ipa/Payload/
+
+          # Guarantee explicit icons in App.app root for SpringBoard & Sideloadly
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-60x60@2x.png build/ipa/Payload/App.app/AppIcon60x60@2x.png || true
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-60x60@3x.png build/ipa/Payload/App.app/AppIcon60x60@3x.png || true
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-76x76@2x.png build/ipa/Payload/App.app/AppIcon76x76@2x~ipad.png || true
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png build/ipa/Payload/App.app/AppIcon-512@2x.png || true
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png build/ipa/Payload/App.app/iTunesArtwork@2x || true
+          cp public/itunes-512.png build/ipa/Payload/App.app/iTunesArtwork || true
+
+          # Sideloadly and iTunes use iTunesArtwork at the root of the .ipa for desktop preview and device icon sync
+          cp public/itunes-512.png build/ipa/iTunesArtwork
+          cp ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png build/ipa/iTunesArtwork@2x
+
           cd build/ipa
-          zip -r -9 ../../purelyİstanbul.ipa Payload
+          zip -r -9 ../../purelyİstanbul.ipa Payload iTunesArtwork iTunesArtwork@2x
           cd ../..
+          cp purelyİstanbul.ipa purelyistanbul.ipa
           cp purelyİstanbul.ipa Xenios.ipa
           ls -lh purelyİstanbul.ipa
 
