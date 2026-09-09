@@ -1,10 +1,10 @@
 {
-  "appId": "com.xenios.app",
-  "appName": "Xenios",
+  "appId": "com.xenios.istanbul",
+  "appName": "purelyİstanbul",
   "webDir": "out",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://xenios.usecomus.com",
+    "url": "https://purelyistanbul.com",
     "cleartext": false,
     "androidScheme": "https"
   },
@@ -21,7 +21,7 @@
     "SplashScreen": {
       "launchShowDuration": 500,
       "launchAutoHide": true,
-      "backgroundColor": "#090807",
+      "backgroundColor": "#F8F4ED",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false
