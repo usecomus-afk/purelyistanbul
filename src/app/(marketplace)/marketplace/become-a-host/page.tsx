@@ -60,7 +60,7 @@ export default function BecomeAHostPage() {
         about
       });
       toast.success("Başvurunuz alındı. Admin onayı sonrası bilgilendirileceksiniz.");
-      router.push("/marketplace");
+      router.push("/marketplace/account");
     } catch (err: any) {
       toast.error(err?.message || "Başvuru gönderilemedi.");
     } finally {

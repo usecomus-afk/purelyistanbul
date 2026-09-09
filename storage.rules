@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (request.auth.token.role == 'admin' || request.auth.token.email == 'anilaslan@usecomus.com');
+    }
+
+    // Purely Istanbul Marketplace — ilan fotoğrafları.
+    // Yol: marketplace_listings/{hostId}/{listingId}/{fileName}
+    // Herkes görüntüleyebilir (public ilan vitrini için); sadece ilanın host'u
+    // veya admin yükleyip silebilir. 8MB üstü ve görsel olmayan dosyalar reddedilir.
+    match /marketplace_listings/{hostId}/{listingId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() &&
+        (request.auth.uid == hostId || isAdmin()) &&
+        request.resource.size < 8 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isAuthenticated() && (request.auth.uid == hostId || isAdmin());
+    }
+
+    // CMS medya (site içeriği görselleri) — sadece admin yönetir, herkes görüntüler.
+    match /cms_media/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAdmin();
+    }
+  }
+}

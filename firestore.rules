@@ -19,6 +19,18 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == guestId;
     }
 
+    // Bir marketplace_listings durumu değişimi client (host) tarafından yapılabilir mi?
+    // 'approved' durumuna GEÇİŞ sadece admin ile mümkündür (aşağıdaki host update kolunda
+    // kullanılır); admin zaten isAdmin() koluyla her geçişe izinlidir.
+    function isAllowedListingTransition(fromStatus, toStatus) {
+      return fromStatus == toStatus ||
+        (fromStatus == 'draft' && toStatus == 'pending_review') ||
+        (fromStatus == 'pending_review' && toStatus == 'draft') ||
+        (fromStatus == 'approved' && toStatus == 'suspended') ||
+        (fromStatus == 'suspended' && toStatus == 'pending_review') ||
+        (fromStatus == 'rejected' && toStatus == 'pending_review');
+    }
+
     // 1. Listings (İlanlar)
     // Herkes aktif ilanları okuyabilir, sadece admin ve yetkili acenteler yazabilir
     match /listings/{listingId} {
@@ -99,7 +111,7 @@ service cloud.firestore {
       allow update: if isAdmin() || (
         isAuthenticated() && resource.data.hostId == request.auth.uid &&
         request.resource.data.hostId == request.auth.uid &&
-        request.resource.data.status in ['draft', 'pending_review', 'suspended']
+        isAllowedListingTransition(resource.data.status, request.resource.data.status)
       );
       allow delete: if isAdmin() || (
         isAuthenticated() && resource.data.hostId == request.auth.uid && resource.data.status == 'draft'

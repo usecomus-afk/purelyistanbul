@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 
 /**
  * Purely Istanbul Marketplace route grubu. Mevcut (guest)/(cockpit)/hotel-portal
@@ -10,7 +11,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 export default function MarketplaceLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-sand-bg text-ink">{children}</div>
+      <div className="min-h-screen bg-sand-bg text-ink font-light">
+        <MarketplaceHeader />
+        {children}
+      </div>
     </AuthProvider>
   );
 }

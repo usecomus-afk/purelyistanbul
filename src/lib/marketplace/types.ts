@@ -73,6 +73,12 @@ export interface HostApplication {
 export type ListingType = 'stay' | 'experience';
 export type ListingStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'suspended';
 
+/** Cloud Storage'a yüklenen bir ilan fotoğrafı; path silme işlemi için saklanır. */
+export interface ListingImage {
+  url: string;
+  path: string;
+}
+
 /** marketplace_listings/{id} */
 export interface MarketplaceListing {
   id: string;
@@ -81,8 +87,11 @@ export interface MarketplaceListing {
   title: string;
   description: string;
   category: string;
-  images: string[];
-  address: string;
+  images: ListingImage[];
+  coverImageUrl?: string;
+  /** Kısa bölge/mahalle etiketi, örn. "Sultanahmet, Fatih" */
+  district: string;
+  address?: string;
   coords?: { lat: number; lng: number };
   pricing: {
     basePrice: number;
