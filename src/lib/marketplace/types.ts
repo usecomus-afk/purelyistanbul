@@ -201,6 +201,16 @@ export interface LegalConsentRecord {
   acceptedAt: string;
 }
 
+/** marketplace_contact_messages/{id} — herkese açık iletişim formu gönderimi. */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  uid?: string;
+  createdAt: string;
+}
+
 /** cms_media/{id} — Cloud Storage'a yüklenen site içeriği görselleri (admin CMS) */
 export interface CmsMediaAsset {
   id: string;
