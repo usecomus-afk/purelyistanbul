@@ -33,6 +33,7 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
     { href: "/dashboard", label: "Yönetici Özeti & Finans", icon: LayoutDashboard },
     { href: "/hotels", label: "Partner Oteller & Tesisler", icon: Building2 },
     { href: "/admin", label: "İlan & Portföy Yönetimi", icon: Lock, badge: "Admin" },
+    { href: "/host-applications", label: "Host Başvuruları (Marketplace)", icon: Building2, badge: "Yeni" },
     { href: "/disputes", label: "Misafir Hakları & Hakem", icon: Scale, badge: "Hakem" },
     { href: "/bookings", label: "Sanal POS & Finansal Raporlar", icon: CreditCard },
     { href: "/experiences", label: "Deneyim Kataloğu", icon: Compass },

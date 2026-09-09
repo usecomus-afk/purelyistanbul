@@ -58,5 +58,103 @@ service cloud.firestore {
     match /system_alerts/{alertId} {
       allow read, write: if isAdmin();
     }
+
+    // ------------------------------------------------------------------
+    // Purely Istanbul Marketplace (host/guest ilan pazaryeri) — yeni modül.
+    // Mevcut koleksiyonlarla çakışmaması için ayrı isimlendirme kullanılır.
+    // ------------------------------------------------------------------
+
+    // 6. Kullanıcı Profilleri — herkes kendi profilini okur/yazar, admin hepsini görür.
+    // roles/isAdmin/hostProfile alanları sadece admin tarafından değiştirilebilir;
+    // activeRole yalnızca zaten host onayı almış kullanıcı tarafından 'host' yapılabilir.
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAdmin() || (
+        isAuthenticated() && request.auth.uid == userId &&
+        request.resource.data.roles.host == resource.data.roles.host &&
+        request.resource.data.get('isAdmin', false) == resource.data.get('isAdmin', false) &&
+        (request.resource.data.activeRole == 'guest' || resource.data.roles.host == true)
+      );
+    }
+
+    // 7. Host Başvuruları — kullanıcı sadece kendi 'pending' başvurusunu oluşturabilir;
+    // onay/red (ve komisyon oranının belirlenmesi) sadece admin yapar.
+    match /host_applications/{appId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.status == 'pending';
+      allow update, delete: if isAdmin();
+    }
+
+    // 8. Marketplace İlanları — onaylı ilanlar herkese açık; host kendi taslak/
+    // incelemedeki ilanını yönetir, admin her ilanı denetler.
+    match /marketplace_listings/{listingId} {
+      allow read: if resource.data.status == 'approved' ||
+        (isAuthenticated() && (resource.data.hostId == request.auth.uid || isAdmin()));
+      allow create: if isAuthenticated() &&
+        request.resource.data.hostId == request.auth.uid &&
+        request.resource.data.status in ['draft', 'pending_review'];
+      allow update: if isAdmin() || (
+        isAuthenticated() && resource.data.hostId == request.auth.uid &&
+        request.resource.data.hostId == request.auth.uid &&
+        request.resource.data.status in ['draft', 'pending_review', 'suspended']
+      );
+      allow delete: if isAdmin() || (
+        isAuthenticated() && resource.data.hostId == request.auth.uid && resource.data.status == 'draft'
+      );
+    }
+
+    // 9. Marketplace Rezervasyonları — misafir kendi rezervasyonunu, host kendi
+    // ilanına gelen rezervasyonları görebilir. Onay/iptal admin veya ödeme
+    // webhook'u (Admin SDK, kuralları by-pass eder) tarafından yapılır.
+    match /marketplace_bookings/{bookingId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.guestId == request.auth.uid || resource.data.hostId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() &&
+        request.resource.data.guestId == request.auth.uid &&
+        request.resource.data.status == 'pending_payment';
+      allow update, delete: if isAdmin();
+    }
+
+    // 10. Ödemeler (Virtual POS'a hazır: mock/iyzico/paytr/stripe) — durum
+    // güncellemeleri (pending -> completed/failed) sadece admin/ödeme sağlayıcı
+    // webhook'u tarafından yapılır, doğrudan istemci yazamaz.
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.guestId == request.auth.uid || resource.data.hostId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() &&
+        request.resource.data.guestId == request.auth.uid &&
+        request.resource.data.status == 'pending';
+      allow update, delete: if isAdmin();
+    }
+
+    // 11. Değerlendirmeler — herkes okuyabilir, sadece rezervasyon sahibi yazar.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && request.resource.data.guestId == request.auth.uid;
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.guestId == request.auth.uid);
+    }
+
+    // 12. Favoriler — döküman id'si `${uid}_${listingId}` formatındadır.
+    match /favorites/{favoriteId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.uid == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.uid == request.auth.uid);
+    }
+
+    // 13. Yasal Onay Kayıtları (KVKK/GDPR ispat logu) — değiştirilemez/silinemez.
+    match /legal_consents/{consentId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.uid == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
+    }
+
+    // 14. CMS Medya (site içeriği görselleri) — herkes görüntüler, sadece admin yönetir.
+    match /cms_media/{mediaId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }
