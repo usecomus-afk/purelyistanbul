@@ -16,8 +16,12 @@ export default function StayRoomPage() {
       XeniosStore.setActiveHotelId(hotelId);
       XeniosStore.setActiveRoomId(roomId);
 
-      // Redirect to main guest PWA page with active session set
-      router.replace('/');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('xenios_session_updated'));
+        window.location.replace('/');
+      } else {
+        router.replace('/');
+      }
     }
   }, [params, router]);
 

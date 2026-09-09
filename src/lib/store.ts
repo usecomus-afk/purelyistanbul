@@ -312,7 +312,11 @@ export const XeniosStore = {
   hasActiveHotelSession(): boolean {
     if (typeof window === 'undefined') return false;
     try {
-      return !!window.localStorage.getItem(STORAGE_KEYS.CURRENT_HOTEL);
+      const isNativeOrPwa =
+        !!(window as any).Capacitor?.isNativePlatform?.() ||
+        window.matchMedia?.('(display-mode: standalone)')?.matches ||
+        (window.navigator as any)?.standalone === true;
+      return !!window.localStorage.getItem(STORAGE_KEYS.CURRENT_HOTEL) || isNativeOrPwa;
     } catch {
       return false;
     }

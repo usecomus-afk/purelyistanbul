@@ -187,6 +187,17 @@ export function HotelHeader({
                 <User className="w-3.5 h-3.5" />
               </button>
             )}
+
+            {/* 4. Otel Yönetim Paneli Hızlı Giriş Butonu */}
+            <span className="w-px h-3.5 bg-amber-200/80" />
+            <a
+              href="/hotel-portal"
+              className="px-2.5 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500 text-amber-950 hover:text-white transition-all text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+              title="Otel Yönetim Paneli"
+            >
+              <Building2 className="w-3.5 h-3.5 text-amber-800" />
+              <span>Otel Paneli</span>
+            </a>
           </div>
         </div>
 
