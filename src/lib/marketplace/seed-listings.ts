@@ -128,6 +128,66 @@ export const SEED_LISTINGS: MarketplaceListing[] = [
     capacity: 4,
     amenities: ['Karşılama Tabelası', 'Su İkramı', 'Bagaj Yardımı'],
     imageKey: 'vip-transfer'
+  }),
+  seedListing({
+    id: 'seed-9',
+    type: 'experience',
+    title: "Kapalıçarşı'da Rehberli Alışveriş Turu",
+    description: 'Yerel bir rehberle Kapalıçarşı ve çevresindeki otantik dükkanlarda pazarlık ve alışveriş deneyimi.',
+    category: 'alisveris',
+    district: 'Kapalıçarşı, Fatih',
+    pricing: { basePrice: 550, currency: 'TRY' },
+    capacity: 6,
+    amenities: ['Yerel Rehber', 'Pazarlık Desteği', '2 Saat'],
+    imageKey: 'alisveris'
+  }),
+  seedListing({
+    id: 'seed-10',
+    type: 'experience',
+    title: 'Semazen Gösterisi ve Tasavvuf Müziği Akşamı',
+    description: 'Tarihi bir mekanda semazen gösterisi ve canlı tasavvuf müziği eşliğinde bir akşam.',
+    category: 'sanat-semazen',
+    district: 'Sirkeci, Fatih',
+    pricing: { basePrice: 800, currency: 'TRY' },
+    capacity: 10,
+    amenities: ['Canlı Gösteri', 'Oturma Düzeni', '1 İkram'],
+    imageKey: 'sanat-semazen'
+  }),
+  seedListing({
+    id: 'seed-11',
+    type: 'experience',
+    title: 'Nişantaşı’nda Cilt Bakımı ve Spa Günü',
+    description: 'Seçkin bir klinikte cilt bakımı, masaj ve rahatlatıcı spa ritüellerinden oluşan bir gün.',
+    category: 'estetik',
+    district: 'Nişantaşı, Şişli',
+    pricing: { basePrice: 2400, currency: 'TRY' },
+    capacity: 1,
+    amenities: ['Cilt Analizi', 'Masaj', 'Uzman Danışmanlık'],
+    imageKey: 'estetik'
+  }),
+  seedListing({
+    id: 'seed-12',
+    type: 'experience',
+    title: 'Boğaz Manzaralı Akşam Yemeği Rezervasyonu',
+    description: 'Boğaz manzaralı seçkin bir restoranda öncelikli masa rezervasyonu ve özel menü deneyimi.',
+    category: 'restoranlar',
+    district: 'Bebek, Beşiktaş',
+    pricing: { basePrice: 1500, currency: 'TRY' },
+    capacity: 4,
+    amenities: ['Öncelikli Masa', 'Özel Menü', 'Manzaralı Salon'],
+    imageKey: 'restoranlar'
+  }),
+  seedListing({
+    id: 'seed-13',
+    type: 'experience',
+    title: 'Osmanlı Kostümlü Fotoğraf Çekimi',
+    description: "Tarihi bir stüdyoda Osmanlı dönemi kostümleriyle profesyonel fotoğraf çekim deneyimi.",
+    category: 'fotograf-kostum',
+    district: 'Sultanahmet, Fatih',
+    pricing: { basePrice: 950, currency: 'TRY' },
+    capacity: 4,
+    amenities: ['Kostüm Dahil', 'Profesyonel Fotoğrafçı', 'Dijital Kopyalar'],
+    imageKey: 'fotograf-kostum'
   })
 ];
 
