@@ -26,11 +26,11 @@ export function MarketplaceHeader() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-5 md:px-8 h-[84px] gap-2">
         <Link href="/" className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
-          <span className="relative h-7 sm:h-11 md:h-12 w-[70px] sm:w-[130px] md:w-[145px] shrink-0">
+          <span className="relative h-9 sm:h-14 md:h-16 w-[90px] sm:w-[165px] md:w-[190px] shrink-0">
             <Image src="/logo-header.png" alt="Purely Istanbul" fill className="object-contain object-left" priority />
           </span>
-          <span className="text-[13px] sm:text-[16px] tracking-tight text-ink leading-none whitespace-nowrap">
-            purely <span className="font-semibold text-terracotta">istanbul</span>
+          <span className="text-[16px] sm:text-[20px] md:text-[22px] tracking-tight text-ink leading-none whitespace-nowrap">
+            purely <span className="font-semibold text-red-600">istanbul</span>
           </span>
         </Link>
 

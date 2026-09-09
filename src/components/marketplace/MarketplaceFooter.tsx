@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 export function MarketplaceFooter() {
   return (
@@ -10,17 +9,11 @@ export function MarketplaceFooter() {
             <Image src="/logo-header.png" alt="" fill className="object-contain object-left" />
           </span>
           <span className="text-[13px] tracking-tight text-ink leading-none">
-            purely <span className="font-semibold text-terracotta">istanbul</span>
+            purely <span className="font-semibold text-red-600">istanbul</span>
           </span>
         </div>
 
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px] text-ink-muted">
-          <Link href="/marketplace/become-a-host" className="hover:text-ink transition">
-            İlanınızı Verin
-          </Link>
-          <Link href="/marketplace/account" className="hover:text-ink transition">
-            Giriş Yap
-          </Link>
           <span>Istanbul, Türkiye</span>
         </nav>
 
