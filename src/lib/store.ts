@@ -23,7 +23,8 @@ const STORAGE_KEYS = {
   HIDE_DEMO_DATA: 'xenios_hide_demo_data',
   ROOM_SERVICE_MENU: 'xenios_room_service_menu',
   OTA_CHANNELS: 'xenios_ota_channels',
-  AI_TOKEN_USAGE: 'xenios_ai_token_usage'
+  AI_TOKEN_USAGE: 'xenios_ai_token_usage',
+  AI_CHAT_MESSAGES: 'xenios_ai_chat_messages'
 };
 
 const DEFAULT_MODULE_SETTING: ModuleAdminSettings = { enabled: true, hidden: false };
@@ -1029,5 +1030,35 @@ export const XeniosStore = {
       window.dispatchEvent(new CustomEvent('xenios_ai_token_updated', { detail: resetStats }));
     }
     return resetStats;
+  },
+
+  // -------------------------------------------------------------
+  // Persistent AI Chat History (Preserved until user explicitly deletes)
+  // -------------------------------------------------------------
+  getAiChatMessages(): any[] {
+    try {
+      const stored = safeGet(STORAGE_KEYS.AI_CHAT_MESSAGES);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return [];
+  },
+
+  saveAiChatMessages(messages: any[]): void {
+    try {
+      safeSet(STORAGE_KEYS.AI_CHAT_MESSAGES, JSON.stringify(messages));
+    } catch (e) {}
+  },
+
+  clearAiChatMessages(): void {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(STORAGE_KEYS.AI_CHAT_MESSAGES);
+      }
+    } catch (e) {}
   }
 };

@@ -6,7 +6,8 @@ import { XeniosStore } from '@/lib/store';
 import { askGeminiConcierge, ChatMessage } from '@/lib/gemini';
 import { useState, useEffect, useRef } from 'react';
 import { GuestPreferenceSurvey } from './guest-preference-survey';
-import { Send, User, X, UserCog, Sparkles } from 'lucide-react';
+import { Send, User, X, UserCog, Sparkles, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import Image from 'next/image';
 
 interface AiChatDrawerProps {
@@ -26,31 +27,35 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
   const [introDismissed, setIntroDismissed] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    {
-      id: 'init-1',
-      sender: 'assistant',
-      text: t.aiGreeting || DEFAULT_GREETING_TR,
-      time: 'Now',
-      actions: [
-        {
-          id: 'act-know-me',
-          label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
-          type: 'OPEN_SURVEY'
-        }
-      ],
-      recommendations: [
-        { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
-        { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
-      ]
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const saved = XeniosStore.getAiChatMessages();
+    if (saved && saved.length > 0) return saved;
+    return [
+      {
+        id: 'init-1',
+        sender: 'assistant',
+        text: t.aiGreeting || DEFAULT_GREETING_TR,
+        time: 'Now',
+        actions: [
+          {
+            id: 'act-know-me',
+            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
+            type: 'OPEN_SURVEY'
+          }
+        ],
+        recommendations: [
+          { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
+          { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
+        ]
+      }
+    ];
+  });
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,27 +72,12 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       setProfile(XeniosStore.getGuestProfile());
       setIntroDismissed(XeniosStore.getAiIntroDismissed());
       setShowSurvey(false);
-      setMessages([
-        {
-          id: 'init-1',
-          sender: 'assistant',
-          text: t.aiGreeting || DEFAULT_GREETING_TR,
-          time: 'Now',
-          actions: [
-            {
-              id: 'act-know-me',
-              label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
-              type: 'OPEN_SURVEY'
-            }
-          ],
-          recommendations: [
-            { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
-            { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
-          ]
-        }
-      ]);
+      const saved = XeniosStore.getAiChatMessages();
+      if (saved && saved.length > 0) {
+        setMessages(saved);
+      }
     }
-  }, [isOpen, lang]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -107,6 +97,32 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
     setShowSurvey(false);
   };
 
+  const handleClearChat = () => {
+    XeniosStore.clearAiChatMessages();
+    const initial: ChatMessage[] = [
+      {
+        id: `init-${Date.now()}`,
+        sender: 'assistant',
+        text: t.aiGreeting || DEFAULT_GREETING_TR,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actions: [
+          {
+            id: 'act-know-me',
+            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
+            type: 'OPEN_SURVEY'
+          }
+        ],
+        recommendations: [
+          { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
+          { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
+        ]
+      }
+    ];
+    setMessages(initial);
+    XeniosStore.saveAiChatMessages(initial);
+    toast.success("Sohbet geçmişi temizlendi.");
+  };
+
   const handleSend = async (customText?: string) => {
     const userMsg = (customText || input).trim();
     if (!userMsg || isLoading) return;
@@ -119,11 +135,22 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages(prev => [...prev, newMsg]);
+    const nextMessages = [...messages, newMsg];
+    setMessages(nextMessages);
+    XeniosStore.saveAiChatMessages(nextMessages);
     setIsLoading(true);
 
     const userPrefs = XeniosStore.getUserPreferences();
-    const assistantMsg = await askGeminiConcierge(userMsg, profile, hotel.name, hotel.district, lang, roomNumber, userPrefs);
+    const assistantMsg = await askGeminiConcierge(
+      userMsg,
+      profile,
+      hotel.name,
+      hotel.district,
+      lang,
+      roomNumber,
+      userPrefs,
+      nextMessages
+    );
 
     // If assistant returned negative locks (Anti-Nagging)
     if (assistantMsg.negative_locked_categories?.length) {
@@ -132,7 +159,9 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       });
     }
 
-    setMessages(prev => [...prev, assistantMsg]);
+    const finalMessages = [...nextMessages, assistantMsg];
+    setMessages(finalMessages);
+    XeniosStore.saveAiChatMessages(finalMessages);
     setIsLoading(false);
   };
 
@@ -167,7 +196,11 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
         text: `Harika bir seçim! ${serviceTitle} randevunuz ${prefDate} saat ${prefTime} için adınıza başarıyla oluşturulmuştur. 🎟️\n\n📅 Haftalık seyahat ajandanıza eklendi. Ulaşım rotanız otel resepsiyonu ve VIP transfer ekibimize bildirildi.`,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-      setMessages(prev => [...prev, confirmMsg]);
+      setMessages(prev => {
+        const updated = [...prev, confirmMsg];
+        XeniosStore.saveAiChatMessages(updated);
+        return updated;
+      });
     } else if (action.type === 'VIEW_ITINERARY') {
       const userPrefs = XeniosStore.getUserPreferences();
       const itinerary = userPrefs.booked_itinerary || [];
@@ -181,7 +214,11 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
         text,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-      setMessages(prev => [...prev, itinMsg]);
+      setMessages(prev => {
+        const updated = [...prev, itinMsg];
+        XeniosStore.saveAiChatMessages(updated);
+        return updated;
+      });
     }
   };
 
@@ -225,6 +262,16 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            {messages.length > 1 && (
+              <button
+                type="button"
+                onClick={handleClearChat}
+                className="p-1.5 rounded-xl bg-white/20 hover:bg-red-500/80 text-white transition cursor-pointer border border-white/20"
+                title="Sohbeti Temizle"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
               onClick={() => setShowSurvey(!showSurvey)}
               className="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-[11px] font-bold flex items-center gap-1 transition cursor-pointer border border-white/20"
