@@ -35,7 +35,7 @@ export default function HostApplicationsPage() {
     }
     const adminUid = auth?.currentUser?.uid;
     if (!adminUid) {
-      toast.error("Admin oturumu bulunamadı (Firebase Auth ile giriş yapmalısınız).");
+      toast.error("Firebase admin oturumu bulunamadı. Cockpit girişini yeniden yapın veya sunucuda Admin SDK servis hesabının tanımlı olduğundan emin olun.");
       return;
     }
     setBusyId(app.id);
@@ -57,7 +57,7 @@ export default function HostApplicationsPage() {
   async function handleReject(app: HostApplication) {
     const adminUid = auth?.currentUser?.uid;
     if (!adminUid) {
-      toast.error("Admin oturumu bulunamadı.");
+      toast.error("Firebase admin oturumu bulunamadı. Cockpit girişini yeniden yapın.");
       return;
     }
     setBusyId(app.id);

@@ -4,7 +4,10 @@
  * ADMIN_EMAIL / ADMIN_PASSWORD environment variables — those values are
  * never sent to the browser, unlike a NEXT_PUBLIC_ constant would be.
  */
-export async function adminLogin(email: string, password: string): Promise<{ success: boolean; email?: string; error?: string }> {
+export async function adminLogin(
+  email: string,
+  password: string
+): Promise<{ success: boolean; email?: string; name?: string; role?: string; customToken?: string; error?: string }> {
   try {
     const res = await fetch('/api/admin-login', {
       method: 'POST',

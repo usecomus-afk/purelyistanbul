@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { signInWithCustomToken } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { adminLogin } from '@/lib/admin-auth';
 import { XeniosStore } from '@/lib/store';
 import { BrandMark } from '@/components/brand-mark';
 import { Lock, KeyRound, ShieldCheck, ArrowRight, Sparkles, Smartphone, Download, CheckCircle2 } from 'lucide-react';
@@ -32,32 +35,43 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const input = username.trim().toLowerCase();
-    if (
-      (input === 'anilaslan@usecomus.com' || input === 'anilaslan') &&
-      password === 'Camille+1618'
-    ) {
-      XeniosStore.setMasterAdminLoggedIn(true);
-      XeniosStore.setHotelPortalLoggedIn(true);
-      XeniosStore.setUser({
-        id: 'usr-anilaslan',
-        name: 'Anıl Aslan',
-        email: 'anilaslan@usecomus.com',
-        role: 'pilot',
-        provider: 'email',
-        avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=Anil%20Aslan&backgroundColor=d97706',
-        createdAt: new Date().toISOString()
-      });
-      toast.success("Pilot Proje Yöneticisi girişi başarılı!", {
-        description: "Hoş geldiniz, Anıl Aslan (anilaslan@usecomus.com)"
-      });
-      setError('');
-    } else {
-      setError("Hatalı yönetici e-postası veya şifre! Lütfen bilgilerinizi kontrol ediniz.");
-      toast.error("Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.");
+    const result = await adminLogin(username, password);
+
+    if (!result.success) {
+      setError(result.error || 'Hatalı yönetici e-postası veya şifre! Lütfen bilgilerinizi kontrol ediniz.');
+      toast.error('Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.');
+      return;
     }
+
+    XeniosStore.setMasterAdminLoggedIn(true);
+    XeniosStore.setHotelPortalLoggedIn(true);
+    XeniosStore.setUser({
+      id: 'usr-anilaslan',
+      name: result.name || 'Anıl Aslan',
+      email: result.email || 'anilaslan@usecomus.com',
+      role: 'pilot',
+      provider: 'email',
+      avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=Anil%20Aslan&backgroundColor=d97706',
+      createdAt: new Date().toISOString()
+    });
+
+    // Marketplace modülünün Firestore/Storage kurallarındaki isAdmin() koluna
+    // (host başvuru onayı, ilan onayı) ekstra bir giriş yapmadan erişebilmek için
+    // aynı oturumda Firebase Authentication'a da 'role: admin' claim'iyle giriş yapılır.
+    if (result.customToken && auth) {
+      try {
+        await signInWithCustomToken(auth, result.customToken);
+      } catch (err) {
+        console.warn('Firebase admin oturumu açılamadı (cockpit erişimi etkilenmez):', err);
+      }
+    }
+
+    toast.success('Pilot Proje Yöneticisi girişi başarılı!', {
+      description: `Hoş geldiniz, ${result.name || 'Anıl Aslan'} (${result.email})`
+    });
+    setError('');
   };
 
   const handleInstallPwa = async () => {

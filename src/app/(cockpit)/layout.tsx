@@ -7,6 +7,7 @@ import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { ArrowLeft, Menu, Hotel, QrCode, LogOut } from "lucide-react";
 import { XeniosStore } from "@/lib/store";
+import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 
 export default function CockpitLayout({
@@ -18,6 +19,7 @@ export default function CockpitLayout({
 
   const handleLogout = () => {
     XeniosStore.setMasterAdminLoggedIn(false);
+    auth?.signOut().catch(() => {});
     toast.info("Master Proje Yöneticisi oturumu kapatıldı.");
   };
 

@@ -11,7 +11,8 @@
     "cap:sync": "cap sync",
     "cap:android": "cap open android",
     "cap:ios": "cap open ios",
-    "cap:build": "next build && cap sync"
+    "cap:build": "next build && cap sync",
+    "test:rules": "firebase emulators:exec --project demo-purelyistanbul --only firestore,storage \"node scripts/test-rules.mjs\""
   },
   "dependencies": {
     "@capacitor/core": "^8.5.0",
@@ -20,6 +21,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "firebase": "^12.17.1",
+    "firebase-admin": "^14.3.0",
     "localtunnel": "^2.0.2",
     "lucide-react": "^1.27.0",
     "next": "16.2.12",
@@ -33,12 +35,14 @@
     "@capacitor/android": "^8.5.0",
     "@capacitor/cli": "^8.5.0",
     "@capacitor/ios": "^8.5.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "firebase-tools": "^15.29.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

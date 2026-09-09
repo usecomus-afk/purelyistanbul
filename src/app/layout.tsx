@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
 import { PwaRegister } from "@/components/pwa-register";
 import { AppIntroSplash } from "@/components/app-intro-splash";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,6 +34,7 @@ export default function RootLayout({
         <AppIntroSplash />
         <PwaRegister />
         {children}
+        <CookieConsentBanner />
         <Toaster position="top-center" richColors />
       </body>
     </html>
