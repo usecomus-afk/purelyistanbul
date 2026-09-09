@@ -2,10 +2,11 @@
  * favorites koleksiyonu — doküman id'si `${uid}_${listingId}` formatındadır,
  * bu sayede tek bir get/delete ile favori durumu değiştirilebilir.
  */
-import { deleteDoc, doc, getDoc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, where, type Unsubscribe } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MARKETPLACE_COLLECTIONS } from './collections';
-import { bumpListingStat } from './listings';
+import { bumpListingStat, getListing } from './listings';
+import type { MarketplaceListing } from './types';
 
 function requireDb() {
   if (!db) throw new Error('Firestore henüz başlatılmadı.');
@@ -33,4 +34,14 @@ export async function toggleFavorite(uid: string, listingId: string): Promise<bo
   await setDoc(ref, { uid, listingId, createdAt: new Date().toISOString() });
   await bumpListingStat(listingId, 'favoriteCount', 1);
   return true;
+}
+
+/** Kullanıcının favori listesi ("Wishlist") sayfası için. */
+export function watchUserFavoriteListings(uid: string, cb: (listings: MarketplaceListing[]) => void): Unsubscribe {
+  const q = query(collection(requireDb(), MARKETPLACE_COLLECTIONS.FAVORITES), where('uid', '==', uid));
+  return onSnapshot(q, async (snap) => {
+    const listingIds = snap.docs.map((d) => d.data().listingId as string);
+    const listings = await Promise.all(listingIds.map((id) => getListing(id)));
+    cb(listings.filter((l): l is MarketplaceListing => l !== null));
+  });
 }
