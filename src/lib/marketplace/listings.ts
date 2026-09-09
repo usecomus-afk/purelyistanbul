@@ -42,7 +42,7 @@ export async function createDraftListing(hostId: string, type: ListingType): Pro
     type,
     title: '',
     description: '',
-    category: type === 'stay' ? 'Konaklama' : 'Deneyim',
+    category: type === 'stay' ? 'konaklama' : '',
     images: [],
     district: '',
     pricing: { basePrice: 0, currency: 'TRY' },

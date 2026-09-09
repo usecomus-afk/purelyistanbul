@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Check, ImageOff, MapPin, Users } from "lucide-react";
 import { watchListing, bumpListingStat } from "@/lib/marketplace/listings";
+import { getCategoryByKey } from "@/lib/marketplace/categories";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
 export default function ListingDetailPage() {
@@ -94,7 +95,8 @@ export default function ListingDetailPage() {
         <div className="space-y-8">
           <div className="flex items-center gap-2 text-sm text-ink-muted border-b border-sand-border pb-6">
             <Users className="w-4 h-4" />
-            {listing.capacity} misafire kadar · {listing.type === "stay" ? "Konaklama" : "Deneyim"} · {listing.category}
+            {listing.capacity} misafire kadar · {listing.type === "stay" ? "Konaklama" : "Deneyim"}
+            {listing.category ? ` · ${getCategoryByKey(listing.category)?.label ?? listing.category}` : ""}
           </div>
 
           <div>

@@ -9,7 +9,7 @@ export function AppIntroSplash() {
   const [isVisible, setIsVisible] = useState(() => {
     if (typeof window !== "undefined") {
       const alreadyPlayed = sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played");
-      if (alreadyPlayed || window.location.pathname.startsWith("/hotel-portal")) {
+      if (alreadyPlayed || window.location.pathname.startsWith("/hotel-portal") || window.location.pathname.startsWith("/marketplace")) {
         return false;
       }
     }
@@ -31,7 +31,7 @@ export function AppIntroSplash() {
   useEffect(() => {
     setMounted(true);
 
-    if (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal")) {
+    if (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal") || pathname?.startsWith("/marketplace")) {
       setIsVisible(false);
       return;
     }
