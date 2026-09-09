@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { LayoutGrid } from "lucide-react";
 import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
 
 interface CategoryFilterBarProps {
@@ -17,26 +16,13 @@ interface CategoryFilterBarProps {
 export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
   function handleSelect(key: string) {
     onChange(key);
-    const target = document.getElementById(key === "all" ? "shelves-top" : `shelf-${key}`);
-    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(`shelf-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
     <div className="sticky top-[84px] z-30 bg-sand-bg/95 backdrop-blur-md border-b border-sand-border/70">
       <div className="max-w-6xl mx-auto px-5 md:px-8">
         <div className="flex items-center gap-4 overflow-x-auto py-3">
-          <button onClick={() => handleSelect("all")} className="flex flex-col items-center gap-1.5 shrink-0">
-            <span
-              className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-colors ${
-                value === "all" ? "bg-ink border-ink text-white" : "bg-white border-sand-border text-ink"
-              }`}
-            >
-              <LayoutGrid className="w-6 h-6" strokeWidth={1.75} />
-            </span>
-            <span className={`text-[11.5px] font-medium whitespace-nowrap ${value === "all" ? "text-ink" : "text-ink-muted"}`}>
-              Tümü
-            </span>
-          </button>
           {MARKETPLACE_CATEGORIES.map((c) => (
             <button key={c.key} onClick={() => handleSelect(c.key)} className="flex flex-col items-center gap-1.5 shrink-0">
               <span

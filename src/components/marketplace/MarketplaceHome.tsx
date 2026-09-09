@@ -25,7 +25,7 @@ export function MarketplaceHome() {
   const { user } = useAuth();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState(MARKETPLACE_CATEGORIES[0]?.key ?? "");
   const [search, setSearch] = useState("");
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
 
@@ -92,8 +92,6 @@ export function MarketplaceHome() {
           </span>
         </div>
       </section>
-
-      <div id="shelves-top" />
 
       {loading ? (
         <p className="text-sm text-ink-muted text-center py-16">Yükleniyor...</p>
