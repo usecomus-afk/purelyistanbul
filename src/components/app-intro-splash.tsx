@@ -60,28 +60,10 @@ export function AppIntroSplash() {
     setIsFadingOut(false);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    // 1. Force video attributes for strict iOS WKWebView autoplay
-    const vid = videoRef.current;
-    if (vid) {
-      vid.muted = true;
-      vid.defaultMuted = true;
-      vid.playsInline = true;
-      vid.setAttribute("muted", "");
-      vid.setAttribute("playsinline", "");
-      vid.setAttribute("webkit-playsinline", "");
-
-      const playPromise = vid.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Graceful fallback to pure CSS & brand graphics animation
-        });
-      }
-    }
-
-    // 2. Smooth 2.6s display timer
+    // Smooth 3.5s display timer for GIF animation
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 2600);
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, [handleDismiss, pathname]);
@@ -105,29 +87,21 @@ export function AppIntroSplash() {
       <div className="absolute w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
       <div className="absolute w-64 h-64 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
 
-      {/* Fullscreen Video Animation Layer */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        loop
-        preload="auto"
-        controls={false}
-        disablePictureInPicture
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-      >
-        <source src="/purely-intro.mp4" type="video/mp4" />
-        <source src="/intro.mp4" type="video/mp4" />
-        <source src="/xenios1618.mp4" type="video/mp4" />
-      </video>
+      {/* Fullscreen GIF Animation Layer */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+        <img
+          src="/intro.gif"
+          alt="purelyİstanbul Intro"
+          className="w-full h-full object-cover pointer-events-none"
+        />
+      </div>
 
       {/* Bottom Progress Bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60 z-20 pointer-events-none overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-amber-600 via-amber-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]"
           style={{
-            animation: "progressFill 2.6s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            animation: "progressFill 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         />
       </div>

@@ -12,16 +12,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
 
         // Request native iOS notification authorization (Alert, Sound, Badge)
-        // This registers Xenios into iPhone Settings -> Notifications on first launch!
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
             if granted {
                 DispatchQueue.main.async {
+                    // Only register if application supports it, failing gracefully on free Apple IDs
                     application.registerForRemoteNotifications()
                 }
             }
         }
 
         return true
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        // Sideloadly free certs do not have APS entitlement; safely ignore
+        print("Sideload notification entitlement note: \(error.localizedDescription)")
     }
 
     // Display banner and play sound even when the app is open in foreground

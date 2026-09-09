@@ -39,11 +39,14 @@ jobs:
         run: |
           npm install
 
-      - name: Configure Server URL (if specified)
+      - name: Configure Server URL
         run: |
           if [ -n "${{ inputs.server_url }}" ]; then
             echo "Custom Server URL specified: ${{ inputs.server_url }}"
             echo "CAPACITOR_SERVER_URL=${{ inputs.server_url }}" >> $GITHUB_ENV
+          else
+            echo "Setting default live server URL: https://xenios-production.up.railway.app"
+            echo "CAPACITOR_SERVER_URL=https://xenios-production.up.railway.app" >> $GITHUB_ENV
           fi
 
       - name: Sync Capacitor iOS Platform

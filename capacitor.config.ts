@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'purelyİstanbul',
   webDir: 'public',
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://xenios.usecomus.com',
+    url: process.env.CAPACITOR_SERVER_URL || 'https://xenios-production.up.railway.app',
     cleartext: true,
     allowNavigation: ['*'],
   },
