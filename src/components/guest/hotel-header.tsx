@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Hotel, Language, XeniosUser } from '@/lib/types';
 import { getT } from '@/lib/i18n';
 import { LanguageSelector } from './language-selector';
@@ -92,16 +93,16 @@ export function HotelHeader({
   };
 
   return (
-    <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-3 pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-visible">
+    <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-3 pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-hidden">
       <div className="max-w-4xl mx-auto space-y-2.5">
-        {/* Top Bar: Brand Logo + Compact Unified Action Pill (Bell, Lang, User) */}
-        <div className="flex items-center justify-between gap-2 relative z-50">
-          <div className="shrink-0">
-            <BrandMark size={32} showText={true} theme="light" />
-          </div>
+        {/* Top Bar: purelyİstanbul Branding + Compact Unified Action Pill */}
+        <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">
+          <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-lg sm:text-xl text-zinc-900 leading-none select-none pl-0">
+            <span>purely</span><span className="text-red-600 font-bold">İstanbul</span>
+          </Link>
           
           {/* Unified Compact Action Pill to ensure 100% symmetric margins without backdrop-blur trapping */}
-          <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-amber-200/90 shadow-xs shrink-0 relative z-50">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-white p-0.5 sm:p-1 rounded-full border border-amber-200/90 shadow-xs shrink-0 relative z-50">
             {/* 1. PWA Notification Bell */}
             <button
               type="button"
@@ -192,7 +193,7 @@ export function HotelHeader({
             <span className="w-px h-3.5 bg-amber-200/80" />
             <a
               href="/hotel-portal"
-              className="px-2.5 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500 text-amber-950 hover:text-white transition-all text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/15 hover:bg-amber-500 text-amber-950 hover:text-white transition-all text-[10.5px] sm:text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
               title="Otel Yönetim Paneli"
             >
               <Building2 className="w-3.5 h-3.5 text-amber-800" />
