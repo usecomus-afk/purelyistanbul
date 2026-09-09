@@ -24,17 +24,17 @@ export function MarketplaceHeader() {
         scrolled ? "shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : ""
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-5 md:px-8 h-[84px]">
-        <Link href="/" className="flex items-center gap-3 shrink-0">
-          <span className="relative h-11 md:h-12 w-[130px] md:w-[145px] shrink-0">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-5 md:px-8 h-[84px] gap-2">
+        <Link href="/" className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+          <span className="relative h-7 sm:h-11 md:h-12 w-[70px] sm:w-[130px] md:w-[145px] shrink-0">
             <Image src="/logo-header.png" alt="Purely Istanbul" fill className="object-contain object-left" priority />
           </span>
-          <span className="text-[16px] tracking-tight text-ink leading-none">
+          <span className="text-[13px] sm:text-[16px] tracking-tight text-ink leading-none whitespace-nowrap">
             purely <span className="font-semibold text-terracotta">istanbul</span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
           {profile?.roles.host ? (
             <Link
               href="/marketplace/host/listings"
@@ -106,16 +106,16 @@ export function MarketplaceHeader() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-1 ml-1">
+            <div className="flex items-center gap-0.5 sm:gap-1 ml-0.5 sm:ml-1 shrink-0">
               <Link
                 href="/marketplace/account"
-                className="text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white transition"
+                className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white transition whitespace-nowrap"
               >
                 Giriş Yap
               </Link>
               <Link
                 href="/marketplace/account?mode=register"
-                className="text-[13px] font-semibold text-white bg-ink px-4 py-2 rounded-full hover:bg-terracotta transition"
+                className="text-[11.5px] sm:text-[13px] font-semibold text-white bg-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
               >
                 Kayıt Ol
               </Link>

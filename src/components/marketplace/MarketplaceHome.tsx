@@ -34,7 +34,13 @@ export function MarketplaceHome() {
       setListings(data);
       setLoading(false);
     });
-    return () => unsub();
+    // Firestore hiç yanıt vermezse (ne veri ne hata) vitrin sonsuza kadar
+    // "Yükleniyor..." demesin — birkaç saniye sonra örnek ilanlara düşülür.
+    const timeout = setTimeout(() => setLoading(false), 5000);
+    return () => {
+      unsub();
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Henüz onaylı gerçek host ilanı yokken vitrin boş görünmesin diye markanın

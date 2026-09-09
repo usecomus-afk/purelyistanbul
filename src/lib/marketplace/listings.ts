@@ -87,12 +87,24 @@ export function watchHostListings(hostId: string, cb: (listings: MarketplaceList
   });
 }
 
-/** Ziyaretçi vitrini için yalnızca admin onaylı ilanlar. */
+/**
+ * Ziyaretçi vitrini için yalnızca admin onaylı ilanlar. Sorgu başarısız
+ * olursa (örn. güvenlik kuralları henüz canlıya deploy edilmemişse) boş
+ * liste ile geri döner — vitrin sonsuza kadar "Yükleniyor..." demez, marka
+ * örnek ilanlarına düşer (bkz. MarketplaceHome).
+ */
 export function watchApprovedListings(cb: (listings: MarketplaceListing[]) => void): Unsubscribe {
   const q = query(collection(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS), where('status', '==', 'approved'));
-  return onSnapshot(q, (snap) => {
-    cb(sortByCreatedAtDesc(snap.docs.map((d) => toListing(d.id, d.data() as Omit<MarketplaceListing, 'id'>))));
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      cb(sortByCreatedAtDesc(snap.docs.map((d) => toListing(d.id, d.data() as Omit<MarketplaceListing, 'id'>))));
+    },
+    (err) => {
+      console.warn('[marketplace] onaylı ilanlar okunamadı, örnek ilanlara düşülüyor:', err);
+      cb([]);
+    }
+  );
 }
 
 /** Admin moderasyon kuyruğu. */
