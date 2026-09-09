@@ -151,7 +151,7 @@
 
     <div class="card">
       <label for="serverUrl">Sunucu Bağlantı Adresi</label>
-      <input type="url" id="serverUrl" placeholder="https://xenios.usecomus.com" />
+      <input type="url" id="serverUrl" placeholder="https://www.purelyistanbul.com" />
       <button class="btn" id="connectBtn" onclick="connect()">
         Uygulamayı Aç
       </button>
@@ -164,15 +164,15 @@
   </div>
 
   <script>
-    const DEFAULT_URL = "https://xenios-production.up.railway.app";
-    const savedUrl = localStorage.getItem("xenios_server_url") || DEFAULT_URL;
+    const DEFAULT_URL = "https://www.purelyistanbul.com";
+    const savedUrl = localStorage.getItem("purely_server_url") || DEFAULT_URL;
     const input = document.getElementById("serverUrl");
     input.value = savedUrl;
 
     function connect() {
       const url = input.value.trim();
       if (!url) return;
-      localStorage.setItem("xenios_server_url", url);
+      localStorage.setItem("purely_server_url", url);
       document.getElementById("statusText").innerText = "Yönlendiriliyor...";
       window.location.replace(url);
     }

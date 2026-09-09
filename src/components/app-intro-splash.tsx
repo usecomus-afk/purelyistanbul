@@ -5,19 +5,20 @@ import { usePathname } from "next/navigation";
 import { XeniosStore } from "@/lib/store";
 
 /**
- * This intro video is for the hotel-guest PWA/app experience only (opened by
- * scanning an in-room QR code) — never for an organic visit to the public
- * marketing/marketplace website, even at "/".
+ * This intro splash GIF plays on app launch and session start for purelyİstanbul.
+ * It auto-advances after 3.5 seconds or on tap, and sets sessionStorage
+ * so internal navigation during the session remains instantaneous.
  */
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
+  if (typeof window === "undefined") return false;
   const alreadyPlayed =
-    typeof window !== "undefined" &&
-    (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played"));
+    sessionStorage.getItem("purely_splash_played") ||
+    sessionStorage.getItem("xenios_splash_played");
   return Boolean(
     alreadyPlayed ||
       pathname?.startsWith("/hotel-portal") ||
-      pathname?.startsWith("/marketplace") ||
-      !XeniosStore.hasActiveHotelSession()
+      pathname?.startsWith("/dashboard") ||
+      pathname?.startsWith("/qr-generator")
   );
 }
 

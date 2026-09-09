@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       server_url:
-        description: 'purelyİstanbul Canli Sunucu URL (Orn: https://xenios-production.up.railway.app - Bos birakilirsa varsayilan kullanilir)'
+        description: 'purelyİstanbul Canli Sunucu URL (Orn: https://www.purelyistanbul.com - Bos birakilirsa varsayilan kullanilir)'
         required: false
         default: ''
       create_release:
@@ -45,8 +45,8 @@ jobs:
             echo "Custom Server URL specified: ${{ inputs.server_url }}"
             echo "CAPACITOR_SERVER_URL=${{ inputs.server_url }}" >> $GITHUB_ENV
           else
-            echo "Setting default live server URL: https://xenios-production.up.railway.app"
-            echo "CAPACITOR_SERVER_URL=https://xenios-production.up.railway.app" >> $GITHUB_ENV
+            echo "Setting default live server URL: https://www.purelyistanbul.com"
+            echo "CAPACITOR_SERVER_URL=https://www.purelyistanbul.com" >> $GITHUB_ENV
           fi
 
       - name: Sync Capacitor iOS Platform

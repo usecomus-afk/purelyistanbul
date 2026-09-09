@@ -5,13 +5,13 @@ const config: CapacitorConfig = {
   appName: 'purelyİstanbul',
   webDir: 'public',
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://xenios-production.up.railway.app',
+    url: process.env.CAPACITOR_SERVER_URL || 'https://www.purelyistanbul.com',
     cleartext: true,
     allowNavigation: ['*'],
   },
   ios: {
     contentInset: 'automatic',
-    backgroundColor: '#f8f6f0',
+    backgroundColor: '#090807',
     preferredContentMode: 'mobile',
   },
 };
