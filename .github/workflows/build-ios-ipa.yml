@@ -1,4 +1,4 @@
-name: Build Xenios iOS App (.ipa for Sideloadly)
+name: Build purelyİstanbul iOS App (.ipa for Sideloadly)
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       server_url:
-        description: 'Xenios Canli Sunucu URL (Orn: https://xenios-production.up.railway.app - Bos birakilirsa varsayilan kullanilir)'
+        description: 'purelyİstanbul Canli Sunucu URL (Orn: https://xenios-production.up.railway.app - Bos birakilirsa varsayilan kullanilir)'
         required: false
         default: ''
       create_release:
@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   build-ipa:
-    name: Build Xenios iOS IPA
+    name: Build purelyİstanbul iOS IPA
     runs-on: macos-14
 
     steps:
@@ -80,38 +80,41 @@ jobs:
           echo "Found app at: $APP_PATH"
           cp -r "$APP_PATH" build/ipa/Payload/
           cd build/ipa
-          zip -r -9 ../../Xenios.ipa Payload
+          zip -r -9 ../../purelyİstanbul.ipa Payload
           cd ../..
-          ls -lh Xenios.ipa
+          cp purelyİstanbul.ipa Xenios.ipa
+          ls -lh purelyİstanbul.ipa
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Xenios-iOS-IPA
-          path: Xenios.ipa
+          name: purelyIstanbul-iOS-IPA
+          path: purelyİstanbul.ipa
           retention-days: 30
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.create_release == true)
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'Xenios Istanbul iOS App (Sideloadly IPA)' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'purelyİstanbul iOS App (Sideloadly IPA)' }}
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0-ios' }}
-          files: Xenios.ipa
+          files: |
+            purelyİstanbul.ipa
+            Xenios.ipa
           body: |
-            ## 🏛️ Xenios Istanbul iOS Mobil Uygulaması (.ipa)
+            ## 🏛️ purelyİstanbul iOS Mobil Uygulaması (.ipa)
             
             Bu sürüm **Sideloadly** veya benzeri sideload araçları (AltStore, TrollStore, Scarlet) ile iPhone / iPad cihazlara doğrudan yüklenmek üzere hazırlanmıştır.
             
             ### 🚀 Kurulum Adımları (Sideloadly):
-            1. Yukarıdaki `Xenios.ipa` dosyasını bilgisayarınıza indirin.
+            1. Yukarıdaki `purelyİstanbul.ipa` dosyasını bilgisayarınıza indirin.
             2. Bilgisayarınızda [Sideloadly](https://sideloadly.io/) programını açın ve iPhone'unuzu kablo ile bağlayın.
-            3. İndirdiğiniz `Xenios.ipa` dosyasını Sideloadly penceresine sürükleyip bırakın.
+            3. İndirdiğiniz `purelyİstanbul.ipa` dosyasını Sideloadly penceresine sürükleyip bırakın.
             4. Apple ID e-postanızı girin ve **Start** butonuna tıklayın.
             5. Yükleme tamamlandıktan sonra iPhone'unuzda:
                - **Ayarlar > Genel > VPN ve Aygıt Yönetimi** bölümüne gidin.
                - Kendi Apple ID'nizi seçin ve **Güven ("Trust")** seçeneğine dokunun.
                - (iOS 16+ için) **Ayarlar > Gizlilik ve Güvenlik > Geliştirici Modu**'nu aktif edin ve telefonu yeniden başlatın.
-            6. Xenios uygulamasını açıp kullanmaya başlayın!
+            6. purelyİstanbul uygulamasını açıp kullanmaya başlayın!
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
