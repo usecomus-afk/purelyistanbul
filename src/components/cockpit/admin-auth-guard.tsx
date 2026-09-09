@@ -68,7 +68,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if (choice.outcome === 'accepted') {
-      toast.success("Xenios Pilot PWA başarıyla yüklendi!");
+      toast.success("purelyİstanbul Pilot PWA başarıyla yüklendi!");
     }
     setDeferredPrompt(null);
   };
@@ -158,7 +158,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
               <span>Pilot PWA Uygulamasını Cihaza Yükle</span>
             </button>
             <p className="text-[10px] text-zinc-500 text-center mt-2">
-              Sadece yetkili Xenios Pilot proje yöneticileri içindir.
+              Sadece yetkili purelyİstanbul Pilot proje yöneticileri içindir.
             </p>
           </div>
         </div>

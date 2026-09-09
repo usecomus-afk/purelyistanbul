@@ -130,7 +130,7 @@ export default function HotelChannelsPage() {
             iCal & OTA Kanal Entegrasyon Masası
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Airbnb, Booking.com, VRBO ve Expedia takvimlerini Xenios oda envanteri ile 2 yönlü canlı senkronize edin.
+            Airbnb, Booking.com, VRBO ve Expedia takvimlerini purelyİstanbul oda envanteri ile 2 yönlü canlı senkronize edin.
           </p>
         </div>
 
@@ -288,7 +288,7 @@ export default function HotelChannelsPage() {
                 <div className="flex-1 min-w-0 bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/80 flex items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <span className="text-[10px] uppercase font-bold text-amber-800 block">
-                      Xenios Dışa Aktarma (.ics Linki)
+                      purelyİstanbul Dışa Aktarma (.ics Linki)
                     </span>
                     <span className="text-[11px] font-mono text-zinc-700 truncate block">
                       {exportUrl}

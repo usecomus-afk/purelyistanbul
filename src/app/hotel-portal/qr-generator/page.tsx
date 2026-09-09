@@ -269,7 +269,7 @@ export default function HotelPortalQrPage() {
               {/* Hotel & Room Header Badge */}
               <div className="space-y-1 w-full border-b border-amber-100 pb-3">
                 <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
-                  {currentHotel?.name || 'Xenios Partner Hotel'}
+                  {currentHotel?.name || 'purelyİstanbul Partner Hotel'}
                 </div>
                 <div className="text-2xl font-bold font-serif text-zinc-900">
                   ODA {room.number}

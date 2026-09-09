@@ -6,7 +6,7 @@
     "type": "Butik Otel & Konak",
     "address": "Alemdar Divanyolu Cd. No:20 Fatih/İstanbul",
     "phone": "+90 212 518 90 00",
-    "website": "https://xenios.usecomus.com",
+    "website": "https://purelyistanbul.usecomus.com",
     "ratingStr": "4.9 (Doğrulanmış Partner)",
     "targetReason": "Anlaşmalı Pilot Tesis",
     "coords": {
@@ -20,7 +20,7 @@
         "type": "Deluxe Queen Oda",
         "floor": "1. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "102",
@@ -28,7 +28,7 @@
         "type": "Standart Çift Kişilik",
         "floor": "1. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "103",
@@ -36,7 +36,7 @@
         "type": "Superior Balkonlu",
         "floor": "1. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "201",
@@ -44,7 +44,7 @@
         "type": "Sultan Suite (Boğaz Manzaralı)",
         "floor": "2. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "202",
@@ -52,7 +52,7 @@
         "type": "Superior Double Oda",
         "floor": "2. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "203",
@@ -60,7 +60,7 @@
         "type": "Deluxe Twin Oda",
         "floor": "2. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "301",
@@ -68,7 +68,7 @@
         "type": "Panoramik Teras Suite",
         "floor": "3. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "302",
@@ -76,7 +76,7 @@
         "type": "Deluxe Aile Odası",
         "floor": "3. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       },
       {
         "id": "303",
@@ -84,7 +84,7 @@
         "type": "King Penthouse Suite",
         "floor": "3. Kat",
         "wifiSsid": "Heritage_Guest",
-        "wifiPass": "Xenios2026!"
+        "wifiPass": "purely2026!"
       }
     ],
     "breakfastHours": "07:30 - 10:30",

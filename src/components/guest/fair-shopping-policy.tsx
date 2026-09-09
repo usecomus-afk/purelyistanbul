@@ -35,8 +35,8 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
   const faqs = [
     {
-      q: "Xenios'a şikayet edersem, işletme beni bulabilir mi?",
-      a: "Hayır. Xenios'un adillik politikasında turist kimliği %100 korunur. İşletme sadece 'Bir misafir x sorununu bildirdi' bilgisini öğrenir. Adınız, telefonunuz veya e-postanız asla işletmeyle paylaşılmaz."
+      q: "purelyİstanbul'a şikayet edersem, işletme beni bulabilir mi?",
+      a: "Hayır. purelyİstanbul'un adillik politikasında turist kimliği %100 korunur. İşletme sadece 'Bir misafir x sorununu bildirdi' bilgisini öğrenir. Adınız, telefonunuz veya e-postanız asla işletmeyle paylaşılmaz."
     },
     {
       q: "7 gün sonra işletme cevap vermezse ne oluyor?",
@@ -44,19 +44,19 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
     },
     {
       q: "İşletme uyarı sayfasından nasıl çıkarılır?",
-      a: "Yazılı başvuru yaparak Xenios ile resmi temas kurması gerekir. Mağdur misafirin zararını telafi ettiğini belgelerse uyarı kaldırılabilir. Ancak tekrar şikayet gelirse kalıcı kara listeye alınır."
+      a: "Yazılı başvuru yaparak purelyİstanbul ile resmi temas kurması gerekir. Mağdur misafirin zararını telafi ettiğini belgelerse uyarı kaldırılabilir. Ancak tekrar şikayet gelirse kalıcı kara listeye alınır."
     },
     {
       q: "Sahte veya asılsız şikayet yaparsam ne olur?",
-      a: "Xenios tüm başvuruları fiş, fatura, konum ve makbuzlarla inceler. Kanıtı olmayan şikayetler reddedilir. Sahte bildirimde bulunan hesaplar sistemden sınırlandırılır."
+      a: "purelyİstanbul tüm başvuruları fiş, fatura, konum ve makbuzlarla inceler. Kanıtı olmayan şikayetler reddedilir. Sahte bildirimde bulunan hesaplar sistemden sınırlandırılır."
     },
     {
-      q: "Xenios'ta ilanı olmayan bir esnaftan dolandırıldıysam?",
-      a: "Fark etmez. Xenios'un misyonu gereği, o işletme de kanıtlar doğrultusunda Alışveriş Rehberi'nde uyarılır ve resmi kurumlara ihbarda bulunulur."
+      q: "purelyİstanbul'da ilanı olmayan bir esnaftan dolandırıldıysam?",
+      a: "Fark etmez. purelyİstanbul'un misyonu gereği, o işletme de kanıtlar doğrultusunda Alışveriş Rehberi'nde uyarılır ve resmi kurumlara ihbarda bulunulur."
     },
     {
       q: "Taksi dolandırıcılığı için ne yapmalıyım?",
-      a: "Taksi plakasını ve fişi sisteme yükleyin. Xenios bu durumu İBB-TUDES sistemi üzerinden online resmi ihbar kaydına geçirir ve şoför hakkında cezai işlem başlatılmasını sağlar."
+      a: "Taksi plakasını ve fişi sisteme yükleyin. purelyİstanbul bu durumu İBB-TUDES sistemi üzerinden online resmi ihbar kaydına geçirir ve şoför hakkında cezai işlem başlatılmasını sağlar."
     },
     {
       q: "Şikayet açtıktan ne kadar süre sonra sonuç alırım?",
@@ -237,7 +237,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
         </div>
       </div>
 
-      {/* SECTION 1: XENIOS MİSAFİR KALKANI (9 Hayati Rehber) */}
+      {/* SECTION 1: purelyİstanbul MİSAFİR KALKANI (9 Hayati Rehber) */}
       <div className="space-y-5">
           
           {/* 9 Hayati Güvenlik & Tuzak Rehberi */}
@@ -321,7 +321,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
         </div>
 
-      {/* SECTION 2: XENIOS ADİL ALIŞVERİŞ POLİTİKASI — en altta: Haksız, Şüpheli Alışveriş & Kötü Deneyim */}
+      {/* SECTION 2: purelyİstanbul ADİL ALIŞVERİŞ POLİTİKASI — en altta: Haksız, Şüpheli Alışveriş & Kötü Deneyim */}
       <div className="space-y-6">
         {/* Visual Header / Banner */}
         <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-md space-y-5">
@@ -330,10 +330,10 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
               Haksız, şüpheli alışveriş & kötü deneyim
             </div>
             <h2 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-2">
-              Xenios Misafir Kalkanı & Adil Alışveriş Politikası
+              purelyİstanbul Misafir Kalkanı & Adil Alışveriş Politikası
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 max-w-xl">
-              İstanbul'da her misafir adil, güvenilir ve şeffaf bir seyahat yaşamalıdır. Xenios haksız kazanç, fahiş fiyat ve kötü niyetli işletmelere karşı haklarınızı korur.
+              İstanbul'da her misafir adil, güvenilir ve şeffaf bir seyahat yaşamalıdır. purelyİstanbul haksız kazanç, fahiş fiyat ve kötü niyetli işletmelere karşı haklarınızı korur.
             </p>
           </div>
 
@@ -412,7 +412,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
           <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
             <h3 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center">2</span>
-              <span>Şikayetiniz sonrası Xenios Ne Yapar? (7 Günlük İnceleme ve Yaptırım Akışı)</span>
+              <span>Şikayetiniz sonrası purelyİstanbul Ne Yapar? (7 Günlük İnceleme ve Yaptırım Akışı)</span>
             </h3>
 
             <div className="space-y-3 text-xs">
@@ -423,7 +423,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
               <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-1">
                 <strong className="text-zinc-900 font-bold block">Adım 2: İşletmeye Bildirim (Gün 2-3)</strong>
-                <p className="text-zinc-600">İşletmeye resmi e-posta gönderilir: <strong>'Bir hata mı yapıldı? Yanlış anlaşılma mı söz konusu?'</strong> İşletmeden makul bir açıklama yapması veya yaşanılan mağduriyeti telafi etmesi beklenir ve verdiğiniz IBAN bilgilerine Xenios hesabı üzerinden aktarım sağlanır. Aksi durumda, işletmeyle ilgili şikayetiniz diğer turist misafirlerin dikkat etmesi için Xenios platformunda <strong>Uyarı Panosu'nda</strong> yayınlanır.</p>
+                <p className="text-zinc-600">İşletmeye resmi e-posta gönderilir: <strong>'Bir hata mı yapıldı? Yanlış anlaşılma mı söz konusu?'</strong> İşletmeden makul bir açıklama yapması veya yaşanılan mağduriyeti telafi etmesi beklenir ve verdiğiniz IBAN bilgilerine purelyİstanbul hesabı üzerinden aktarım sağlanır. Aksi durumda, işletmeyle ilgili şikayetiniz diğer turist misafirlerin dikkat etmesi için purelyİstanbul platformunda <strong>Uyarı Panosu'nda</strong> yayınlanır.</p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2.5">

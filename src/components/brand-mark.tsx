@@ -28,7 +28,7 @@ export function BrandMark({
       >
         <Image 
           src="/logo.png" 
-          alt="Xenios Istanbul" 
+          alt="purelyİstanbul" 
           width={size} 
           height={size}
           unoptimized
@@ -38,15 +38,15 @@ export function BrandMark({
       </div>
       {showText && (
         <div className="flex flex-col">
-          <span className={`font-serif tracking-[0.2em] font-bold text-lg leading-tight ${
+          <span className={`font-serif tracking-wide font-bold text-lg leading-tight ${
             theme === 'dark' ? 'text-amber-400' : 'text-zinc-900'
           }`}>
-            XENIOS
+            purelyİstanbul
           </span>
           <span className={`text-[10px] tracking-wider uppercase ${
             theme === 'dark' ? 'text-zinc-400' : 'text-amber-800/70'
           }`}>
-            İstanbul Concierge
+            Digital Guest Concierge
           </span>
         </div>
       )}

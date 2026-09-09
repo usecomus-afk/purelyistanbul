@@ -22,8 +22,8 @@ export default function AdilAlisverisPolitikasiPage() {
 
   const faqs = [
     {
-      q: "Xenios'a şikayet edersem, işletme beni bulabilir mi?",
-      a: "Hayır. Xenios'un adillik politikasında turist kimliği %100 korunur. İşletme sadece 'Bir misafir x sorununu bildirdi' bilgisini öğrenir. Adınız, telefonunuz veya e-postanız asla işletmeyle paylaşılmaz."
+      q: "purelyİstanbul'a şikayet edersem, işletme beni bulabilir mi?",
+      a: "Hayır. purelyİstanbul'un adillik politikasında turist kimliği %100 korunur. İşletme sadece 'Bir misafir x sorununu bildirdi' bilgisini öğrenir. Adınız, telefonunuz veya e-postanız asla işletmeyle paylaşılmaz."
     },
     {
       q: "7 gün sonra işletme cevap vermezse ne oluyor?",
@@ -31,19 +31,19 @@ export default function AdilAlisverisPolitikasiPage() {
     },
     {
       q: "İşletme uyarı sayfasından nasıl çıkarılır?",
-      a: "Yazılı başvuru yaparak Xenios ile resmi temas kurması gerekir. Mağdur misafirin zararını telafi ettiğini belgelerse uyarı kaldırılabilir. Ancak tekrar şikayet gelirse kalıcı kara listeye alınır."
+      a: "Yazılı başvuru yaparak purelyİstanbul ile resmi temas kurması gerekir. Mağdur misafirin zararını telafi ettiğini belgelerse uyarı kaldırılabilir. Ancak tekrar şikayet gelirse kalıcı kara listeye alınır."
     },
     {
       q: "Sahte veya asılsız şikayet yaparsam ne olur?",
-      a: "Xenios tüm başvuruları fiş, fatura, konum ve makbuzlarla inceler. Kanıtı olmayan şikayetler reddedilir. Sahte bildirimde bulunan hesaplar sistemden sınırlandırılır."
+      a: "purelyİstanbul tüm başvuruları fiş, fatura, konum ve makbuzlarla inceler. Kanıtı olmayan şikayetler reddedilir. Sahte bildirimde bulunan hesaplar sistemden sınırlandırılır."
     },
     {
-      q: "Xenios'ta ilanı olmayan bir esnaftan dolandırıldıysam?",
-      a: "Fark etmez. Xenios'un misyonu gereği, o işletme de kanıtlar doğrultusunda Alışveriş Rehberi'nde uyarılır ve resmi kurumlara ihbarda bulunulur."
+      q: "purelyİstanbul'da ilanı olmayan bir esnaftan dolandırıldıysam?",
+      a: "Fark etmez. purelyİstanbul'un misyonu gereği, o işletme de kanıtlar doğrultusunda Alışveriş Rehberi'nde uyarılır ve resmi kurumlara ihbarda bulunulur."
     },
     {
       q: "Taksi dolandırıcılığı için ne yapmalıyım?",
-      a: "Taksi plakasını ve fişi sisteme yükleyin. Xenios bu durumu İBB-TUDES sistemi üzerinden online resmi ihbar kaydına geçirir ve şoför hakkında cezai işlem başlatılmasını sağlar."
+      a: "Taksi plakasını ve fişi sisteme yükleyin. purelyİstanbul bu durumu İBB-TUDES sistemi üzerinden online resmi ihbar kaydına geçirir ve şoför hakkında cezai işlem başlatılmasını sağlar."
     },
     {
       q: "Şikayet açtıktan ne kadar süre sonra sonuç alırım?",
@@ -66,7 +66,7 @@ export default function AdilAlisverisPolitikasiPage() {
             <div className="w-4 h-4 relative shrink-0">
               <Image src="/icons/xenios-adil-alisveris.png" alt="Adil Alışveriş" fill className="object-contain" />
             </div>
-            <span>Xenios Adil Alışveriş Politikası</span>
+            <span>purelyİstanbul Adil Alışveriş Politikası</span>
           </div>
         </div>
       </header>
@@ -81,10 +81,10 @@ export default function AdilAlisverisPolitikasiPage() {
                 Şeffaflık & Adalet Taahhütü
               </span>
               <h1 className="text-xl sm:text-2xl font-bold font-serif">
-                Xenios Adil Alışveriş Politikası
+                purelyİstanbul Adil Alışveriş Politikası
               </h1>
               <p className="text-xs text-zinc-300 leading-relaxed max-w-2xl">
-                İstanbul'da her turist adil, güvenilir ve şeffaf bir alışveriş deneyimi yaşamalıdır. Xenios, haksız uygulamalar ve kötü niyetli işletmelerden sizi korur.
+                İstanbul'da her turist adil, güvenilir ve şeffaf bir alışveriş deneyimi yaşamalıdır. purelyİstanbul, haksız uygulamalar ve kötü niyetli işletmelerden sizi korur.
               </p>
             </div>
             <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md p-2 border border-white/20 shrink-0 hidden sm:flex items-center justify-center">
@@ -135,11 +135,11 @@ export default function AdilAlisverisPolitikasiPage() {
           </div>
         </div>
 
-        {/* 2. Xenios Ne Yapacak? 7 Günlük Süreç */}
+        {/* 2. purelyİstanbul Ne Yapacak? 7 Günlük Süreç */}
         <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
           <h2 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center">2</span>
-            <span>Xenios Ne Yapacak? (7 Günlük İnceleme ve Yaptırım Akışı)</span>
+            <span>purelyİstanbul Ne Yapacak? (7 Günlük İnceleme ve Yaptırım Akışı)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -163,7 +163,7 @@ export default function AdilAlisverisPolitikasiPage() {
               <p><span className="text-amber-400">⚠️ UYARI:</span> Turist Mağduriyeti Kaydı</p>
               <p><span className="text-zinc-400">İşletme:</span> Örnek Restoran, Fatih, İstanbul</p>
               <p><span className="text-zinc-400">Sorun:</span> Fatura 250 TL, müşteriden 450 TL tahsil etme</p>
-              <p><span className="text-zinc-400">Xenios Kararı:</span> İşletme 7 gün içinde telafi etmedi ➔ Kamuya Uyarı Panosunda Yayınlandı</p>
+              <p><span className="text-zinc-400">purelyİstanbul Kararı:</span> İşletme 7 gün içinde telafi etmedi ➔ Kamuya Uyarı Panosunda Yayınlandı</p>
             </div>
           </div>
         </div>

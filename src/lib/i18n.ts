@@ -2,7 +2,7 @@ import { Language } from './types';
 
 export const translations = {
   "tr": {
-    "appTitle": "Xenios",
+    "appTitle": "purelyİstanbul",
     "appSubtitle": "İstanbul Dijital Misafir Rehberi & Concierge",
     "welcome": "Hoş Geldiniz",
     "room": "Oda",
@@ -285,7 +285,7 @@ export const translations = {
     }
   },
   "en": {
-    "appTitle": "Xenios",
+    "appTitle": "purelyİstanbul",
     "appSubtitle": "Istanbul Digital Guest Directory & Concierge",
     "welcome": "Welcome",
     "room": "Room",
@@ -850,7 +850,7 @@ export const translations = {
     }
   },
   "ru": {
-    "appTitle": "Xenios",
+    "appTitle": "purelyİstanbul",
     "appSubtitle": "Цифровой гид и консьерж для гостей Стамбула",
     "welcome": "Добро пожаловать",
     "room": "Номер",
@@ -1132,7 +1132,7 @@ export const translations = {
     }
   },
   "de": {
-    "appTitle": "Xenios",
+    "appTitle": "purelyİstanbul",
     "appSubtitle": "Digitaler Gästeführer & Concierge für Istanbul",
     "welcome": "Willkommen",
     "room": "Zimmer",
@@ -1414,7 +1414,7 @@ export const translations = {
     }
   },
   "fr": {
-    "appTitle": "Xenios",
+    "appTitle": "purelyİstanbul",
     "appSubtitle": "Guide Numérique & Concierge pour Istanbul",
     "welcome": "Bienvenue",
     "room": "Chambre",

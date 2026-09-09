@@ -45,10 +45,10 @@ export class ICalSyncService {
     const lines: string[] = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Xenios Istanbul//Concierge Calendar v2.0//TR',
+      'PRODID:-//purelyIstanbul//Concierge Calendar v2.0//TR',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
-      `X-WR-CALNAME:Xenios - ${listingTitle}`,
+      `X-WR-CALNAME:purelyİstanbul - ${listingTitle}`,
       'X-WR-TIMEZONE:Europe/Istanbul'
     ];
 
@@ -56,12 +56,12 @@ export class ICalSyncService {
       const start = new Date(ev.startTime);
       const end = new Date(ev.endTime);
       lines.push('BEGIN:VEVENT');
-      lines.push(`UID:xenios_${listingId}_${ev.id}@usecomus.com`);
+      lines.push(`UID:purely_${listingId}_${ev.id}@usecomus.com`);
       lines.push(`DTSTAMP:${formatICalDate(now)}`);
       lines.push(`DTSTART:${formatICalDate(start)}`);
       lines.push(`DTEND:${formatICalDate(end)}`);
       lines.push(`SUMMARY:RESERVED: ${ev.title} (${ev.guestCount || 1} Pax)`);
-      lines.push(`DESCRIPTION:${ev.description || 'Xenios In-Room Concierge Confirmed Booking'}`);
+      lines.push(`DESCRIPTION:${ev.description || 'purelyİstanbul In-Room Concierge Confirmed Booking'}`);
       lines.push('STATUS:CONFIRMED');
       lines.push('END:VEVENT');
     });

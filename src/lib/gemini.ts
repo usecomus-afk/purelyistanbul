@@ -50,7 +50,7 @@ async function callDirectGeminiRest(
 
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-    const systemPrompt = `Sene 2026. Sen "Comus AI", İstanbul'daki Xenios platformunun 7/24 hizmet veren seçkin, güvenlik odaklı ve kişisel lüks dijital konsiyerjisisin.
+    const systemPrompt = `Sene 2026. Sen "Comus AI", İstanbul'daki purelyİstanbul platformunun 7/24 hizmet veren seçkin, güvenlik odaklı ve kişisel lüks dijital konsiyerjisisin.
 Konaklayan misafir: ${guestName || 'Misafir'}
 Otel: ${hotelName} (${hotelDistrict}), Oda No: ${roomNumber}
 Yanıt Dili: ${lang === 'tr' ? 'Türkçe' : lang}.
@@ -125,7 +125,7 @@ function generateSmartContextualFallback(
       reply = `${guestName} Bey, İstanbul sokak lezzetleri için önerilerim:\n\n🐟 **Karaköy & Eminönü:** Balık Ekmek & Turşu Suyu\n🌯 **Beyoğlu:** Dürümzade & Kızılkayalar Islak Hamburger\n🦪 **Kadıköy & Beşiktaş:** Midye Dolma & Kokoreç\n\nBu rotalardan hangisi ilginizi çeker?`;
     }
   } else if (q.includes('wifi') || q.includes('wi-fi') || q.includes('internet') || q.includes('şifre')) {
-    reply = `${guestName} Bey, odanızdaki (${hotelName}, Oda ${roomNumber}) yüksek hızlı misafir Wi-Fi ağı:\n\n📶 Ağ Adı (SSID): ${hotelName.split(' ')[0]}_Guest\n🔑 Şifre: Xenios2026!\n\nÜst bardaki Wi-Fi butonuna tıklayarak şifreyi tek dokunuşla kopyalayabilirsiniz.`;
+    reply = `${guestName} Bey, odanızdaki (${hotelName}, Oda ${roomNumber}) yüksek hızlı misafir Wi-Fi ağı:\n\n📶 Ağ Adı (SSID): ${hotelName.split(' ')[0]}_Guest\n🔑 Şifre: purely2026!\n\nÜst bardaki Wi-Fi butonuna tıklayarak şifreyi tek dokunuşla kopyalayabilirsiniz.`;
   } else if (q.includes('kahvaltı') || q.includes('breakfast')) {
     reply = `${guestName} Bey, ${hotelName} bünyesinde açık büfe kahvaltı servisimiz her sabah 07:00 - 10:30 saatleri arasında ana restoran/teras katımızda sunulmaktadır. Ayrıca dilerseniz "Oda İçi Hizmetler" menümüzden odaya sıcak kahvaltı siparişi de verebilirsiniz.`;
   } else if (q.includes('çıkış') || q.includes('checkout') || q.includes('check-out') || q.includes('saat kaç')) {

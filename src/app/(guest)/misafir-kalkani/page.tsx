@@ -112,7 +112,7 @@ export default function MisafirKalkaniPage() {
             <div className="w-4 h-4 relative shrink-0">
               <Image src="/icons/xenios-misafir-kalkani.png" alt="Kalkan" fill className="object-contain" />
             </div>
-            <span>Xenios Misafir Kalkanı</span>
+            <span>purelyİstanbul Misafir Kalkanı</span>
           </div>
         </div>
       </header>
@@ -129,7 +129,7 @@ export default function MisafirKalkaniPage() {
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <h1 className="text-xl sm:text-2xl font-bold font-serif">
-                Xenios Misafir Kalkanı & İstanbul Seyahat Rehberi
+                purelyİstanbul Misafir Kalkanı & İstanbul Seyahat Rehberi
               </h1>
               <p className="text-xs text-white/90 leading-relaxed max-w-2xl">
                 İstanbul'da güvenli seyahat etmeniz için 9 yaygın sokak tuzağı, yasal sağlık haklarınız, resmi İstanbulkart & MüzeKart biletleri ve acil durum rehberleri.

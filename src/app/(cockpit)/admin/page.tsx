@@ -81,7 +81,7 @@ function AdminLoginGate({ onLogin }: { onLogin: (user: XeniosUser) => void }) {
 
     const user: XeniosUser = {
       id: 'usr_admin_' + Date.now(),
-      name: 'Xenios Yöneticisi',
+      name: 'purelyİstanbul Yöneticisi',
       email: result.email || email.trim().toLowerCase(),
       role: 'admin',
       provider: 'email',

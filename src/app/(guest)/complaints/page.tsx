@@ -116,7 +116,7 @@ export default function GuestComplaintsPage() {
 
               <p className="text-xs text-zinc-600 leading-relaxed max-w-2xl">
                 İstanbul'da karşılaştığınız şüpheli, fahiş fiyatlı veya aldatıcı alışverişleri platformumuza bildirin. 
-                Xenios olarak işletmeyle resmi iletişime geçerek hatanın telafisini ve haksız tahsil edilen farkın 
+                purelyİstanbul olarak işletmeyle resmi iletişime geçerek hatanın telafisini ve haksız tahsil edilen farkın 
                 <strong className="text-zinc-900"> doğrudan hesabınıza iadesini</strong> talep ediyoruz. 
                 İyi niyet göstermeyen ve 30 gün içinde telafi etmeyen işletmeleri sonraki misafirleri korumak için 
                 <strong className="text-zinc-900"> Uyarı Panosu'nda</strong> paylaşıyoruz.
@@ -144,7 +144,7 @@ export default function GuestComplaintsPage() {
                   Hakem Bildiriminiz Başarıyla Kaydedildi!
                 </h3>
                 <p className="text-xs text-zinc-500 max-w-md mx-auto">
-                  Xenios Hukuk ve Hakem heyetimiz ilgili işletmeyle resmi temas başlatacaktır. 
+                  purelyİstanbul Hukuk ve Hakem heyetimiz ilgili işletmeyle resmi temas başlatacaktır. 
                   Gelişmeler girdiğiniz e-posta adresinize iletilecektir.
                 </p>
               </div>

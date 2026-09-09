@@ -295,7 +295,7 @@ export function AestheticInquiryModal({
               <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-emerald-800 text-left space-y-1 text-[11px] font-medium">
                 <div className="flex items-center gap-1.5 font-bold">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Xenios Medikal Konsiyerj Bildirimi</span>
+                  <span>purelyİstanbul Medikal Konsiyerj Bildirimi</span>
                 </div>
                 <p className="text-[10px] text-zinc-600">
                   Talebinizin detayları ve takip linki SMS/WhatsApp üzerinden iletilmiştir.

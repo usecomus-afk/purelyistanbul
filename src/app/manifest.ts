@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Xenios Istanbul - Digital Guest Directory',
-    short_name: 'Xenios',
-    description: 'Istanbul In-Room Hotel Services & Curated Experiences Concierge',
+    name: 'purelyİstanbul - Digital Guest Directory',
+    short_name: 'purelyİstanbul',
+    description: 'purelyİstanbul In-Room Hotel Services & Curated Experiences Concierge',
     start_url: '/',
     display: 'standalone',
     background_color: '#f8f6f0',

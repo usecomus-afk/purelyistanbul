@@ -103,7 +103,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
           </div>
           <p className="text-[11px] text-zinc-600 leading-relaxed">
             {permission === 'granted'
-              ? 'Xenios PWA bildirimleri aktif. Oda içi hizmet taleplerinizde ve rezervasyonlarınızda anında bildirim alacaksınız.'
+              ? 'purelyİstanbul PWA bildirimleri aktif. Oda içi hizmet taleplerinizde ve rezervasyonlarınızda anında bildirim alacaksınız.'
               : 'Mobil veya masaüstü ekranınız kilitliyken bile anlık durum güncellemelerini almak için bildirimlere izin verin.'}
           </p>
         </div>

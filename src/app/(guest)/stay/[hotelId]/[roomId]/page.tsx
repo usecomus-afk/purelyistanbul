@@ -27,7 +27,7 @@ export default function StayRoomPage() {
         <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-700 flex items-center justify-center mx-auto text-xl font-bold">
           🏛️
         </div>
-        <h2 className="text-base font-bold text-zinc-900 font-serif">Xenios Girişi Yapılıyor...</h2>
+        <h2 className="text-base font-bold text-zinc-900 font-serif">purelyİstanbul Girişi Yapılıyor...</h2>
         <p className="text-xs text-zinc-500">Oda kimliğiniz doğrulanıyor ve dijital rehberiniz yükleniyor.</p>
       </div>
     </div>

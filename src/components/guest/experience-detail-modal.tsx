@@ -232,7 +232,7 @@ export function ExperienceDetailModal({
           <div className="flex items-center gap-2 text-xs font-bold text-zinc-900 pt-1">
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Xenios Güvencesi</span>
+              <span>purelyİstanbul Güvencesi</span>
             </span>
           </div>
         </div>
@@ -322,7 +322,7 @@ export function ExperienceDetailModal({
           <div className="space-y-0.5">
             <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Xenios Onaylı Mekan</span>
+              <span>purelyİstanbul Onaylı Mekan</span>
             </div>
             <div>
               <span className="text-[10px] text-zinc-400 uppercase font-semibold block">

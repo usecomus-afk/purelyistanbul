@@ -95,7 +95,7 @@ export default function HotelPortalLayout({
                 <BrandMark size={32} showText={false} theme="light" asDiv />
                 <div className="hidden xs:block">
                   <span className="font-serif font-extrabold text-sm sm:text-base text-zinc-900 tracking-tight block leading-tight">
-                    XENIOS
+                    purelyİstanbul
                   </span>
                   <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
                     Yönetim Paneli

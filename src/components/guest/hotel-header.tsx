@@ -72,10 +72,10 @@ export function HotelHeader({
   }, []);
 
   const room = hotel.rooms?.find(r => r.number === roomNumber) || hotel.rooms?.[0] || {
-    wifiPass: 'Xenios2026!',
+    wifiPass: 'purely2026!',
     wifiSsid: 'Hotel_Guest'
   };
-  const wifiPass = room?.wifiPass || 'Xenios2026!';
+  const wifiPass = room?.wifiPass || 'purely2026!';
   const wifiSsid = room?.wifiSsid || `${hotel.name.split(' ')[0]}_Guest`;
 
   const copyWifi = () => {

@@ -66,7 +66,7 @@ export default function CockpitLayout({
             <div className="flex items-center gap-3">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
               <span className="text-xs text-zinc-800 font-bold">
-                Xenios Master Operations Deck • Proje Yöneticisi Paneli
+                purelyİstanbul Master Operations Deck • Proje Yöneticisi Paneli
               </span>
               <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono font-bold border border-amber-300">
                 43 Partner Otel Aktif

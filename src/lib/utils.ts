@@ -27,8 +27,8 @@ export function generateCalendarUrl(title: string, description: string, location
 
     const params = new URLSearchParams({
       action: 'TEMPLATE',
-      text: `Xenios İstanbul: ${title}`,
-      details: `${description}\n\n🏨 Rezervasyon: Xenios Concierge Platformu`,
+      text: `purelyİstanbul: ${title}`,
+      details: `${description}\n\n🏨 Rezervasyon: purelyİstanbul Concierge Platformu`,
       location: location,
       dates: `${startIso}/${endIso}`
     });

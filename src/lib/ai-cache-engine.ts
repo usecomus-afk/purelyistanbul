@@ -151,16 +151,16 @@ export function getInstantKnowledgeAnswer(
   // 5. Tourist Rights / Fraud / Complaint Desk
   if (norm.includes('sikayet') || norm.includes('şikayet') || norm.includes('dolandirildim') || norm.includes('dolandırıldım') || norm.includes('fazla para') || norm.includes('hakem masasi') || norm.includes('hakem masası') || norm.includes('complaint') || norm.includes('scam') || norm.includes('ombudsman')) {
     const replies: Record<string, string> = {
-      tr: `Xenios olarak misafirlerimizin güvenliğini en üst düzeyde koruyoruz! "Rehber" sekmesinde yer alan "Xenios Misafir Kalkanı & Turist Hakem Masası" üzerinden taksi, esnaf veya işletme şikayetlerinizi fiş/fatura ile doğrudan iletebilirsiniz. Kimliğiniz gizli tutularak resmi bildirim süreci başlatılır.`,
-      en: `As Xenios, your safety is our top priority! Through our "Guest Shield & Tourist Ombudsman Desk" located in the "Guide" tab, you can officially submit disputes regarding taxis or vendors with receipt evidence while keeping your identity 100% private.`,
-      ar: `سلامتكم هي أولويتنا في زينيوس! من خلال "درع حماية النزلاء وديوان المظالم" في تبويب الدليل، يمكنك تقديم أي شكوى رسمية بشأن التاكسي أو المتاجر بأمان تام وهوية محمية.`,
+      tr: `purelyİstanbul olarak misafirlerimizin güvenliğini en üst düzeyde koruyoruz! "Rehber" sekmesinde yer alan "purelyİstanbul Misafir Kalkanı & Turist Hakem Masası" üzerinden taksi, esnaf veya işletme şikayetlerinizi fiş/fatura ile doğrudan iletebilirsiniz. Kimliğiniz gizli tutularak resmi bildirim süreci başlatılır.`,
+      en: `As purelyİstanbul, your safety is our top priority! Through our "Guest Shield & Tourist Ombudsman Desk" located in the "Guide" tab, you can officially submit disputes regarding taxis or vendors with receipt evidence while keeping your identity 100% private.`,
+      ar: `سلامتكم هي أولويتنا في purelyİstanbul! من خلال "درع حماية النزلاء وديوان المظالم" في تبويب الدليل، يمكنك تقديم أي شكوى رسمية بشأن التاكسي أو المتاجر بأمان تام وهوية محمية.`,
       ru: `Ваша безопасность — наш приоритет! В разделе "Гид" доступен "Щит защиты гостей", где можно подать официальную жалобу на такси или магазин с сохранением конфиденциальности.`,
       de: `Ihre Sicherheit steht an erster Stelle! Über den "Gästeschutz & Tourismus-Ombudsmann" im Reiter "Führer" können Sie Beschwerden sicher und anonym einreichen.`,
       fr: `Votre sécurité est notre priorité ! Via le "Bouclier Invités" dans l'onglet "Guide", vous pouvez signaler tout litige de manière totalement confidentielle.`
     };
     return {
       reply: replies[language] || replies.en,
-      recommendations: [{ title: "Xenios Turist Hakem Masası & Misafir Kalkanı", category: "Güvenlik & Haklar", location: "Merkez Masası" }]
+      recommendations: [{ title: "purelyİstanbul Turist Hakem Masası & Misafir Kalkanı", category: "Güvenlik & Haklar", location: "Merkez Masası" }]
     };
   }
 

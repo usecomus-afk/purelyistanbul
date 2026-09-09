@@ -8,7 +8,7 @@ export function AppIntroSplash() {
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(() => {
     if (typeof window !== "undefined") {
-      const alreadyPlayed = sessionStorage.getItem("xenios_splash_played");
+      const alreadyPlayed = sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played");
       if (alreadyPlayed || window.location.pathname.startsWith("/hotel-portal")) {
         return false;
       }
@@ -21,7 +21,7 @@ export function AppIntroSplash() {
   const handleDismiss = useCallback(() => {
     setIsFadingOut(true);
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("xenios_splash_played", "true");
+      sessionStorage.setItem("purely_splash_played", "true");
     }
     setTimeout(() => {
       setIsVisible(false);
@@ -31,12 +31,12 @@ export function AppIntroSplash() {
   useEffect(() => {
     setMounted(true);
 
-    if (sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal")) {
+    if (sessionStorage.getItem("purely_splash_played") || sessionStorage.getItem("xenios_splash_played") || pathname?.startsWith("/hotel-portal")) {
       setIsVisible(false);
       return;
     }
 
-    sessionStorage.setItem("xenios_splash_played", "true");
+    sessionStorage.setItem("purely_splash_played", "true");
 
     // 1. Force video attributes for strict iOS WKWebView autoplay
     const vid = videoRef.current;
@@ -95,8 +95,9 @@ export function AppIntroSplash() {
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       >
-        <source src="/xenios1618.mp4" type="video/mp4" />
+        <source src="/purely-intro.mp4" type="video/mp4" />
         <source src="/intro.mp4" type="video/mp4" />
+        <source src="/xenios1618.mp4" type="video/mp4" />
       </video>
 
       {/* Bottom Progress Bar */}

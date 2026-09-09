@@ -5,8 +5,8 @@ import { AppIntroSplash } from "@/components/app-intro-splash";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Xenios - Istanbul Digital Guest Directory & Concierge",
-  description: "ComusV2 Istanbul Digital In-Room Directory, QR Check-in, City Experiences & Gemini AI Concierge",
+  title: "purelyİstanbul - Digital Guest Directory & Concierge",
+  description: "purelyİstanbul Digital In-Room Directory, QR Check-in, City Experiences & Gemini AI Concierge",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.png",

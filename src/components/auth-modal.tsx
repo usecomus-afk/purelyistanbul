@@ -143,14 +143,14 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           <div className="w-12 h-12 mx-auto mb-2 rounded-2xl overflow-hidden shadow-sm border border-amber-200 p-0.5 bg-white">
             <Image
               src="/logo.png"
-              alt="Xenios"
+              alt="purelyİstanbul"
               width={48}
               height={48}
               className="object-contain w-full h-full rounded-xl"
             />
           </div>
           <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 block">
-            Xenios İstanbul
+            purelyİstanbul
           </span>
           <h2 className="text-xl font-bold font-serif text-zinc-900">
             {mode === 'login' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}
@@ -331,7 +331,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
         {/* Footer info */}
         <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
           <p className="text-[10px] text-zinc-400">
-            Xenios 256-Bit SSL şifreleme ve KVKK güvencesiyle korunmaktadır.
+            purelyİstanbul 256-Bit SSL şifreleme ve KVKK güvencesiyle korunmaktadır.
           </p>
         </div>
       </div>

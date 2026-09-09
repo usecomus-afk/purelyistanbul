@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { MobileFooterNav } from '@/components/navigation/MobileFooterNav';
 
 export const metadata: Metadata = {
-  title: 'Xenios - Misafir Rehberi & Concierge',
-  description: 'İstanbul Dijital Otel Rehberi, Oda İçi Hizmetler, Şehir Deneyimleri & AI Concierge',
+  title: 'purelyİstanbul - Misafir Rehberi & Concierge',
+  description: 'İstanbul seçkin butik oteller dijital oda rehberi ve konsiyerj platformu',
 };
 
 export default function GuestLayout({

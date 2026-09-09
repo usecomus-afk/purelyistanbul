@@ -525,7 +525,7 @@ export class AestheticServiceEngine {
     // 1. Kliniğe HTML E-posta Bildirimi Gönder
     const clinicEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #fed7aa; border-radius: 12px; background: #fffbf5;">
-        <h2 style="color: #9a3412;">🌟 Xenios İstanbul — Yeni Estetik & Sağlık Talebi</h2>
+        <h2 style="color: #9a3412;">🌟 purelyİstanbul — Yeni Estetik & Sağlık Talebi</h2>
         <p>Aşağıdaki misafir otel konsiyerj arayüzü üzerinden kliniğinizle iletişime geçmek istemektedir:</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
@@ -538,7 +538,7 @@ export class AestheticServiceEngine {
           <tr><td style="padding: 8px; font-weight: bold;">Misafir Notu:</td><td>${leadData.message || 'Belirtilmedi'}</td></tr>
         </table>
         
-        <p style="font-size: 12px; color: #78716c;">Xenios Health-Tech Lead Dispatcher Engine • İstanbul</p>
+        <p style="font-size: 12px; color: #78716c;">purelyİstanbul Health-Tech Lead Dispatcher Engine • İstanbul</p>
       </div>
     `;
 

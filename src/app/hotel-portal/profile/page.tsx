@@ -50,7 +50,7 @@ export default function HotelProfileManagementPage() {
   const [checkoutTime, setCheckoutTime] = useState(currentHotel.checkoutTime || '11:30');
   const [receptionExt, setReceptionExt] = useState(currentHotel.receptionExt || '9');
   const [wifiSsid, setWifiSsid] = useState(currentHotel.rooms?.[0]?.wifiSsid || 'Hotel_Guest');
-  const [wifiPass, setWifiPass] = useState(currentHotel.rooms?.[0]?.wifiPass || 'Xenios2026!');
+  const [wifiPass, setWifiPass] = useState(currentHotel.rooms?.[0]?.wifiPass || 'purely2026!');
 
   // User / Manager Info State
   const [managerName, setManagerName] = useState('Ahmet Yılmaz');
@@ -58,7 +58,7 @@ export default function HotelProfileManagementPage() {
   const [managerPhone, setManagerPhone] = useState('+90 532 555 44 33');
 
   // Email Info State
-  const [contactEmail, setContactEmail] = useState('heritage@xenios.istanbul');
+  const [contactEmail, setContactEmail] = useState('heritage@purelyistanbul.com');
   const [notificationEmail, setNotificationEmail] = useState('concierge@heritagehotel.com');
   const [notifyOnNewBooking, setNotifyOnNewBooking] = useState(true);
   const [notifyOnRoomRequest, setNotifyOnRoomRequest] = useState(true);
@@ -78,7 +78,7 @@ export default function HotelProfileManagementPage() {
       setManagerName(profile.managerName || 'Ahmet Yılmaz');
       setManagerTitle(profile.managerTitle || 'Genel Müdür / Ön Büro Direktörü');
       setManagerPhone(profile.managerPhone || '+90 532 555 44 33');
-      setContactEmail(profile.contactEmail || 'heritage@xenios.istanbul');
+      setContactEmail(profile.contactEmail || 'heritage@purelyistanbul.com');
       setNotificationEmail(profile.notificationEmail || 'concierge@heritagehotel.com');
     }
   }, [currentHotel.id]);
@@ -123,7 +123,7 @@ export default function HotelProfileManagementPage() {
     setPermissionStatus(st);
     if (granted) {
       toast.success("Telefon / iOS bildirim izni başarıyla etkinleştirildi!", {
-        description: "Xenios artık iPhone Ayarlar > Bildirimler menüsünde görünür."
+        description: "purelyİstanbul artık iPhone Ayarlar > Bildirimler menüsünde görünür."
       });
     } else {
       toast.info("Bildirim izni talep edildi. Lütfen ekrandaki sistem bildirimine 'İzin Ver' deyiniz.");

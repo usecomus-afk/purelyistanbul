@@ -16,8 +16,8 @@ export class GoogleThingsToDoService {
       '<?xml version="1.0" encoding="UTF-8"?>',
       '<feed xmlns="http://www.google.com/schemas/things_to_do/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
       `  <feed_metadata>`,
-      `    <provider_id>xenios_istanbul_official</provider_id>`,
-      `    <provider_name>Xenios Istanbul Luxury Experiences</provider_name>`,
+      `    <provider_id>purely_istanbul_official</provider_id>`,
+      `    <provider_name>purelyİstanbul Luxury Experiences</provider_name>`,
       `    <updated_at>${new Date().toISOString()}</updated_at>`,
       `  </feed_metadata>`,
       `  <products>`
@@ -70,12 +70,12 @@ export class GoogleThingsToDoService {
   /**
    * 2. JSON Formatında Feed (GTTD REST API Entegratörleri için)
    */
-  static generateGTTDJsonFeed(baseUrl: string = 'https://xenios.usecomus.com'): Record<string, any> {
+  static generateGTTDJsonFeed(baseUrl: string = 'https://purelyistanbul.usecomus.com'): Record<string, any> {
     const experiences = experiencesData || [];
 
     return {
-      provider_id: 'xenios_istanbul_official',
-      provider_name: 'Xenios Istanbul Luxury Experiences',
+      provider_id: 'purely_istanbul_official',
+      provider_name: 'purelyİstanbul Luxury Experiences',
       updated_at: new Date().toISOString(),
       products_count: experiences.length,
       products: experiences.map((exp: any) => ({

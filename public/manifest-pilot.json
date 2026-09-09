@@ -1,7 +1,7 @@
 {
-  "name": "Xenios Pilot - Master Operations Deck",
-  "short_name": "Xenios Pilot",
-  "description": "ComusV2 Istanbul Pilot Project Manager & Operations Control Deck",
+  "name": "purelyİstanbul Pilot - Master Operations Deck",
+  "short_name": "purelyİstanbul Pilot",
+  "description": "purelyİstanbul Pilot Project Manager & Operations Control Deck",
   "start_url": "/pilot",
   "scope": "/pilot",
   "display": "standalone",
