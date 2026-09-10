@@ -35,7 +35,7 @@ export function MarketplaceHeader() {
         scrolled ? "shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : ""
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between pl-1 pr-4 sm:pl-1.5 sm:pr-5 md:pl-2 md:pr-8 h-[84px] gap-2">
+      <div className="max-w-6xl mx-auto flex items-center justify-between pl-0 pr-4 sm:pr-5 md:pr-8 h-[84px] gap-2">
         <Link href="/" className="relative shrink-0 h-9 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
           <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill priority className="object-contain object-left" />
         </Link>
