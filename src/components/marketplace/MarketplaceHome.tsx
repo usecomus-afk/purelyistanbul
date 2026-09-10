@@ -130,8 +130,8 @@ export function MarketplaceHome() {
 
   return (
     <>
-      {/* Hero — Sadece Harita Arka Planı */}
-      <section className="relative w-full h-[45vh] sm:h-[50vh] flex flex-col justify-end bg-sand-bg">
+      {/* Hero — Harita ve Çizim */}
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh] pb-8">
         {/* Background Map Image */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
@@ -140,27 +140,24 @@ export function MarketplaceHome() {
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="object-cover opacity-90"
             style={{ objectPosition: "50% 0%" }}
           />
           {/* Üst Kısım Şeffaflık Geçişi (Header için) */}
           <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
-          
-          {/* Alt Kısım Şeffaflık Geçişi (Üst tarafın simetriği) */}
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-sand-bg/95 via-sand-bg/60 to-transparent" />
+        </div>
+
+        {/* Skyline Çizimi */}
+        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none">
+          <Image
+            src="/images/skyline-drawing-transparent.png"
+            alt="Nothing but Istanbul"
+            width={600}
+            height={320}
+            className="w-full h-auto object-contain opacity-95"
+          />
         </div>
       </section>
-
-      {/* Skyline Çizimi */}
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 -mt-20 sm:-mt-24 mb-4 flex justify-center pointer-events-none">
-        <Image
-          src="/images/skyline-drawing-transparent.png"
-          alt="Nothing but Istanbul"
-          width={500}
-          height={280}
-          className="w-full h-auto object-contain opacity-90"
-        />
-      </div>
 
       {/* Kategori Çubuğu */}
       <div className="relative z-20">
