@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
@@ -14,26 +14,43 @@ interface CategoryShelfProps {
 }
 
 /** Bir kategorinin ilanlarını yatay eksende kayan bir raf olarak gösterir.
- *  Hover sırasında liste otomatik olarak sola kayar. */
+ *  Fare üzerine geldiğinde liste otomatik sola kayar. */
 export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavorite }: CategoryShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number | null>(null);
+  const pauseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Bileşen unmount olduğunda temizle
+  useEffect(() => {
+    return () => {
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+      if (pauseRef.current !== null) clearTimeout(pauseRef.current);
+    };
+  }, []);
 
   const startAutoScroll = useCallback(() => {
-    const step = () => {
-      const container = scrollRef.current;
-      if (!container) return;
-      if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 2) {
-        container.scrollLeft = 0;
-      } else {
-        container.scrollLeft += 1;
-      }
+    // Yanlışlıkla tetiklenmesin diye kısa bir gecikme
+    pauseRef.current = setTimeout(() => {
+      const step = () => {
+        const container = scrollRef.current;
+        if (!container) return;
+        // Sona ulaşıldıysa başa dön
+        if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 2) {
+          container.scrollLeft = 0;
+        } else {
+          container.scrollLeft += 0.8;
+        }
+        animRef.current = requestAnimationFrame(step);
+      };
       animRef.current = requestAnimationFrame(step);
-    };
-    animRef.current = requestAnimationFrame(step);
+    }, 300);
   }, []);
 
   const stopAutoScroll = useCallback(() => {
+    if (pauseRef.current !== null) {
+      clearTimeout(pauseRef.current);
+      pauseRef.current = null;
+    }
     if (animRef.current !== null) {
       cancelAnimationFrame(animRef.current);
       animRef.current = null;
@@ -67,13 +84,14 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
           ref={scrollRef}
           onMouseEnter={startAutoScroll}
           onMouseLeave={stopAutoScroll}
-          className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-px-5 md:scroll-px-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-5 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollBehavior: 'auto' }}
         >
           {/* Sol padding spacer */}
           <div className="shrink-0 w-5 md:w-8 xl:w-[calc((100vw-1152px)/2+2rem)]" />
 
           {listings.map((listing) => (
-            <div key={listing.id} className="w-[220px] sm:w-[260px] shrink-0 snap-start">
+            <div key={listing.id} className="w-[220px] sm:w-[260px] shrink-0">
               <ListingCard
                 listing={listing}
                 isFavorite={favoriteIds.has(listing.id)}
