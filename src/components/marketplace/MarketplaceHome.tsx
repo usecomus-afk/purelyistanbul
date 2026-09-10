@@ -131,9 +131,9 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Harita ve Çizim */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh] pb-8">
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh] pb-8 overflow-hidden">
         {/* Background Map Image */}
-        <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 z-0">
           <Image
             src="/images/marketplace-hero.webp"
             alt="Purely İstanbul Map"
@@ -144,11 +144,15 @@ export function MarketplaceHome() {
             style={{ objectPosition: "50% 0%" }}
           />
           {/* Üst Kısım Şeffaflık Geçişi (Header için) */}
-          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
+          
+          {/* Ortadaki eski çizimi gizlemek için maske (sand-bg renginde yumuşak bir daire/elips) */}
+          <div className="absolute left-1/2 bottom-[5%] -translate-x-1/2 w-[90%] max-w-[800px] h-[50%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
+          <div className="absolute left-1/2 bottom-[10%] -translate-x-1/2 w-[80%] max-w-[600px] h-[40%] bg-sand-bg rounded-[100%] blur-2xl opacity-100" />
         </div>
 
-        {/* Skyline Çizimi */}
-        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none">
+        {/* Yeni Skyline Çizimi */}
+        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-4 sm:mt-8">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Nothing but Istanbul"
