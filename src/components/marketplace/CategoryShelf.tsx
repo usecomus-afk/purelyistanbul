@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
+import { useRef, useCallback } from "react";
 
 interface CategoryShelfProps {
   id: string;
@@ -13,8 +14,30 @@ interface CategoryShelfProps {
   onToggleFavorite: (listing: MarketplaceListing) => void;
 }
 
-/** Bir kategorinin ilanlarını yatay eksende kayan bir raf olarak gösterir. */
 export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggleFavorite }: CategoryShelfProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+
+  const startAutoScroll = useCallback(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    const scrollStep = () => {
+      if (scrollContainer) {
+        scrollContainer.scrollLeft += 1; // Hız ayarı
+      }
+      rafRef.current = requestAnimationFrame(scrollStep);
+    };
+    rafRef.current = requestAnimationFrame(scrollStep);
+  }, []);
+
+  const stopAutoScroll = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  }, []);
+
   if (listings.length === 0) return null;
 
   return (
@@ -39,6 +62,11 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
 
       <div className="w-full">
         <div 
+          ref={scrollRef}
+          onMouseEnter={startAutoScroll}
+          onMouseLeave={stopAutoScroll}
+          // Mobil cihazlarda dokunmatik kaydırma yapıldığında çakışmayı önlemek için touch olaylarında da durdurabiliriz
+          onTouchStart={stopAutoScroll}
           className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-px-5 md:scroll-px-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {/* Sol padding spacer (Header ile aynı hizada başlaması için) */}
