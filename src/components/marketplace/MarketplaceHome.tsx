@@ -131,9 +131,9 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Harita ve Çizim */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh] pb-8 overflow-hidden">
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh]">
         {/* Background Map Image */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src="/images/marketplace-hero.webp"
             alt="Purely İstanbul Map"
@@ -149,10 +149,14 @@ export function MarketplaceHome() {
           {/* Ortadaki eski çizimi gizlemek için maske (sand-bg renginde yumuşak bir daire/elips) */}
           <div className="absolute left-1/2 bottom-[5%] -translate-x-1/2 w-[90%] max-w-[800px] h-[50%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
           <div className="absolute left-1/2 bottom-[10%] -translate-x-1/2 w-[80%] max-w-[600px] h-[40%] bg-sand-bg rounded-[100%] blur-2xl opacity-100" />
+          
+          {/* En alttaki purely istanbul yazısını tamamen gizlemek için alt maske */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-sand-bg via-sand-bg/95 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-sand-bg" />
         </div>
 
         {/* Yeni Skyline Çizimi */}
-        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-4 sm:mt-8">
+        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-4 sm:mt-8 pb-4">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Nothing but Istanbul"
@@ -164,7 +168,7 @@ export function MarketplaceHome() {
       </section>
 
       {/* Kategori Çubuğu */}
-      <div className="relative z-20">
+      <div className="relative z-20 -mt-6 sm:-mt-10">
         <CategoryFilterBar value={category} onChange={setCategory} />
       </div>
 
