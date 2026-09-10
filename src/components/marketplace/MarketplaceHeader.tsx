@@ -31,8 +31,8 @@ export function MarketplaceHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 bg-sand-bg/90 backdrop-blur-md transition-shadow duration-300 ${
-        scrolled ? "shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : ""
+      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
+        scrolled ? "bg-sand-bg/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : "bg-transparent"
       }`}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between pl-0 pr-4 sm:pr-5 md:pr-8 h-[84px] gap-2">

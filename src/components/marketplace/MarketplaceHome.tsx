@@ -130,74 +130,77 @@ export function MarketplaceHome() {
 
   return (
     <>
-      {/* Sayfanın açılışında yer alan marka görseli — header'ın hemen
-          altında, normal akışta (header'ın üzerine binmez); yatay eksende
-          uçtan uca kaplar. Görselin altındaki boş kağıt payı kırpılacak
-          şekilde konumlanır, böylece kategori menüsü amblemin hemen
-          altından başlar. */}
-      <div className="relative w-full aspect-[3/1] bg-sand-bg overflow-hidden">
-        <Image
-          src="/images/marketplace-hero.webp"
-          alt="Purely İstanbul"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          style={{ objectPosition: "50% 37%" }}
-        />
-      </div>
-
-      <CategoryFilterBar value={category} onChange={setCategory} />
-
-      {/* Hero — kategori çubuğunun altında, arama kutusu burada */}
-      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-10 md:pt-12 pb-10 text-center">
-        <h1 className="text-2xl md:text-4xl font-light tracking-tight text-ink">
-          <span className="text-ink-muted">Nothing but</span> <span className="font-semibold text-ink">İstanbul.</span>
-        </h1>
-
-        <div className="mt-6 flex items-center gap-1 max-w-lg mx-auto rounded-full border border-sand-border bg-white shadow-[0_2px_16px_rgba(30,33,41,0.06)] p-1.5 pl-5">
-          <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Bölge veya ilan adı ara — örn. Sultanahmet"
-            className="flex-1 min-w-0 bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
+      {/* Hero — Harita Arka Planı ve Arama Kutusu */}
+      <section className="relative w-full min-h-[50vh] flex flex-col justify-end pb-12 bg-sand-bg">
+        {/* Background Map Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <Image
+            src="/images/marketplace-hero.webp"
+            alt="Purely İstanbul"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{ objectPosition: "50% 37%" }}
           />
-          <div className="relative shrink-0 border-l border-sand-border pl-2">
-            <Filter className="w-3.5 h-3.5 text-ink-muted absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.75} />
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              aria-label="Kategoriye göre filtrele"
-              className="appearance-none bg-transparent text-[12px] font-medium text-ink rounded-full pl-6 pr-2 py-2 outline-none cursor-pointer max-w-[110px] sm:max-w-none"
-            >
-              <option value="">Tüm Kategoriler</option>
-              {MARKETPLACE_CATEGORIES.map((c) => (
-                <option key={c.key} value={c.key}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[12.5px] font-medium px-5 py-2.5 shrink-0">
-            Keşfet
-          </span>
+          {/* Üst Kısım Şeffaflık Geçişi (Header için) */}
+          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
+          
+          {/* Alt Kısım Şeffaflık Geçişi */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-sand-bg to-transparent" />
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowFilters(true)}
-          className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-ink-muted hover:text-ink transition"
-        >
-          <Filter className="w-3.5 h-3.5" strokeWidth={1.75} />
-          Filtreler
-          {activeAdvancedFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full bg-terracotta text-white text-[10px] font-semibold">
-              {activeAdvancedFilterCount}
+        {/* Hero Content */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-5 md:px-8 mt-32 text-center">
+          <div className="flex items-center gap-1 max-w-lg mx-auto rounded-full border border-sand-border bg-white/95 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-1.5 pl-5">
+            <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Bölge veya ilan adı ara — örn. Sultanahmet"
+              className="flex-1 min-w-0 bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
+            />
+            <div className="relative shrink-0 border-l border-sand-border pl-2">
+              <Filter className="w-3.5 h-3.5 text-ink-muted absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.75} />
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                aria-label="Kategoriye göre filtrele"
+                className="appearance-none bg-transparent text-[12px] font-medium text-ink rounded-full pl-6 pr-2 py-2 outline-none cursor-pointer max-w-[110px] sm:max-w-none"
+              >
+                <option value="">Tüm Kategoriler</option>
+                {MARKETPLACE_CATEGORIES.map((c) => (
+                  <option key={c.key} value={c.key}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[12.5px] font-medium px-5 py-2.5 shrink-0 cursor-pointer hover:bg-terracotta transition">
+              Keşfet
             </span>
-          )}
-        </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowFilters(true)}
+            className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-ink-muted hover:text-ink transition"
+          >
+            <Filter className="w-3.5 h-3.5" strokeWidth={1.75} />
+            Filtreler
+            {activeAdvancedFilterCount > 0 && (
+              <span className="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full bg-terracotta text-white text-[10px] font-semibold">
+                {activeAdvancedFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
       </section>
+
+      {/* Kategori Çubuğu (Artık Hero'nun altında) */}
+      <div className="relative z-20">
+        <CategoryFilterBar value={category} onChange={setCategory} />
+      </div>
 
       {showFilters && (
         <div
