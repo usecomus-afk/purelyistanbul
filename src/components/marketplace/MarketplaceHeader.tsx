@@ -36,8 +36,8 @@ export function MarketplaceHeader() {
       }`}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between pl-3 pr-4 sm:pl-4 sm:pr-5 md:pl-5 md:pr-8 h-[84px] gap-2">
-        <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-xl sm:text-2xl text-ink leading-none whitespace-nowrap select-none drop-shadow-[0_2px_3px_rgba(30,33,41,0.18)]">
-          <span>purely</span><span className="text-red-600 font-bold">İstanbul</span><span className="text-ink-muted font-normal text-[0.55em] ml-0.5">.com</span>
+        <Link href="/" className="relative shrink-0 h-7 sm:h-8" style={{ aspectRatio: "1564 / 232" }}>
+          <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill priority className="object-contain object-left" />
         </Link>
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
