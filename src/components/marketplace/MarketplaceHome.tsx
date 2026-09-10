@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { watchApprovedListings } from "@/lib/marketplace/listings";
@@ -71,6 +72,21 @@ export function MarketplaceHome() {
 
   return (
     <>
+      {/* Sayfanın açılışında yer alan estetik marka bandı — İstanbul'un
+          altın çizgili harita deseni. Header'daki logoyla çakışmaması için
+          sadece desen kısmı (logo/wordmark olmadan) gösterilir. */}
+      <div className="relative w-full h-[110px] sm:h-[170px] md:h-[230px] overflow-hidden">
+        <Image
+          src="/images/marketplace-hero.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-top"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-sand-bg" />
+      </div>
+
       <CategoryFilterBar value={category} onChange={setCategory} />
 
       {/* Hero — kategori çubuğunun altında, arama kutusu burada */}

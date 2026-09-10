@@ -2,24 +2,31 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { Capacitor } from "@capacitor/core";
 import { XeniosStore } from "@/lib/store";
 
 /**
- * This intro splash GIF plays on app launch and session start for purelyİstanbul.
- * It auto-advances after 3.5 seconds or on tap, and sets sessionStorage
- * so internal navigation during the session remains instantaneous.
+ * This intro splash GIF plays on native app launch, and on web only for a
+ * real hotel-guest session (QR check-in) — never for an organic visit to the
+ * public marketplace website, even at "/". It auto-advances after 3.5 seconds
+ * or on tap, and sets sessionStorage so internal navigation during the
+ * session remains instantaneous.
  */
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
   if (typeof window === "undefined") return false;
   const alreadyPlayed =
     sessionStorage.getItem("purely_splash_played") ||
     sessionStorage.getItem("xenios_splash_played");
-  return Boolean(
+  if (
     alreadyPlayed ||
-      pathname?.startsWith("/hotel-portal") ||
-      pathname?.startsWith("/dashboard") ||
-      pathname?.startsWith("/qr-generator")
-  );
+    pathname?.startsWith("/hotel-portal") ||
+    pathname?.startsWith("/dashboard") ||
+    pathname?.startsWith("/qr-generator")
+  ) {
+    return true;
+  }
+  if (Capacitor.isNativePlatform()) return false;
+  return !XeniosStore.hasActiveHotelSession();
 }
 
 export function AppIntroSplash() {
