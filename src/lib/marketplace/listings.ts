@@ -59,7 +59,7 @@ export async function createDraftListing(hostId: string, type: ListingType): Pro
 }
 
 export async function getListing(id: string): Promise<MarketplaceListing | null> {
-  if (isSeedListingId(id)) return getSeedListing(id);
+  if (isSeedListingId(id)) return getSeedListing(id) ?? null;
   const snap = await getDoc(doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id));
   return snap.exists() ? toListing(snap.id, snap.data() as Omit<MarketplaceListing, 'id'>) : null;
 }
