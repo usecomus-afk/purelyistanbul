@@ -140,11 +140,11 @@ export function MarketplaceHome() {
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-90"
+            className="object-cover opacity-25 mix-blend-multiply"
             style={{ objectPosition: "50% 0%" }}
           />
           {/* Üst Kısım Şeffaflık Geçişi (Header için) */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg via-sand-bg/80 to-transparent" />
           
           {/* Ortadaki eski çizimi gizlemek için maske (sand-bg renginde yumuşak bir daire/elips) */}
           <div className="absolute left-1/2 bottom-[5%] -translate-x-1/2 w-[90%] max-w-[800px] h-[50%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
@@ -162,7 +162,7 @@ export function MarketplaceHome() {
             alt="Nothing but Istanbul"
             width={600}
             height={320}
-            className="w-full h-auto object-contain opacity-95"
+            className="w-full h-auto object-contain opacity-[0.15] mix-blend-multiply"
           />
         </div>
       </section>
@@ -384,7 +384,7 @@ export function MarketplaceHome() {
               <p className="text-sm text-ink-muted">Bu aramayla eşleşen ilan yok.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 gap-y-10">
               {searchResults.map((listing) => (
                 <ListingCard
                   key={listing.id}

@@ -19,8 +19,8 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
   return (
     <div className="group">
       <Link href={`/marketplace/listing/${listing.id}`} className="block">
-        {/* Kare görsel — Airbnb stili */}
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.04]">
+        {/* Dikey dikdörtgen (3:4) görsel — Airbnb Deneyimler stili */}
+        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.04]">
           {listing.coverImageUrl ? (
             <Image
               src={listing.coverImageUrl}

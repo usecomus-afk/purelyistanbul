@@ -112,7 +112,7 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
         >
           <div className="shrink-0 w-5 md:w-8 xl:w-[calc((100vw-1152px)/2+2rem)]" />
           {listings.map((listing) => (
-            <div key={listing.id} className="w-[200px] sm:w-[240px] shrink-0">
+            <div key={listing.id} className="w-[160px] sm:w-[192px] shrink-0">
               <ListingCard
                 listing={listing}
                 isFavorite={favoriteIds.has(listing.id)}
