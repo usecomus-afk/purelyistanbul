@@ -16,7 +16,6 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
       { label: "Hizmet Koşulları", href: "/marketplace/legal/hizmet-kosullari" },
       { label: "Erişilebilirlik Bildirisi", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
       { label: "Çalışma Şeklimiz", href: "/marketplace/legal/calisma-seklimiz" },
-      { label: "Misafir Kalkanı & Adil Alışveriş Politikası", href: "/marketplace/legal/misafir-kalkani" },
     ],
   },
   {
@@ -61,6 +60,14 @@ export function MarketplaceFooter() {
         <div>
           <h3 className="text-[13px] font-semibold text-ink mb-4">Destek</h3>
           <ul className="space-y-2.5">
+            <li>
+              <Link
+                href="/marketplace/legal/misafir-kalkani"
+                className="text-[13px] font-semibold text-terracotta hover:text-amber-700 hover:underline underline-offset-2 transition"
+              >
+                Misafir Kalkanı & Adil Alışveriş Politikası
+              </Link>
+            </li>
             <li>
               <Link
                 href="/marketplace/iletisim"
