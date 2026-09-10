@@ -70,7 +70,7 @@ export function watchListing(
   onError?: (err: Error) => void
 ): Unsubscribe {
   if (isSeedListingId(id)) {
-    cb(getSeedListing(id));
+    cb(getSeedListing(id) ?? null);
     return () => {};
   }
   return onSnapshot(
