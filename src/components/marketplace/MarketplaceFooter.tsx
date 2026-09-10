@@ -1,11 +1,38 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Mail, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitContactMessage } from "@/lib/marketplace/firestore";
+
+const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Destek",
+    links: [{ label: "Müşteri Hizmetleriyle İletişime Geçin", href: "/marketplace/iletisim" }],
+  },
+  {
+    title: "Şartlar ve Ayarlar",
+    links: [
+      { label: "Gizlilik Bildirimi", href: "/marketplace/legal/gizlilik-bildirimi" },
+      { label: "Hizmet Koşulları", href: "/marketplace/legal/hizmet-kosullari" },
+      { label: "Erişilebilirlik Bildirisi", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
+      { label: "Çalışma Şeklimiz", href: "/marketplace/legal/calisma-seklimiz" },
+      { label: "Misafir Kalkanı & Adil Alışveriş Politikası", href: "/marketplace/legal/misafir-kalkani" },
+    ],
+  },
+  {
+    title: "Ortaklar İçin",
+    links: [
+      { label: "Extranet Girişi", href: "/marketplace/partner/extranet" },
+      { label: "Ortaklar İçin Yardım Sayfası", href: "/marketplace/partner/yardim" },
+      { label: "Hizmetinizi / Deneyiminizi Kaydedin", href: "/marketplace/partner/kayit" },
+      { label: "İştirak Olun", href: "/marketplace/partner/istirak" },
+    ],
+  },
+];
 
 export function MarketplaceFooter() {
   const { user } = useAuth();
@@ -34,6 +61,27 @@ export function MarketplaceFooter() {
 
   return (
     <footer className="border-t border-sand-border mt-16">
+      <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-14 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10">
+        {FOOTER_COLUMNS.map((col) => (
+          <div key={col.title}>
+            <h3 className="text-[13px] font-semibold text-ink mb-4">{col.title}</h3>
+            <ul className="space-y-2.5">
+              {col.links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-sand-border">
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
         <span className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 shrink-0">
           <Image src="/logo-header.png" alt="Purely Istanbul" fill className="object-contain" />
@@ -53,6 +101,7 @@ export function MarketplaceFooter() {
         <p className="text-[12px] text-ink-muted/70 tracking-wide">
           © {new Date().getFullYear()} Purely Istanbul — nothing but İstanbul.
         </p>
+      </div>
       </div>
 
       {showContact && (
