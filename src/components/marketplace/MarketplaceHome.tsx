@@ -130,8 +130,8 @@ export function MarketplaceHome() {
 
   return (
     <>
-      {/* Hero — Harita ve Çizim */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[10vh] sm:pt-[14vh]">
+      {/* Hero — Harita ve Çizim: layout'un pt-[84px]'ini -mt ile geri alır, harita başın üstüne taşmaz */}
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end -mt-[84px] pt-[84px]">
         {/* Background Map Image */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
