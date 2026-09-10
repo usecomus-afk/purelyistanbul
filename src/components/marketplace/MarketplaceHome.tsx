@@ -77,18 +77,19 @@ export function MarketplaceHome() {
 
   return (
     <>
-      {/* Sayfanın açılışında yer alan marka görseli — görselin tamamı
-          (harita deseni + amblem + "purely İstanbul" yazısı) hiçbir kırpma
-          olmadan gösterilir; kutunun arka planı görselin kağıt dokusuyla
-          aynı tonda olduğu için kenarlarda boşluk kalsa da görünmez. */}
-      <div className="relative w-full h-[200px] sm:h-[320px] md:h-[420px] bg-sand-bg overflow-hidden">
+      {/* Sayfanın açılışında yer alan marka görseli — header'ın hemen
+          altında, normal akışta (header'ın üzerine binmez); yatay eksende
+          uçtan uca kaplar, kompozisyon merkeze göre ~%30 yukarı çekilerek
+          konumlanır (amblem çerçevenin alt üçte birine sıkışmadan görünür). */}
+      <div className="relative w-full aspect-[3/1] bg-sand-bg overflow-hidden">
         <Image
           src="/images/marketplace-hero.webp"
           alt="Purely İstanbul"
           fill
           priority
           sizes="100vw"
-          className="object-contain"
+          className="object-cover"
+          style={{ objectPosition: "50% 85%" }}
         />
       </div>
 

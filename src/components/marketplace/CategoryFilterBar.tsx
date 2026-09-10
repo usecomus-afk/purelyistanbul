@@ -86,7 +86,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
               className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${
                 value === "all"
                   ? "bg-zinc-900 border-zinc-900 text-white shadow-md ring-4 ring-zinc-900/15 scale-105"
-                  : "bg-white/95 border-stone-200/90 text-zinc-700 shadow-xs hover:border-amber-400/80 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
+                  : "bg-white/95 border-amber-400/70 text-zinc-700 shadow-xs hover:border-amber-500 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
               }`}
             >
               <LayoutGrid className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={1.75} />
@@ -114,7 +114,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
                   className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border-2 p-2 transition-all duration-200 ${
                     isSelected
                       ? "bg-gradient-to-b from-amber-50 to-orange-50/70 border-amber-600 shadow-md ring-4 ring-amber-500/25 scale-105"
-                      : "bg-white/95 border-stone-200/90 shadow-xs hover:border-amber-400/80 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
+                      : "bg-white/95 border-amber-400/70 shadow-xs hover:border-amber-500 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
                   }`}
                 >
                   <span className="relative w-full h-full flex items-center justify-center">

@@ -37,7 +37,7 @@ export function MarketplaceHeader() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-5 md:px-8 h-[84px] gap-2">
         <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-xl sm:text-2xl text-ink leading-none whitespace-nowrap select-none">
-          <span>purely</span><span className="text-red-600 font-bold">İstanbul</span>
+          <span>purely</span><span className="text-red-600 font-bold">İstanbul</span><span className="text-ink-muted font-normal text-[0.55em] ml-0.5">.com</span>
         </Link>
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">

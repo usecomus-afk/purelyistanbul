@@ -14,7 +14,6 @@ export interface MarketplaceCategory {
 }
 
 export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
-  { key: "konaklama", label: "Konaklama", icon: "/icons/categories/konaklama.png", type: "stay" },
   { key: "bogaz-yat", label: "Boğaz & Yat Turları", icon: "/icons/categories/bogaz-yatturlari.png", type: "experience" },
   { key: "gastronomi", label: "Gastronomi & Gurme", icon: "/icons/categories/gastronomi-gurme.png", type: "experience" },
   { key: "kulturel-miras", label: "Kültürel Miras", icon: "/icons/categories/kulturel-miras.png", type: "experience" },
