@@ -173,22 +173,28 @@ export function MarketplaceHome() {
       </div>
 
       {/* Arama Kutusu (Kategorilerin Altında) */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-5 md:px-8 pt-8 pb-4 text-center">
-        <div className="flex items-center gap-1 max-w-lg mx-auto rounded-full border border-sand-border bg-white shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-1.5 pl-5">
-          <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Bölge veya ilan adı ara — örn. Sultanahmet"
-            className="flex-1 min-w-0 bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
-          />
-          <div className="relative shrink-0 border-l border-sand-border pl-2">
-            <Filter className="w-3.5 h-3.5 text-ink-muted absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.75} />
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-5 md:px-8 pt-8 pb-4 text-center">
+        <div className="flex items-center justify-between gap-3 w-full mx-auto rounded-full border border-sand-border bg-white shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-1.5 pl-5">
+          
+          {/* Sol: Arama İkonu ve Input */}
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Bölge veya ilan adı ara — örn. Sultanahmet"
+              className="w-full bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
+            />
+          </div>
+
+          {/* Sağ: Kategoriler, Filtreler, Keşfet */}
+          <div className="flex items-center gap-4 sm:gap-6 shrink-0 pl-4 border-l border-sand-border">
+            {/* Tüm Kategoriler */}
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               aria-label="Kategoriye göre filtrele"
-              className="appearance-none bg-transparent text-[12px] font-medium text-ink rounded-full pl-6 pr-2 py-2 outline-none cursor-pointer max-w-[110px] sm:max-w-none"
+              className="appearance-none bg-transparent text-[13px] font-medium text-ink outline-none cursor-pointer hidden sm:block"
             >
               <option value="">Tüm Kategoriler</option>
               {MARKETPLACE_CATEGORIES.map((c) => (
@@ -197,25 +203,28 @@ export function MarketplaceHome() {
                 </option>
               ))}
             </select>
-          </div>
-          <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[12.5px] font-medium px-5 py-2.5 shrink-0 cursor-pointer hover:bg-terracotta transition">
-            Keşfet
-          </span>
-        </div>
 
-        <button
-          type="button"
-          onClick={() => setShowFilters(true)}
-          className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-ink-muted hover:text-ink transition"
-        >
-          <Filter className="w-3.5 h-3.5" strokeWidth={1.75} />
-          Filtreler
-          {activeAdvancedFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full bg-terracotta text-white text-[10px] font-semibold">
-              {activeAdvancedFilterCount}
+            {/* Filtreler Butonu */}
+            <button
+              type="button"
+              onClick={() => setShowFilters(true)}
+              className="flex items-center gap-1.5 text-[13px] font-medium text-ink hover:text-terracotta transition"
+            >
+              <Filter className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
+              <span className="hidden sm:inline">Filtreler</span>
+              {activeAdvancedFilterCount > 0 && (
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-terracotta text-white text-[10px] font-semibold ml-0.5">
+                  {activeAdvancedFilterCount}
+                </span>
+              )}
+            </button>
+
+            {/* Keşfet Butonu */}
+            <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[13px] font-medium px-6 py-2.5 cursor-pointer hover:bg-terracotta transition">
+              Keşfet
             </span>
-          )}
-        </button>
+          </div>
+        </div>
       </div>
 
       {showFilters && (

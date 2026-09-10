@@ -118,16 +118,16 @@ export function MarketplaceHeader() {
           ) : (
             <div className="flex items-center gap-0.5 sm:gap-1 ml-0.5 sm:ml-1 shrink-0">
               <Link
-                href="/marketplace/account?mode=register"
-                className="text-[11.5px] sm:text-[13px] font-semibold text-white bg-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
-              >
-                Kayıt Ol
-              </Link>
-              <Link
                 href="/marketplace/account"
                 className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white transition whitespace-nowrap"
               >
                 Giriş Yap
+              </Link>
+              <Link
+                href="/marketplace/account?mode=register"
+                className="text-[11.5px] sm:text-[13px] font-semibold text-white bg-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
+              >
+                Kayıt Ol
               </Link>
             </div>
           )}
