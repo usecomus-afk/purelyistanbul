@@ -1044,3 +1044,6 @@ export const SEED_LISTINGS: MarketplaceListing[] = [
     coverImageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80"
   })
 ];
+
+export function getSeedListing(id: string) { return SEED_LISTINGS.find(l => l.id === id); }
+export function isSeedListingId(id: string) { return id.startsWith('exp-') || id.startsWith('hotel-'); }
