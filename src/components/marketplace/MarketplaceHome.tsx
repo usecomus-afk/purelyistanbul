@@ -131,28 +131,39 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Sadece Harita Arka Planı */}
-      <section className="relative w-full min-h-[45vh] sm:min-h-[50vh] flex flex-col justify-end bg-sand-bg">
+      <section className="relative w-full min-h-[35vh] sm:min-h-[40vh] flex flex-col justify-end bg-sand-bg">
         {/* Background Map Image */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src="/images/marketplace-hero.webp"
-            alt="Purely İstanbul"
+            alt="Purely İstanbul Map"
             fill
             priority
             sizes="100vw"
             className="object-cover"
-            style={{ objectPosition: "50% 37%" }}
+            style={{ objectPosition: "50% 0%" }}
           />
           {/* Üst Kısım Şeffaflık Geçişi (Header için) */}
           <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg/95 via-sand-bg/60 to-transparent" />
           
-          {/* Alt Kısım Şeffaflık Geçişi */}
+          {/* Alt Kısım Şeffaflık Geçişi (Keskin harita çizgisini yumuşatmak için) */}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-sand-bg to-transparent" />
         </div>
       </section>
 
+      {/* Skyline Çizimi */}
+      <div className="relative z-10 w-full max-w-lg mx-auto px-6 py-6 sm:py-8 flex justify-center">
+        <Image
+          src="/images/skyline-drawing.jpg"
+          alt="Nothing but Istanbul"
+          width={500}
+          height={280}
+          className="w-full h-auto object-contain mix-blend-multiply opacity-90"
+        />
+      </div>
+
       {/* Kategori Çubuğu */}
-      <div className="relative z-20 -mt-6 sm:-mt-8">
+      <div className="relative z-20">
         <CategoryFilterBar value={category} onChange={setCategory} />
       </div>
 
