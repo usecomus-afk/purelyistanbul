@@ -1046,4 +1046,6 @@ export const SEED_LISTINGS: MarketplaceListing[] = [
 ];
 
 export function getSeedListing(id: string) { return SEED_LISTINGS.find(l => l.id === id); }
-export function isSeedListingId(id: string) { return id.startsWith('exp-') || id.startsWith('hotel-'); }
+export function isSeedListingId(id: string) {
+  return id.startsWith('exp-') || id.startsWith('hotel-') || id.startsWith('rest-');
+}

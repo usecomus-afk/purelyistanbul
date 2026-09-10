@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import { useRef, useCallback } from "react";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
-import { useRef, useCallback } from "react";
 
 interface CategoryShelfProps {
   id: string;
@@ -14,27 +13,30 @@ interface CategoryShelfProps {
   onToggleFavorite: (listing: MarketplaceListing) => void;
 }
 
-export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggleFavorite }: CategoryShelfProps) {
+/** Bir kategorinin ilanlarını yatay eksende kayan bir raf olarak gösterir.
+ *  Hover sırasında liste otomatik olarak sola kayar. */
+export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavorite }: CategoryShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
+  const animRef = useRef<number | null>(null);
 
   const startAutoScroll = useCallback(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    const scrollStep = () => {
-      if (scrollContainer) {
-        scrollContainer.scrollLeft += 1; // Hız ayarı
+    const step = () => {
+      const container = scrollRef.current;
+      if (!container) return;
+      if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 2) {
+        container.scrollLeft = 0;
+      } else {
+        container.scrollLeft += 1;
       }
-      rafRef.current = requestAnimationFrame(scrollStep);
+      animRef.current = requestAnimationFrame(step);
     };
-    rafRef.current = requestAnimationFrame(scrollStep);
+    animRef.current = requestAnimationFrame(step);
   }, []);
 
   const stopAutoScroll = useCallback(() => {
-    if (rafRef.current !== null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
+    if (animRef.current !== null) {
+      cancelAnimationFrame(animRef.current);
+      animRef.current = null;
     }
   }, []);
 
@@ -61,17 +63,15 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
       </div>
 
       <div className="w-full">
-        <div 
+        <div
           ref={scrollRef}
           onMouseEnter={startAutoScroll}
           onMouseLeave={stopAutoScroll}
-          // Mobil cihazlarda dokunmatik kaydırma yapıldığında çakışmayı önlemek için touch olaylarında da durdurabiliriz
-          onTouchStart={stopAutoScroll}
           className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-px-5 md:scroll-px-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {/* Sol padding spacer (Header ile aynı hizada başlaması için) */}
+          {/* Sol padding spacer */}
           <div className="shrink-0 w-5 md:w-8 xl:w-[calc((100vw-1152px)/2+2rem)]" />
-          
+
           {listings.map((listing) => (
             <div key={listing.id} className="w-[220px] sm:w-[260px] shrink-0 snap-start">
               <ListingCard
@@ -89,4 +89,3 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
     </section>
   );
 }
-
