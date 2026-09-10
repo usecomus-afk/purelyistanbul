@@ -35,8 +35,8 @@ export function MarketplaceHeader() {
         scrolled ? "shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : ""
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-5 md:px-8 h-[84px] gap-2">
-        <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-xl sm:text-2xl text-ink leading-none whitespace-nowrap select-none">
+      <div className="max-w-6xl mx-auto flex items-center justify-between pl-3 pr-4 sm:pl-4 sm:pr-5 md:pl-5 md:pr-8 h-[84px] gap-2">
+        <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-xl sm:text-2xl text-ink leading-none whitespace-nowrap select-none drop-shadow-[0_2px_3px_rgba(30,33,41,0.18)]">
           <span>purely</span><span className="text-red-600 font-bold">İstanbul</span><span className="text-ink-muted font-normal text-[0.55em] ml-0.5">.com</span>
         </Link>
 
