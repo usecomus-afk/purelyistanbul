@@ -131,7 +131,7 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Harita ve Çizim */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[25vh] sm:pt-[30vh]">
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-[10vh] sm:pt-[14vh]">
         {/* Background Map Image */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
@@ -156,7 +156,7 @@ export function MarketplaceHome() {
         </div>
 
         {/* Yeni Skyline Çizimi */}
-        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-4 sm:mt-8 pb-4">
+        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-2 sm:mt-4 pb-4">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Nothing but Istanbul"
@@ -168,7 +168,7 @@ export function MarketplaceHome() {
       </section>
 
       {/* Kategori Çubuğu */}
-      <div className="relative z-20 -mt-6 sm:-mt-10">
+      <div className="relative z-20 -mt-4 sm:-mt-6">
         <CategoryFilterBar value={category} onChange={setCategory} />
       </div>
 
