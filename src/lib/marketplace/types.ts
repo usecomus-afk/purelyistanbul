@@ -122,6 +122,8 @@ export interface MarketplaceListing {
   createdAt: string;
   updatedAt: string;
   approvedAt?: string;
+  /** Görüntüleme amaçlı puan (seed ilanlar için, Firestore ilanlarında reviews koleksiyonundan hesaplanır) */
+  rating?: { score: number; reviewCount: number };
 }
 
 export type BookingStatus = 'pending_payment' | 'confirmed' | 'cancelled' | 'completed';
