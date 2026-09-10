@@ -1,4 +1,4 @@
-import type { MarketplaceListing } from './types';
+import type { GroupType, MarketplaceListing } from './types';
 
 /**
  * Purely Istanbul vitrininde yer alan doğrulanmış, gerçek fotoğraflı
@@ -6,6 +6,29 @@ import type { MarketplaceListing } from './types';
  * doğru semt ve fiyatlandırma bilgileriyle donatılmıştır.
  */
 const now = new Date().toISOString();
+
+/**
+ * Arama filtrelerinde (katılım tipi, çocuk/evcil hayvan uygunluğu, süre)
+ * kullanılan varsayılanlar — kategoriye göre belirlenir; her ilanın kendi
+ * özel değerlerle bu varsayılanları ezmesine gerek kalmaz.
+ */
+const CATEGORY_FILTER_DEFAULTS: Record<
+  string,
+  { suitableFor: GroupType[]; childFriendly: boolean; petFriendly: boolean; durationMinutes: number }
+> = {
+  'bogaz-yat': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 180 },
+  gastronomi: { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 150 },
+  'kulturel-miras': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 120 },
+  'tarih-muzeler': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 90 },
+  'hamam-spa': { suitableFor: ['single', 'couple'], childFriendly: false, petFriendly: false, durationMinutes: 90 },
+  'macera-doga': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: true, durationMinutes: 240 },
+  'vip-transfer': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: true, durationMinutes: 60 },
+  alisveris: { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 150 },
+  'sanat-semazen': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 75 },
+  estetik: { suitableFor: ['single', 'couple'], childFriendly: false, petFriendly: false, durationMinutes: 90 },
+  restoranlar: { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 120 },
+  'fotograf-kostum': { suitableFor: ['single', 'couple', 'group'], childFriendly: true, petFriendly: false, durationMinutes: 60 }
+};
 
 function createRealListing(data: {
   id: string;
@@ -26,6 +49,8 @@ function createRealListing(data: {
       : [data.coverImageUrl]
   ).map((url) => ({ url, path: url }));
 
+  const filterDefaults = CATEGORY_FILTER_DEFAULTS[data.category];
+
   return {
     id: data.id,
     hostId: 'purely-curated',
@@ -39,6 +64,7 @@ function createRealListing(data: {
     amenities: data.amenities,
     coverImageUrl: data.coverImageUrl,
     images,
+    ...filterDefaults,
     status: 'approved',
     stats: { viewCount: 154, clickCount: 92, favoriteCount: 41, bookingCount: 14 },
     createdAt: now,

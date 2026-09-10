@@ -52,19 +52,12 @@ export function MarketplaceHeader() {
             </Link>
           )}
 
-          {profile?.roles.host ? (
+          {profile?.roles.host && (
             <Link
               href="/marketplace/host/listings"
               className="hidden sm:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white transition"
             >
               İlanlarım
-            </Link>
-          ) : (
-            <Link
-              href={user ? "/marketplace/become-a-host" : "/marketplace/account"}
-              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white transition"
-            >
-              İlanınızı Verin
             </Link>
           )}
 

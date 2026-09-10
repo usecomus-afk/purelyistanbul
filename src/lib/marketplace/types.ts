@@ -73,6 +73,9 @@ export interface HostApplication {
 export type ListingType = 'stay' | 'experience';
 export type ListingStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'suspended';
 
+/** Bir ilanın hangi katılım tipleri için uygun olduğu — arama filtresinde kullanılır. */
+export type GroupType = 'single' | 'couple' | 'group';
+
 /** Cloud Storage'a yüklenen bir ilan fotoğrafı; path silme işlemi için saklanır. */
 export interface ListingImage {
   url: string;
@@ -100,6 +103,12 @@ export interface MarketplaceListing {
   };
   capacity: number;
   amenities: string[];
+  /** Arama filtresi: hangi katılım tipleri için uygun (tek/çift/grup). */
+  suitableFor?: GroupType[];
+  childFriendly?: boolean;
+  petFriendly?: boolean;
+  /** Deneyimin yaklaşık süresi, dakika cinsinden. */
+  durationMinutes?: number;
   status: ListingStatus;
   /** Listing onaylanırken host'un o anki komisyon oranından kopyalanır. */
   commissionRateSnapshot?: CommissionRate;
