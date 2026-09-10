@@ -152,13 +152,13 @@ export function MarketplaceHome() {
       </section>
 
       {/* Skyline Çizimi */}
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 py-6 sm:py-8 flex justify-center">
+      <div className="relative z-10 w-full max-w-lg mx-auto px-6 -mt-16 sm:-mt-24 mb-4 flex justify-center pointer-events-none">
         <Image
-          src="/images/skyline-drawing.jpg"
+          src="/images/skyline-drawing-transparent.png"
           alt="Nothing but Istanbul"
           width={500}
           height={280}
-          className="w-full h-auto object-contain mix-blend-multiply opacity-90"
+          className="w-full h-auto object-contain opacity-90"
         />
       </div>
 
