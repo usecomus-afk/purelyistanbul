@@ -77,19 +77,19 @@ export function MarketplaceHome() {
 
   return (
     <>
-      {/* Sayfanın açılışında yer alan estetik marka bandı — İstanbul'un
-          altın çizgili harita deseni. Header'daki logoyla çakışmaması için
-          sadece desen kısmı (logo/wordmark olmadan) gösterilir. */}
-      <div className="relative w-full h-[110px] sm:h-[170px] md:h-[230px] overflow-hidden">
+      {/* Sayfanın açılışında yer alan marka görseli — görselin tamamı
+          (harita deseni + amblem + "purely İstanbul" yazısı) hiçbir kırpma
+          olmadan gösterilir; kutunun arka planı görselin kağıt dokusuyla
+          aynı tonda olduğu için kenarlarda boşluk kalsa da görünmez. */}
+      <div className="relative w-full h-[200px] sm:h-[320px] md:h-[420px] bg-sand-bg overflow-hidden">
         <Image
           src="/images/marketplace-hero.webp"
-          alt=""
+          alt="Purely İstanbul"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-top"
+          className="object-contain"
         />
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-sand-bg" />
       </div>
 
       <CategoryFilterBar value={category} onChange={setCategory} />
