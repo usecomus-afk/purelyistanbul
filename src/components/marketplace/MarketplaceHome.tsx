@@ -79,8 +79,9 @@ export function MarketplaceHome() {
     <>
       {/* Sayfanın açılışında yer alan marka görseli — header'ın hemen
           altında, normal akışta (header'ın üzerine binmez); yatay eksende
-          uçtan uca kaplar, kompozisyon merkeze göre ~%30 yukarı çekilerek
-          konumlanır (amblem çerçevenin alt üçte birine sıkışmadan görünür). */}
+          uçtan uca kaplar. Görselin altındaki boş kağıt payı kırpılacak
+          şekilde konumlanır, böylece kategori menüsü amblemin hemen
+          altından başlar. */}
       <div className="relative w-full aspect-[3/1] bg-sand-bg overflow-hidden">
         <Image
           src="/images/marketplace-hero.webp"
@@ -89,7 +90,7 @@ export function MarketplaceHome() {
           priority
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: "50% 85%" }}
+          style={{ objectPosition: "50% 37%" }}
         />
       </div>
 
