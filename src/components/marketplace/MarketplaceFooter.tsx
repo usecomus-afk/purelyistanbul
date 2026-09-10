@@ -112,6 +112,12 @@ export function MarketplaceFooter() {
       </div>
       </div>
 
+      <div className="border-t border-sand-border py-6 flex items-center justify-center">
+        <span className="relative h-8 sm:h-9 w-28 sm:w-32">
+          <Image src="/comus-logo.png" alt="comus" fill className="object-contain" />
+        </span>
+      </div>
+
       {showContact && (
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
