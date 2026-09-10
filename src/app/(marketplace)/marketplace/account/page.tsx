@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -23,6 +23,7 @@ export default function MarketplaceAccountPage() {
 
 function MarketplaceAccountForm() {
   const { user, profile, loading, signUp, signIn, signInWithGoogle, logout } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<"login" | "register">(
     searchParams.get("mode") === "register" ? "register" : "login"
@@ -62,9 +63,11 @@ function MarketplaceAccountForm() {
           }
         });
         toast.success("Kaydınız oluşturuldu.");
+        router.push("/marketplace");
       } else {
         await signIn(email, password);
         toast.success("Giriş yapıldı.");
+        router.push("/marketplace");
       }
     } catch (err: any) {
       toast.error(err?.message || "Bir hata oluştu.");
@@ -78,6 +81,7 @@ function MarketplaceAccountForm() {
     try {
       await signInWithGoogle();
       toast.success("Giriş yapıldı.");
+      router.push("/marketplace");
     } catch (err: any) {
       if (err?.code !== "auth/popup-closed-by-user") {
         toast.error(err?.message || "Google ile giriş başarısız oldu.");
@@ -91,7 +95,11 @@ function MarketplaceAccountForm() {
     return <div className="p-8 text-sm text-ink-muted">Yükleniyor...</div>;
   }
 
-  if (user && profile) {
+  // Kullanıcı giriş yapmış (profile henüz yüklenirken de göster)
+  if (user) {
+    if (!profile) {
+      return <div className="p-8 text-sm text-ink-muted">Hesap bilgileri yükleniyor...</div>;
+    }
     return (
       <div className="max-w-xl mx-auto px-5 py-12 space-y-6">
         <h1 className="text-2xl font-light tracking-tight text-ink">Hesabım</h1>
