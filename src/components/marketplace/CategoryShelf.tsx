@@ -18,14 +18,9 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
   if (listings.length === 0) return null;
 
   return (
-    <section id={id} style={{ scrollMarginTop: 180 }} className="py-7 border-b border-sand-border/40 last:border-b-0">
+    <section id={id} style={{ scrollMarginTop: 180 }} className="py-7 border-b border-sand-border/40 last:border-b-0 overflow-hidden">
       <div className="flex items-center justify-between mb-5 px-5 md:px-8 max-w-6xl mx-auto">
         <div className="flex items-center gap-3 sm:gap-3.5">
-          {icon && (
-            <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 p-2 flex items-center justify-center shrink-0 shadow-xs">
-              <Image src={icon} alt={title} width={34} height={34} className="object-contain drop-shadow-2xs" />
-            </div>
-          )}
           <div>
             <div className="flex items-center gap-2.5">
               <h2 className="text-lg sm:text-2xl font-semibold tracking-tight text-ink">
@@ -42,8 +37,13 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-5 md:px-8">
-        <div className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory scroll-px-5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="w-full">
+        <div 
+          className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-px-5 md:scroll-px-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {/* Sol padding spacer (Header ile aynı hizada başlaması için) */}
+          <div className="shrink-0 w-5 md:w-8 xl:w-[calc((100vw-1152px)/2+2rem)]" />
+          
           {listings.map((listing) => (
             <div key={listing.id} className="w-[220px] sm:w-[260px] shrink-0 snap-start">
               <ListingCard
@@ -53,6 +53,9 @@ export function CategoryShelf({ id, title, icon, listings, favoriteIds, onToggle
               />
             </div>
           ))}
+
+          {/* Sağ padding spacer */}
+          <div className="shrink-0 w-5 md:w-8 xl:w-[calc((100vw-1152px)/2+2rem)]" />
         </div>
       </div>
     </section>
