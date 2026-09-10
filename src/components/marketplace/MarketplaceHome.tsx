@@ -363,6 +363,22 @@ export function MarketplaceHome() {
       ) : searchResults ? (
         // Arama aktifken tek bir grid olarak sonuçlar gösterilir.
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-6">
+          {filterCategory && !search.trim() && (
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-ink">
+                  {MARKETPLACE_CATEGORIES.find(c => c.key === filterCategory)?.label}
+                </h2>
+                <p className="text-xs text-ink-muted mt-0.5">{searchResults?.length ?? 0} ilan</p>
+              </div>
+              <button
+                onClick={() => setFilterCategory("")}
+                className="text-xs font-semibold text-terracotta border border-terracotta/30 rounded-full px-4 py-1.5 hover:bg-terracotta/5 transition"
+              >
+                ← Tüm Kategoriler
+              </button>
+            </div>
+          )}
           {searchResults.length === 0 ? (
             <div className="text-center py-24 border border-dashed border-sand-border rounded-2xl">
               <p className="text-sm text-ink-muted">Bu aramayla eşleşen ilan yok.</p>
@@ -392,6 +408,10 @@ export function MarketplaceHome() {
               listings={withCover.filter((l) => l.category === c.key)}
               favoriteIds={favoriteIds}
               onToggleFavorite={handleToggleFavorite}
+              onTitleClick={() => {
+                setFilterCategory(c.key);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             />
           ))}
         </div>

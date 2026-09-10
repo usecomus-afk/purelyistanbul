@@ -11,16 +11,17 @@ interface CategoryShelfProps {
   listings: MarketplaceListing[];
   favoriteIds: Set<string>;
   onToggleFavorite: (listing: MarketplaceListing) => void;
+  /** Kategori başlığına tıklandığında çağrılır (tüm ilanları göster) */
+  onTitleClick?: () => void;
 }
 
 /** Bir kategorinin ilanlarını yatay eksende kayan bir raf olarak gösterir.
- *  Fare üzerine geldiğinde liste otomatik sola kayar. */
-export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavorite }: CategoryShelfProps) {
+ *  Ekrana sığmayan ilanlar varsa fare üzerine gelince otomatik kayar. */
+export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavorite, onTitleClick }: CategoryShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number | null>(null);
   const pauseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Bileşen unmount olduğunda temizle
   useEffect(() => {
     return () => {
       if (animRef.current !== null) cancelAnimationFrame(animRef.current);
@@ -29,16 +30,19 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
   }, []);
 
   const startAutoScroll = useCallback(() => {
-    // Yanlışlıkla tetiklenmesin diye kısa bir gecikme
     pauseRef.current = setTimeout(() => {
+      const container = scrollRef.current;
+      if (!container) return;
+      // Tüm ilanlar ekrana sığıyorsa kaydırma yapma
+      if (container.scrollWidth <= container.clientWidth + 4) return;
+
       const step = () => {
-        const container = scrollRef.current;
-        if (!container) return;
-        // Sona ulaşıldıysa başa dön
-        if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 2) {
-          container.scrollLeft = 0;
+        const c = scrollRef.current;
+        if (!c) return;
+        if (c.scrollLeft >= c.scrollWidth - c.clientWidth - 2) {
+          c.scrollLeft = 0;
         } else {
-          container.scrollLeft += 0.8;
+          c.scrollLeft += 0.8;
         }
         animRef.current = requestAnimationFrame(step);
       };
@@ -65,15 +69,28 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
         <div className="flex items-center gap-3 sm:gap-3.5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-lg sm:text-2xl font-semibold tracking-tight text-ink">
-                {title}
-              </h2>
+              {onTitleClick ? (
+                <button
+                  onClick={onTitleClick}
+                  className="text-lg sm:text-2xl font-semibold tracking-tight text-ink hover:text-terracotta transition-colors text-left group"
+                >
+                  {title}
+                  <span className="ml-2 text-sm font-normal text-ink-muted group-hover:text-terracotta">→</span>
+                </button>
+              ) : (
+                <h2 className="text-lg sm:text-2xl font-semibold tracking-tight text-ink">{title}</h2>
+              )}
               <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold">
                 {listings.length} İlan
               </span>
             </div>
             <p className="text-xs text-ink-muted mt-0.5">
               İstanbul'un en seçkin {title.toLowerCase()} seçenekleri
+              {onTitleClick && (
+                <button onClick={onTitleClick} className="ml-2 font-semibold text-terracotta hover:underline">
+                  Tümünü gör
+                </button>
+              )}
             </p>
           </div>
         </div>
