@@ -68,10 +68,10 @@ export function AppIntroSplash() {
     setIsFadingOut(false);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    // Smooth 3.5s display timer for GIF animation
+    // Smooth 5s display timer for new GIF animation
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 3500);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [handleDismiss, pathname]);
@@ -82,34 +82,36 @@ export function AppIntroSplash() {
     <div
       onClick={handleDismiss}
       onTouchStart={handleDismiss}
-      className={`fixed inset-0 z-[999999] w-screen h-[100dvh] bg-[#090807] flex flex-col items-center justify-center transition-all duration-450 ease-out select-none cursor-pointer overflow-hidden ${
+      className={`fixed inset-0 z-[999999] w-screen h-[100dvh] flex flex-col items-center justify-center transition-all duration-500 ease-out select-none cursor-pointer overflow-hidden ${
         isFadingOut
           ? "opacity-0 scale-105 pointer-events-none"
           : "opacity-100 scale-100"
       }`}
       style={{
-        backgroundColor: "#090807",
+        backgroundColor: "#F3F2EE",
+        backgroundImage: "url('/texture.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      {/* 1. Ambient Luxury Radial Glow */}
-      <div className="absolute w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
-      <div className="absolute w-64 h-64 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
+      {/* 1. Subtle luxury ambient backlight */}
+      <div className="absolute w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Fullscreen GIF Animation Layer */}
-      <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+      {/* Screen-Fitted GIF Animation Layer */}
+      <div className="relative z-10 w-full h-full max-w-lg mx-auto flex items-center justify-center px-4 py-6">
         <img
           src="/intro.gif"
           alt="purelyİstanbul Intro"
-          className="w-full h-full object-cover pointer-events-none"
+          className="w-full h-full max-h-full max-w-full object-contain pointer-events-none drop-shadow-sm"
         />
       </div>
 
       {/* Bottom Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60 z-20 pointer-events-none overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-stone-300/40 z-20 pointer-events-none overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-amber-600 via-amber-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]"
+          className="h-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 shadow-[0_0_12px_rgba(220,38,38,0.5)]"
           style={{
-            animation: "progressFill 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            animation: "progressFill 5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         />
       </div>

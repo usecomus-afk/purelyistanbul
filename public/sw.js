@@ -15,7 +15,7 @@ self.addEventListener('push', (event) => {
 
   try {
     const data = event.data.json();
-    const title = data.title || 'Xenios Istanbul';
+    const title = data.title || 'purelyİstanbul';
     const options = {
       body: data.body || 'Yeni bir bildiriminiz var.',
       icon: data.icon || '/logo.png',
@@ -34,7 +34,7 @@ self.addEventListener('push', (event) => {
   } catch (e) {
     const text = event.data.text();
     event.waitUntil(
-      self.registration.showNotification('Xenios Istanbul', {
+      self.registration.showNotification('purelyİstanbul', {
         body: text,
         icon: '/logo.png'
       })

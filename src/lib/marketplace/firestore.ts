@@ -21,6 +21,7 @@ import { db } from '@/lib/firebase';
 import { MARKETPLACE_COLLECTIONS } from './collections';
 import type {
   CommissionRate,
+  ContactMessage,
   HostApplication,
   LegalConsentRecord,
   UserProfile
@@ -47,7 +48,7 @@ export async function ensureUserProfile(params: {
     uid: params.uid,
     email: params.email,
     displayName: params.displayName,
-    phone: params.phone,
+    ...(params.phone ? { phone: params.phone } : {}),
     roles: { guest: true, host: false },
     activeRole: 'guest',
     lastActiveAt: now,
@@ -183,6 +184,23 @@ export async function recordLegalConsent(record: Omit<LegalConsentRecord, 'id' |
     ...record,
     acceptedAt: new Date().toISOString()
   });
+}
+
+/** İletişim formu gönderimini kaydeder — herkese açık, giriş gerektirmez. */
+export async function submitContactMessage(params: {
+  name: string;
+  email: string;
+  message: string;
+  uid?: string;
+}): Promise<void> {
+  const payload: Omit<ContactMessage, 'id'> = {
+    name: params.name,
+    email: params.email,
+    message: params.message,
+    ...(params.uid ? { uid: params.uid } : {}),
+    createdAt: new Date().toISOString()
+  };
+  await addDoc(collection(requireDb(), MARKETPLACE_COLLECTIONS.CONTACT_MESSAGES), payload);
 }
 
 /** İlan tıklama/favori sayaçlarını atomik olarak artırır (analitik için). */

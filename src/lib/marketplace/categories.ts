@@ -1,12 +1,9 @@
 /**
- * Marketplace kategori taksonomisi — Airbnb'nin 2025 Deneyimler/Hizmetler
- * modeline hizalıdır (History & Culture, Food & Drink, Nature & Outdoors,
- * Art & Design, Fitness & Wellness + Services: photography, spa, vb.).
- * "Konaklama" bu ilk etapta kapsam dışıdır — platform şimdilik sadece
- * deneyim/hizmet ilanlarına odaklanır. İkonlar mevcut guest uygulamasındaki
- * deneyim ikonlarıyla (public/icons/categories) hizalıdır — platform
- * genelinde tutarlı bir kategori dili sağlar. Host, ilan oluştururken bu
- * listeden seçer; grid sayfası aynı listeyi buton olarak gösterir.
+ * Marketplace kategori taksonomisi. Deneyim kategorileri, mevcut guest
+ * uygulamasındaki deneyim ikonlarıyla (public/icons/categories) hizalıdır —
+ * platform genelinde tutarlı bir kategori dili sağlar. Host, ilan
+ * oluştururken bu listeden seçer; grid sayfası aynı listeyi buton olarak
+ * gösterir ve seçime göre filtreler.
  */
 export interface MarketplaceCategory {
   key: string;
@@ -17,6 +14,7 @@ export interface MarketplaceCategory {
 }
 
 export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
+  { key: "konaklama", label: "Konaklama", icon: "/icons/categories/konaklama.png", type: "stay" },
   { key: "bogaz-yat", label: "Boğaz & Yat Turları", icon: "/icons/categories/bogaz-yatturlari.png", type: "experience" },
   { key: "gastronomi", label: "Gastronomi & Gurme", icon: "/icons/categories/gastronomi-gurme.png", type: "experience" },
   { key: "kulturel-miras", label: "Kültürel Miras", icon: "/icons/categories/kulturel-miras.png", type: "experience" },

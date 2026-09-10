@@ -43,11 +43,20 @@ jobs:
         run: |
           if [ -n "${{ inputs.server_url }}" ]; then
             echo "Custom Server URL specified: ${{ inputs.server_url }}"
-            echo "CAPACITOR_SERVER_URL=${{ inputs.server_url }}" >> $GITHUB_ENV
+            TARGET_URL="${{ inputs.server_url }}"
           else
-            echo "Setting default live server URL: https://www.purelyistanbul.com"
-            echo "CAPACITOR_SERVER_URL=https://www.purelyistanbul.com" >> $GITHUB_ENV
+            echo "Setting default live server URL: https://purelyistanbul.com"
+            TARGET_URL="https://purelyistanbul.com"
           fi
+          echo "CAPACITOR_SERVER_URL=$TARGET_URL" >> $GITHUB_ENV
+          node -e "
+            const fs = require('fs');
+            const c = JSON.parse(fs.readFileSync('capacitor.config.json', 'utf8'));
+            c.server = c.server || {};
+            c.server.url = '$TARGET_URL';
+            fs.writeFileSync('capacitor.config.json', JSON.stringify(c, null, 2));
+            console.log('Updated capacitor.config.json server.url to:', c.server.url);
+          "
 
       - name: Sync Capacitor iOS Platform
         run: |

@@ -26,16 +26,14 @@ export function GuestTabBar({
   const pathname = usePathname();
   const [currentTab, setCurrentTab] = useState<TabId>(() => propActiveTab || 'services');
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
-  const [hasHotelSession, setHasHotelSession] = useState(() => XeniosStore.hasActiveHotelSession());
+  const [shouldShow, setShouldShow] = useState(false);
 
-  // GuestTabBar mount'ı (guest)/layout.tsx seviyesinde kalıcıdır ve rota
-  // değişimlerinde REMOUNT OLMAZ (örn. /stay/[hotelId]/[roomId] -> / geçişinde
-  // aynı layout paylaşılır). Bu yüzden oturum durumunu her pathname
-  // değişiminde yeniden okumak gerekir — yoksa /stay QR akışından hemen sonra
-  // ilk mount'taki (henüz oturum kurulmamış) eski değerde donup kalır.
   useEffect(() => {
-    setHasHotelSession(XeniosStore.hasActiveHotelSession());
+    const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
+    const isGuestRoute = pathname?.startsWith('/stay') || pathname?.startsWith('/guest');
+    setShouldShow(isNative || isGuestRoute);
   }, [pathname]);
+
 
   // Sync prop changes
   useEffect(() => {
@@ -91,7 +89,7 @@ export function GuestTabBar({
     }
   };
 
-  if (!hasHotelSession) return null;
+  if (!shouldShow) return null;
 
   return (
     <nav

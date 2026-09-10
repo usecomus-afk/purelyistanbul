@@ -12,5 +12,6 @@ export const MARKETPLACE_COLLECTIONS = {
   REVIEWS: 'reviews',
   FAVORITES: 'favorites',
   LEGAL_CONSENTS: 'legal_consents',
-  CMS_MEDIA: 'cms_media'
+  CMS_MEDIA: 'cms_media',
+  CONTACT_MESSAGES: 'marketplace_contact_messages'
 } as const;

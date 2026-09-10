@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Search } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { watchApprovedListings } from "@/lib/marketplace/listings";
 import { toggleFavorite } from "@/lib/marketplace/favorites";
@@ -28,6 +28,7 @@ export function MarketplaceHome() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(MARKETPLACE_CATEGORIES[0]?.key ?? "");
   const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -52,9 +53,13 @@ export function MarketplaceHome() {
 
   const searchResults = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return null;
-    return withCover.filter((l) => l.title.toLowerCase().includes(q) || l.district.toLowerCase().includes(q));
-  }, [withCover, search]);
+    if (!q && !filterCategory) return null;
+    return withCover.filter((l) => {
+      const matchesQuery = !q || l.title.toLowerCase().includes(q) || l.district.toLowerCase().includes(q);
+      const matchesCategory = !filterCategory || l.category === filterCategory;
+      return matchesQuery && matchesCategory;
+    });
+  }, [withCover, search, filterCategory]);
 
   async function handleToggleFavorite(listing: MarketplaceListing) {
     if (!user) {
@@ -95,14 +100,30 @@ export function MarketplaceHome() {
           <span className="text-ink-muted">Nothing but</span> <span className="font-semibold text-ink">İstanbul.</span>
         </h1>
 
-        <div className="mt-6 flex items-center gap-2 max-w-lg mx-auto rounded-full border border-sand-border bg-white shadow-[0_2px_16px_rgba(30,33,41,0.06)] p-1.5 pl-5">
+        <div className="mt-6 flex items-center gap-1 max-w-lg mx-auto rounded-full border border-sand-border bg-white shadow-[0_2px_16px_rgba(30,33,41,0.06)] p-1.5 pl-5">
           <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Bölge veya ilan adı ara — örn. Sultanahmet"
-            className="flex-1 bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
+            className="flex-1 min-w-0 bg-transparent text-[13.5px] py-2 outline-none placeholder:text-ink-muted/60"
           />
+          <div className="relative shrink-0 border-l border-sand-border pl-2">
+            <Filter className="w-3.5 h-3.5 text-ink-muted absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.75} />
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              aria-label="Kategoriye göre filtrele"
+              className="appearance-none bg-transparent text-[12px] font-medium text-ink rounded-full pl-6 pr-2 py-2 outline-none cursor-pointer max-w-[110px] sm:max-w-none"
+            >
+              <option value="">Tüm Kategoriler</option>
+              {MARKETPLACE_CATEGORIES.map((c) => (
+                <option key={c.key} value={c.key}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[12.5px] font-medium px-5 py-2.5 shrink-0">
             Keşfet
           </span>
@@ -139,6 +160,7 @@ export function MarketplaceHome() {
               key={c.key}
               id={`shelf-${c.key}`}
               title={c.label}
+              icon={c.icon}
               listings={withCover.filter((l) => l.category === c.key)}
               favoriteIds={favoriteIds}
               onToggleFavorite={handleToggleFavorite}
