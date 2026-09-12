@@ -36,8 +36,8 @@ export function MarketplaceHeader() {
       }`}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between pl-0 pr-4 sm:pr-5 md:pr-8 h-[84px] gap-2">
-        <Link href="/" className="relative shrink-0 h-11 w-11 sm:h-12 sm:w-12 ml-4 sm:ml-0 rounded-[14px] sm:rounded-2xl overflow-hidden shadow-sm ring-1 ring-black/5 bg-white">
-          <Image src="/logo.png" alt="purely İstanbul.com" fill preload={true} className="object-cover" />
+        <Link href="/" className="relative shrink-0 h-9 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
+          <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill preload={true} className="object-contain object-left" />
         </Link>
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
