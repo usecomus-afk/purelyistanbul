@@ -157,7 +157,7 @@ export function MarketplaceHome() {
         </div>
 
         {/* Yeni Skyline Çizimi */}
-        <div className="relative z-10 w-full max-w-xl mx-auto px-6 flex justify-center pointer-events-none mt-8 sm:mt-14 pb-4">
+        <div className="relative z-10 w-full max-w-[440px] mx-auto px-6 flex justify-center pointer-events-none mt-4 sm:mt-6 pb-0">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Nothing but Istanbul"
@@ -170,7 +170,7 @@ export function MarketplaceHome() {
       </section>
 
       {/* Kategori Çubuğu */}
-      <div className="relative z-20 -mt-4 sm:-mt-6">
+      <div className="relative z-20 -mt-6 sm:-mt-12">
         <CategoryFilterBar value={category} onChange={setCategory} />
       </div>
 
