@@ -1,17 +1,24 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
 import { XeniosStore } from "@/lib/store";
 
 /**
- * This intro splash GIF plays on native app launch, and on web only for a
- * real hotel-guest session (QR check-in) — never for an organic visit to the
- * public marketplace website, even at "/". It auto-advances after 3.5 seconds
- * or on tap, and sets sessionStorage so internal navigation during the
- * session remains instantaneous.
+ * Tam ekran açılış GIF'i.
+ *  - Native uygulama: her açılışta gösterilir.
+ *  - Web/PWA: yalnızca otel misafiri QR oturumunda gösterilir, normal
+ *    marketplace ziyaretlerinde atlanır.
+ *  - 5 saniye sonra veya dokunmayla kapanır.
+ *  - sessionStorage bayrağı ile oturum içi tekrar gösterilmez.
+ *
+ * Sorunlar ve düzeltmeler:
+ *  1. İlk frame'de sayfa içeriği görünüyor (mounted=false anında null dönmek
+ *     yerine, sayfanın üzerini kapatan statik bir overlay SSR'da render edilir).
+ *  2. GIF tam ekran kaplamıyor: padding/max-width kaldırıldı, object-cover kullanıldı.
  */
+
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
   if (typeof window === "undefined") return false;
   const alreadyPlayed =
@@ -31,99 +38,122 @@ function shouldSkipSplash(pathname: string | null | undefined): boolean {
 
 export function AppIntroSplash() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !shouldSkipSplash(window.location.pathname);
-    }
-    return true;
-  });
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleDismiss = useCallback(() => {
-    setIsFadingOut(true);
+  // İstemci taraflı durum. Başlangıç değeri sunucuda bilinmez; "görünür" olarak
+  // başlat ki hidrasyon öncesi beyaz/boş sayfa frame'i görünmesin.
+  const [visible, setVisible] = useState(true);
+  const [fadingOut, setFadingOut] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const dismiss = useCallback(() => {
+    setFadingOut(true);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("purely_splash_played", "true");
     }
-    setTimeout(() => {
-      setIsVisible(false);
-    }, 450);
+    setTimeout(() => setVisible(false), 450);
   }, []);
 
   useEffect(() => {
-    setMounted(true);
-
+    // Hydrasyon tamamlandı; artık gerçek karar verilebilir.
     if (shouldSkipSplash(pathname)) {
-      setIsVisible(false);
+      setVisible(false);
+      setReady(true);
       return;
     }
 
-    // Bu instance kalıcı kök layout'ta yaşar ve rota değişiminde REMOUNT OLMAZ.
-    // Otel oturumu QR akışında (/stay/[hotelId]/[roomId] -> /) bu efekt İKİNCİ
-    // kez, ilk mount'tan SONRA kurulur; ilk mount'ta oturum henüz yokken
-    // isVisible zaten false'a çekilmiş olabilir — bu yüzden burada açıkça
-    // true'ya geri almak gerekir.
-    setIsVisible(true);
-    setIsFadingOut(false);
+    setVisible(true);
+    setFadingOut(false);
+    setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    // Smooth 5s display timer for new GIF animation
-    const timer = setTimeout(() => {
-      handleDismiss();
-    }, 5000);
-
+    const timer = setTimeout(dismiss, 5000);
     return () => clearTimeout(timer);
-  }, [handleDismiss, pathname]);
+  }, [dismiss, pathname]);
 
-  if (!mounted || !isVisible) return null;
+  // Henüz hydrasyon tamamlanmadıysa SABİT arka plan katmanı döndür.
+  // Bu, React'in sunucu HTML'si ile eşleşen minimal bir overlay'dir;
+  // sayfa içeriğinin 1 frame görünmesini engeller.
+  if (!ready) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 999999,
+          backgroundColor: "#F3F2EE",
+          width: "100vw",
+          height: "100dvh",
+        }}
+      />
+    );
+  }
+
+  if (!visible) return null;
 
   return (
     <div
-      onClick={handleDismiss}
-      onTouchStart={handleDismiss}
-      className={`fixed inset-0 z-[999999] w-screen h-[100dvh] flex flex-col items-center justify-center transition-all duration-500 ease-out select-none cursor-pointer overflow-hidden ${
-        isFadingOut
-          ? "opacity-0 scale-105 pointer-events-none"
-          : "opacity-100 scale-100"
-      }`}
+      onClick={dismiss}
+      onTouchStart={dismiss}
       style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 999999,
+        width: "100vw",
+        height: "100dvh",
+        overflow: "hidden",
+        cursor: "pointer",
+        userSelect: "none",
         backgroundColor: "#F3F2EE",
-        backgroundImage: "url('/texture.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        transition: "opacity 500ms ease-out, transform 500ms ease-out",
+        opacity: fadingOut ? 0 : 1,
+        transform: fadingOut ? "scale(1.05)" : "scale(1)",
+        pointerEvents: fadingOut ? "none" : "auto",
       }}
     >
-      {/* 1. Subtle luxury ambient backlight */}
-      <div className="absolute w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* GIF tam ekranı kaplar — padding/margin yok, kenarlar tam kesim */}
+      <img
+        src="/intro.gif"
+        alt="purelyİstanbul"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
+          display: "block",
+          pointerEvents: "none",
+        }}
+      />
 
-      {/* Screen-Fitted GIF Animation Layer */}
-      <div className="relative z-10 w-full h-full max-w-lg mx-auto flex items-center justify-center px-4 py-6">
-        <img
-          src="/intro.gif"
-          alt="purelyİstanbul Intro"
-          className="w-full h-full max-h-full max-w-full object-contain pointer-events-none drop-shadow-sm"
-        />
-      </div>
-
-      {/* Bottom Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-stone-300/40 z-20 pointer-events-none overflow-hidden">
+      {/* Alt progress bar */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          backgroundColor: "rgba(180,170,150,0.4)",
+          zIndex: 20,
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="h-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 shadow-[0_0_12px_rgba(220,38,38,0.5)]"
           style={{
-            animation: "progressFill 5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            height: "100%",
+            background:
+              "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626)",
+            boxShadow: "0 0 12px rgba(220,38,38,0.5)",
+            animation: "splashProgress 5s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         />
       </div>
 
       <style>{`
-        @keyframes progressFill {
-          0% {
-            width: 0%;
-          }
-          100% {
-            width: 100%;
-          }
+        @keyframes splashProgress {
+          from { width: 0% }
+          to   { width: 100% }
         }
       `}</style>
     </div>

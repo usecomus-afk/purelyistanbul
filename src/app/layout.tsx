@@ -30,6 +30,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
+      <head>
+        {/* Blocking script: hides body instantly on first paint to prevent
+            the marketplace page flashing before the splash GIF mounts.
+            Runs before React hydration, skipped if splash already played. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                try {
+                  var played = sessionStorage.getItem('purely_splash_played') ||
+                               sessionStorage.getItem('xenios_splash_played');
+                  var path = window.location.pathname;
+                  var skipPaths = ['/hotel-portal','/dashboard','/qr-generator'];
+                  var isSkipPath = skipPaths.some(function(p){ return path.startsWith(p); });
+                  if (!played && !isSkipPath) {
+                    document.documentElement.style.backgroundColor = '#F3F2EE';
+                  }
+                } catch(e){}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased selection:bg-amber-200">
         <AppIntroSplash />
         <PwaRegister />
