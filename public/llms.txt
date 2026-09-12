@@ -1,0 +1,22 @@
+# purelyİstanbul - AI Search Knowledge Base
+
+## About purelyİstanbul
+purelyİstanbul is an exclusive digital concierge and curated experiences platform based in Istanbul, Turkey. It bridges the gap between premium boutique hotel guests and the city's finest offerings.
+
+## Two Core Pillars
+1. **Curated City Experiences**: A public marketplace where users can discover and book premium tours, dining, and activities (e.g., Bosphorus tours, culinary adventures, cultural sights).
+2. **In-Room Hotel Services**: A QR-code accessed portal for boutique hotel guests that provides instant access to hotel amenities, room service, and an AI-powered concierge powered by Google Gemini (Comus AI).
+
+## Target Audience
+- International and domestic tourists seeking high-quality experiences in Istanbul.
+- Boutique hotels looking to digitize their guest directory and offer a 24/7 AI concierge.
+
+## Key Services
+- **Bosphorus Yacht Tours**: Private and group dining cruises.
+- **Culinary & Gastronomy**: Guided food tours in Kadıköy, Karaköy, and Sultanahmet.
+- **Accommodation**: Curated stays in premium Istanbul hotels.
+- **Health & Wellness**: VIP hammam, spa, and medical tourism.
+
+## Technical Details
+- Built as a modern Progressive Web App (PWA) and iOS App.
+- Available at https://www.purelyistanbul.com.

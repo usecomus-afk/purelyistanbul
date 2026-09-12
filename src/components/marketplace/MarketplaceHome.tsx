@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Filter, Search, Baby, PawPrint, Clock, Users, X } from "lucide-react";
+import { Filter, Search, Baby, PawPrint, Clock, Users, X, ChevronDown, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { watchApprovedListings } from "@/lib/marketplace/listings";
 import { toggleFavorite } from "@/lib/marketplace/favorites";
@@ -52,6 +52,7 @@ export function MarketplaceHome() {
   const [filterCategory, setFilterCategory] = useState("");
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
 
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -138,7 +139,7 @@ export function MarketplaceHome() {
             src="/images/marketplace-hero.webp"
             alt="Purely İstanbul Map"
             fill
-            priority
+            preload={true}
             sizes="100vw"
             className="object-cover opacity-25 mix-blend-multiply"
             style={{ objectPosition: "50% 0%" }}
@@ -162,7 +163,8 @@ export function MarketplaceHome() {
             alt="Nothing but Istanbul"
             width={600}
             height={320}
-            className="w-full h-auto object-contain opacity-[0.15] mix-blend-multiply"
+            preload={true}
+            className="w-full h-auto object-contain brightness-0 opacity-100 drop-shadow-2xl"
           />
         </div>
       </section>
@@ -189,20 +191,56 @@ export function MarketplaceHome() {
 
           {/* Sağ: Kategoriler, Filtreler, Keşfet */}
           <div className="flex items-center gap-4 sm:gap-6 shrink-0 pl-4 border-l border-sand-border">
-            {/* Tüm Kategoriler */}
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              aria-label="Kategoriye göre filtrele"
-              className="appearance-none bg-transparent text-[13px] font-medium text-ink outline-none cursor-pointer hidden sm:block"
-            >
-              <option value="">Tüm Kategoriler</option>
-              {MARKETPLACE_CATEGORIES.map((c) => (
-                <option key={c.key} value={c.key}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
+            {/* Custom Tüm Kategoriler Dropdown */}
+            <div className="relative hidden sm:block">
+              <button
+                type="button"
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                className="flex items-center gap-1.5 bg-transparent text-[13.5px] font-medium text-ink outline-none cursor-pointer hover:text-terracotta transition"
+              >
+                <span className="truncate max-w-[200px]">
+                  {filterCategory ? MARKETPLACE_CATEGORIES.find(c => c.key === filterCategory)?.label : "Tüm Kategoriler"}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-ink-muted transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} strokeWidth={1.75} />
+              </button>
+
+              {showCategoryDropdown && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setShowCategoryDropdown(false)} />
+                  <div className="absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-[0_8px_32px_rgba(30,33,41,0.14)] border border-sand-border py-2 z-40 max-h-[60vh] overflow-y-auto">
+                    <button
+                      type="button"
+                      onClick={() => { setFilterCategory(""); setShowCategoryDropdown(false); }}
+                      className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-sand-bg transition"
+                    >
+                      <div className="w-6 flex justify-center shrink-0">
+                        {!filterCategory && <Check className="w-5 h-5 text-terracotta" strokeWidth={2.5} />}
+                      </div>
+                      <span className={`text-[13.5px] ${!filterCategory ? "font-semibold text-terracotta" : "font-medium text-ink"}`}>Tüm Kategoriler</span>
+                    </button>
+                    {MARKETPLACE_CATEGORIES.map((c) => (
+                      <button
+                        key={c.key}
+                        type="button"
+                        onClick={() => { setFilterCategory(c.key); setShowCategoryDropdown(false); }}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-sand-bg transition group"
+                      >
+                        <div className="w-6 flex justify-center shrink-0">
+                          {filterCategory === c.key ? (
+                            <Check className="w-5 h-5 text-terracotta" strokeWidth={2.5} />
+                          ) : (
+                            c.icon && <Image src={c.icon} alt="" width={24} height={24} className="object-contain opacity-50 group-hover:opacity-100 transition" />
+                          )}
+                        </div>
+                        <span className={`text-[13.5px] ${filterCategory === c.key ? "font-semibold text-terracotta" : "font-medium text-ink group-hover:text-terracotta"}`}>
+                          {c.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Filtreler Butonu */}
             <button

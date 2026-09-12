@@ -37,7 +37,7 @@ export function MarketplaceHeader() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between pl-0 pr-4 sm:pr-5 md:pr-8 h-[84px] gap-2">
         <Link href="/" className="relative shrink-0 h-9 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
-          <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill priority className="object-contain object-left" />
+          <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill preload={true} className="object-contain object-left" />
         </Link>
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
