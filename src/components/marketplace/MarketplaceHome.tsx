@@ -407,7 +407,6 @@ export function MarketplaceHome() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-ink">
                   {MARKETPLACE_CATEGORIES.find(c => c.key === filterCategory)?.label}
                 </h2>
-                <p className="text-xs text-ink-muted mt-0.5">{searchResults?.length ?? 0} ilan</p>
               </div>
               <button
                 onClick={() => setFilterCategory("")}

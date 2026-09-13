@@ -69,9 +69,6 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
             ) : (
               <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-ink">{title}</h2>
             )}
-            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold">
-              {listings.length} İlan
-            </span>
           </div>
           {onTitleClick && (
             <button onClick={onTitleClick} className="text-xs text-terracotta font-semibold hover:underline mt-0.5">
