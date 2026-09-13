@@ -35,8 +35,8 @@ export function MarketplaceHeader() {
         scrolled ? "bg-sand-bg/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(30,33,41,0.08)]" : "bg-transparent"
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between pl-0 pr-4 sm:pr-5 md:pr-8 h-[84px] gap-2">
-        <Link href="/" className="relative shrink-0 h-9 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
+      <div className="max-w-6xl mx-auto flex items-center justify-between pl-2 sm:pl-0 pr-2 sm:pr-5 md:pr-8 h-[84px] gap-2">
+        <Link href="/" className="relative shrink-0 h-7 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
           <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill preload={true} className="object-contain object-left" />
         </Link>
 

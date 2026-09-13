@@ -157,7 +157,7 @@ export function MarketplaceHome() {
         </div>
 
         {/* Yeni Skyline Çizimi */}
-        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none mt-2 sm:mt-4 pb-0">
+        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none mt-12 sm:mt-4 pb-0">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Nothing but Istanbul"

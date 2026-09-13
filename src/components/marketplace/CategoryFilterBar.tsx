@@ -9,11 +9,6 @@ interface CategoryFilterBarProps {
   onChange: (key: string) => void;
 }
 
-/**
- * Header'ın altında yer alan kategori gezinti çubuğu. Tüm kategoriler tek
- * satırda, ekrana orantılı sığar — kaydırma veya ok butonu yoktur; her öğe
- * eşit pay alır (flex-1), dar ekranlarda ikon/etiket küçülür.
- */
 export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
   function handleSelect(key: string) {
     onChange(key);
@@ -24,23 +19,23 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
   return (
     <div className="sticky top-[84px] z-30 bg-sand-bg/95 backdrop-blur-md border-b border-sand-border/70 py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
       <div className="max-w-6xl mx-auto px-1.5 sm:px-6">
-        <div className="flex items-start justify-between gap-0.5 sm:gap-2">
+        <div className="flex items-start gap-4 sm:gap-2 overflow-x-auto hide-scrollbar snap-x px-2 sm:px-0 sm:justify-between">
           {/* Tümü Butonu */}
           <button
             onClick={() => handleSelect("all")}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer flex-1 min-w-0"
+            className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto snap-start"
           >
             <span
-              className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${
+              className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${
                 value === "all"
                   ? "bg-zinc-900 border-zinc-900 text-white shadow-md scale-105"
                   : "bg-white/95 border-amber-400/70 text-zinc-700 shadow-xs hover:border-amber-500"
               }`}
             >
-              <LayoutGrid className="w-4 h-4 sm:w-6 sm:h-6" strokeWidth={1.75} />
+              <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.75} />
             </span>
             <span
-              className={`text-[9px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
+              className={`text-[10px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
                 value === "all" ? "text-zinc-900 font-bold" : "text-zinc-600 group-hover:text-zinc-900"
               }`}
             >
@@ -55,10 +50,10 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
               <button
                 key={c.key}
                 onClick={() => handleSelect(c.key)}
-                className="flex flex-col items-center gap-1.5 group cursor-pointer flex-1 min-w-0"
+                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto snap-start"
               >
                 <span
-                  className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 p-1 sm:p-1.5 transition-all duration-200 ${
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-2xl flex items-center justify-center border-2 p-1.5 transition-all duration-200 ${
                     isSelected
                       ? "bg-gradient-to-b from-amber-50 to-orange-50/70 border-amber-600 shadow-md scale-105"
                       : "bg-white/95 border-amber-400/70 shadow-xs hover:border-amber-500"
@@ -74,7 +69,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
                   </span>
                 </span>
                 <span
-                  className={`text-[9px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
+                  className={`text-[10px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
                     isSelected ? "text-amber-900 font-bold" : "text-zinc-600 group-hover:text-zinc-900"
                   }`}
                 >
