@@ -209,6 +209,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         activeRequestsCount={activePendingRequests.length}
         onOpenRequests={() => setShowRequestsModal(true)}
         onOpenAuth={() => setShowAuthModal(true)}
+        activeTab={activeTab}
       />
 
       {/* Main Content Area */}

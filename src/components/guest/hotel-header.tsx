@@ -39,6 +39,7 @@ interface HotelHeaderProps {
   activeRequestsCount?: number;
   onOpenRequests?: () => void;
   onOpenAuth?: () => void;
+  activeTab?: string;
 }
 
 export function HotelHeader({ 
@@ -48,9 +49,11 @@ export function HotelHeader({
   onLanguageChange,
   activeRequestsCount = 0,
   onOpenRequests,
-  onOpenAuth
+  onOpenAuth,
+  activeTab = 'services'
 }: HotelHeaderProps) {
   const t = getT(lang);
+  const isHotelServices = activeTab === 'services';
   const [copied, setCopied] = useState(false);
   const [user, setUser] = useState<XeniosUser | null>(null);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -95,11 +98,22 @@ export function HotelHeader({
   return (
     <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-3 pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-hidden">
       <div className="max-w-4xl mx-auto space-y-2.5">
-        {/* Top Bar: purelyİstanbul Branding + Compact Unified Action Pill */}
+        {/* Top Bar: Hotel Name (in hotel services) or purelyİstanbul Branding + Compact Unified Action Pill */}
         <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">
-          <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-lg sm:text-xl text-zinc-900 leading-none select-none pl-0">
-            <span>purely</span><span className="text-red-600 font-bold">İstanbul</span>
-          </Link>
+          {isHotelServices ? (
+            <div className="flex items-center gap-2 min-w-0">
+              <span 
+                className="font-serif font-extrabold text-base sm:text-lg text-zinc-900 leading-tight truncate max-w-[170px] sm:max-w-[280px] tracking-tight"
+                title={hotel.name}
+              >
+                {hotel.name}
+              </span>
+            </div>
+          ) : (
+            <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-lg sm:text-xl text-zinc-900 leading-none select-none pl-0">
+              <span>purely</span><span className="text-red-600 font-bold">İstanbul</span>
+            </Link>
+          )}
           
           {/* Unified Compact Action Pill to ensure 100% symmetric margins without backdrop-blur trapping */}
           <div className="flex items-center gap-0.5 sm:gap-1 bg-white p-0.5 sm:p-1 rounded-full border border-amber-200/90 shadow-xs shrink-0 relative z-50">

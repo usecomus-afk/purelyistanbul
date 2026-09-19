@@ -89,16 +89,18 @@ export default function HotelPortalLayout({
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 py-2 sm:py-2.5">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
             
-            {/* Left: Brand & Title / Back Button */}
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/hotel-portal" className="flex items-center gap-2.5 shrink-0">
-                <BrandMark size={32} showText={false} theme="light" asDiv />
-                <div className="hidden xs:block">
-                  <span className="font-serif font-extrabold text-sm sm:text-base text-zinc-900 tracking-tight block leading-tight">
-                    purelyİstanbul
+            {/* Left: Hotel Name & Badge / Back Button */}
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0" title={currentHotel.name}>
+                <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs">
+                  <Building2 className="w-4.5 h-4.5 text-amber-800" />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-zinc-900 tracking-tight block leading-tight truncate max-w-[130px] sm:max-w-[240px] md:max-w-[360px]">
+                    {currentHotel.name}
                   </span>
-                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
-                    Yönetim Paneli
+                  <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 uppercase tracking-wider block truncate">
+                    Otel Paneli
                   </span>
                 </div>
               </Link>
@@ -106,11 +108,10 @@ export default function HotelPortalLayout({
               {isSubPage && (
                 <Link
                   href="/hotel-portal"
-                  className="px-3 py-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200/80 shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200/80 shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Yönetim Paneline Dön</span>
-                  <span className="sm:hidden">Ana Sayfa</span>
+                  <span className="hidden sm:inline">Panoya Dön</span>
                 </Link>
               )}
             </div>
