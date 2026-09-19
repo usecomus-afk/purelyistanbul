@@ -35,7 +35,6 @@ export function ExperienceCard({
   const isRestaurant = experience.category.toLowerCase().includes('restoran') || experience.id.startsWith('rest-');
   const isAesthetic = experience.category.toLowerCase().includes('estetik') || experience.categoryTag === 'Aesthetic' || experience.id.startsWith('exp-aesthetic-');
 
-  // Category Tag localization lookup
   const getLocalizedTag = () => {
     const raw = experience.categoryTag || (experience.category.includes('.') ? experience.category.split('.')[1].trim() : experience.category);
     const lower = raw.toLowerCase();
@@ -44,13 +43,16 @@ export function ExperienceCard({
     if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
     if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
     if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
+    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || raw;
+    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
     if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
-    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
+    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || raw;
     if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
+    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || raw;
     if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
     if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
-    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
+    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
+    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
     if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
     return raw;
   };

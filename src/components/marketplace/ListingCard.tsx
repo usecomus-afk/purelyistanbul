@@ -66,7 +66,7 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
           
           {/* Fiyat */}
           <p className="text-[15px] text-[#717171] mt-0.5">
-            Başlangıç fiyatı ₺{listing.pricing.basePrice.toLocaleString("tr-TR")} <span className="font-normal">/{priceUnit}</span>
+            Başlangıç fiyatı {listing.pricing.currency === 'EUR' ? '€' : listing.pricing.currency === 'USD' ? '$' : '₺'}{listing.pricing.basePrice.toLocaleString("tr-TR")} <span className="font-normal">/{priceUnit}</span>
           </p>
           
           {/* Puan ve Değerlendirme (Airbnb stilinde hemen altta) */}

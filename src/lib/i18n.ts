@@ -131,11 +131,23 @@ export const translations = {
     "categoriesSubtitle": "12 özel kategoride TÜRSAB onaylı seçkin turlar, biletler, lezzetler ve yatırım fırsatları.",
     "listingsCount": "İlan",
     "inspectListings": "İlanları İncele",
-    "categoriesList": {
-      "invest": {
+    "categoriesList": {      "invest": {
         "title": "İstanbul'da Yatırım",
         "desc": "Vatandaşlığa uygun lüks rezidanslar, tarihi yalılar & Airbnb mülkleri"
       },
+      "dayTrips": {
+        "title": "Günübirlik Şehir Dışı Turlar",
+        "desc": "Bursa, Sapanca & Adalar turları"
+      },
+      "nightlife": {
+        "title": "Gece Hayatı & Bar Turları",
+        "desc": "Pub Crawl, Boğaz'da parti tekneleri & club geçişleri"
+      },
+      "family": {
+        "title": "Aile, Çocuk & Tematik Parklar",
+        "desc": "Akvaryum, Vialand & Rahmi Koç Müzesi"
+      },
+
       "restaurants": {
         "title": "Önerdiğimiz Restoranlar",
         "desc": "Michelin yıldızlı şefler, tarihi lezzetler & Boğaz manzaralı teraslar"
@@ -414,11 +426,23 @@ export const translations = {
     "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
     "listingsCount": "Listings",
     "inspectListings": "Browse Listings",
-    "categoriesList": {
-      "invest": {
+    "categoriesList": {      "invest": {
         "title": "Invest in Istanbul",
         "desc": "Citizenship-eligible luxury residences, waterfront mansions & Airbnb properties"
       },
+      "dayTrips": {
+        "title": "Day Trips Out of City",
+        "desc": "Bursa, Sapanca & Princes' Islands tours"
+      },
+      "nightlife": {
+        "title": "Nightlife & Pub Crawls",
+        "desc": "Pub Crawl, party boats on Bosphorus & club entries"
+      },
+      "family": {
+        "title": "Family, Kids & Theme Parks",
+        "desc": "Aquarium, Vialand & Rahmi Koç Museum"
+      },
+
       "restaurants": {
         "title": "Recommended Restaurants",
         "desc": "Michelin-starred chefs, historic gastronomy & Bosphorus view terraces"
@@ -697,11 +721,23 @@ export const translations = {
     "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
     "listingsCount": "Listings",
     "inspectListings": "Browse Listings",
-    "categoriesList": {
-      "invest": {
+    "categoriesList": {      "invest": {
         "title": "الاستثمار في إسطنبول",
-        "desc": "شقق فاخرة مؤهلة للجنسية التركية، قصور تاريخية وعقارات Airbnb"
+        "desc": "مساكن فاخرة مؤهلة للجنسية، قصور على الواجهة المائية وعقارات إير بي إن بي"
       },
+      "dayTrips": {
+        "title": "رحلات يومية خارج المدينة",
+        "desc": "بورصة، صبنجة وجولات جزر الأميرات"
+      },
+      "nightlife": {
+        "title": "الحياة الليلية وجولات الحانات",
+        "desc": "جولة الحانات، قوارب الحفلات في البوسفور ودخول النوادي"
+      },
+      "family": {
+        "title": "العائلة، الأطفال والمنتزهات",
+        "desc": "الأكواريوم، فيالاند ومتحف رحمي كوتش"
+      },
+
       "restaurants": {
         "title": "المطاعم الموصى بها",
         "desc": "طهاة حائزون على نجوم ميشلان، أكلات تاريخية وإطلالات ساحرة على البوسفور"
@@ -979,11 +1015,23 @@ export const translations = {
     "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
     "listingsCount": "Listings",
     "inspectListings": "Browse Listings",
-    "categoriesList": {
-      "invest": {
-        "title": "Инвестиции в Стамбуле",
-        "desc": "Элитное жилье под гражданство Турции, особняки на Босфоре и доходная аренда"
+    "categoriesList": {      "invest": {
+        "title": "Инвестиции в Стамбул",
+        "desc": "Роскошные резиденции для гражданства, особняки на набережной и недвижимость Airbnb"
       },
+      "dayTrips": {
+        "title": "Дневные поездки за город",
+        "desc": "Бурса, Сапанджа и Принцевы острова"
+      },
+      "nightlife": {
+        "title": "Ночная жизнь и Паб-кроул",
+        "desc": "Паб-кроул, вечеринки на лодках по Босфору и входы в клубы"
+      },
+      "family": {
+        "title": "Семья, Дети и Тематические Парки",
+        "desc": "Аквариум, Виаленд и музей Рахми Коча"
+      },
+
       "restaurants": {
         "title": "Рекомендованные рестораны",
         "desc": "Шефы Мишлен, историческая кухня и террасы с видом на Босфор"
@@ -1261,11 +1309,23 @@ export const translations = {
     "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
     "listingsCount": "Listings",
     "inspectListings": "Browse Listings",
-    "categoriesList": {
-      "invest": {
+    "categoriesList": {      "invest": {
         "title": "Investieren in Istanbul",
-        "desc": "Luxusresidenzen für Staatsbürgerschaft, historische Villen & Airbnb-Immobilien"
+        "desc": "Für die Staatsbürgerschaft berechtigte Luxusresidenzen, Villen am Wasser & Airbnb-Immobilien"
       },
+      "dayTrips": {
+        "title": "Tagesausflüge aus der Stadt",
+        "desc": "Bursa, Sapanca & Prinzeninseln Touren"
+      },
+      "nightlife": {
+        "title": "Nachtleben & Pub Crawls",
+        "desc": "Pub Crawl, Partyboote auf dem Bosporus & Club-Eintritte"
+      },
+      "family": {
+        "title": "Familie, Kinder & Themenparks",
+        "desc": "Aquarium, Vialand & Rahmi Koç Museum"
+      },
+
       "restaurants": {
         "title": "Empfohlene Restaurants",
         "desc": "Michelin-Sterne-Köche, historische Spezialitäten & Bosporus-Terrassen"
@@ -1543,11 +1603,23 @@ export const translations = {
     "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
     "listingsCount": "Listings",
     "inspectListings": "Browse Listings",
-    "categoriesList": {
-      "invest": {
+    "categoriesList": {      "invest": {
         "title": "Investir à Istanbul",
-        "desc": "Résidences de luxe pour la citoyenneté, manoirs historiques et biens Airbnb"
+        "desc": "Résidences de luxe éligibles à la citoyenneté, manoirs au bord de l'eau et propriétés Airbnb"
       },
+      "dayTrips": {
+        "title": "Excursions d'une journée",
+        "desc": "Bursa, Sapanca et les Îles des Princes"
+      },
+      "nightlife": {
+        "title": "Vie nocturne et Pub Crawls",
+        "desc": "Pub Crawl, bateaux de fête sur le Bosphore et entrées en club"
+      },
+      "family": {
+        "title": "Famille, Enfants & Parcs",
+        "desc": "Aquarium, Vialand et Musée Rahmi Koç"
+      },
+
       "restaurants": {
         "title": "Restaurants Recommandés",
         "desc": "Chefs étoilés Michelin, saveurs historiques et terrasses avec vue sur le Bosphore"

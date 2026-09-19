@@ -162,20 +162,22 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   // Extract unique categories
   const categories = ['all', ...Array.from(new Set(allExperiences.map(e => e.category)))];
 
-  // Dynamic Category Showcase (13 Categories with localized title & description)
   const categoryShowcase = [
     { key: t.categoriesList.invest.title, rawKey: "İstanbul'da Yatırım", iconPath: '/icons/categories/invest.png', count: 20, desc: t.categoriesList.invest.desc, tab: 'invest' },
     { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
     { key: t.categoriesList.bosphorus.title, rawKey: "Boğaz Turları & Yat", targetCategory: "1. Boğaz & Tekne Deneyimleri", iconPath: '/icons/categories/bogaz-yatturlari.png', count: 7, desc: t.categoriesList.bosphorus.desc },
     { key: t.categoriesList.history.title, rawKey: "Tarih & Müzeler", targetCategory: "2. Tarihi Rota & Hızlı Geçiş Turları", iconPath: '/icons/categories/tarih-muzeler.png', count: 8, desc: t.categoriesList.history.desc },
     { key: t.categoriesList.gastronomy.title, rawKey: "Gastronomi & Gurme", targetCategory: "3. Gastronomi & Sokak Lezzetleri", iconPath: '/icons/categories/gastronomi-gurme.png', count: 6, desc: t.categoriesList.gastronomy.desc },
-    { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.png', count: 5, desc: t.categoriesList.photo.desc },
-    { key: t.categoriesList.adventure.title, rawKey: "Macera & Doğa", targetCategory: "13. Doğa, Macera & Açık Hava Aktiviteleri", iconPath: '/icons/categories/macera-doga.png', count: 4, desc: t.categoriesList.adventure.desc },
     { key: t.categoriesList.hamam.title, rawKey: "Türk Hamamı & Spa", targetCategory: "4. Geleneksel & Kültürel Deneyimler", iconPath: '/icons/categories/turk-hamami-spa.png', count: 4, desc: t.categoriesList.hamam.desc },
+    { key: (t.categoriesList as any).dayTrips?.title || "Günübirlik Şehir Dışı Turlar", rawKey: "Günübirlik Şehir Dışı Turlar", targetCategory: "5. Günübirlik Şehir Dışı Turlar", iconPath: '/icons/categories/macera-doga.png', count: 3, desc: (t.categoriesList as any).dayTrips?.desc || "Bursa, Sapanca & Adalar turları" },
+    { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
+    { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.png', count: 5, desc: t.categoriesList.photo.desc },
+    { key: (t.categoriesList as any).nightlife?.title || "Gece Hayatı & Bar Turları", rawKey: "Gece Hayatı & Bar Turları", targetCategory: "8. Gece Hayatı, Bar Turları & Pub Crawl", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 3, desc: (t.categoriesList as any).nightlife?.desc || "Pub Crawl, Boğaz'da parti tekneleri & club geçişleri" },
     { key: t.categoriesList.shopping.title, rawKey: "Alışveriş & Çarşılar", targetCategory: "9. Alışveriş, Stilist & Pazarlık Asistanlığı", iconPath: '/icons/categories/alisveris-carsilar.png', count: 4, desc: t.categoriesList.shopping.desc },
+    { key: (t.categoriesList as any).family?.title || "Aile & Çocuk", rawKey: "Aile & Çocuk", targetCategory: "10. Aile, Çocuk & Tematik Eğlence Parkları", iconPath: '/icons/categories/macera-doga.png', count: 5, desc: (t.categoriesList as any).family?.desc || "Akvaryum, Vialand & Rahmi Koç Müzesi" },
     { key: t.categoriesList.art.title, rawKey: "Sanat & Semazen", targetCategory: "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri", iconPath: '/icons/categories/sanat-semazen.png', count: 4, desc: t.categoriesList.art.desc },
     { key: t.categoriesList.culture.title, rawKey: "Kültürel Miras", targetCategory: "12. Mistik, İnanç & Çok Kültürlü Miras Rotaları", iconPath: '/icons/categories/kulturel-miras.png', count: 5, desc: t.categoriesList.culture.desc },
-    { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
+    { key: t.categoriesList.adventure.title, rawKey: "Macera & Doğa", targetCategory: "13. Doğa, Macera & Açık Hava Aktiviteleri", iconPath: '/icons/categories/macera-doga.png', count: 4, desc: t.categoriesList.adventure.desc },
     { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "14. Medikal Estetik & Güzellik", targetCategory: "14. Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" }
   ];
 
@@ -324,13 +326,16 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
                     if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
                     if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
+                    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || cleaned;
+                    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
                     if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
-                    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-                    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
+                    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || cleaned;
                     if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
+                    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || cleaned;
                     if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
                     if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
-                    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
+                    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
+                    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
                     if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
                     return cleaned;
                   };
