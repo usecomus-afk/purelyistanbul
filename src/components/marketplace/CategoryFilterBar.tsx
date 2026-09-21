@@ -17,13 +17,13 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
   }
 
   return (
-    <div className="sticky top-[84px] z-30 bg-sand-bg/95 backdrop-blur-md border-b border-sand-border/70 py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
-      <div className="max-w-6xl mx-auto px-1.5 sm:px-6">
-        <div className="flex items-start gap-4 sm:gap-2 overflow-x-auto hide-scrollbar snap-x px-2 sm:px-0 sm:justify-between">
+    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/95 backdrop-blur-md border-b border-sand-border/70 py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto px-1.5 sm:px-6">
+        <div className="flex items-start gap-4 sm:gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2 sm:px-0 sm:justify-between" style={{ WebkitOverflowScrolling: 'touch' }}>
           {/* Tümü Butonu */}
           <button
             onClick={() => handleSelect("all")}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto snap-start"
+            className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto"
           >
             <span
               className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${
@@ -50,7 +50,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
               <button
                 key={c.key}
                 onClick={() => handleSelect(c.key)}
-                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto snap-start"
+                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto"
               >
                 <span
                   className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-2xl flex items-center justify-center border-2 p-1.5 transition-all duration-200 ${
