@@ -79,6 +79,25 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
     }
   }, [isOpen]);
 
+  // Update initial greeting if language changes and no chat history exists
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].id.startsWith('init')) {
+      const updatedInit: ChatMessage = {
+        ...messages[0],
+        text: t.aiGreeting || DEFAULT_GREETING_TR,
+        actions: [
+          {
+            id: 'act-know-me',
+            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
+            type: 'OPEN_SURVEY'
+          }
+        ]
+      };
+      setMessages([updatedInit]);
+      XeniosStore.saveAiChatMessages([updatedInit]);
+    }
+  }, [lang, t]);
+
   if (!isOpen) return null;
 
   const handleSaveProfile = (updated: GuestProfile) => {

@@ -195,6 +195,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const handleLanguageChange = (newLang: Language) => {
     setLang(newLang);
     XeniosStore.setLanguage(newLang);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('xenios_lang_changed', { detail: { lang: newLang } }));
+    }
   };
 
   const activePendingRequests = requests.filter(r => r.status !== 'completed');
