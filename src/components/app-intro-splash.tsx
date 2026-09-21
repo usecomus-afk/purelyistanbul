@@ -44,6 +44,7 @@ export function AppIntroSplash() {
   const [visible, setVisible] = useState(true);
   const [fadingOut, setFadingOut] = useState(false);
   const [ready, setReady] = useState(false);
+  const [isNight, setIsNight] = useState(false);
 
   const dismiss = useCallback(() => {
     setFadingOut(true);
@@ -61,18 +62,22 @@ export function AppIntroSplash() {
       return;
     }
 
+    // Gündüz/Gece kontrolü (Akşam 18:00 - Sabah 06:00 arası gece kabul edilir)
+    const currentHour = new Date().getHours();
+    if (currentHour >= 18 || currentHour < 6) {
+      setIsNight(true);
+    }
+
     setVisible(true);
     setFadingOut(false);
     setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    const timer = setTimeout(dismiss, 5000);
+    const timer = setTimeout(dismiss, 3000); // 3 saniye
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
   // Henüz hydrasyon tamamlanmadıysa SABİT arka plan katmanı döndür.
-  // Bu, React'in sunucu HTML'si ile eşleşen minimal bir overlay'dir;
-  // sayfa içeriğinin 1 frame görünmesini engeller.
   if (!ready) {
     return (
       <div
@@ -103,16 +108,16 @@ export function AppIntroSplash() {
         overflow: "hidden",
         cursor: "pointer",
         userSelect: "none",
-        backgroundColor: "#F3F2EE",
+        backgroundColor: "#090807",
         transition: "opacity 500ms ease-out, transform 500ms ease-out",
         opacity: fadingOut ? 0 : 1,
         transform: fadingOut ? "scale(1.05)" : "scale(1)",
         pointerEvents: fadingOut ? "none" : "auto",
       }}
     >
-      {/* GIF tam ekranı kaplar — padding/margin yok, kenarlar tam kesim */}
+      {/* Görsel tam ekranı kaplar */}
       <img
-        src="/intro.gif"
+        src={isNight ? "/images/splash-night.jpg" : "/images/splash-day.jpg"}
         alt="purelyİstanbul"
         style={{
           position: "absolute",
@@ -142,10 +147,9 @@ export function AppIntroSplash() {
         <div
           style={{
             height: "100%",
-            background:
-              "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626)",
+            background: "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626)",
             boxShadow: "0 0 12px rgba(220,38,38,0.5)",
-            animation: "splashProgress 5s cubic-bezier(0.4,0,0.2,1) forwards",
+            animation: "splashProgress 3s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         />
       </div>
