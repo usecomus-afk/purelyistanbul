@@ -62,13 +62,13 @@ export function GuestTabBar({
 
   const t = getT(currentLang);
 
-  const tabs: { id: TabId; label: string; icon: any }[] = [
-    { id: 'services', label: t.tabs.services, icon: Home },
-    { id: 'experiences', label: t.tabs.experiences, icon: Compass },
-    { id: 'categories', label: t.tabs.categories, icon: LayoutGrid },
-    { id: 'ai', label: t.tabs.aiGuide, icon: Sparkles },
-    { id: 'practical', label: t.tabs.practical, icon: BookOpen },
-    { id: 'invest', label: t.tabs.invest, icon: Building2 }
+  const tabs: { id: TabId; label: string; iconType: 'lucide' | 'image'; icon?: any; imgSrc?: string }[] = [
+    { id: 'services', label: t.tabs.services, iconType: 'lucide', icon: Home },
+    { id: 'experiences', label: t.tabs.experiences, iconType: 'lucide', icon: Compass },
+    { id: 'categories', label: t.tabs.categories, iconType: 'lucide', icon: LayoutGrid },
+    { id: 'ai', label: t.tabs.aiGuide, iconType: 'image', imgSrc: '/icons/menu/aiGuide.png' },
+    { id: 'practical', label: t.tabs.practical, iconType: 'image', imgSrc: '/icons/menu/practical.png' },
+    { id: 'invest', label: t.tabs.invest, iconType: 'lucide', icon: Building2 }
   ];
 
   const handleTabClick = (tabId: TabId) => {
@@ -108,7 +108,6 @@ export function GuestTabBar({
       <div className="max-w-md mx-auto flex items-center justify-around">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
-          const IconComponent = tab.icon;
 
           return (
             <button
@@ -125,7 +124,17 @@ export function GuestTabBar({
                   ? 'btn-3d text-amber-800 scale-105' 
                   : 'hover:bg-amber-50/80'
               }`}>
-                <IconComponent className="w-5 h-5" />
+                {tab.iconType === 'image' && tab.imgSrc ? (
+                  <div className="w-5 h-5 relative flex items-center justify-center">
+                    <img
+                      src={tab.imgSrc}
+                      alt={tab.label}
+                      style={{ width: '22px', height: '22px', objectFit: 'contain' }}
+                    />
+                  </div>
+                ) : (
+                  tab.icon && <tab.icon className="w-5 h-5" />
+                )}
               </div>
               <span className="text-[10px] tracking-tight mt-0.5">{tab.label}</span>
             </button>
