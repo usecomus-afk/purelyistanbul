@@ -147,49 +147,58 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
       </div>
 
       {/* Grid of In-Room Services */}
-      <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-        {services.map((item) => {
-          const settings = moduleSettings[item.key];
-          const isEnabled = settings ? settings.enabled : item.enabled !== false;
-          const serviceTitle = getLocalizedTitle(item);
-          const serviceDesc = getLocalizedDesc(item);
+      <div className="relative p-4 sm:p-6 -mx-3.5 sm:mx-0 rounded-[32px] sm:rounded-3xl overflow-hidden shadow-2xl border border-white/20">
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url(/images/services-bg.jpg)' }}
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+        </div>
+        
+        <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          {services.map((item) => {
+            const settings = moduleSettings[item.key];
+            const isEnabled = settings ? settings.enabled : item.enabled !== false;
+            const serviceTitle = getLocalizedTitle(item);
+            const serviceDesc = getLocalizedDesc(item);
 
-          return (
-            <button
-              key={item.id || item.key}
-              type="button"
-              disabled={!isEnabled}
-              onClick={() => {
-                if (!isEnabled) return;
-                setSelectedService(item);
-                if (item.options && item.options.length > 0) {
-                  setCustomOption(item.options[0]);
-                }
-              }}
-              className={`p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[145px] group relative rounded-[28px] bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white/60 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(201,162,39,0.12)] ${
-                isEnabled
-                  ? 'cursor-pointer'
-                  : 'cursor-not-allowed opacity-50 grayscale'
-              }`}
-            >
-              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/50 backdrop-blur-md p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-amber-100/60 shadow-inner overflow-hidden">
-                <img
-                  src={item.icon}
-                  alt={serviceTitle}
-                  className="object-contain w-full h-full drop-shadow-sm"
-                />
-              </div>
-              <div className="w-full">
-                <span className="text-xs sm:text-sm font-bold text-zinc-800 leading-tight block">
-                  {serviceTitle}
-                </span>
-                <span className="text-[10px] text-zinc-400 line-clamp-1 mt-0.5">
-                  {serviceDesc}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={item.id || item.key}
+                type="button"
+                disabled={!isEnabled}
+                onClick={() => {
+                  if (!isEnabled) return;
+                  setSelectedService(item);
+                  if (item.options && item.options.length > 0) {
+                    setCustomOption(item.options[0]);
+                  }
+                }}
+                className={`p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[145px] group relative rounded-[28px] bg-black/30 backdrop-blur-md border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.5)] ${
+                  isEnabled
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed opacity-50 grayscale'
+                }`}
+              >
+                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/20 backdrop-blur-md p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-white/30 shadow-inner overflow-hidden">
+                  <img
+                    src={item.icon}
+                    alt={serviceTitle}
+                    className="object-contain w-full h-full drop-shadow-lg"
+                  />
+                </div>
+                <div className="w-full">
+                  <span className="text-xs sm:text-sm font-bold text-white leading-tight block drop-shadow-md">
+                    {serviceTitle}
+                  </span>
+                  <span className="text-[10px] text-zinc-300 line-clamp-1 mt-0.5 drop-shadow-md">
+                    {serviceDesc}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Modal for In-Room Request Confirmation */}
