@@ -174,20 +174,20 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                     setCustomOption(item.options[0]);
                   }
                 }}
-                className={`p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[145px] group relative rounded-[28px] bg-black/30 backdrop-blur-md border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.5)] ${
+                className={`p-2 sm:p-3 flex flex-col items-center text-center justify-start gap-2 min-h-[120px] group relative bg-transparent transition-all duration-300 hover:-translate-y-1 ${
                   isEnabled
                     ? 'cursor-pointer'
                     : 'cursor-not-allowed opacity-50 grayscale'
                 }`}
               >
-                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/20 backdrop-blur-md p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-white/30 shadow-inner overflow-hidden">
+                <div className="w-20 h-20 sm:w-22 sm:h-22 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <img
                     src={item.icon}
                     alt={serviceTitle}
                     className="object-contain w-full h-full drop-shadow-lg"
                   />
                 </div>
-                <div className="w-full">
+                <div className="w-full mt-1">
                   <span className="text-xs sm:text-sm font-bold text-white leading-tight block drop-shadow-md">
                     {serviceTitle}
                   </span>
