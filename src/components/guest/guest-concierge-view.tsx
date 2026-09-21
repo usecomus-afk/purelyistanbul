@@ -226,58 +226,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
               lang={lang}
             />
 
-            {/* Curated Istanbul Experiences Banner (Kataloğu Keşfet Modülü) */}
-            <div className="btn-3d p-5 sm:p-6 space-y-4 relative overflow-hidden bg-gradient-to-br from-white via-amber-50/40 to-orange-50/30">
-              
-              {/* Decorative subtle ambient light */}
-              <div className="absolute -top-12 -right-12 w-44 h-44 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
 
-              {/* Centered Top Badge */}
-              <div className="flex items-center justify-center w-full">
-                <span className="px-4 py-1.5 rounded-full text-[11px] bg-amber-500 text-white font-extrabold uppercase tracking-widest shadow-xs text-center">
-                  {t.catalogBadge}
-                </span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 p-2 flex items-center justify-center shrink-0 border border-amber-200 shadow-xs hidden sm:flex">
-                    <Image 
-                      src="/icons/katalogu-kesfet.png" 
-                      alt="Kataloğu Keşfet" 
-                      width={44} 
-                      height={44} 
-                      className="object-contain" 
-                    />
-                  </div>
-                  <div className="space-y-1.5 text-left">
-                    <h3 className="text-base sm:text-lg font-bold font-serif text-zinc-900 leading-snug">
-                      {t.catalogTitle}
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-zinc-700 leading-relaxed max-w-xl font-medium">
-                      {t.catalogDesc}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="shrink-0 pt-2 sm:pt-0">
-                  <button
-                    onClick={() => setActiveTab('experiences')}
-                    className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
-                  >
-                    <Image 
-                      src="/icons/katalogu-kesfet.png" 
-                      alt="Katalog" 
-                      width={28} 
-                      height={28} 
-                      className="w-6 h-6 sm:w-7 sm:h-7 object-contain brightness-0 invert shrink-0" 
-                    />
-                    <span>{t.exploreCatalogBtn}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 

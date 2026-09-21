@@ -166,13 +166,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`btn-3d p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[145px] group relative ${
+              className={`p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[145px] group relative rounded-[28px] bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white/60 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(201,162,39,0.12)] ${
                 isEnabled
                   ? 'cursor-pointer'
-                  : 'cursor-not-allowed border-zinc-200 opacity-50 grayscale'
+                  : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-[#fbf8f1] p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-amber-100/60 shadow-inner overflow-hidden">
+              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/50 backdrop-blur-md p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-amber-100/60 shadow-inner overflow-hidden">
                 <img
                   src={item.icon}
                   alt={serviceTitle}
