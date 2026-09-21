@@ -101,9 +101,9 @@ export function HotelHeader({
         {/* Top Bar: Hotel Name (in hotel services) or purelyİstanbul Branding + Compact Unified Action Pill */}
         <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">
           {isHotelServices ? (
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 flex-1 pr-2">
               <span 
-                className="font-serif font-extrabold text-base sm:text-lg text-zinc-900 leading-tight truncate max-w-[170px] sm:max-w-[280px] tracking-tight"
+                className="font-serif font-extrabold text-[15px] sm:text-lg text-white leading-tight break-words drop-shadow-md"
                 title={hotel.name}
               >
                 {hotel.name}
