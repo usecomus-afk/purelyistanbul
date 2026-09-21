@@ -73,7 +73,7 @@ export function AppIntroSplash() {
     setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    const timer = setTimeout(dismiss, 3000); // 3 saniye
+    const timer = setTimeout(dismiss, 5000); // 5 saniye
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
@@ -149,7 +149,7 @@ export function AppIntroSplash() {
             height: "100%",
             background: "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626)",
             boxShadow: "0 0 12px rgba(220,38,38,0.5)",
-            animation: "splashProgress 3s cubic-bezier(0.4,0,0.2,1) forwards",
+            animation: "splashProgress 5s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         />
       </div>
