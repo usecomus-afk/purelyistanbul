@@ -137,18 +137,18 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   return (
     <div className="space-y-4">
       {/* Top Section Header */}
-      <div className="space-y-1">
-        <h2 className="text-xl font-bold font-serif text-zinc-900 flex items-center gap-2">
+      <div className="relative z-10 space-y-1 drop-shadow-md">
+        <h2 className="text-xl font-bold font-serif text-white flex items-center gap-2">
           <span>{t.servicesTitle}</span>
         </h2>
-        <p className="text-xs text-zinc-500 max-w-xl font-medium">
+        <p className="text-xs text-zinc-200 max-w-xl font-medium">
           {t.servicesSubtitle}
         </p>
       </div>
 
       {/* Fixed Background for this tab */}
       <div 
-        className="fixed inset-0 z-[-1] bg-cover bg-center"
+        className="fixed inset-0 z-0 bg-cover bg-center pointer-events-none"
         style={{ backgroundImage: 'url(/images/services-bg.jpg)' }}
       >
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
