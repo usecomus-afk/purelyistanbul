@@ -174,13 +174,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-center gap-2 min-h-[110px] group relative bg-white/10 backdrop-blur-md rounded-[24px] border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.5)] ${
+              className={`p-3 flex flex-col items-center text-center justify-center gap-2 min-h-[110px] group relative bg-black/10 backdrop-blur-[2px] rounded-[24px] border border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-black/20 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              <div className="w-20 h-20 sm:w-22 sm:h-22 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <img
                   src={item.icon}
                   alt={serviceTitle}
@@ -188,7 +188,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 />
               </div>
               <div className="w-full mt-1">
-                <span className="text-xs sm:text-sm font-bold text-white leading-tight block drop-shadow-md">
+                <span className="text-sm sm:text-base font-bold text-white leading-tight block drop-shadow-md">
                   {serviceTitle}
                 </span>
               </div>
