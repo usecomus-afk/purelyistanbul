@@ -174,7 +174,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-center gap-2 min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_2px_8px_rgba(255,255,255,0.3),inset_0_-4px_8px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-black/20 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4),inset_0_3px_10px_rgba(255,255,255,0.4),inset_0_-5px_10px_rgba(0,0,0,0.4)] ${
+              className={`p-3 flex flex-col items-center text-center justify-center gap-2 min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
