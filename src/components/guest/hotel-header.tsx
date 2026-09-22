@@ -96,7 +96,7 @@ export function HotelHeader({
   };
 
   return (
-    <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-3 pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-hidden">
+    <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-hidden">
       <div className="max-w-4xl mx-auto space-y-2.5">
         {/* Top Bar: Hotel Name (in hotel services) or purelyİstanbul Branding + Compact Unified Action Pill */}
         <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">

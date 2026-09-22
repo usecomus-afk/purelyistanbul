@@ -32,7 +32,7 @@ export default function CockpitLayout({
         />
 
         {/* Mobile Top Header */}
-        <div className="md:hidden flex items-center justify-between p-3.5 bg-white border-b border-amber-200/80 sticky top-0 z-40 shadow-xs">
+        <div className="md:hidden flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] bg-white border-b border-amber-200/80 sticky top-0 z-40 shadow-xs">
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setMobileMenuOpen(true)}
