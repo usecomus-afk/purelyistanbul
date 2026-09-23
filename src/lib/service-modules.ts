@@ -232,7 +232,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
       { id: 'delivered', label: 'Odasında' }
     ],
     fields: [
-      { key: 'menuItems', label: 'Menü Seçimi', type: 'multiselect', options: ['Izgara Köfte Tabağı', 'Sezar Salata', 'Kulüp Sandviç', 'Türk Kahvesi', 'Taze Meyve Tabağı', 'Su Şişesi (0.5L)'], default: ['Kulüp Sandviç'] },
+      { key: 'menuItems', label: 'Menü Seçimi', type: 'multiselect', options: ['Geleneksel Türk Serpme Kahvaltısı', 'Dana Antrikot Izgara & Trüflü Patates Püresi', 'El Yapımı Yaban Mantarlı Fettuccine', 'Xenios Gurme Kulüp Sandviç', 'Geleneksel Fırın Sütlaç & Fındık', 'Taze Sıkılmış Akdeniz Portakal Suyu'], default: ['Xenios Gurme Kulüp Sandviç'] },
       { key: 'quantity', label: 'Miktar', type: 'number', min: 1, max: 10, default: 1 },
       { key: 'deliveryTime', label: 'Teslimat Zamanı', type: 'time', default: '' },
       { key: 'specialNotes', label: 'Özel Notlar', type: 'textarea', optional: true },
@@ -246,7 +246,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
         }
       }
     ],
-    pricingDefaults: { 'Izgara Köfte Tabağı': 320, 'Sezar Salata': 220, 'Kulüp Sandviç': 240, 'Türk Kahvesi': 90, 'Taze Meyve Tabağı': 180, 'Su Şişesi (0.5L)': 40 },
+    pricingDefaults: { 'Geleneksel Türk Serpme Kahvaltısı': 840, 'Dana Antrikot Izgara & Trüflü Patates Püresi': 1190, 'El Yapımı Yaban Mantarlı Fettuccine': 630, 'Xenios Gurme Kulüp Sandviç': 560, 'Geleneksel Fırın Sütlaç & Fındık': 280, 'Taze Sıkılmış Akdeniz Portakal Suyu': 210 },
     pricedFieldKey: 'menuItems'
   },
 

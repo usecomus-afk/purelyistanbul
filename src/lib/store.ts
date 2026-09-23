@@ -453,7 +453,7 @@ export const XeniosStore = {
   // In-Room Services
   getInRoomServices(): InRoomServiceItem[] {
     const defaultServices: InRoomServiceItem[] = [
-      { id: 'breakfast', key: 'breakfast', label: 'Kahvaltı Talebi', desc: 'Odaya sıcak kahvaltı servisi', icon: '/icons/menu/breakfast.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
+      { id: 'roomservice', key: 'roomservice', label: 'Oda Servisi', desc: 'Yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
       { id: 'dnd', key: 'dnd', label: 'Rahatsız Etmeyin', desc: 'Rahatsız edilmek istemiyorum', icon: '/icons/menu/dnd.png', department: 'Housekeeping', enabled: true, hidden: false, order: 2 },
       { id: 'cleaning', key: 'cleaning', label: 'Oda Temizliği', desc: 'Oda temizliği ve havalandırma', icon: '/icons/menu/cleaning.png', department: 'Housekeeping', enabled: true, hidden: false, order: 3 },
       { id: 'towels', key: 'towels', label: 'Temiz Havlu', desc: 'Banyo & el havluları değişimi', icon: '/icons/menu/towels.png', department: 'Housekeeping', enabled: true, hidden: false, order: 4 },
@@ -461,21 +461,27 @@ export const XeniosStore = {
       { id: 'pillows', key: 'pillows', label: 'Ekstra Yastık', desc: 'Ortopedik / ekstra yastık', icon: '/icons/menu/pillows.png', department: 'Housekeeping', enabled: true, hidden: false, order: 6 },
       { id: 'toiletries', key: 'toiletries', label: 'Banyo Bukleti', desc: 'Şampuan, duş jeli, sabun', icon: '/icons/menu/toiletries.png', department: 'Housekeeping', enabled: true, hidden: false, order: 7 },
       { id: 'hygiene', key: 'hygiene', label: 'Hijyen & Bakım Seti', desc: 'Diş & tıraş seti, terlik', icon: '/icons/menu/hygiene.png', department: 'Housekeeping', enabled: true, hidden: false, order: 8 },
-      { id: 'roomservice', key: 'roomservice', label: 'Oda Servisi', desc: 'Yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 9 },
-      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: true, hidden: false, order: 10 },
-      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: true, hidden: false, order: 11 },
-      { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 12 },
-      { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: true, hidden: false, order: 13 },
-      { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / Ön Büro', enabled: true, hidden: false, order: 14 },
-      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: true, hidden: false, order: 15 },
-      { id: 'taxi', key: 'taxi', label: 'Taksi Çağır', desc: 'Otel kapısına sarı taksi', icon: '/icons/menu/taksi.png', department: 'Concierge / Bellboy', enabled: true, hidden: false, order: 16 }
+      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: true, hidden: false, order: 9 },
+      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: true, hidden: false, order: 10 },
+      { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 11 },
+      { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: true, hidden: false, order: 12 },
+      { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / Ön Büro', enabled: true, hidden: false, order: 13 },
+      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: true, hidden: false, order: 14 }
     ];
 
     let items: InRoomServiceItem[] = defaultServices;
     try {
       const stored = safeGet(STORAGE_KEYS.IN_ROOM_SERVICES);
       if (stored) {
-        items = JSON.parse(stored);
+        const parsed = JSON.parse(stored) as InRoomServiceItem[];
+        items = parsed.filter(i => i.key !== 'breakfast' && i.key !== 'taxi');
+        
+        // Ensure roomservice is at the top if it exists
+        const rsIndex = items.findIndex(i => i.key === 'roomservice');
+        if (rsIndex > 0) {
+          const rs = items.splice(rsIndex, 1)[0];
+          items.unshift(rs);
+        }
       }
     } catch (e) {}
 
