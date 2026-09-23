@@ -162,6 +162,19 @@ export default function HotelPortalQrPage() {
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
 
+  const testRoom: Room = {
+    id: 'room-TEST',
+    number: 'TEST',
+    type: 'test QR Kodu',
+    floor: 'Önizleme',
+    wifiSsid: '',
+    wifiPass: ''
+  };
+
+  const displayRooms = selectedRoomNumber === 'all' || selectedRoomNumber === 'TEST' 
+    ? [testRoom, ...filteredRooms.filter(r => r.number !== 'TEST')] 
+    : filteredRooms;
+
   return (
     <div className="space-y-6 text-zinc-900 pb-16">
       {/* Header */}
@@ -256,7 +269,7 @@ export default function HotelPortalQrPage() {
 
       {/* Generated Room QR Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRooms.map((room) => {
+        {displayRooms.map((room) => {
           const qrUrl = `${origin}/stay/${currentHotel?.id || 'hotel-1'}/${room.number}`;
           const icsUrl = `${origin}/api/channels/ical/room-${currentHotel?.id || 'hotel-1'}-${room.number}/export.ics`;
           const isCopied = copiedKey === `ics-${room.number}`;
@@ -289,42 +302,48 @@ export default function HotelPortalQrPage() {
               </p>
 
               {/* iCal .ics Takvim Bağlantısı Kutusu */}
-              <div className="w-full bg-amber-50/70 p-2.5 rounded-2xl border border-amber-200 text-left space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-bold text-amber-900">
-                  <span className="flex items-center gap-1">
-                    <CalendarSync className="w-3 h-3 text-amber-700" />
-                    <span>iCal Dışa Aktarma (.ics)</span>
-                  </span>
-                  <button
-                    onClick={() => handleCopy(icsUrl, `ics-${room.number}`)}
-                    className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer bg-white px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs"
-                  >
-                    {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{isCopied ? 'Kopyalandı' : 'Kopyala'}</span>
-                  </button>
+              {room.number !== 'TEST' && (
+                <div className="w-full bg-amber-50/70 p-2.5 rounded-2xl border border-amber-200 text-left space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-bold text-amber-900">
+                    <span className="flex items-center gap-1">
+                      <CalendarSync className="w-3 h-3 text-amber-700" />
+                      <span>iCal Dışa Aktarma (.ics)</span>
+                    </span>
+                    <button
+                      onClick={() => handleCopy(icsUrl, `ics-${room.number}`)}
+                      className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer bg-white px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs"
+                    >
+                      {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      <span>{isCopied ? 'Kopyalandı' : 'Kopyala'}</span>
+                    </button>
+                  </div>
+                  <div className="text-[10px] font-mono text-zinc-600 truncate" title={icsUrl}>
+                    {icsUrl}
+                  </div>
                 </div>
-                <div className="text-[10px] font-mono text-zinc-600 truncate" title={icsUrl}>
-                  {icsUrl}
-                </div>
-              </div>
+              )}
 
               {/* Action Buttons: Edit, Delete, Direct Link */}
               <div className="w-full pt-3 border-t border-amber-100 flex items-center justify-between print:hidden">
                 <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleOpenEditRoom(room)}
-                    className="p-1.5 text-zinc-500 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
-                    title="Odayı Düzenle"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteRoom(room.number)}
-                    className="p-1.5 text-zinc-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                    title="Odayı Sil"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  {room.number !== 'TEST' && (
+                    <>
+                      <button
+                        onClick={() => handleOpenEditRoom(room)}
+                        className="p-1.5 text-zinc-500 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
+                        title="Odayı Düzenle"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRoom(room.number)}
+                        className="p-1.5 text-zinc-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        title="Odayı Sil"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 <a

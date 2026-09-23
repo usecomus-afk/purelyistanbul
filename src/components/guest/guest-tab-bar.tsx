@@ -109,7 +109,16 @@ export function GuestTabBar({
         WebkitTransform: 'none'
       }}
     >
-      <div className="max-w-md mx-auto flex items-center justify-around">
+      {/* iOS Overscroll / Rubber Banding gap filler */}
+      <div 
+        className={`absolute top-full left-0 right-0 h-[100px] -mt-[1px] transition-colors duration-300 ${
+          currentTab === 'services' 
+            ? 'bg-black/10 backdrop-blur-[4px]' 
+            : 'bg-white/95 backdrop-blur-md'
+        }`}
+      />
+
+      <div className="max-w-md mx-auto flex items-center justify-around relative z-10">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
           const isServicesDark = currentTab === 'services';
