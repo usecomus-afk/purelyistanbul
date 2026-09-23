@@ -86,7 +86,7 @@ export default function HotelPortalLayout({
       <HotelLiveAlertBanner />
       <div className={`${isSubPage ? 'min-h-screen' : 'h-[100dvh] max-h-[100dvh] overflow-hidden'} bg-[#f8f6f0] text-zinc-900 flex flex-col`}>
         {/* Modern Top Header Bar */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:py-2.5">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2 pt-3 sm:py-2.5">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
             
             {/* Left: Hotel Name & Badge / Back Button */}
