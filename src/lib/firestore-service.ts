@@ -132,6 +132,18 @@ export const FirestoreService = {
     }
   },
 
+  async deleteRequest(id: string): Promise<void> {
+    XeniosStore.deleteRequest(id);
+    if (!db || !isFirebaseConfigured) return;
+
+    try {
+      const docRef = doc(db, COLLECTIONS.REQUESTS, id);
+      await deleteDoc(docRef);
+    } catch (e) {
+      console.warn("Firestore delete error:", e);
+    }
+  },
+
   // 💳 BOOKINGS
   async addBooking(booking: Omit<Booking, 'id' | 'createdAt' | 'confirmationCode'>): Promise<Booking> {
     const local = XeniosStore.addBooking(booking);

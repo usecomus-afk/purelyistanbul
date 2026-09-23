@@ -8,7 +8,9 @@ import {
   CheckCircle2,
   Check,
   Search,
-  AlertTriangle
+  AlertTriangle,
+  Trash2,
+  ChevronLeft
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
@@ -37,6 +39,11 @@ export default function HotelLiveRequestsPage() {
   const handleUpdateStatus = async (id: string, status: ServiceRequest['status']) => {
     await FirestoreService.updateRequestStatus(id, status);
     toast.success('Talep durumu güncellendi.');
+  };
+
+  const handleDeleteRequest = async (id: string) => {
+    await FirestoreService.deleteRequest(id);
+    toast.success('Talep kalıcı olarak silindi.');
   };
 
   const filtered = requests.filter((r) => {
@@ -115,77 +122,105 @@ export default function HotelLiveRequestsPage() {
             <p className="text-xs font-semibold">Şu anda bekleyen veya filtrelere uyan talep bulunmuyor.</p>
           </div>
         ) : (
-          filtered.map((req) => (
-            <div
-              key={req.id}
-              className={`p-4 rounded-2xl border transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs ${
-                req.status === 'completed'
-                  ? 'bg-white/70 border-zinc-200 opacity-75'
-                  : req.priority === 'acil'
-                  ? 'bg-red-50/50 border-red-300 shadow-xs'
-                  : 'bg-white border-amber-200/80 hover:border-amber-400'
-              }`}
-            >
-              <div className="space-y-1.5 min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
-                    Oda {req.roomNumber}
-                  </span>
-                  <strong className="text-sm font-bold text-zinc-900">{req.serviceTitle}</strong>
-                  
-                  {req.priority === 'acil' && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold border border-red-200 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3 text-red-600" /> ACİL
-                    </span>
+          filtered.map((req) => {
+            const isCompleted = req.status === 'completed';
+            const cardContent = (
+              <div
+                className={`p-4 rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs min-w-full shrink-0 snap-start ${
+                  isCompleted
+                    ? 'bg-white/70 opacity-80 border-none'
+                    : req.priority === 'acil'
+                    ? 'bg-red-50/50 border border-red-300 shadow-xs'
+                    : 'bg-white border border-amber-200/80 hover:border-amber-400'
+                }`}
+              >
+                <div className="space-y-1.5 min-w-0 flex-1 relative">
+                  {isCompleted && (
+                    <div className="absolute top-0 right-0 sm:hidden flex items-center gap-1 text-zinc-400 bg-white/80 px-2 py-0.5 rounded-full shadow-2xs pointer-events-none">
+                      <ChevronLeft className="w-3 h-3 animate-pulse" />
+                      <span className="text-[9px] font-bold">Sil</span>
+                    </div>
                   )}
-                  {req.department && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 font-semibold">
-                      {req.department}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
+                      Oda {req.roomNumber}
+                    </span>
+                    <strong className="text-sm font-bold text-zinc-900">{req.serviceTitle}</strong>
+                    
+                    {req.priority === 'acil' && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold border border-red-200 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-red-600" /> ACİL
+                      </span>
+                    )}
+                    {req.department && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 font-semibold">
+                        {req.department}
+                      </span>
+                    )}
+                  </div>
+
+                  {req.notes && (
+                    <p className="text-xs text-zinc-700 leading-relaxed pl-1">
+                      {req.notes}
+                    </p>
+                  )}
+
+                  <div className="text-[10px] text-zinc-500 flex items-center gap-2 pl-1 font-mono">
+                    <span>Talep Zamanı: {new Date(req.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+
+                {/* Status Action Buttons */}
+                <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+                  {req.status === 'pending' && (
+                    <button
+                      onClick={() => handleUpdateStatus(req.id, 'in_progress')}
+                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition cursor-pointer"
+                    >
+                      İşleme Al
+                    </button>
+                  )}
+
+                  {req.status !== 'completed' && (
+                    <button
+                      onClick={() => handleUpdateStatus(req.id, 'completed')}
+                      className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Çözüldü</span>
+                    </button>
+                  )}
+
+                  {req.status === 'completed' && (
+                    <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200 flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Tamamlandı</span>
                     </span>
                   )}
                 </div>
+              </div>
+            );
 
-                {req.notes && (
-                  <p className="text-xs text-zinc-700 leading-relaxed pl-1">
-                    {req.notes}
-                  </p>
-                )}
-
-                <div className="text-[10px] text-zinc-500 flex items-center gap-2 pl-1 font-mono">
-                  <span>Talep Zamanı: {new Date(req.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+            if (isCompleted) {
+              return (
+                <div key={req.id} className="relative rounded-2xl overflow-hidden group border border-zinc-200">
+                  <div className="flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {cardContent}
+                    
+                    {/* Delete Button Area (snap-end) */}
+                    <div className="w-24 shrink-0 snap-end flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors cursor-pointer" onClick={() => handleDeleteRequest(req.id)}>
+                      <div className="flex flex-col items-center justify-center text-white gap-1">
+                        <Trash2 className="w-5 h-5" />
+                        <span className="text-[10px] font-bold tracking-wider">SİL</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              );
+            }
 
-              {/* Status Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                {req.status === 'pending' && (
-                  <button
-                    onClick={() => handleUpdateStatus(req.id, 'in_progress')}
-                    className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition cursor-pointer"
-                  >
-                    İşleme Al
-                  </button>
-                )}
-
-                {req.status !== 'completed' && (
-                  <button
-                    onClick={() => handleUpdateStatus(req.id, 'completed')}
-                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Çözüldü</span>
-                  </button>
-                )}
-
-                {req.status === 'completed' && (
-                  <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Tamamlandı</span>
-                  </span>
-                )}
-              </div>
-            </div>
-          ))
+            return <div key={req.id}>{cardContent}</div>;
+          })
         )}
       </div>
     </div>

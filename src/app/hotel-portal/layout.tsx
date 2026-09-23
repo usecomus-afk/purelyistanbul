@@ -89,35 +89,32 @@ export default function HotelPortalLayout({
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2 pt-3 sm:py-2.5">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
             
-            {/* Left: Hotel Name & Badge / Back Button */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0" title={currentHotel.name}>
+            {/* Left: Title */}
+            <div className="flex items-center min-w-0">
+              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0" title="Otel Yönetim Paneli">
                 <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs">
                   <Building2 className="w-4.5 h-4.5 text-amber-800" />
                 </div>
                 <div className="min-w-0">
-                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-zinc-900 tracking-tight block leading-tight truncate max-w-[130px] sm:max-w-[240px] md:max-w-[360px]">
-                    {currentHotel.name}
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 uppercase tracking-wider block truncate">
-                    Otel Paneli
+                  <span className="font-serif font-extrabold text-sm sm:text-base md:text-lg text-zinc-900 tracking-tight block leading-tight truncate">
+                    OTEL YÖNETİM PANELİ
                   </span>
                 </div>
               </Link>
-
-              {isSubPage && (
-                <Link
-                  href="/hotel-portal"
-                  className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200/80 shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Panoya Dön</span>
-                </Link>
-              )}
             </div>
 
             {/* Right: Sound Toggle, Live Notifications & Logout */}
-            <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 ml-auto">
+              {/* Back Button for Sub-pages */}
+              {isSubPage && (
+                <Link
+                  href="/hotel-portal"
+                  className="p-2 sm:px-3 sm:py-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200/80 shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0 mr-1 sm:mr-2"
+                  title="Geri Dön"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Link>
+              )}
               {/* Preview Guest Screen */}
               <Link
                 href="/"

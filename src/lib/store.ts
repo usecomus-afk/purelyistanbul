@@ -395,6 +395,15 @@ export const XeniosStore = {
     }
   },
 
+  deleteRequest(id: string) {
+    const list = this.getRequests();
+    const filtered = list.filter(r => r.id !== id);
+    try {
+      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(filtered));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+    } catch (e) {}
+  },
+
   syncRequestsFromRemote(list: ServiceRequest[]) {
     try {
       safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
