@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { getModuleConfig, deriveStatus, formatFieldValue, resolvePricing } from '@/lib/service-modules';
 import { ServiceRequestForm } from './service-request-form';
+import { GuestRoomServiceMenu } from './guest-room-service-menu';
 import { Clock, CheckCircle2 } from 'lucide-react';
 
 interface InRoomServicesProps {
@@ -205,147 +206,155 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
             if (e.target === e.currentTarget) setSelectedService(null);
           }}
         >
-          <div className="min-h-full flex items-center justify-center py-6">
-            <div 
-              className="relative w-full max-w-md bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900"
-              onClick={(e) => e.stopPropagation()}
-            >
-            <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 p-1.5 border border-amber-200 flex items-center justify-center shrink-0 overflow-hidden">
-                  <img
-                    src={selectedService.icon}
-                    alt={getLocalizedTitle(selectedService)}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900">{getLocalizedTitle(selectedService)}</h3>
-                  <p className="text-xs text-zinc-500">{hotel.name} - {t.room} {roomNumber}</p>
-                </div>
+          {selectedService.key === 'roomservice' ? (
+            <div className="min-h-full flex items-center justify-center py-2 sm:py-6" onClick={(e) => e.stopPropagation()}>
+              <div className="w-full max-w-lg">
+                <GuestRoomServiceMenu hotel={hotel} roomNumber={roomNumber} lang={lang} onClose={() => setSelectedService(null)} />
               </div>
-              <button
-                onClick={() => setSelectedService(null)}
-                className="text-zinc-400 hover:text-zinc-700 text-xl font-bold p-1 cursor-pointer"
-              >
-                ✕
-              </button>
             </div>
-
-            {(() => {
-              const config = getModuleConfig(selectedService.key);
-              if (config) {
-                const settings = moduleSettings[selectedService.key];
-                return (
-                  <ServiceRequestForm
-                    config={config}
-                    onSubmit={handleStandardRequestSubmit}
-                    onCancel={() => setSelectedService(null)}
-                    isSubmitting={isSubmitting}
-                    pricing={resolvePricing(config, settings?.pricing)}
-                    fieldOptionOverrides={settings?.fieldOptions}
-                  />
-                );
-              }
-
-              // Generic Dynamic Form for Custom In-Room Services
-              return (
-                <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
-                  {getLocalizedDesc(selectedService) && (
-                    <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-zinc-700 text-xs">
-                      {getLocalizedDesc(selectedService)}
+          ) : (
+            <div className="min-h-full flex items-center justify-center py-6">
+              <div 
+                className="relative w-full max-w-md bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-50 p-1.5 border border-amber-200 flex items-center justify-center shrink-0 overflow-hidden">
+                      <img
+                        src={selectedService.icon}
+                        alt={getLocalizedTitle(selectedService)}
+                        className="object-contain w-full h-full"
+                      />
                     </div>
-                  )}
-
-                  {/* Options Selection */}
-                  {selectedService.options && selectedService.options.length > 0 && (
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
-                      <select
-                        value={customOption}
-                        onChange={(e) => setCustomOption(e.target.value)}
-                        className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
-                      >
-                        {selectedService.options.map((opt, i) => (
-                          <option key={i} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900">{getLocalizedTitle(selectedService)}</h3>
+                      <p className="text-xs text-zinc-500">{hotel.name} - {t.room} {roomNumber}</p>
                     </div>
-                  )}
+                  </div>
+                  <button
+                    onClick={() => setSelectedService(null)}
+                    className="text-zinc-400 hover:text-zinc-700 text-xl font-bold p-1 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
 
-                  {/* Count / Quantity */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.quantity || 'Adet'}</label>
-                    <div className="flex items-center gap-2">
-                      {[1, 2, 3, 4, 5].map((num) => (
+                {(() => {
+                  const config = getModuleConfig(selectedService.key);
+                  if (config) {
+                    const settings = moduleSettings[selectedService.key];
+                    return (
+                      <ServiceRequestForm
+                        config={config}
+                        onSubmit={handleStandardRequestSubmit}
+                        onCancel={() => setSelectedService(null)}
+                        isSubmitting={isSubmitting}
+                        pricing={resolvePricing(config, settings?.pricing)}
+                        fieldOptionOverrides={settings?.fieldOptions}
+                      />
+                    );
+                  }
+
+                  // Generic Dynamic Form for Custom In-Room Services
+                  return (
+                    <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
+                      {getLocalizedDesc(selectedService) && (
+                        <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-zinc-700 text-xs">
+                          {getLocalizedDesc(selectedService)}
+                        </div>
+                      )}
+
+                      {/* Options Selection */}
+                      {selectedService.options && selectedService.options.length > 0 && (
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
+                          <select
+                            value={customOption}
+                            onChange={(e) => setCustomOption(e.target.value)}
+                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                          >
+                            {selectedService.options.map((opt, i) => (
+                              <option key={i} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Count / Quantity */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.quantity || 'Adet'}</label>
+                        <div className="flex items-center gap-2">
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <button
+                              type="button"
+                              key={num}
+                              onClick={() => setCustomCount(num)}
+                              className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
+                                customCount === num
+                                  ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
+                                  : 'bg-zinc-50 hover:bg-amber-50 border-zinc-200 text-zinc-700'
+                              }`}
+                            >
+                              {num}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Time Preference */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-amber-600" /> {t.serviceForm?.deliveryTime || 'Zaman'}
+                        </label>
+                        <select
+                          value={customTime}
+                          onChange={(e) => setCustomTime(e.target.value)}
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                        >
+                          <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
+                          <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
+                          <option value={t.serviceForm?.in1Hour || '1 Saat'}>{t.serviceForm?.in1Hour || '1 Saat'}</option>
+                          <option value={t.serviceForm?.tonight || 'Akşam'}>{t.serviceForm?.tonight || 'Akşam'}</option>
+                          <option value={t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}>{t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}</option>
+                        </select>
+                      </div>
+
+                      {/* Special Note */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.specialNote || 'Not'}</label>
+                        <textarea
+                          value={customNote}
+                          onChange={(e) => setCustomNote(e.target.value)}
+                          rows={2}
+                          placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                        />
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="flex items-center gap-2 pt-2">
                         <button
                           type="button"
-                          key={num}
-                          onClick={() => setCustomCount(num)}
-                          className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
-                            customCount === num
-                              ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                              : 'bg-zinc-50 hover:bg-amber-50 border-zinc-200 text-zinc-700'
-                          }`}
+                          onClick={() => setSelectedService(null)}
+                          className="flex-1 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition text-xs cursor-pointer"
                         >
-                          {num}
+                          {t.serviceForm?.cancel || 'Vazgeç'}
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Time Preference */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-amber-600" /> {t.serviceForm?.deliveryTime || 'Zaman'}
-                    </label>
-                    <select
-                      value={customTime}
-                      onChange={(e) => setCustomTime(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
-                    >
-                      <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
-                      <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
-                      <option value={t.serviceForm?.in1Hour || '1 Saat'}>{t.serviceForm?.in1Hour || '1 Saat'}</option>
-                      <option value={t.serviceForm?.tonight || 'Akşam'}>{t.serviceForm?.tonight || 'Akşam'}</option>
-                      <option value={t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}>{t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}</option>
-                    </select>
-                  </div>
-
-                  {/* Special Note */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.specialNote || 'Not'}</label>
-                    <textarea
-                      value={customNote}
-                      onChange={(e) => setCustomNote(e.target.value)}
-                      rows={2}
-                      placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                      className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="flex items-center gap-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedService(null)}
-                      className="flex-1 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition text-xs cursor-pointer"
-                    >
-                      {t.serviceForm?.cancel || 'Vazgeç'}
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex-2 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
-                    >
-                      {isSubmitting ? '...' : (t.serviceForm?.submitRequest || 'Talebi Gönder')}
-                    </button>
-                  </div>
-                </form>
-              );
-            })()}
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="flex-2 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
+                        >
+                          {isSubmitting ? '...' : (t.serviceForm?.submitRequest || 'Talebi Gönder')}
+                        </button>
+                      </div>
+                    </form>
+                  );
+                })()}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
