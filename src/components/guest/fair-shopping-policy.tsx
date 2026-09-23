@@ -1,13 +1,4 @@
-import json
-import os
-
-with open('src/components/guest/fair-shopping-policy.tsx', 'r', encoding='utf-8') as f:
-    content = f.read()
-
-# Let's just create a new fair-shopping-policy.tsx content using a simpler approach
-# Wait, rewriting the whole file in python might be tedious. Let me just create a new React component string with local translations.
-
-new_content = """\"use client\";
+﻿"use client";
 
 import { useState } from 'react';
 import { 
@@ -701,7 +692,3 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
     </div>
   );
 }
-"""
-
-with open('src/components/guest/fair-shopping-policy.tsx', 'w', encoding='utf-8') as f:
-    f.write(new_content)
