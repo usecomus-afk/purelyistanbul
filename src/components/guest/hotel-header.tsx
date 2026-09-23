@@ -96,7 +96,7 @@ export function HotelHeader({
   };
 
   return (
-    <header className="bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 px-3.5 sm:px-4 border-b border-amber-200/50 w-full relative z-40 overflow-hidden">
+    <header className={`pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 ${isHotelServices ? 'bg-transparent border-b-transparent' : 'bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent border-b border-amber-200/50'}`}>
       <div className="max-w-4xl mx-auto space-y-2.5">
         {/* Top Bar: Hotel Name (in hotel services) or purelyİstanbul Branding + Compact Unified Action Pill */}
         <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">
@@ -116,28 +116,28 @@ export function HotelHeader({
           )}
           
           {/* Unified Compact Action Pill to ensure 100% symmetric margins without backdrop-blur trapping */}
-          <div className="flex items-center gap-0.5 sm:gap-1 bg-white p-0.5 sm:p-1 rounded-full border border-amber-200/90 shadow-xs shrink-0 relative z-50">
+          <div className={`flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-full shadow-xs shrink-0 relative z-50 transition ${isHotelServices ? 'bg-black/10 backdrop-blur-[4px] border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)]' : 'bg-white border border-amber-200/90'}`}>
             {/* 1. PWA Notification Bell */}
             <button
               type="button"
               onClick={() => setShowPwaModal(true)}
-              className="w-7 h-7 rounded-full hover:bg-amber-50 text-zinc-700 hover:text-zinc-900 transition flex items-center justify-center relative cursor-pointer"
+              className={`w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer ${isHotelServices ? 'hover:bg-white/10 text-white' : 'hover:bg-amber-50 text-zinc-700 hover:text-zinc-900'}`}
               title="PWA Bildirim Ayarları"
             >
-              <BellRing className="w-3.5 h-3.5 text-amber-800" />
+              <BellRing className={`w-3.5 h-3.5 ${isHotelServices ? 'text-white' : 'text-amber-800'}`} />
               {pwaPerm === 'granted' && (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-0.5 right-0.5 ring-1.5 ring-white" />
               )}
             </button>
 
             {/* Subtle Divider */}
-            <span className="w-px h-3.5 bg-amber-200/80" />
+            <span className={`w-px h-3.5 ${isHotelServices ? 'bg-white/30' : 'bg-amber-200/80'}`} />
 
             {/* 2. Language Selector */}
-            <LanguageSelector currentLang={lang} onSelect={onLanguageChange} />
+            <LanguageSelector currentLang={lang} onSelect={onLanguageChange} theme={isHotelServices ? 'dark' : 'light'} />
 
             {/* Subtle Divider */}
-            <span className="w-px h-3.5 bg-amber-200/80" />
+            <span className={`w-px h-3.5 ${isHotelServices ? 'bg-white/30' : 'bg-amber-200/80'}`} />
 
             {/* 3. User Session Profile Badge / Login Button */}
             {user ? (
@@ -145,7 +145,7 @@ export function HotelHeader({
                 <button
                   type="button"
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  className="w-7 h-7 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] shadow-2xs transition cursor-pointer overflow-hidden"
+                  className={`w-7 h-7 rounded-full font-bold flex items-center justify-center text-[10px] shadow-2xs transition cursor-pointer overflow-hidden ${isHotelServices ? 'bg-white/20 text-white border border-white/30 hover:bg-white/30' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
                   title={user.name}
                 >
                   {user.avatar ? (
@@ -196,7 +196,7 @@ export function HotelHeader({
               <button
                 type="button"
                 onClick={onOpenAuth}
-                className="w-7 h-7 rounded-full bg-zinc-900 hover:bg-black text-amber-400 flex items-center justify-center text-xs shadow-2xs transition cursor-pointer"
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-2xs transition cursor-pointer ${isHotelServices ? 'bg-white/20 text-white border border-white/30 hover:bg-white/30' : 'bg-zinc-900 hover:bg-black text-amber-400'}`}
                 title={t.loginRegister}
               >
                 <User className="w-3.5 h-3.5" />
@@ -204,13 +204,13 @@ export function HotelHeader({
             )}
 
             {/* 4. Otel Yönetim Paneli Hızlı Giriş Butonu */}
-            <span className="w-px h-3.5 bg-amber-200/80" />
+            <span className={`w-px h-3.5 ${isHotelServices ? 'bg-white/30' : 'bg-amber-200/80'}`} />
             <a
               href="/hotel-portal"
-              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/15 hover:bg-amber-500 text-amber-950 hover:text-white transition-all text-[10.5px] sm:text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+              className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all text-[10.5px] sm:text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer ${isHotelServices ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-amber-500/15 hover:bg-amber-500 text-amber-950 hover:text-white'}`}
               title="Otel Yönetim Paneli"
             >
-              <Building2 className="w-3.5 h-3.5 text-amber-800" />
+              <Building2 className={`w-3.5 h-3.5 ${isHotelServices ? 'text-white' : 'text-amber-800'}`} />
               <span>Otel Paneli</span>
             </a>
           </div>
@@ -219,15 +219,15 @@ export function HotelHeader({
         {/* SINGLE-LINE SLEEK HOTEL BAR (Tıklanınca Açılır Pencere) */}
         <div 
           onClick={() => setShowHotelModal(true)}
-          className="bg-white/95 hover:bg-white rounded-2xl px-3.5 py-2.5 shadow-xs hover:shadow-sm border border-amber-200/80 flex items-center justify-between gap-2.5 cursor-pointer transition group relative z-0"
+          className={`rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2.5 cursor-pointer transition group relative z-0 ${isHotelServices ? 'bg-black/10 backdrop-blur-[4px] border border-white/30 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] hover:bg-black/20' : 'bg-white/95 hover:bg-white border border-amber-200/80 shadow-xs hover:shadow-sm'}`}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Building2 className="w-4 h-4 text-amber-700 shrink-0" />
-            <span className="font-bold text-xs text-zinc-900 truncate group-hover:text-amber-800 transition">
+            <Building2 className={`w-4 h-4 shrink-0 ${isHotelServices ? 'text-white' : 'text-amber-700'}`} />
+            <span className={`font-bold text-xs truncate transition ${isHotelServices ? 'text-white group-hover:text-white/80' : 'text-zinc-900 group-hover:text-amber-800'}`}>
               {hotel.name}
             </span>
-            <span className="text-zinc-300">|</span>
-            <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-500 text-white rounded-lg text-[11px] font-bold shrink-0 shadow-2xs">
+            <span className={isHotelServices ? 'text-white/40' : 'text-zinc-300'}>|</span>
+            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold shrink-0 shadow-2xs ${isHotelServices ? 'bg-white/20 text-white border border-white/30' : 'bg-amber-500 text-white'}`}>
               <DoorOpen className="w-3 h-3" />
               <span>{t.room} {roomNumber}</span>
             </div>
@@ -241,17 +241,17 @@ export function HotelHeader({
                   e.stopPropagation();
                   onOpenRequests();
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[11px] font-bold shadow-xs animate-pulse cursor-pointer"
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold shadow-xs animate-pulse cursor-pointer ${isHotelServices ? 'bg-white/20 hover:bg-white/30 text-white border border-white/30' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
               >
                 <BellRing className="w-3 h-3" />
                 <span>{t.myRequests} ({activeRequestsCount})</span>
               </button>
             )}
 
-            <div className="flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 group-hover:bg-amber-100 px-2.5 py-1 rounded-xl border border-amber-200 transition">
-              <Wifi className="w-3.5 h-3.5 text-amber-700" />
+            <div className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-xl transition ${isHotelServices ? 'text-white bg-white/10 group-hover:bg-white/20 border border-white/30' : 'text-amber-800 bg-amber-50 group-hover:bg-amber-100 border border-amber-200'}`}>
+              <Wifi className={`w-3.5 h-3.5 ${isHotelServices ? 'text-white' : 'text-amber-700'}`} />
               <span className="hidden sm:inline">{t.wifiTitle}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-amber-700 group-hover:translate-y-0.5 transition" />
+              <ChevronDown className={`w-3.5 h-3.5 transition group-hover:translate-y-0.5 ${isHotelServices ? 'text-white' : 'text-amber-700'}`} />
             </div>
           </div>
         </div>

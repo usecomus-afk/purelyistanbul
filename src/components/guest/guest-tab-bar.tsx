@@ -92,7 +92,11 @@ export function GuestTabBar({
 
   return (
     <nav
-      className="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] transition-colors duration-300 ${
+        currentTab === 'services' 
+          ? 'bg-black/10 backdrop-blur-[4px] border-t border-white/20 shadow-[0_-8px_24px_rgba(0,0,0,0.3)]'
+          : 'bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]'
+      }`}
       style={{
         position: 'fixed',
         bottom: 0,
@@ -108,6 +112,7 @@ export function GuestTabBar({
       <div className="max-w-md mx-auto flex items-center justify-around">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
+          const isServicesDark = currentTab === 'services';
 
           return (
             <button
@@ -115,14 +120,14 @@ export function GuestTabBar({
               onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all relative cursor-pointer active:scale-90 ${
                 isActive 
-                  ? 'text-amber-800 font-bold' 
-                  : 'text-zinc-500 hover:text-zinc-800'
+                  ? (isServicesDark ? 'text-white font-bold' : 'text-amber-800 font-bold') 
+                  : (isServicesDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 hover:text-zinc-800')
               }`}
             >
               <div className={`p-1.5 rounded-2xl transition-all ${
                 isActive 
-                  ? 'btn-3d text-amber-800 scale-105' 
-                  : 'hover:bg-amber-50/80'
+                  ? (isServicesDark ? 'bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] scale-105' : 'btn-3d text-amber-800 scale-105') 
+                  : (isServicesDark ? 'hover:bg-white/10' : 'hover:bg-amber-50/80')
               }`}>
                 {tab.iconType === 'image' && tab.imgSrc ? (
                   <div className="w-5 h-5 relative flex items-center justify-center">
@@ -130,6 +135,7 @@ export function GuestTabBar({
                       src={tab.imgSrc}
                       alt={tab.label}
                       style={{ width: '22px', height: '22px', objectFit: 'contain' }}
+                      className={isServicesDark && tab.id === 'ai' ? 'brightness-0 invert' : ''}
                     />
                   </div>
                 ) : (

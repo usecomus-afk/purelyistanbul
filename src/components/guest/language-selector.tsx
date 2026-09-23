@@ -13,14 +13,16 @@ const langs: { code: Language; flag: string; label: string }[] = [
   { code: 'fr', flag: '🇫🇷', label: 'FR' },
 ];
 
-export function LanguageSelector({ currentLang, onSelect }: { currentLang: Language; onSelect: (l: Language) => void }) {
+export function LanguageSelector({ currentLang, onSelect, theme = 'light' }: { currentLang: Language; onSelect: (l: Language) => void; theme?: 'dark' | 'light' }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative z-50">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] font-bold text-zinc-800 hover:bg-amber-50 transition cursor-pointer"
+        className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] font-bold transition cursor-pointer ${
+          theme === 'dark' ? 'text-white hover:bg-white/10' : 'text-zinc-800 hover:bg-amber-50'
+        }`}
       >
         <span>{langs.find(l => l.code === currentLang)?.flag || '🇹🇷'}</span>
         <span>{currentLang.toUpperCase()}</span>
