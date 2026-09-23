@@ -86,7 +86,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         department: 'Room Service (Mutfak KDS)',
         stage: 'order_received',
         priority: 'standart',
-        details: { cart, total: cartTotal }
+        details: { items: orderDetails, total: cartTotal }
       });
 
       toast.success('Siparişiniz Alındı!', {
