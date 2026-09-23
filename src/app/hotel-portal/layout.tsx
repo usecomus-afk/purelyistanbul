@@ -90,13 +90,13 @@ export default function HotelPortalLayout({
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
             
             {/* Left: Title */}
-            <div className="flex items-center min-w-0">
-              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0" title="Otel Yönetim Paneli">
+            <div className="flex items-center min-w-0 shrink">
+              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink min-w-0" title="Otel Yönetim Paneli">
                 <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs">
                   <Building2 className="w-4.5 h-4.5 text-amber-800" />
                 </div>
-                <div className="min-w-0">
-                  <span className="font-serif font-extrabold text-sm sm:text-base md:text-lg text-zinc-900 tracking-tight block leading-tight truncate">
+                <div className="min-w-0 shrink">
+                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-zinc-900 tracking-tight block leading-tight truncate">
                     OTEL YÖNETİM PANELİ
                   </span>
                 </div>
@@ -104,7 +104,7 @@ export default function HotelPortalLayout({
             </div>
 
             {/* Right: Sound Toggle, Live Notifications & Logout */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 ml-auto">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 ml-auto shrink-0">
               {/* Back Button for Sub-pages */}
               {isSubPage && (
                 <Link
