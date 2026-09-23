@@ -19,7 +19,7 @@ export default function RootPage() {
 
   // 1. Cihaza kurulu iOS IPA uygulaması açıldığında doğrudan otel içi menü ve konsiyerj gelir
   if (isMounted && isNative) {
-    return <GuestConciergeView />;
+    return <GuestConciergeView initialRoomId="TEST" />;
   }
 
   // 2. Web sitesine (purelyistanbul.com) giren tüm genel kullanıcılar için herkese açık pazar yeri
