@@ -44,6 +44,10 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     };
   }, []);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: !!selectedService } }));
+  }, [selectedService]);
+
   const getLocalizedTitle = (item: InRoomServiceItem) => {
     return (t.servicesLabels as any)?.[item.key]?.title || (t as any)[item.key] || item.label;
   };
@@ -211,13 +215,17 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
           className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-3 sm:p-6"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
-            if (e.target === e.currentTarget) setSelectedService(null);
+            if (e.target === e.currentTarget) {
+              setSelectedService(null);
+            }
           }}
         >
           {selectedService.key === 'roomservice' ? (
             <div className="min-h-full flex items-center justify-center py-2 sm:py-6" onClick={(e) => e.stopPropagation()}>
               <div className="w-full max-w-lg">
-                <GuestRoomServiceMenu hotel={hotel} roomNumber={roomNumber} lang={lang} onClose={() => setSelectedService(null)} />
+                <GuestRoomServiceMenu hotel={hotel} roomNumber={roomNumber} lang={lang} onClose={() => {
+                  setSelectedService(null);
+                }} />
               </div>
             </div>
           ) : (

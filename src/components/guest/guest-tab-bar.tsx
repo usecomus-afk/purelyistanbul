@@ -26,6 +26,7 @@ export function GuestTabBar({
   const [currentTab, setCurrentTab] = useState<TabId>(() => propActiveTab || 'services');
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
   const [shouldShow, setShouldShow] = useState(false);
+  const [shouldShowDark, setShouldShowDark] = useState(true);
 
   useEffect(() => {
     const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
@@ -51,12 +52,17 @@ export function GuestTabBar({
     const handleLangEvent = (e: any) => {
       if (e.detail?.lang) setCurrentLang(e.detail.lang);
     };
+    const handleModalEvent = (e: any) => {
+      setShouldShowDark(e.detail?.isOpen ? false : true);
+    };
 
     window.addEventListener('xenios_tab_changed', handleTabEvent);
     window.addEventListener('xenios_lang_changed', handleLangEvent);
+    window.addEventListener('xenios_modal_state', handleModalEvent);
     return () => {
       window.removeEventListener('xenios_tab_changed', handleTabEvent);
       window.removeEventListener('xenios_lang_changed', handleLangEvent);
+      window.removeEventListener('xenios_modal_state', handleModalEvent);
     };
   }, []);
 
@@ -90,10 +96,12 @@ export function GuestTabBar({
 
   if (!shouldShow) return null;
 
+  const isServicesDarkOverall = currentTab === 'services' && shouldShowDark;
+
   return (
     <nav
       className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] transition-colors duration-300 ${
-        currentTab === 'services' 
+        isServicesDarkOverall
           ? 'bg-black/10 backdrop-blur-[4px] border-t border-white/20 shadow-[0_-8px_24px_rgba(0,0,0,0.3)]'
           : 'bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]'
       }`}
@@ -112,7 +120,7 @@ export function GuestTabBar({
       {/* iOS Overscroll / Rubber Banding gap filler */}
       <div 
         className={`absolute top-full left-0 right-0 h-[100px] -mt-[1px] transition-colors duration-300 ${
-          currentTab === 'services' 
+          isServicesDarkOverall
             ? 'bg-black/10 backdrop-blur-[4px]' 
             : 'bg-white/95 backdrop-blur-md'
         }`}
@@ -121,7 +129,7 @@ export function GuestTabBar({
       <div className="max-w-md mx-auto flex items-center justify-around relative z-10">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
-          const isServicesDark = currentTab === 'services';
+          const isServicesDark = isServicesDarkOverall;
 
           return (
             <button
