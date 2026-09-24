@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "id": "exp-1",
     "category": "1. Boğaz & Tekne Deneyimleri",
@@ -346,7 +346,7 @@
   },
   {
     "id": "exp-16",
-    "category": "4. Geleneksel & Kültürel Deneyimler",
+    "category": "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri",
     "provider": "Hodjapasha Kültür Merkezi",
     "title": "Whirling Dervishes & Sema Ceremony",
     "location": "Sirkeci, Fatih",
@@ -369,7 +369,7 @@
   },
   {
     "id": "exp-17",
-    "category": "4. Geleneksel & Kültürel Deneyimler",
+    "category": "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri",
     "provider": "Highlights in Istanbul Workshops",
     "title": "Turkish Mosaic Lamp Making Workshop",
     "location": "Sultanahmet, Fatih",
@@ -392,7 +392,7 @@
   },
   {
     "id": "exp-18",
-    "category": "4. Geleneksel & Kültürel Deneyimler",
+    "category": "3. Gastronomi & Sokak Lezzetleri",
     "provider": "Turka Home Workshop",
     "title": "Turkish Coffee Making & Fortune Telling",
     "location": "Sultanahmet, Fatih",
@@ -2108,3 +2108,4 @@
     ]
   }
 ]
+
