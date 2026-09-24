@@ -427,7 +427,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
         <div className="bg-black/20 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-sm space-y-3 flex flex-col justify-between">
           <div className="space-y-2">
-            <div className="h-16 w-24 rounded-xl bg-white/100/5 p-1 border border-white/20 flex items-center justify-center overflow-hidden">
+            <div className="h-16 w-24 rounded-xl bg-white/5 p-1 border border-white/20 flex items-center justify-center overflow-hidden">
               <Image 
                 src="/icons/muzekart.png" 
                 alt={lt.officialMuzekartTitle}
@@ -471,7 +471,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                     className="w-full p-4 text-left font-bold text-xs sm:text-sm text-white bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-full bg-white/100 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                         {item.id}
                       </span>
                       <span>{item.title}</span>
@@ -583,7 +583,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
             <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-white/100 text-white text-xs font-bold flex items-center justify-center">1</span>
+              <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center">1</span>
               <span>{lt.howToComplainTitle}</span>
             </h3>
 
@@ -624,7 +624,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
             <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-white/100 text-white text-xs font-bold flex items-center justify-center">2</span>
+              <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center">2</span>
               <span>{lt.whatHappensNextTitle}</span>
             </h3>
 

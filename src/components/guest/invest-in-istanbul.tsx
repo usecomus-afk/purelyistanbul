@@ -132,7 +132,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('all')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'all'
-              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
               : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
@@ -142,7 +142,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('citizenship')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'citizenship'
-              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
               : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
@@ -152,7 +152,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('short_term_rental')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'short_term_rental'
-              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
               : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
@@ -162,7 +162,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('luxury_lifestyle')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'luxury_lifestyle'
-              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
               : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
@@ -244,7 +244,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
 
                     <button
                       onClick={(e) => openTourModal(p, e)}
-                      className="px-3 py-1.5 rounded-xl bg-white/100 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition cursor-pointer"
                     >
                       {t.bookDiscoveryTour}
                     </button>
@@ -291,7 +291,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
               
               <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5">
-                <span className="bg-white/100/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                <span className="bg-amber-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                   {selectedLoc.district}
                 </span>
                 {selected.citizenshipEligible && (
@@ -386,7 +386,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
               <button
                 type="button"
                 onClick={(e) => openTourModal(selected, e)}
-                className="flex-1 py-3 bg-white/100 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-amber-600 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition cursor-pointer flex items-center justify-center gap-2"
               >
                 <Calendar className="w-4 h-4" />
                 <span>{t.bookDiscoveryTour}</span>
@@ -474,7 +474,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-3 bg-white/100 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-3 bg-amber-600 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? '...' : modalT.bookTourBtn}
                 </button>

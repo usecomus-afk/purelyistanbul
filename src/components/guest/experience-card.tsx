@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Experience, Hotel, Language } from '@/lib/types';
 import { getT } from '@/lib/i18n';
@@ -91,7 +91,7 @@ export function ExperienceCard({
               {getLocalizedTag()}
             </span>
             {experience.cuisine && (
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-white/100/90 text-white shadow-xs backdrop-blur-md hidden xs:inline-block">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-amber-600/90 text-white shadow-xs backdrop-blur-md hidden xs:inline-block">
                 {experience.cuisine.split('&')[0].trim()}
               </span>
             )}
@@ -175,7 +175,7 @@ export function ExperienceCard({
                 e.stopPropagation();
                 onSelect(experience);
               }}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/100/10 hover:bg-white/100/20 text-white text-xs font-semibold border border-white/10 transition cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition cursor-pointer"
             >
               <Info className="w-3.5 h-3.5 text-amber-700" />
               <span>{t.details}</span>
