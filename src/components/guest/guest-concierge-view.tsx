@@ -218,18 +218,16 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className="max-w-4xl mx-auto px-3.5 sm:px-4 mt-3 sm:mt-4 space-y-5 sm:space-y-6 w-full">
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'mt-1 sm:mt-2 space-y-3 sm:space-y-4' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
-          <div className="space-y-6">
+          <div>
             <InRoomServices
               hotel={currentHotel}
               roomNumber={activeRoomNumber}
               lang={lang}
             />
-
-
           </div>
         )}
 

@@ -140,16 +140,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   };
 
   return (
-    <div className="space-y-4">
-      {/* Top Section Header - Pill Design */}
-      <div className="relative z-10 flex justify-center pb-2">
-        <div className="px-6 py-2 rounded-full bg-black/10 backdrop-blur-[4px] border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)]">
-          <h2 className="text-sm font-bold font-serif text-white uppercase tracking-wide">
-            {t.servicesTitle}
-          </h2>
-        </div>
-      </div>
-
+    <div>
       {/* Fixed Background for this tab */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center pointer-events-none"
