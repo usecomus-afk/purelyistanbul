@@ -96,10 +96,9 @@ export function HotelHeader({
   };
 
   return (
-    <header className={`pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 ${isHotelServices ? 'bg-transparent border-b-transparent' : 'bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent border-b border-amber-200/50'}`}>
-      <div className={`max-w-4xl mx-auto ${isHotelServices ? 'flex flex-col items-center justify-center gap-4' : 'space-y-2.5'}`}>
+    <header className="pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 bg-transparent border-b-transparent">
+      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-4">
         
-        {isHotelServices ? (
           <>
             {/* NEW DESIGN: Centered Hotel Name */}
             <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
@@ -157,78 +156,8 @@ export function HotelHeader({
               )}
             </div>
           </>
-        ) : (
-          <>
-            {/* Original Layout for other tabs */}
-            <div className="flex items-center justify-between gap-2 relative z-50 w-full max-w-full">
-              <Link href="/" className="flex items-baseline shrink-0 tracking-tight font-serif font-bold text-lg sm:text-xl text-zinc-900 leading-none select-none pl-0">
-                <span>purely</span><span className="text-red-600 font-bold">İstanbul</span>
-              </Link>
-              
-              <div className="flex items-center gap-0.5 sm:gap-1 bg-white p-0.5 sm:p-1 rounded-full border border-amber-200/90 shadow-xs shrink-0 relative z-50">
-                <button
-                  onClick={() => setShowPwaModal(true)}
-                  className="w-7 h-7 rounded-full hover:bg-amber-50 text-zinc-700 transition flex items-center justify-center relative cursor-pointer"
-                >
-                  <BellRing className="w-3.5 h-3.5 text-amber-800" />
-                  {pwaPerm === 'granted' && <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-0.5 right-0.5 ring-1.5 ring-white" />}
-                </button>
-                <span className="w-px h-3.5 bg-amber-200/80" />
-                <LanguageSelector currentLang={lang} onSelect={onLanguageChange} theme="light" />
-
-                {roomNumber.toUpperCase() === 'TEST' && (
-                  <>
-                    <span className="w-px h-3.5 bg-amber-200/80" />
-                    {user ? (
-                      <button onClick={handleLogout} className="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
-                        {user.name.charAt(0).toUpperCase()}
-                      </button>
-                    ) : (
-                      <button onClick={onOpenAuth} className="w-7 h-7 rounded-full bg-zinc-900 text-amber-400 flex items-center justify-center text-xs">
-                        <User className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    <span className="w-px h-3.5 bg-amber-200/80" />
-                    <a href="/hotel-portal" className="px-2 py-1 rounded-full bg-amber-500/15 text-amber-950 font-bold flex items-center gap-1 text-[10px]">
-                      <Building2 className="w-3.5 h-3.5 text-amber-800" />
-                      Panel
-                    </a>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div 
-              onClick={() => setShowHotelModal(true)}
-              className="bg-white/95 hover:bg-white rounded-2xl px-3.5 py-2.5 shadow-xs hover:shadow-sm border border-amber-200/80 flex items-center justify-between gap-2.5 cursor-pointer transition"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <Building2 className="w-4 h-4 text-amber-700 shrink-0" />
-                <span className="font-bold text-xs text-zinc-900 truncate">
-                  {hotel.name}
-                </span>
-                <span className="text-zinc-300">|</span>
-                <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-500 text-white rounded-lg text-[11px] font-bold shrink-0">
-                  <DoorOpen className="w-3 h-3" />
-                  <span>{t.room} {roomNumber}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {activeRequestsCount > 0 && onOpenRequests && (
-                  <button onClick={(e) => { e.stopPropagation(); onOpenRequests(); }} className="flex items-center gap-1 px-2.5 py-1 bg-amber-500 text-white rounded-xl text-[11px] font-bold animate-pulse">
-                    <BellRing className="w-3 h-3" />
-                    <span>{t.myRequests} ({activeRequestsCount})</span>
-                  </button>
-                )}
-                <div className="flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
-                  <Wifi className="w-3.5 h-3.5 text-amber-700" />
-                  <span className="hidden sm:inline">{t.wifiTitle}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-amber-700" />
-                </div>
-              </div>
-            </div>
           </>
-        )}
+      </div>
       </div>
 
       {/* FULL HOTEL & WI-FI DETAILS MODAL (Tıklanınca Açılan Pencere) */}

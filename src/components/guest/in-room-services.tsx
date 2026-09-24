@@ -142,18 +142,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
   return (
     <div>
-      {/* Fixed Background for this tab */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <Image 
-          src="/images/services-bg.jpg" 
-          alt="Services Background"
-          fill
-          priority
-          quality={80}
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
-      </div>
+      {/* Background moved to GuestConciergeView to apply globally */}
       
       {/* Grid of In-Room Services */}
       <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0">

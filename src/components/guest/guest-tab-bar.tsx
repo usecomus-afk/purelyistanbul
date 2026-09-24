@@ -96,7 +96,7 @@ export function GuestTabBar({
 
   if (!shouldShow) return null;
 
-  const isServicesDarkOverall = currentTab === 'services' && shouldShowDark;
+  const isServicesDarkOverall = true; // Always dark theme for all tabs
 
   return (
     <nav

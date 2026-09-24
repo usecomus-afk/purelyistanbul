@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
@@ -204,8 +205,22 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
 
   return (
-    <div className="w-full text-zinc-900">
-      {/* Hotel Header & Credentials */}
+    <div className="w-full text-white min-h-screen relative">
+      {/* Global Fixed Background for Guest App */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Image 
+          src="/images/services-bg.jpg" 
+          alt="Guest Background"
+          fill
+          priority
+          quality={80}
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+      </div>
+
+      <div className="relative z-10 w-full h-full">
+        {/* Hotel Header & Credentials */}
       <HotelHeader
         hotel={currentHotel}
         roomNumber={activeRoomNumber}
@@ -236,31 +251,31 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           <div className="space-y-4">
             {selectedCategory === 'Önerdiğimiz Restoranlar' || selectedCategory.toLowerCase().includes('restoran') ? (
               <div>
-                <h2 className="text-xl font-bold font-serif text-zinc-900">{t.categoriesList.restaurants.title}</h2>
-                <p className="text-xs text-zinc-500">{t.categoriesList.restaurants.desc}</p>
+                <h2 className="text-xl font-bold font-serif text-white">{t.categoriesList.restaurants.title}</h2>
+                <p className="text-xs text-white/70">{t.categoriesList.restaurants.desc}</p>
               </div>
             ) : selectedCategory.toLowerCase().includes('estetik') || selectedCategory.toLowerCase().includes('aesthetic') || selectedCategory.toLowerCase().includes('güzellik') ? (
               <div>
-                <h2 className="text-xl font-bold font-serif text-zinc-900">{t.categoriesList.aesthetic?.title || 'Medikal Estetik & Güzellik'}</h2>
-                <p className="text-xs text-zinc-500">{t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı"}</p>
+                <h2 className="text-xl font-bold font-serif text-white">{t.categoriesList.aesthetic?.title || 'Medikal Estetik & Güzellik'}</h2>
+                <p className="text-xs text-white/70">{t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı"}</p>
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-bold font-serif text-zinc-900">{t.experiencesTitle}</h2>
-                <p className="text-xs text-zinc-500">{t.experiencesSubtitle}</p>
+                <h2 className="text-xl font-bold font-serif text-white">{t.experiencesTitle}</h2>
+                <p className="text-xs text-white/70">{t.experiencesSubtitle}</p>
               </div>
             )}
 
             {/* Search & Category Filter */}
             <div className="space-y-2.5">
               <div className="relative">
-                <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
+                <Search className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-white rounded-2xl border border-amber-200/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-black/20 backdrop-blur-md rounded-2xl border border-amber-200/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
@@ -296,8 +311,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                       onClick={() => setSelectedCategory(cat)}
                       className={`text-[11px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-medium transition cursor-pointer ${
                         selectedCategory === cat
-                          ? 'bg-amber-500 text-white font-bold shadow-sm'
-                          : 'bg-white text-zinc-600 hover:bg-amber-50 border border-amber-200/60'
+                          ? 'bg-white/20 text-white font-bold shadow-sm'
+                          : 'bg-black/20 backdrop-blur-md text-white/80 hover:bg-white/10 border border-amber-200/60'
                       }`}
                     >
                       {getCategoryLabel(cat)}
@@ -326,10 +341,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             </div>
 
             {filteredExperiences.length === 0 && (
-              <div className="text-center py-12 bg-white rounded-3xl border border-amber-200/80 p-6 space-y-2">
+              <div className="text-center py-12 bg-black/20 backdrop-blur-md rounded-3xl border border-amber-200/80 p-6 space-y-2">
                 <Compass className="w-10 h-10 text-amber-500/40 mx-auto" />
-                <h3 className="text-sm font-bold text-zinc-800">{t.noRequests}</h3>
-                <p className="text-xs text-zinc-500 max-w-xs mx-auto">
+                <h3 className="text-sm font-bold text-white">{t.noRequests}</h3>
+                <p className="text-xs text-white/70 max-w-xs mx-auto">
                   Arama kriterlerinize uygun ilan bulunamadı. Lütfen filtreyi temizleyiniz.
                 </p>
                 <button
@@ -337,7 +352,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     setSelectedCategory('all');
                     setSearchQuery('');
                   }}
-                  className="mt-2 text-xs font-bold text-amber-700 bg-amber-50 px-4 py-2 rounded-xl border border-amber-200"
+                  className="mt-2 text-xs font-bold text-amber-700 bg-white/10 px-4 py-2 rounded-xl border border-amber-200"
                 >
                   {t.allCategories}
                 </button>
@@ -350,10 +365,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {activeTab === 'categories' && (
           <div className="space-y-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold font-serif text-zinc-900 flex items-center gap-2">
+              <h2 className="text-xl font-bold font-serif text-white flex items-center gap-2">
                 <span>{t.categoriesTitle}</span>
               </h2>
-              <p className="text-xs text-zinc-500 max-w-xl font-medium">
+              <p className="text-xs text-white/70 max-w-xl font-medium">
                 {t.categoriesSubtitle}
               </p>
             </div>
@@ -417,10 +432,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
                     {/* Title & Description */}
                     <div className="w-full">
-                      <span className="text-xs sm:text-sm font-bold text-zinc-800 group-hover:text-amber-800 transition-colors leading-tight block">
+                      <span className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-800 transition-colors leading-tight block">
                         {cat.key}
                       </span>
-                      <span className="text-[10px] text-zinc-400 line-clamp-1 mt-0.5 block">
+                      <span className="text-[10px] text-white/60 line-clamp-1 mt-0.5 block">
                         {cat.desc}
                       </span>
                     </div>
@@ -435,8 +450,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {activeTab === 'practical' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold font-serif text-zinc-900">{t.practicalTitle}</h2>
-              <p className="text-xs text-zinc-500">{t.practicalSubtitle}</p>
+              <h2 className="text-xl font-bold font-serif text-white">{t.practicalTitle}</h2>
+              <p className="text-xs text-white/70">{t.practicalSubtitle}</p>
             </div>
 
             {/* Xenios Fair Shopping Policy & Misafir Kalkanı Component */}
@@ -540,29 +555,29 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         >
           <div className="min-h-full flex items-center justify-center py-6">
             <div 
-              className="relative w-full max-w-lg bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-zinc-900"
+              className="relative w-full max-w-lg bg-black/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-white"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-700">
+                  <div className="w-8 h-8 rounded-xl bg-white/20/15 flex items-center justify-center text-amber-700">
                     <Bell className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-zinc-900">{t.activeRequests}</h3>
-                    <p className="text-[11px] text-zinc-500">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
+                    <h3 className="text-sm font-bold text-white">{t.activeRequests}</h3>
+                    <p className="text-[11px] text-white/70">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowRequestsModal(false)} 
-                  className="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center text-sm font-bold cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center text-sm font-bold cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               {requests.length === 0 ? (
-                <div className="py-8 text-center text-zinc-400 space-y-2">
+                <div className="py-8 text-center text-white/60 space-y-2">
                   <Bell className="w-8 h-8 mx-auto text-amber-400 opacity-50" />
                   <p className="text-xs">{t.noRequests}</p>
                 </div>
@@ -574,10 +589,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                       className="bg-[#fbf8f1] p-3.5 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="space-y-1">
-                        <strong className="text-zinc-900 block">{req.serviceTitle}</strong>
-                        {req.notes && <p className="text-[11px] text-zinc-600">{req.notes}</p>}
-                        <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-mono">
-                          <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                        <strong className="text-white block">{req.serviceTitle}</strong>
+                        {req.notes && <p className="text-[11px] text-white/80">{req.notes}</p>}
+                        <div className="flex items-center gap-1 text-[10px] text-white/60 font-mono">
+                          <Clock className="w-3.5 h-3.5 text-white/60" />
                           <span>{new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       </div>
@@ -617,6 +632,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           if (activeTab === 'ai') setActiveTab('services');
         }}
       />
+      </div>
     </div>
   );
 }
