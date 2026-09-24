@@ -99,8 +99,7 @@ export function HotelHeader({
     <header className="pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 bg-transparent border-b-transparent">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-4">
         
-          <>
-            {/* NEW DESIGN: Centered Hotel Name */}
+        {/* NEW DESIGN: Centered Hotel Name */}
             <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
               {hotel.name}
             </h1>
@@ -155,11 +154,7 @@ export function HotelHeader({
                 </>
               )}
             </div>
-          </>
-          </>
       </div>
-      </div>
-
       {/* FULL HOTEL & WI-FI DETAILS MODAL (Tıklanınca Açılan Pencere) */}
       {showHotelModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">

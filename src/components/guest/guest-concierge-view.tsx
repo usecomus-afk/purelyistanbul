@@ -21,7 +21,6 @@ import { AestheticBookingModal } from '@/components/guest/aesthetic-booking-moda
 import { AestheticInquiryModal } from '@/components/guest/aesthetic-inquiry-modal';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   Search, 
   Sparkles, 
