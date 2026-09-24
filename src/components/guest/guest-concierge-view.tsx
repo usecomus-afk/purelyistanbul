@@ -416,22 +416,31 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     className="btn-3d p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[155px] sm:min-h-[170px] group relative cursor-pointer"
                   >
                     {/* 3D Icon Box matching in-room services */}
-                    <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/10 p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-white/20 shadow-inner overflow-hidden relative">
-                      <div 
-                        className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.65]"
-                        style={{
-                          WebkitMaskImage: `url(${cat.iconPath})`,
-                          WebkitMaskSize: 'contain',
-                          WebkitMaskRepeat: 'no-repeat',
-                          WebkitMaskPosition: 'center',
-                          maskImage: `url(${cat.iconPath})`,
-                          maskSize: 'contain',
-                          maskRepeat: 'no-repeat',
-                          maskPosition: 'center'
-                        }}
-                      />
+                    <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
+                      {cat.iconPath.includes('fotograf') ? (
+                        <img 
+                          src={cat.iconPath} 
+                          alt={cat.key} 
+                          className="w-[65%] h-[65%] object-contain drop-shadow-sm rounded-lg"
+                        />
+                      ) : (
+                        <div 
+                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.65]"
+                          style={{
+                            WebkitMaskImage: `url(${cat.iconPath})`,
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            maskImage: `url(${cat.iconPath})`,
+                            maskSize: 'contain',
+                            maskRepeat: 'no-repeat',
+                            maskPosition: 'center'
+                          }}
+                        />
+                      )}
+                      
                       {cat.count > 0 && (
-                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-amber-600/90 text-white font-bold text-[9px] shadow-2xs leading-none">
+                        <span className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-md bg-amber-600/90 text-white font-bold text-[9px] shadow-sm leading-none z-10">
                           {cat.count}
                         </span>
                       )}
