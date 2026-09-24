@@ -34,12 +34,12 @@ const MENU_CATEGORIES = [
 ] as const;
 
 const PRESET_FOOD_IMAGES = [
-  { label: 'Geleneksel Kahvaltı', path: '/images/experiences/exp-gastro-1.jpg' },
-  { label: 'Antrikot & Izgara',   path: '/images/experiences/exp-gastro-2.jpg' },
-  { label: 'El Yapımı Makarna',   path: '/images/experiences/exp-gastro-3.jpg' },
-  { label: 'Kulüp Sandviç',       path: '/images/experiences/exp-gastro-4.jpg' },
-  { label: 'Fırın Tatlı & Sütlaç', path: '/images/experiences/exp-gastro-5.jpg' },
-  { label: 'Taze Meyve Suyu',     path: '/images/experiences/exp-gastro-6.jpg' },
+  { label: 'Geleneksel Kahvaltı', path: '/images/experiences/exp-1.jpg' },
+  { label: 'Antrikot & Izgara',   path: '/images/experiences/exp-2.jpg' },
+  { label: 'El Yapımı Makarna',   path: '/images/experiences/exp-3.jpg' },
+  { label: 'Kulüp Sandviç',       path: '/images/experiences/exp-4.jpg' },
+  { label: 'Fırın Tatlı & Sütlaç', path: '/images/experiences/exp-5.jpg' },
+  { label: 'Taze Meyve Suyu',     path: '/images/experiences/exp-6.jpg' },
 ];
 
 // ─── tiny helper ────────────────────────────────────────────────────────────
@@ -121,28 +121,34 @@ export default function HotelPortalServicesPage() {
     }
 
     try {
-      setUploadProgress(0);
-      const hotelId  = currentHotel?.id || 'shared';
-      const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-      const storageRef = ref(storage, `hotel-menu/${hotelId}/${fileName}`);
-      const task = uploadBytesResumable(storageRef, file);
-
-      task.on(
-        'state_changed',
-        snap => setUploadProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100)),
-        err => {
-          console.error(err);
-          toast.error('Görsel yüklenemedi. Lütfen tekrar deneyin.');
-          setUploadProgress(null);
-        },
-        async () => {
-          const url = await getDownloadURL(task.snapshot.ref);
-          setUploadedUrl(url);
-          setFormImage(url);
+      setUploadProgress(10);
+      const reader = new FileReader();
+      
+      reader.onloadstart = () => setUploadProgress(20);
+      reader.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setUploadProgress(20 + Math.round((e.loaded / e.total) * 60));
+        }
+      };
+      
+      reader.onload = () => {
+        const base64Url = reader.result as string;
+        setUploadedUrl(base64Url);
+        setFormImage(base64Url);
+        setUploadProgress(100);
+        
+        setTimeout(() => {
           setUploadProgress(null);
           toast.success('Görsel başarıyla yüklendi!');
-        }
-      );
+        }, 500);
+      };
+      
+      reader.onerror = () => {
+        toast.error('Görsel yüklenirken hata oluştu.');
+        setUploadProgress(null);
+      };
+
+      reader.readAsDataURL(file);
     } catch (err) {
       console.error(err);
       toast.error('Görsel yüklenirken hata oluştu.');
