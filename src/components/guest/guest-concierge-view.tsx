@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -30,7 +30,7 @@ import {
   Compass, 
   ArrowRight, 
   ShieldCheck, 
-  Clock 
+  Clock, Camera 
 } from 'lucide-react';
 
 interface GuestConciergeViewProps {
@@ -418,14 +418,12 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     {/* 3D Icon Box matching in-room services */}
                     <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
                       {cat.iconPath.includes('fotograf') ? (
-                        <img 
-                          src={cat.iconPath} 
-                          alt={cat.key} 
-                          className="w-[65%] h-[65%] object-contain drop-shadow-sm rounded-lg"
-                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500" strokeWidth={1.5} />
+                        </div>
                       ) : (
                         <div 
-                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.65]"
+                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.85]"
                           style={{
                             WebkitMaskImage: `url(${cat.iconPath})`,
                             WebkitMaskSize: 'contain',
@@ -437,12 +435,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                             maskPosition: 'center'
                           }}
                         />
-                      )}
-                      
-                      {cat.count > 0 && (
-                        <span className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-md bg-amber-600/90 text-white font-bold text-[9px] shadow-sm leading-none z-10">
-                          {cat.count}
-                        </span>
                       )}
                     </div>
 
