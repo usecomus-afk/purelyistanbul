@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { NotificationService } from "@/lib/notification-service";
 import { FirestoreService } from "@/lib/firestore-service";
@@ -122,8 +122,8 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
     <div className="space-y-6">
       {/* Top Header */}
       <div className="space-y-1">
-        <h2 className="text-xl font-bold font-serif text-zinc-900">{t.investTitle}</h2>
-        <p className="text-xs text-zinc-500 max-w-xl">{t.investSubtitle}</p>
+        <h2 className="text-xl font-bold font-serif text-white">{t.investTitle}</h2>
+        <p className="text-xs text-white/70 max-w-xl">{t.investSubtitle}</p>
       </div>
 
       {/* Filter Personas */}
@@ -132,8 +132,8 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('all')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'all'
-              ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-              : 'bg-white text-zinc-700 hover:bg-amber-50 border-amber-200'
+              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
           {t.allPersonas}
@@ -142,8 +142,8 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('citizenship')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'citizenship'
-              ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-              : 'bg-white text-zinc-700 hover:bg-amber-50 border-amber-200'
+              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
           🛂 {t.citizenshipFilter}
@@ -152,8 +152,8 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('short_term_rental')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'short_term_rental'
-              ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-              : 'bg-white text-zinc-700 hover:bg-amber-50 border-amber-200'
+              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
           🏠 {t.airbnbFilter}
@@ -162,8 +162,8 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
           onClick={() => setPersonaFilter('luxury_lifestyle')}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
             personaFilter === 'luxury_lifestyle'
-              ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-              : 'bg-white text-zinc-700 hover:bg-amber-50 border-amber-200'
+              ? 'bg-white/100 text-white border-amber-500 shadow-xs'
+              : 'bg-black/20 backdrop-blur-md text-white/90 hover:bg-white/10 border-white/20'
           }`}
         >
           🌊 {t.luxuryFilter}
@@ -172,13 +172,13 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
 
       {/* Search Input */}
       <div className="relative">
-        <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
+        <Search className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t.searchPlaceholder}
-          className="w-full pl-10 pr-4 py-2.5 text-xs bg-white rounded-2xl border border-amber-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+          className="w-full pl-10 pr-4 py-2.5 text-xs bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
         />
       </div>
 
@@ -190,7 +190,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
             <div
               key={p.id}
               onClick={() => openDetail(p)}
-              className="bg-white rounded-3xl overflow-hidden border border-amber-200/80 shadow-sm hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group"
+              className="bg-black/20 backdrop-blur-md rounded-3xl overflow-hidden border border-white/20 shadow-sm hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group"
             >
               <div>
                 <div className="relative h-44 w-full overflow-hidden bg-zinc-900">
@@ -219,7 +219,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                 </div>
 
                 <div className="p-4 space-y-3">
-                  <div className="flex items-center justify-between text-xs text-zinc-600">
+                  <div className="flex items-center justify-between text-xs text-white/80">
                     <div className="flex items-center gap-1">
                       <BedDouble className="w-3.5 h-3.5 text-amber-600" />
                       <span>{p.bedrooms} {modalT.bedrooms}</span>
@@ -230,13 +230,13 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-zinc-500 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-white/70 line-clamp-2 leading-relaxed">
                     {loc.description}
                   </p>
 
                   <div className="flex items-center justify-between pt-2 border-t border-amber-100">
                     <div>
-                      <span className="text-[10px] text-zinc-400 block uppercase font-semibold">{modalT.priceRange}</span>
+                      <span className="text-[10px] text-white/60 block uppercase font-semibold">{modalT.priceRange}</span>
                       <strong className="text-base font-bold text-amber-800 font-mono">
                         {formatUSD(p.priceUSD)}
                       </strong>
@@ -244,7 +244,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
 
                     <button
                       onClick={(e) => openTourModal(p, e)}
-                      className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-white/100 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition cursor-pointer"
                     >
                       {t.bookDiscoveryTour}
                     </button>
@@ -267,7 +267,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
         >
           <div className="min-h-full flex items-center justify-center py-6">
             <div 
-              className="relative w-full max-w-lg bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 text-zinc-900 space-y-4 animate-in zoom-in-95"
+              className="relative w-full max-w-lg bg-black/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/20 text-white space-y-4 animate-in zoom-in-95"
               onClick={(e) => e.stopPropagation()}
             >
             
@@ -291,7 +291,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
               
               <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5">
-                <span className="bg-amber-500/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                <span className="bg-white/100/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                   {selectedLoc.district}
                 </span>
                 {selected.citizenshipEligible && (
@@ -313,34 +313,34 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
             </div>
 
             {/* Agency Info */}
-            <div className="flex items-center justify-between text-xs text-zinc-500 px-1">
-              <span>{modalT.agency}: <strong className="text-zinc-800 font-semibold">{selected.developer || selected.agency || 'Xenios Prime Real Estate'}</strong></span>
-              <span className="font-mono text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">ID: {selected.id}</span>
+            <div className="flex items-center justify-between text-xs text-white/70 px-1">
+              <span>{modalT.agency}: <strong className="text-white font-semibold">{selected.developer || selected.agency || 'Xenios Prime Real Estate'}</strong></span>
+              <span className="font-mono text-amber-700 bg-white/10 px-2 py-0.5 rounded-full border border-white/20">ID: {selected.id}</span>
             </div>
 
             {/* Specifications Grid */}
-            <div className="grid grid-cols-3 gap-2 text-center p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200 text-xs">
+            <div className="grid grid-cols-3 gap-2 text-center p-3.5 bg-white/10/70 rounded-2xl border border-white/20 text-xs">
               <div>
-                <span className="text-[10px] text-zinc-400 block uppercase font-semibold">{modalT.bedrooms}</span>
-                <strong className="text-zinc-900 text-sm font-bold">{selected.bedrooms}</strong>
+                <span className="text-[10px] text-white/60 block uppercase font-semibold">{modalT.bedrooms}</span>
+                <strong className="text-white text-sm font-bold">{selected.bedrooms}</strong>
               </div>
               <div>
-                <span className="text-[10px] text-zinc-400 block uppercase font-semibold">{modalT.grossArea}</span>
-                <strong className="text-zinc-900 text-sm font-bold">{selected.areaM2} m²</strong>
+                <span className="text-[10px] text-white/60 block uppercase font-semibold">{modalT.grossArea}</span>
+                <strong className="text-white text-sm font-bold">{selected.areaM2} m²</strong>
               </div>
               <div>
-                <span className="text-[10px] text-zinc-400 block uppercase font-semibold">{modalT.priceRange}</span>
+                <span className="text-[10px] text-white/60 block uppercase font-semibold">{modalT.priceRange}</span>
                 <strong className="text-amber-800 font-mono text-sm font-bold">{formatUSD(selected.priceUSD)}</strong>
               </div>
             </div>
 
             {/* Localized Description */}
             <div className="space-y-1.5">
-              <h4 className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                 <span>{modalT.specs}</span>
               </h4>
-              <p className="text-xs text-zinc-700 leading-relaxed bg-[#fbf8f1] p-4 rounded-2xl border border-amber-200/70">
+              <p className="text-xs text-white/90 leading-relaxed bg-white/5 p-4 rounded-2xl border border-white/20">
                 {selectedLoc.description}
               </p>
             </div>
@@ -352,7 +352,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                   {selectedLoc.highlights.map((h: string, idx: number) => (
                     <span
                       key={idx}
-                      className="px-2.5 py-1 rounded-xl bg-amber-100/60 text-amber-900 text-[11px] font-semibold border border-amber-200 flex items-center gap-1"
+                      className="px-2.5 py-1 rounded-xl bg-amber-100/60 text-amber-900 text-[11px] font-semibold border border-white/20 flex items-center gap-1"
                     >
                       <CheckCircle2 className="w-3 h-3 text-amber-700" />
                       <span>{h}</span>
@@ -368,7 +368,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                 <span className="text-[10px] text-emerald-700 font-bold uppercase block">{modalT.citizenship}</span>
                 <p className="text-[11px] font-semibold leading-tight">{selectedLoc.citizenshipStatus}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-amber-950 space-y-0.5">
+              <div className="p-3 rounded-2xl bg-white/10/80 border border-white/20 text-amber-950 space-y-0.5">
                 <span className="text-[10px] text-amber-700 font-bold uppercase block">{modalT.roi}</span>
                 <p className="text-[11px] font-semibold leading-tight">{selectedLoc.roiEstimate}</p>
               </div>
@@ -379,14 +379,14 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="py-3 px-4 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold text-xs transition cursor-pointer"
+                className="py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white/90 font-bold text-xs transition cursor-pointer"
               >
                 {modalT.close}
               </button>
               <button
                 type="button"
                 onClick={(e) => openTourModal(selected, e)}
-                className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-white/100 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition cursor-pointer flex items-center justify-center gap-2"
               >
                 <Calendar className="w-4 h-4" />
                 <span>{t.bookDiscoveryTour}</span>
@@ -408,7 +408,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
         >
           <div className="min-h-full flex items-center justify-center py-6">
             <div 
-              className="relative w-full max-w-md bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95"
+              className="relative w-full max-w-md bg-black/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/20 space-y-4 text-white animate-in zoom-in-95"
               onClick={(e) => e.stopPropagation()}
             >
             
@@ -417,49 +417,49 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
               type="button"
               onClick={closeTourModal}
               aria-label={modalT.close}
-              className="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center text-sm font-bold cursor-pointer transition border border-zinc-200 active:scale-95"
+              className="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/90 flex items-center justify-center text-sm font-bold cursor-pointer transition border border-white/20 active:scale-95"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="space-y-1 pr-8">
-              <h3 className="text-base font-bold font-serif text-zinc-900">{modalT.tourTitle}</h3>
+              <h3 className="text-base font-bold font-serif text-white">{modalT.tourTitle}</h3>
               <p className="text-xs text-amber-800 font-semibold">{tourLoc.title}</p>
             </div>
 
             <form onSubmit={handleTourSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="text-zinc-700 font-bold block mb-1">{modalT.fullName}</label>
+                <label className="text-white/90 font-bold block mb-1">{modalT.fullName}</label>
                 <input
                   type="text"
                   value={tourName}
                   onChange={(e) => setTourName(e.target.value)}
                   placeholder={modalT.fullNamePlaceholder}
-                  className="w-full p-2.5 bg-white rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500/40 outline-none"
+                  className="w-full p-2.5 bg-black/20 backdrop-blur-md rounded-xl border border-white/20 focus:ring-2 focus:ring-amber-500/40 outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-zinc-700 font-bold block mb-1">{modalT.phone}</label>
+                <label className="text-white/90 font-bold block mb-1">{modalT.phone}</label>
                 <input
                   type="text"
                   value={tourContact}
                   onChange={(e) => setTourContact(e.target.value)}
                   placeholder={modalT.phonePlaceholder}
-                  className="w-full p-2.5 bg-white rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500/40 outline-none font-mono"
+                  className="w-full p-2.5 bg-black/20 backdrop-blur-md rounded-xl border border-white/20 focus:ring-2 focus:ring-amber-500/40 outline-none font-mono"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-zinc-700 font-bold block mb-1">{modalT.notes}</label>
+                <label className="text-white/90 font-bold block mb-1">{modalT.notes}</label>
                 <textarea
                   value={tourNote}
                   onChange={(e) => setTourNote(e.target.value)}
                   placeholder={modalT.notesPlaceholder}
                   rows={2}
-                  className="w-full p-2.5 bg-white rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500/40 outline-none"
+                  className="w-full p-2.5 bg-black/20 backdrop-blur-md rounded-xl border border-white/20 focus:ring-2 focus:ring-amber-500/40 outline-none"
                 />
               </div>
 
@@ -467,14 +467,14 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                 <button
                   type="button"
                   onClick={closeTourModal}
-                  className="py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold rounded-2xl transition cursor-pointer"
+                  className="py-3 px-4 bg-white/10 hover:bg-white/20 text-white/90 font-bold rounded-2xl transition cursor-pointer"
                 >
                   {modalT.close}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-3 bg-white/100 hover:bg-amber-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-500/25 transition disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? '...' : modalT.bookTourBtn}
                 </button>

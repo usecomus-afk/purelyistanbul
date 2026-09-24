@@ -274,7 +274,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-black/20 backdrop-blur-md rounded-2xl border border-amber-200/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
@@ -340,7 +340,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             </div>
 
             {filteredExperiences.length === 0 && (
-              <div className="text-center py-12 bg-black/20 backdrop-blur-md rounded-3xl border border-amber-200/80 p-6 space-y-2">
+              <div className="text-center py-12 bg-black/20 backdrop-blur-md rounded-3xl border border-white/20 p-6 space-y-2">
                 <Compass className="w-10 h-10 text-amber-500/40 mx-auto" />
                 <h3 className="text-sm font-bold text-white">{t.noRequests}</h3>
                 <p className="text-xs text-white/70 max-w-xs mx-auto">
@@ -416,11 +416,19 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     className="btn-3d p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[155px] sm:min-h-[170px] group relative cursor-pointer"
                   >
                     {/* 3D Icon Box matching in-room services */}
-                    <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-[#fbf8f1] p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-amber-100/60 shadow-inner overflow-hidden relative">
-                      <img 
-                        src={cat.iconPath} 
-                        alt={cat.key} 
-                        className={`w-full h-full object-contain drop-shadow-sm transition-transform ${isAesthetic ? 'scale-130' : isScaledUp ? 'scale-120' : 'scale-105'}`}
+                    <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-white/10 p-2 flex items-center justify-center group-hover:scale-105 transition-transform border border-white/20 shadow-inner overflow-hidden relative">
+                      <div 
+                        className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.65]"
+                        style={{
+                          WebkitMaskImage: `url(${cat.iconPath})`,
+                          WebkitMaskSize: 'contain',
+                          WebkitMaskRepeat: 'no-repeat',
+                          WebkitMaskPosition: 'center',
+                          maskImage: `url(${cat.iconPath})`,
+                          maskSize: 'contain',
+                          maskRepeat: 'no-repeat',
+                          maskPosition: 'center'
+                        }}
                       />
                       {cat.count > 0 && (
                         <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-amber-600/90 text-white font-bold text-[9px] shadow-2xs leading-none">
@@ -431,7 +439,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
                     {/* Title & Description */}
                     <div className="w-full">
-                      <span className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-800 transition-colors leading-tight block">
+                      <span className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-400 transition-colors leading-tight block">
                         {cat.key}
                       </span>
                       <span className="text-[10px] text-white/60 line-clamp-1 mt-0.5 block">
@@ -559,7 +567,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             >
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-white/20/15 flex items-center justify-center text-amber-700">
+                  <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center text-amber-700">
                     <Bell className="w-4 h-4" />
                   </div>
                   <div>
@@ -585,7 +593,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   {requests.map((req) => (
                     <div
                       key={req.id}
-                      className="bg-[#fbf8f1] p-3.5 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3 text-xs"
+                      className="bg-white/10 p-3.5 rounded-2xl border border-white/20 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="space-y-1">
                         <strong className="text-white block">{req.serviceTitle}</strong>

@@ -99,10 +99,16 @@ export function HotelHeader({
     <header className="pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 bg-transparent border-b-transparent">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-4">
         
-        {/* NEW DESIGN: Centered Hotel Name */}
-            <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
-              {hotel.name}
-            </h1>
+        {/* Centered Logo/Name */}
+        {activeTab === 'services' ? (
+          <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
+            {hotel.name}
+          </h1>
+        ) : (
+          <Link href="/" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-xl sm:text-2xl text-white leading-none select-none drop-shadow-md mt-2 mb-1">
+            <span>purely</span><span className="text-red-500 font-bold">İstanbul</span>
+          </Link>
+        )}
 
             {/* NEW DESIGN: Unified Single Pill */}
             <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-black/10 backdrop-blur-[4px] border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] relative z-50">
