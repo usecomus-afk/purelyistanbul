@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { Language, Hotel, ModuleAdminSettingsMap, InRoomServiceItem } from '@/lib/types';
 import { getT } from '@/lib/i18n';
 import { XeniosStore } from '@/lib/store';
@@ -142,10 +143,15 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   return (
     <div>
       {/* Fixed Background for this tab */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: 'url(/images/services-bg.jpg)' }}
-      >
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Image 
+          src="/images/services-bg.jpg" 
+          alt="Services Background"
+          fill
+          priority
+          quality={80}
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
       </div>
       

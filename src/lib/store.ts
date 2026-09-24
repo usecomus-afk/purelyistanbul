@@ -640,10 +640,20 @@ export const XeniosStore = {
     try {
       const stored = safeGet(`${STORAGE_KEYS.ROOM_SERVICE_MENU}_${targetHotelId}`);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        // Migrate old broken preset image paths dynamically
+        return parsed.map((item: any) => ({
+          ...item,
+          image: item.image?.replace('exp-gastro-', 'exp-')
+        }));
       }
     } catch (e) {}
-    return defaultMenu;
+    
+    // Migrate default menu
+    return defaultMenu.map(item => ({
+      ...item,
+      image: item.image?.replace('exp-gastro-', 'exp-')
+    }));
   },
 
   saveRoomServiceMenu(hotelId: string, menu: RoomServiceMenuItem[]) {
