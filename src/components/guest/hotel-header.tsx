@@ -96,7 +96,7 @@ export function HotelHeader({
   };
 
   return (
-    <header className={`pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 ${isHotelServices ? 'bg-transparent border-b-transparent' : 'bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent border-b border-amber-200/50'}`}>
+    <header className={`pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 ${isHotelServices ? 'bg-transparent border-b-transparent' : 'bg-gradient-to-b from-amber-500/10 via-amber-100/20 to-transparent border-b border-amber-200/50'}`}>
       <div className={`max-w-4xl mx-auto ${isHotelServices ? 'flex flex-col items-center justify-center gap-4' : 'space-y-2.5'}`}>
         
         {isHotelServices ? (
