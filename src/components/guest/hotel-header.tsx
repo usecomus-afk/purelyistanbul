@@ -102,7 +102,7 @@ export function HotelHeader({
         {isHotelServices ? (
           <>
             {/* NEW DESIGN: Centered Hotel Name */}
-            <h1 className="font-serif font-extrabold text-[13px] sm:text-[15px] tracking-[0.15em] text-white uppercase drop-shadow-md text-center mt-2">
+            <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
               {hotel.name}
             </h1>
 
