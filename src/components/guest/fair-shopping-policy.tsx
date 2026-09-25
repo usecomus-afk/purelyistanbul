@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from 'react';
 import { 
@@ -552,7 +552,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             </p>
           </div>
 
-          <div className="bg-gradient-to-b from-amber-50 to-orange-50/60 p-5 rounded-2xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-black/20 backdrop-blur-md p-5 rounded-2xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 text-center sm:text-left">
               <div className="w-14 h-14 rounded-2xl bg-orange-500/10 p-1.5 flex items-center justify-center shrink-0 border border-orange-200/80 shadow-xs">
                 <Image
@@ -583,7 +583,6 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
             <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center">1</span>
               <span>{lt.howToComplainTitle}</span>
             </h3>
 
@@ -624,7 +623,6 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
             <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center">2</span>
               <span>{lt.whatHappensNextTitle}</span>
             </h3>
 
