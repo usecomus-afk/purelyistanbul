@@ -164,13 +164,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-center gap-2 min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
+              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center group-hover:scale-110 transition-transform relative drop-shadow-[0_4px_8px_rgba(245,158,11,0.3)]">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative drop-shadow-[0_4px_8px_rgba(245,158,11,0.3)]">
                 <div 
                   className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600"
                   style={{
@@ -186,7 +186,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 />
               </div>
               <div className="w-full mt-1">
-                <span className="text-sm sm:text-base font-extrabold bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent leading-tight block drop-shadow-sm">
+                <span className="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-400 transition-colors leading-tight block drop-shadow-sm">
                   {serviceTitle}
                 </span>
               </div>
