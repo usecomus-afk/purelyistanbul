@@ -149,7 +149,7 @@ export function ExperienceCard({
                 {experience.specialties.map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-block px-2 py-0.5 rounded-lg text-[10px] font-medium bg-amber-100/70 text-amber-950 border border-white/10/80"
+                    className="inline-block px-2 py-0.5 rounded-lg text-[10px] font-medium bg-black/50 text-amber-300 border border-white/10/80"
                   >
                     {item}
                   </span>
@@ -193,7 +193,7 @@ export function ExperienceCard({
             e.stopPropagation();
             onOpenTransit(experience);
           }}
-          className="p-2.5 rounded-2xl bg-white/10 hover:bg-amber-100 text-amber-400 border border-white/10 text-xs font-semibold flex items-center justify-center transition cursor-pointer"
+          className="p-2.5 rounded-2xl bg-white/10 hover:bg-black/40 text-amber-400 border border-white/10 text-xs font-semibold flex items-center justify-center transition cursor-pointer"
           title={t.transitTitle}
         >
           <Navigation className="w-4 h-4 text-amber-700" />
@@ -261,7 +261,7 @@ export function ExperienceCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-2.5 rounded-2xl bg-white/10 hover:bg-zinc-200 text-white/80 border border-white/10 text-xs font-semibold flex items-center justify-center transition cursor-pointer"
+                className="p-2.5 rounded-2xl bg-white/10 hover:bg-black/40 text-white/80 border border-white/10 text-xs font-semibold flex items-center justify-center transition cursor-pointer"
                 title="Web Sitesi / Menü"
               >
                 <Globe className="w-4 h-4 text-white/80" />

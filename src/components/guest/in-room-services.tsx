@@ -172,7 +172,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
             >
               <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative drop-shadow-[0_4px_8px_rgba(245,158,11,0.3)]">
                 <div 
-                  className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600"
+                  className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.4]"
                   style={{
                     WebkitMaskImage: `url(${item.icon})`,
                     WebkitMaskSize: 'contain',
