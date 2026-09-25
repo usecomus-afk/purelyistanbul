@@ -35,8 +35,6 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
     if (result === 'granted') {
       toast.success("Bildirim izinleri başarıyla verildi!");
       PwaNotificationManager.testNotification();
-    } else {
-      toast.error("Bildirim izni reddedildi. Tarayıcı ayarlarından izin verebilirsiniz.");
     }
   };
 
@@ -47,14 +45,6 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
     toast.success("Bildirim tercihleriniz güncellendi.");
   };
 
-  const handleSendTest = async () => {
-    if (permission !== 'granted') {
-      await handleRequestPermission();
-      return;
-    }
-    await PwaNotificationManager.testNotification();
-    toast.success("Test bildirimi cihazınıza gönderildi!");
-  };
 
   if (!isOpen) return null;
 
@@ -179,18 +169,10 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-2 border-t border-zinc-100 flex items-center gap-2.5">
-          <button
-            onClick={handleSendTest}
-            className="flex-1 py-2.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-950 border border-amber-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <Bell className="w-3.5 h-3.5" />
-            <span>Test Bildirimi Gönder</span>
-          </button>
-
+        <div className="pt-2 border-t border-zinc-100 flex items-center justify-end">
           <button
             onClick={onClose}
-            className="py-2.5 px-5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-xs transition cursor-pointer"
+            className="w-full sm:w-auto py-2.5 px-6 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-xs transition cursor-pointer"
           >
             Tamam
           </button>
