@@ -163,23 +163,19 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const categories = ['all', ...Array.from(new Set(allExperiences.map(e => e.category)))];
 
   const categoryShowcase = [
-    { key: t.categoriesList.invest.title, rawKey: "İstanbul'da Yatırım", iconPath: '/icons/categories/invest.png', count: 20, desc: t.categoriesList.invest.desc, tab: 'invest' },
-    { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
-    { key: t.categoriesList.bosphorus.title, rawKey: "Boğaz Turları & Yat", targetCategory: "1. Boğaz & Tekne Deneyimleri", iconPath: '/icons/categories/bogaz-yatturlari.png', count: 7, desc: t.categoriesList.bosphorus.desc },
-    { key: t.categoriesList.history.title, rawKey: "Tarih & Müzeler", targetCategory: "2. Tarihi Rota & Hızlı Geçiş Turları", iconPath: '/icons/categories/tarih-muzeler.png', count: 8, desc: t.categoriesList.history.desc },
-    { key: t.categoriesList.gastronomy.title, rawKey: "Gastronomi & Gurme", targetCategory: "3. Gastronomi & Sokak Lezzetleri", iconPath: '/icons/categories/gastronomi-gurme.png', count: 6, desc: t.categoriesList.gastronomy.desc },
-    { key: t.categoriesList.hamam.title, rawKey: "Türk Hamamı & Spa", targetCategory: "4. Geleneksel & Kültürel Deneyimler", iconPath: '/icons/categories/turk-hamami-spa.png', count: 4, desc: t.categoriesList.hamam.desc },
-    { key: (t.categoriesList as any).dayTrips?.title || "Günübirlik Şehir Dışı Turlar", rawKey: "Günübirlik Şehir Dışı Turlar", targetCategory: "5. Günübirlik Şehir Dışı Turlar", iconPath: '/icons/categories/macera-doga.png', count: 3, desc: (t.categoriesList as any).dayTrips?.desc || "Bursa, Sapanca & Adalar turları" },
-    { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
-    { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.png', count: 5, desc: t.categoriesList.photo.desc },
-    { key: (t.categoriesList as any).nightlife?.title || "Gece Hayatı & Bar Turları", rawKey: "Gece Hayatı & Bar Turları", targetCategory: "8. Gece Hayatı, Bar Turları & Pub Crawl", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 3, desc: (t.categoriesList as any).nightlife?.desc || "Pub Crawl, Boğaz'da parti tekneleri & club geçişleri" },
-    { key: t.categoriesList.shopping.title, rawKey: "Alışveriş & Çarşılar", targetCategory: "9. Alışveriş, Stilist & Pazarlık Asistanlığı", iconPath: '/icons/categories/alisveris-carsilar.png', count: 4, desc: t.categoriesList.shopping.desc },
-    { key: (t.categoriesList as any).family?.title || "Aile & Çocuk", rawKey: "Aile & Çocuk", targetCategory: "10. Aile, Çocuk & Tematik Eğlence Parkları", iconPath: '/icons/categories/macera-doga.png', count: 5, desc: (t.categoriesList as any).family?.desc || "Akvaryum, Vialand & Rahmi Koç Müzesi" },
-    { key: t.categoriesList.art.title, rawKey: "Sanat & Semazen", targetCategory: "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri", iconPath: '/icons/categories/sanat-semazen.png', count: 4, desc: t.categoriesList.art.desc },
-    { key: t.categoriesList.culture.title, rawKey: "Kültürel Miras", targetCategory: "12. Mistik, İnanç & Çok Kültürlü Miras Rotaları", iconPath: '/icons/categories/kulturel-miras.png', count: 5, desc: t.categoriesList.culture.desc },
-    { key: t.categoriesList.adventure.title, rawKey: "Macera & Doğa", targetCategory: "13. Doğa, Macera & Açık Hava Aktiviteleri", iconPath: '/icons/categories/macera-doga.png', count: 4, desc: t.categoriesList.adventure.desc },
-    { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "14. Medikal Estetik & Güzellik", targetCategory: "14. Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" }
-  ];
+      { key: t.categoriesList.history.title, rawKey: "Tarih & Müzeler", targetCategory: "2. Tarihi Rota & Hızlı Geçiş Turları", iconPath: '/icons/categories/tarih-muzeler.png', count: 8, desc: t.categoriesList.history.desc },
+      { key: t.categoriesList.gastronomy.title, rawKey: "Gastronomi & Gurme", targetCategory: "3. Gastronomi & Sokak Lezzetleri", iconPath: '/icons/categories/gastronomi-gurme.png', count: 6, desc: t.categoriesList.gastronomy.desc },
+      { key: t.categoriesList.art.title, rawKey: "Sanat & Semazen", targetCategory: "11. Modern Sanat, Tasarım & Mimarlık Yürüyüşleri", iconPath: '/icons/categories/sanat-semazen.png', count: 4, desc: t.categoriesList.art.desc },
+      { key: t.categoriesList.shopping.title, rawKey: "Alışveriş & Çarşılar", targetCategory: "9. Alışveriş, Stilist & Pazarlık Asistanlığı", iconPath: '/icons/categories/alisveris-carsilar.png', count: 4, desc: t.categoriesList.shopping.desc },
+      { key: t.categoriesList.bosphorus.title, rawKey: "Boğaz Turları & Yat", targetCategory: "1. Boğaz & Tekne Deneyimleri", iconPath: '/icons/categories/bogaz-yatturlari.png', count: 7, desc: t.categoriesList.bosphorus.desc },
+      { key: t.categoriesList.culture.title, rawKey: "Kültürel Miras", targetCategory: "12. Mistik, İnanç & Çok Kültürlü Miras Rotaları", iconPath: '/icons/categories/kulturel-miras.png', count: 5, desc: t.categoriesList.culture.desc },
+      { key: t.categoriesList.hamam.title, rawKey: "Türk Hamamı & Spa", targetCategory: "4. Geleneksel & Kültürel Deneyimler", iconPath: '/icons/categories/turk-hamami-spa.png', count: 4, desc: t.categoriesList.hamam.desc },
+      { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.png', count: 5, desc: t.categoriesList.photo.desc },
+      { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
+      { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
+      { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "14. Medikal Estetik & Güzellik", targetCategory: "14. Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" },
+      { key: t.categoriesList.invest.title, rawKey: "İstanbul'da Yatırım", iconPath: '/icons/categories/invest.png', count: 20, desc: t.categoriesList.invest.desc, tab: 'invest' }
+    ];
 
   // Filter experiences (admin-suspended listings never reach the guest catalog)
   const filteredExperiences = allExperiences.filter(e => {
@@ -413,17 +409,17 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                     }}
-                    className="btn-3d p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[155px] sm:min-h-[170px] group relative cursor-pointer"
+                    className="p-4 sm:p-5 flex flex-col items-center text-center justify-between gap-3 min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)]"
                   >
                     {/* 3D Icon Box matching in-room services */}
                     <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
                       {cat.iconPath.includes('fotograf') ? (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500" strokeWidth={1.5} />
+                          <Camera className="w-14 h-14 sm:w-16 sm:h-16 text-amber-500" strokeWidth={1.5} />
                         </div>
                       ) : (
                         <div 
-                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[0.85]"
+                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.2]"
                           style={{
                             WebkitMaskImage: `url(${cat.iconPath})`,
                             WebkitMaskSize: 'contain',
