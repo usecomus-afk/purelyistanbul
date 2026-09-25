@@ -170,7 +170,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       { key: t.categoriesList.bosphorus.title, rawKey: "Boğaz Turları & Yat", targetCategory: "1. Boğaz & Tekne Deneyimleri", iconPath: '/icons/categories/bogaz-yatturlari.png', count: 7, desc: t.categoriesList.bosphorus.desc },
       { key: t.categoriesList.culture.title, rawKey: "Kültürel Miras", targetCategory: "12. Mistik, İnanç & Çok Kültürlü Miras Rotaları", iconPath: '/icons/categories/kulturel-miras.png', count: 5, desc: t.categoriesList.culture.desc },
       { key: t.categoriesList.hamam.title, rawKey: "Türk Hamamı & Spa", targetCategory: "4. Geleneksel & Kültürel Deneyimler", iconPath: '/icons/categories/turk-hamami-spa.png', count: 4, desc: t.categoriesList.hamam.desc },
-      { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.png', count: 5, desc: t.categoriesList.photo.desc },
+      { key: t.categoriesList.photo.title, rawKey: "Fotoğraf & Kostüm", targetCategory: "7. Fotoğrafçılık & Sosyal Medya Çekimleri", iconPath: '/icons/categories/fotograf-kostum.svg', count: 5, desc: t.categoriesList.photo.desc },
       { key: t.categoriesList.transfer.title, rawKey: "Özel VIP Transfer", targetCategory: "6. Ulaşım, Transfer & Şehir Kartları", iconPath: '/icons/categories/ozel-vip-transfer.png', count: 2, desc: t.categoriesList.transfer.desc },
       { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
       { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "14. Medikal Estetik & Güzellik", targetCategory: "14. Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" },
@@ -413,12 +413,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   >
                     {/* 3D Icon Box matching in-room services */}
                     <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
-                      {cat.iconPath.includes('fotograf') ? (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Camera className="w-14 h-14 sm:w-16 sm:h-16 text-amber-500" strokeWidth={1.5} />
-                        </div>
-                      ) : (
-                        <div 
+                      <div 
                           className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.2]"
                           style={{
                             WebkitMaskImage: `url(${cat.iconPath})`,
@@ -431,7 +426,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                             maskPosition: 'center'
                           }}
                         />
-                      )}
                     </div>
 
                     {/* Title & Description */}
