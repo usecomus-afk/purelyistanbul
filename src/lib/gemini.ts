@@ -49,7 +49,7 @@ async function callDirectGeminiRest(
   if (!apiKey) return null;
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const systemPrompt = `Sene 2026. Sen "Comus AI", İstanbul'daki purelyİstanbul platformunun 7/24 hizmet veren seçkin, güvenlik odaklı ve kişisel lüks dijital konsiyerjisisin.
 Konaklayan misafir: ${guestName || 'Misafir'}
 Otel: ${hotelName} (${hotelDistrict}), Oda No: ${roomNumber}
@@ -259,3 +259,4 @@ export async function askGeminiConcierge(
     recommendations: fallback.recs
   };
 }
+

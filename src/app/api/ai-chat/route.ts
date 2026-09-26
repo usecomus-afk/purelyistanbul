@@ -1,3 +1,4 @@
+export const maxDuration = 60;
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import {
@@ -183,7 +184,7 @@ export async function POST(req: Request) {
         ];
 
         const response = await ai.models.generateContent({
-          model: 'gemini-3.6-flash',
+          model: 'gemini-1.5-flash',
           contents,
           config: {
             systemInstruction: fullSystemPrompt,
@@ -315,4 +316,6 @@ export async function POST(req: Request) {
     });
   }
 }
+
+
 

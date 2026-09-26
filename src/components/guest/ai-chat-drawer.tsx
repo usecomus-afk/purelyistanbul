@@ -243,13 +243,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
   return (
     <div 
-      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
+      className="fixed top-0 left-0 right-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white w-full sm:max-w-lg h-[88dvh] sm:h-[82vh] max-h-[88dvh] sm:max-h-[82vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900"
+        className="bg-white w-full sm:max-w-lg h-full sm:h-[82vh] max-h-full sm:max-h-[82vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -417,7 +417,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 e.preventDefault();
                 handleSend();
               }}
-              className="p-3 pb-[calc(5rem+env(safe-area-inset-bottom))] bg-white border-t border-amber-200 flex items-center gap-2 shrink-0"
+              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white border-t border-amber-200 flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
@@ -440,3 +440,4 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
     </div>
   );
 }
+

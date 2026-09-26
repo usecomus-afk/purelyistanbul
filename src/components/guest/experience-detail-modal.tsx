@@ -117,7 +117,7 @@ export function ExperienceDetailModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-white overflow-y-scroll overflow-x-hidden text-zinc-900"
+      className="fixed inset-0 z-[100000] bg-white overflow-y-scroll overflow-x-hidden text-zinc-900"
       style={{ 
         WebkitOverflowScrolling: 'touch'
       }}
@@ -320,7 +320,7 @@ export function ExperienceDetailModal({
       </div>
 
       {/* FLOATING BOTTOM BAR (Sticky Footer) */}
-      <div className="fixed bottom-[64px] sm:bottom-[68px] inset-x-0 bg-white/95 backdrop-blur-lg border-t border-zinc-200 p-3.5 sm:p-4 z-40 shadow-2xl">
+      <div className="fixed bottom-0 pb-[calc(1rem+env(safe-area-inset-bottom))] inset-x-0 bg-white/95 backdrop-blur-lg border-t border-zinc-200 p-3.5 sm:p-4 z-40 shadow-2xl">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <div className="space-y-0.5">
             <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
