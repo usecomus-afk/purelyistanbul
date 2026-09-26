@@ -417,7 +417,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 e.preventDefault();
                 handleSend();
               }}
-              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white border-t border-amber-200 flex items-center gap-2 shrink-0"
+              className="p-3 pb-[calc(5rem+env(safe-area-inset-bottom))] bg-white border-t border-amber-200 flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
