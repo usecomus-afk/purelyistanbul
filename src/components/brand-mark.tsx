@@ -42,10 +42,10 @@ export function BrandMark({
       )}
       {showText && (
         <div className="flex flex-col leading-none">
-          <span className={`font-serif tracking-tight font-bold text-lg sm:text-xl leading-none ${
-            theme === 'dark' ? 'text-amber-400' : 'text-zinc-900'
+          <span className={`font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
+            theme === 'dark' ? 'text-white' : 'text-zinc-900'
           }`}>
-            purely<span className="text-red-600 font-bold">İstanbul</span>
+            www.purely<span className="text-red-600 font-bold">istanbul</span>.com
           </span>
           <span className={`text-[9px] sm:text-[10px] tracking-wider uppercase mt-0.5 ${
             theme === 'dark' ? 'text-zinc-400' : 'text-amber-800/70'
@@ -66,8 +66,9 @@ export function BrandMark({
   }
 
   return (
-    <Link href={href} className={`inline-flex items-center gap-2 group ${className}`}>
+    <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 group ${className}`}>
       {content}
-    </Link>
+    </a>
   );
 }
+
