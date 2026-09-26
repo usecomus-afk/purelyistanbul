@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { BrandMark } from "@/components/brand-mark";
 
 export function MarketplaceHeader() {
   const { user, profile, logout } = useAuth();
@@ -36,9 +37,7 @@ export function MarketplaceHeader() {
       }`}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between pl-2 sm:pl-0 pr-2 sm:pr-5 md:pr-8 h-[84px] gap-2">
-        <Link href="/" className="relative shrink-0 h-7 sm:h-11" style={{ aspectRatio: "1564 / 232" }}>
-          <Image src="/purely-wordmark.png" alt="purely İstanbul.com" fill preload={true} className="object-contain object-left" />
-        </Link>
+        <BrandMark href="https://www.purelyistanbul.com" theme="light" />
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
           {hotelSession && (

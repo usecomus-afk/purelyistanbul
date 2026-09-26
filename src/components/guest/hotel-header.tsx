@@ -105,9 +105,9 @@ export function HotelHeader({
             {hotel.name}
           </h1>
         ) : (
-          <Link href="/" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-xl sm:text-2xl text-white leading-none select-none drop-shadow-md mt-2 mb-1">
-            <span>purely</span><span className="text-red-500 font-bold">İstanbul</span>
-          </Link>
+          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-2xl sm:text-3xl text-white leading-none select-none drop-shadow-md mt-2 mb-1">
+            www.purely<span className="text-red-500 font-bold">istanbul</span>.com
+          </a>
         )}
 
             {/* NEW DESIGN: Unified Single Pill */}
