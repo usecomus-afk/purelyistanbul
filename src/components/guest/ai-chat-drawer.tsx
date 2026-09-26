@@ -6,7 +6,7 @@ import { XeniosStore } from '@/lib/store';
 import { askGeminiConcierge, ChatMessage } from '@/lib/gemini';
 import { useState, useEffect, useRef } from 'react';
 import { GuestPreferenceSurvey } from './guest-preference-survey';
-import { Send, User, X, UserCog, Sparkles, Trash2 } from 'lucide-react';
+import { Send, User, X, Sparkles, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -291,14 +291,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
-            <button
-              onClick={() => setShowSurvey(!showSurvey)}
-              className="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-[11px] font-bold flex items-center gap-1 transition cursor-pointer border border-white/20"
-              title={t.knowMeBtn}
-            >
-              <UserCog className="w-3.5 h-3.5 text-amber-200" />
-              <span>{t.knowMeBtn}</span>
-            </button>
+
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm font-bold transition cursor-pointer"
