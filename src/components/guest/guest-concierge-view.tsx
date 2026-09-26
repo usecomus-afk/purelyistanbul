@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -414,7 +414,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     {/* 3D Icon Box matching in-room services */}
                     <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
                       <div 
-                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.7]"
+                          className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.2]"
                           style={{
                             WebkitMaskImage: `url(${cat.iconPath})`,
                             WebkitMaskSize: 'contain',
