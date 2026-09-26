@@ -254,7 +254,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       >
         
         {/* Header */}
-        <div className="px-4 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-md shrink-0">
+        <div className="px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-md shrink-0">
           <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
             <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xs overflow-hidden p-1.5 shrink-0">
               <Image
