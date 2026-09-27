@@ -209,7 +209,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           fill
           priority
           quality={80}
-          className="object-cover"
+          unoptimized className="object-cover"
         />
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
       </div>
