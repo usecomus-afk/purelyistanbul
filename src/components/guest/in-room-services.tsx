@@ -170,19 +170,11 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative drop-shadow-[0_4px_8px_rgba(245,158,11,0.3)]">
-                <div 
-                  className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 scale-[1.4]"
-                  style={{
-                    WebkitMaskImage: `url(${item.icon})`,
-                    WebkitMaskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    maskImage: `url(${item.icon})`,
-                    maskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center'
-                  }}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                <img
+                  src={item.icon}
+                  alt={serviceTitle}
+                  className="w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)]"
                 />
               </div>
               <div className="w-full mt-1">
