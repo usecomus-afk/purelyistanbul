@@ -106,7 +106,7 @@ export function HotelHeader({
           </h1>
         ) : (
           <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-2xl sm:text-3xl text-white leading-none select-none drop-shadow-md mt-2 mb-1">
-            www.purely<span className="text-red-500 font-bold">istanbul</span>.com
+            purely<span className="text-red-500 font-bold">istanbul</span>
           </a>
         )}
 

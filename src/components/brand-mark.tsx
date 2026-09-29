@@ -45,12 +45,7 @@ export function BrandMark({
           <span className={`font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
             theme === 'dark' ? 'text-white' : 'text-zinc-900'
           }`}>
-            www.purely<span className="text-red-600 font-bold">istanbul</span>.com
-          </span>
-          <span className={`text-[9px] sm:text-[10px] tracking-wider uppercase mt-0.5 ${
-            theme === 'dark' ? 'text-zinc-400' : 'text-amber-800/70'
-          }`}>
-            Digital Guest Concierge
+            purely<span className="text-red-600 font-bold">istanbul</span>
           </span>
         </div>
       )}
