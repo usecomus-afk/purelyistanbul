@@ -560,7 +560,7 @@ export const XeniosStore = {
         ingredients: 'Yumurta, Peynir Çeşitleri, Bal, Kaymak, Zeytin, Tereyağı, Simit',
         price: 24,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-1.jpg',
+        image: '/images/experiences/rest-3.jpg',
         available: true,
         preparationTimeMinutes: 20,
         createdAt: new Date().toISOString()
@@ -574,7 +574,7 @@ export const XeniosStore = {
         ingredients: '220gr Dana Antrikot, Trüf Yağı, Patates, Kuşkonmaz, Biberiye',
         price: 34,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-2.jpg',
+        image: '/images/experiences/rest-1.jpg',
         available: true,
         preparationTimeMinutes: 25,
         createdAt: new Date().toISOString()
@@ -588,7 +588,7 @@ export const XeniosStore = {
         ingredients: 'Taze Makarna, Porçini Mantarı, Krema, Parmesan, Sarımsak',
         price: 21,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-3.jpg',
+        image: '/images/experiences/rest-9.jpg',
         available: true,
         preparationTimeMinutes: 15,
         createdAt: new Date().toISOString()
@@ -602,7 +602,7 @@ export const XeniosStore = {
         ingredients: 'Tost Ekmeği, Tavuk Göğsü, Füme Et, Yumurta, Patates',
         price: 16,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-4.jpg',
+        image: '/images/experiences/rest-6.jpg',
         available: true,
         preparationTimeMinutes: 12,
         createdAt: new Date().toISOString()
@@ -616,7 +616,7 @@ export const XeniosStore = {
         ingredients: 'Manda Sütü, Pirinç, Şeker, Giresun Fındığı, Vanilya',
         price: 9,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-5.jpg',
+        image: '/images/experiences/rest-11.jpg',
         available: true,
         preparationTimeMinutes: 5,
         createdAt: new Date().toISOString()
@@ -630,29 +630,40 @@ export const XeniosStore = {
         ingredients: '%100 Doğal Portakal',
         price: 7,
         currency: 'EUR',
-        image: '/images/experiences/exp-gastro-6.jpg',
+        image: '/images/experiences/rest-15.jpg',
         available: true,
         preparationTimeMinutes: 5,
         createdAt: new Date().toISOString()
       }
     ];
 
+    const fixFoodImage = (item: any) => {
+      let img = item.image;
+      if (!img || img.includes('exp-gastro-') || (img.includes('/images/experiences/exp-') && !img.includes('exp-gastro-'))) {
+        if (item.name?.includes('Kahvaltı')) return '/images/experiences/rest-3.jpg';
+        if (item.name?.includes('Antrikot')) return '/images/experiences/rest-1.jpg';
+        if (item.name?.includes('Fettuccine')) return '/images/experiences/rest-9.jpg';
+        if (item.name?.includes('Sandviç')) return '/images/experiences/rest-6.jpg';
+        if (item.name?.includes('Sütlaç')) return '/images/experiences/rest-11.jpg';
+        if (item.name?.includes('Portakal')) return '/images/experiences/rest-15.jpg';
+      }
+      return img || '/images/experiences/rest-1.jpg';
+    };
+
     try {
       const stored = safeGet(`${STORAGE_KEYS.ROOM_SERVICE_MENU}_${targetHotelId}`);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Migrate old broken preset image paths dynamically
         return parsed.map((item: any) => ({
           ...item,
-          image: item.image?.replace('exp-gastro-', 'exp-')
+          image: fixFoodImage(item)
         }));
       }
     } catch (e) {}
     
-    // Migrate default menu
     return defaultMenu.map(item => ({
       ...item,
-      image: item.image?.replace('exp-gastro-', 'exp-')
+      image: fixFoodImage(item)
     }));
   },
 
