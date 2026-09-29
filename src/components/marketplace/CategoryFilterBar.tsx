@@ -42,7 +42,9 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
                       src={c.icon}
                       alt={c.label}
                       fill
-                      className="object-contain drop-shadow-xs"
+                      className={`object-contain drop-shadow-xs ${
+                        c.icon.includes('kulturel-miras') ? 'scale-[1.25]' : ''
+                      }`}
                     />
                   </span>
                 </span>

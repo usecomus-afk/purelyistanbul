@@ -410,7 +410,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                       <img
                         src={cat.iconPath}
                         alt={cat.key}
-                        className="w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)]"
+                        className={`w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)] ${
+                          cat.iconPath.includes('kulturel-miras') ? 'scale-[1.25]' : ''
+                        }`}
                       />
                     </div>
 
