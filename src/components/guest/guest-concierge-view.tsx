@@ -199,6 +199,29 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const activePendingRequests = requests.filter(r => r.status !== 'completed');
 
 
+  const getCategoryLabel = (categoryRaw: string) => {
+    if (categoryRaw === 'all') return t.allCategories;
+    const cleaned = categoryRaw.replace(/^[0-9]+\.\s*/, '');
+    const lower = cleaned.toLowerCase();
+    if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
+    if (lower.includes('restoran')) return t.categoriesList.restaurants.title;
+    if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
+    if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
+    if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
+    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || cleaned;
+    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
+    if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
+    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || cleaned;
+    if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
+    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || cleaned;
+    if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
+    if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
+    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
+    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
+    if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
+    return cleaned;
+  };
+
   return (
     <div className="w-full text-white min-h-screen relative">
       {/* Global Fixed Background for Guest App */}
@@ -244,15 +267,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {/* TAB 2: Experiences & Tours Grid (Tüm İlanlar) */}
         {activeTab === 'experiences' && (
           <div className="space-y-4">
-            {selectedCategory === 'Önerdiğimiz Restoranlar' || selectedCategory.toLowerCase().includes('restoran') ? (
+            {selectedCategory && selectedCategory !== 'all' ? (
               <div>
-                <h2 className="text-xl font-bold font-serif text-white">{t.categoriesList.restaurants.title}</h2>
-                <p className="text-xs text-white/70">{t.categoriesList.restaurants.desc}</p>
-              </div>
-            ) : selectedCategory.toLowerCase().includes('estetik') || selectedCategory.toLowerCase().includes('aesthetic') || selectedCategory.toLowerCase().includes('güzellik') ? (
-              <div>
-                <h2 className="text-xl font-bold font-serif text-white">{t.categoriesList.aesthetic?.title || 'Medikal Estetik & Güzellik'}</h2>
-                <p className="text-xs text-white/70">{t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı"}</p>
+                <h2 className="text-xl font-bold font-serif text-white">{getCategoryLabel(selectedCategory)}</h2>
               </div>
             ) : (
               <div>
@@ -277,29 +294,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
               {/* Horizontal Scroll Categories */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                 {categories.map((cat, cIdx) => {
-                  const getCategoryLabel = (categoryRaw: string) => {
-                    if (categoryRaw === 'all') return t.allCategories;
-                    const cleaned = categoryRaw.replace(/^[0-9]+\.\s*/, '');
-                    const lower = cleaned.toLowerCase();
-                    if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
-                    if (lower.includes('restoran')) return t.categoriesList.restaurants.title;
-                    if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
-                    if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
-                    if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
-                    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || cleaned;
-                    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
-                    if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
-                    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || cleaned;
-                    if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
-                    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || cleaned;
-                    if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
-                    if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
-                    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-                    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
-                    if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
-                    return cleaned;
-                  };
-
                   return (
                     <button
                       key={cIdx}
