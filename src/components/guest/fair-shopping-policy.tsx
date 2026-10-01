@@ -395,24 +395,12 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
   return (
     <div className="space-y-6">
       
-      {/* SAYFA BAŞI: İSTANBUL SKYLINE GÖRSELİ */}
-      <div className="w-full bg-black/40 backdrop-blur-md rounded-3xl p-4 border border-white/20 shadow-lg flex items-center justify-center overflow-hidden">
-        <Image 
-          src="/images/istanbul-skyline-paper.png" 
-          alt="Istanbul Skyline" 
-          width={800} 
-          height={200} 
-          className="w-full max-h-48 object-contain drop-shadow-md"
-          priority
-        />
-      </div>
-
       {/* RESMİ İSTANBULKART & MÜZEKART MODÜLLERİ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* İstanbulkart Card */}
         <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
           <div className="space-y-3">
-            {/* Top row: Icon box */}
+            {/* Top row: Icon box & Skyline artwork */}
             <div className="flex items-center justify-between gap-2 pt-1">
               <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-red-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
                 <Image 
@@ -421,6 +409,15 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                   width={84} 
                   height={54} 
                   className="object-contain" 
+                />
+              </div>
+              <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
+                <Image 
+                  src="/images/istanbul-skyline-paper.png" 
+                  alt="Istanbul Skyline" 
+                  width={240} 
+                  height={60} 
+                  className="h-full w-auto object-contain drop-shadow-sm opacity-90"
                 />
               </div>
             </div>
@@ -445,7 +442,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
         {/* MüzeKart Card */}
         <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
           <div className="space-y-3">
-            {/* Top row: Icon box */}
+            {/* Top row: Icon box & Skyline artwork */}
             <div className="flex items-center justify-between gap-2 pt-1">
               <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-white/30 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
                 <Image 
@@ -454,6 +451,15 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                   width={84} 
                   height={54} 
                   className="object-contain" 
+                />
+              </div>
+              <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
+                <Image 
+                  src="/images/istanbul-skyline-paper.png" 
+                  alt="Istanbul Skyline" 
+                  width={240} 
+                  height={60} 
+                  className="h-full w-auto object-contain drop-shadow-sm opacity-90"
                 />
               </div>
             </div>

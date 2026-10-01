@@ -143,19 +143,30 @@ export default function MisafirKalkaniPage() {
 
         {/* ISTANBULKART & MUZEKART MODULLERI (Same Page) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white rounded-3xl p-5 border border-red-200/80 shadow-sm space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="h-16 w-24 rounded-xl bg-red-500/5 p-1 border border-red-200 flex items-center justify-center overflow-hidden">
-                <Image 
-                  src="/icons/istanbulkart.png" 
-                  alt="Resmi İstanbulkart & Ulaşım" 
-                  width={80} 
-                  height={52} 
-                  className="object-contain drop-shadow-xs" 
-                />
+          <div className="bg-black/90 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-md space-y-3 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-red-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+                  <Image 
+                    src="/icons/istanbulkart.png" 
+                    alt="Resmi İstanbulkart & Ulaşım" 
+                    width={84} 
+                    height={54} 
+                    className="object-contain drop-shadow-xs" 
+                  />
+                </div>
+                <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
+                  <Image 
+                    src="/images/istanbul-skyline-paper.png" 
+                    alt="Istanbul Skyline" 
+                    width={240} 
+                    height={60} 
+                    className="h-full w-auto object-contain drop-shadow-sm opacity-90"
+                  />
+                </div>
               </div>
-              <h3 className="text-base font-bold text-zinc-900">Resmi İstanbulkart & Ulaşım</h3>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Resmi İstanbulkart & Ulaşım</h3>
+              <p className="text-xs text-white/85 leading-relaxed">
                 Metro, tramvay, vapur, Marmaray ve otobüslerde geçerli tek resmi toplu taşıma kartı. Biletmatik cihazlarından veya online temin edebilirsiniz.
               </p>
             </div>
@@ -164,26 +175,37 @@ export default function MisafirKalkaniPage() {
               href="https://www.istanbulkart.istanbul"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition"
+              className="w-full py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
             >
               <span>İstanbulkart Resmi Portalı</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          <div className="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-sm space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="h-16 w-24 rounded-xl bg-amber-500/5 p-1 border border-amber-200 flex items-center justify-center overflow-hidden">
-                <Image 
-                  src="/icons/muzekart.png" 
-                  alt="Resmi MüzeKart & Biletler" 
-                  width={80} 
-                  height={52} 
-                  className="object-contain drop-shadow-xs" 
-                />
+          <div className="bg-black/90 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-md space-y-3 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-amber-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+                  <Image 
+                    src="/icons/muzekart.png" 
+                    alt="Resmi MüzeKart & Biletler" 
+                    width={84} 
+                    height={54} 
+                    className="object-contain drop-shadow-xs" 
+                  />
+                </div>
+                <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
+                  <Image 
+                    src="/images/istanbul-skyline-paper.png" 
+                    alt="Istanbul Skyline" 
+                    width={240} 
+                    height={60} 
+                    className="h-full w-auto object-contain drop-shadow-sm opacity-90"
+                  />
+                </div>
               </div>
-              <h3 className="text-base font-bold text-zinc-900">Resmi MüzeKart & Biletler</h3>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Resmi MüzeKart & Biletler</h3>
+              <p className="text-xs text-white/85 leading-relaxed">
                 T.C. Kültür ve Turizm Bakanlığı'na bağlı 300'den fazla müze ve ören yerinde sıra beklemeden geçerli resmi giriş kartı.
               </p>
             </div>
@@ -192,7 +214,7 @@ export default function MisafirKalkaniPage() {
               href="https://muze.gov.tr"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition"
+              className="w-full py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
             >
               <span>MüzeKart Satın Al / İncele</span>
               <ExternalLink className="w-3.5 h-3.5" />
