@@ -397,19 +397,33 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
       
       {/* SAYFA BAŞI: RESMİ İSTANBULKART & MÜZEKART MODÜLLERİ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-black/20 backdrop-blur-md rounded-3xl p-5 border border-red-200/80 shadow-sm space-y-3 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="h-16 w-24 rounded-xl bg-red-500/5 p-1 border border-red-200 flex items-center justify-center overflow-hidden">
-              <Image 
-                src="/icons/istanbulkart.png" 
-                alt={lt.officialIstanbulkartTitle} 
-                width={80} 
-                height={52} 
-                className="object-contain drop-shadow-xs" 
-              />
+        {/* İstanbulkart Card */}
+        <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
+          <div className="space-y-3">
+            {/* Top row: Icon box on left + Skyline on right */}
+            <div className="flex items-end justify-between gap-2 pt-1">
+              <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-red-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+                <Image 
+                  src="/icons/istanbulkart.png" 
+                  alt={lt.officialIstanbulkartTitle} 
+                  width={84} 
+                  height={54} 
+                  className="object-contain" 
+                />
+              </div>
+              <div className="flex-1 h-16 relative flex items-end justify-end overflow-hidden">
+                <Image 
+                  src="/images/istanbul-skyline-paper.png" 
+                  alt="Istanbul Skyline" 
+                  width={220} 
+                  height={64} 
+                  className="object-contain object-right-bottom max-h-16 w-auto drop-shadow-xs" 
+                />
+              </div>
             </div>
-            <h3 className="text-base font-bold text-white">{lt.officialIstanbulkartTitle}</h3>
-            <p className="text-xs text-white/80 leading-relaxed">
+
+            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{lt.officialIstanbulkartTitle}</h3>
+            <p className="text-xs text-white/85 leading-relaxed">
               {lt.officialIstanbulkartDesc}
             </p>
           </div>
@@ -418,26 +432,40 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             href="https://www.istanbulkart.istanbul"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition"
+            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
           >
             <span>{lt.officialIstanbulkartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
 
-        <div className="bg-black/20 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-sm space-y-3 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="h-16 w-24 rounded-xl bg-white/5 p-1 border border-white/20 flex items-center justify-center overflow-hidden">
-              <Image 
-                src="/icons/muzekart.png" 
-                alt={lt.officialMuzekartTitle}
-                width={80} 
-                height={52} 
-                className="object-contain drop-shadow-xs" 
-              />
+        {/* MüzeKart Card */}
+        <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
+          <div className="space-y-3">
+            {/* Top row: Icon box on left + Skyline on right */}
+            <div className="flex items-end justify-between gap-2 pt-1">
+              <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-white/30 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+                <Image 
+                  src="/icons/muzekart.png" 
+                  alt={lt.officialMuzekartTitle}
+                  width={84} 
+                  height={54} 
+                  className="object-contain" 
+                />
+              </div>
+              <div className="flex-1 h-16 relative flex items-end justify-end overflow-hidden">
+                <Image 
+                  src="/images/istanbul-skyline-paper.png" 
+                  alt="Istanbul Skyline" 
+                  width={220} 
+                  height={64} 
+                  className="object-contain object-right-bottom max-h-16 w-auto drop-shadow-xs" 
+                />
+              </div>
             </div>
-            <h3 className="text-base font-bold text-white">{lt.officialMuzekartTitle}</h3>
-            <p className="text-xs text-white/80 leading-relaxed">
+
+            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{lt.officialMuzekartTitle}</h3>
+            <p className="text-xs text-white/85 leading-relaxed">
               {lt.officialMuzekartDesc}
             </p>
           </div>
@@ -446,7 +474,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             href="https://muze.gov.tr"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition"
+            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
           >
             <span>{lt.officialMuzekartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
