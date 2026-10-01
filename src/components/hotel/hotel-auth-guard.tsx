@@ -162,10 +162,6 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
             <div className="inline-block">
               <BrandMark size={48} showText={true} theme="light" />
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300 text-[11px] font-bold uppercase tracking-wider font-mono">
-              <Hotel className="w-3.5 h-3.5 text-amber-700" />
-              <span>Partner Otel Yönetim Paneli Girişi</span>
-            </div>
             <h3 className="text-sm font-bold text-zinc-900">{currentHotel.name}</h3>
           </div>
 
