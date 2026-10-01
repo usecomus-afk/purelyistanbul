@@ -135,7 +135,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Item List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-44">
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
           return (
@@ -181,12 +181,12 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                       <Plus className="w-3.5 h-3.5" /> Ekle
                     </button>
                   ) : (
-                    <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-full p-1">
-                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-sm hover:bg-zinc-50 transition">
+                    <div className="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-full p-1 shadow-2xs">
+                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-xs hover:bg-zinc-50 transition">
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="font-bold text-sm w-4 text-center">{qty}</span>
-                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-sm hover:bg-amber-600 transition">
+                      <span className="font-extrabold text-sm w-5 text-center text-zinc-900 select-none">{qty}</span>
+                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-xs hover:bg-amber-600 transition">
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -206,17 +206,17 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
 
       {/* Floating Cart Footer */}
       {cartCount > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent pt-12 pb-6">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent pt-10 pb-8 sm:pb-6 z-30">
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-lg transition-all disabled:opacity-70 disabled:cursor-wait"
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
                 {cartCount}
               </div>
-              <span className="font-bold">Siparişi Ver</span>
+              <span className="font-bold text-base">Siparişi Ver</span>
             </div>
             <div className="flex items-center gap-2 font-bold text-lg">
               {cartTotal}€
