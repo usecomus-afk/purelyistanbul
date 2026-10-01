@@ -1,3 +1,5 @@
+import { GuestProfile } from '@/lib/types';
+
 export interface BookedItineraryItem {
   booking_id: string;
   title: string;
@@ -22,6 +24,7 @@ export interface UserPreferences {
     district: string; // Örn: "Sultanahmet", "Galata", "Nişantaşı"
     location: { lat: number; lng: number };
   };
+  guest_profile_survey?: GuestProfile;
   know_me_profile: {
     travel_purpose: 'LEISURE' | 'BUSINESS' | 'HEALTH_AESTHETICS' | 'GASTRONOMY';
     interests: {

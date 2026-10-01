@@ -1,6 +1,7 @@
 import { GuestProfile, TokenUsageInfo } from './types';
 import { UserPreferences, AiActionItem } from '@/types/comusAi';
 import { XeniosStore } from './store';
+import { buildInjectedComusSystemPrompt } from '@/prompts/comusSystemPrompt';
 
 export interface ChatMessage {
   id: string;
@@ -43,24 +44,19 @@ async function callDirectGeminiRest(
   hotelDistrict: string,
   roomNumber: string,
   lang: string,
-  chatHistory?: ChatMessage[]
+  chatHistory?: ChatMessage[],
+  guestProfile?: GuestProfile
 ): Promise<string | null> {
   const apiKey = resolveGeminiApiKey();
   if (!apiKey) return null;
 
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const systemPrompt = `Sene 2026. Sen "Comus AI", İstanbul'daki purelyİstanbul platformunun 7/24 hizmet veren seçkin, güvenlik odaklı ve kişisel lüks dijital konsiyerjisisin.
-Konaklayan misafir: ${guestName || 'Misafir'}
-Otel: ${hotelName} (${hotelDistrict}), Oda No: ${roomNumber}
-Yanıt Dili: ${lang === 'tr' ? 'Türkçe' : lang}.
-
-TURİST KORUMA VE REHBERLİK İLKELERİ:
-1. TURİST GÜVENLİĞİ & TAKSİ UYARILARI: Taksilerde her zaman taksimetrenin ('Taksimetre') açılması gerektiğini hatırlat, tırnakçılık/para değiştirme veya sabit fahiş fiyat tuzaklarına karşı uyar. BiTaksi/Uber veya otel VIP Vito transferini öner. Tanımadığı yabancıların "gel bir şeyler içelim" davetlerine asla kapılmamasını söyle.
-2. DOĞRUDAN VE UZMAN CEVAP: Misafirin sorduğu soruya (canlı hava durumu, güncel müze açılış/restorasyon saatleri, Ayasofya/Topkapı kuralları, sokak lezzetleri, trafik durumu, sergiler) doğrudan, adres ve mekan isimleriyle detaylı cevap ver. Asla ezber kalıp cümleler tekrarlama.
-3. TRAFİK DUYARLILIĞI: Yoğun saatlerde (08:00-10:00 ve 17:00-19:30) araç trafiği yerine T1 Tramvay, M2 Metro, Marmaray ve Boğaz Vapurlarını öner.
-4. ACİL DESTEK: Acil durumlarda 112, Turizm Polisi (+90 212 527 45 03) ve Otel Resepsiyonu (Dahili 0) hatlarını bil.
-5. LÜKS VE KİŞİSELLEŞTİRİLMİŞ ÜSLUP: Samimi, kibar, koruyucu ve vizyoner bir dil kullan. Yanıtın sonuna arzu ederse ilgili mekan veya hizmet için rezervasyon/transfer organize edebileceğini nazikçe ekle.`;
+    const prefs: Partial<UserPreferences> = {
+      first_name: guestName,
+      guest_profile_survey: guestProfile
+    };
+    const systemPrompt = buildInjectedComusSystemPrompt(prefs, hotelName, hotelDistrict, roomNumber, lang, guestProfile);
 
     const contents: any[] = [];
     if (chatHistory && chatHistory.length > 0) {
@@ -105,24 +101,60 @@ TURİST KORUMA VE REHBERLİK İLKELERİ:
   return null;
 }
 
-function generateSmartContextualFallback(
+export function generateSmartContextualFallback(
   userQuery: string,
   guestName: string,
   hotelName: string,
   hotelDistrict: string,
-  roomNumber: string
+  roomNumber: string,
+  guestProfile?: GuestProfile
 ): { reply: string; recs: any[]; actions: AiActionItem[] } {
   const q = userQuery.toLowerCase();
+  const allergies = guestProfile?.allergies || [];
+  const hasSeafoodAllergy = allergies.some(a => a.toLowerCase().includes('deniz') || a.toLowerCase().includes('seafood') || a.toLowerCase().includes('balık') || a.toLowerCase().includes('midye'));
+  const budget = guestProfile?.budgetLevel || 'luxury';
+  const isLuxury = budget === 'luxury';
+
   let reply = '';
   let recs: any[] = [];
   let actions: AiActionItem[] = [];
 
-  if (q.includes('sokak') || q.includes('lezzet') || q.includes('kebap') || q.includes('dürüm') || q.includes('yemek') || q.includes('restoran') || q.includes('lokanta')) {
-    if (q.includes('beyoğlu') || q.includes('taksim') || q.includes('istiklal') || q.includes('karaköy')) {
-      reply = `${guestName} Bey, Beyoğlu ve Taksim çevresinde kaçırmamanız gereken en ikonik sokak lezzetleri şunlardır:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🦪 **Şampiyon Kokoreç & Midyeci Ahmet (Balık Pazarı):** Çıtır ekmek arası kokoreç ve taze midye dolma.\n🍰 **Tarihi Savoy Pastanesi / İnci Pastanesi:** Klasik profiterol ve tatlı molası.\n\nDilerseniz bu mekanlara en hızlı yürüyüş rotasını çıkarabilir veya akşam için rezervasyon oluşturabilirim!`;
-      recs = [{ title: "Dürümzade & Beyoğlu Lezzet Turu", category: "Gastronomi", location: "Beyoğlu" }];
+  const isStreetFoodQuery = q.includes('sokak') || q.includes('büfe') || q.includes('ıslak hamburger') || q.includes('dürüm') || q.includes('kokoreç') || q.includes('atıştırmalık');
+  const isGeneralFoodQuery = q.includes('restoran') || q.includes('yemek') || q.includes('lokanta') || q.includes('nerede yenir') || q.includes('akşam yemeği') || q.includes('lezzet');
+
+  if (isStreetFoodQuery || (!isLuxury && isGeneralFoodQuery)) {
+    if (hasSeafoodAllergy) {
+      reply = `${guestName} Bey, İstanbul'un seçkin sokak lezzetlerinden alerjinize (**Deniz Ürünleri Hariç**) %100 uygun önerilerim:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu, Beyoğlu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🥩 **Tarihi Sultanahmet Köftecisi (1920 Orijinal Yeşil Tabela):** Gerçek geleneksel ızgara köfte ve piyaz.\n🍰 **Tarihi İnci Pastanesi:** Klasik profiterol ve tatlı molası.\n\n📌 *Not:* Bu ikonik sokak lezzeti mekanları hızlı servis konseptinde olduğu için rezervasyonla çalışmazlar; dilediğiniz zaman doğrudan gidip tadabilirsiniz. Dilerseniz en rahat yürüyüş rotanızı tarif edebilirim!`;
+      recs = [{ title: "Dürümzade & Taksim Lezzet Rotaları", category: "Sokak Lezzeti", location: "Beyoğlu" }];
     } else {
-      reply = `${guestName} Bey, İstanbul sokak lezzetleri için önerilerim:\n\n🐟 **Karaköy & Eminönü:** Balık Ekmek & Turşu Suyu\n🌯 **Beyoğlu:** Dürümzade & Kızılkayalar Islak Hamburger\n🦪 **Kadıköy & Beşiktaş:** Midye Dolma & Kokoreç\n\nBu rotalardan hangisi ilginizi çeker?`;
+      reply = `${guestName} Bey, İstanbul sokak lezzetleri için önerilerim:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu, Beyoğlu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🦪 **Midyeci Ahmet & Şampiyon Kokoreç (Balık Pazarı):** Çıtır ekmek arası kokoreç ve taze midye dolma.\n🥩 **Tarihi Sultanahmet Köftecisi (1920):** Izgara köfte ve piyaz.\n\n📌 *Not:* Bu sokak lezzeti durakları hızlı servis sunduğu için rezervasyonla çalışmazlar; dilediğiniz zaman doğrudan uğrayarak tadabilirsiniz. Dilerseniz en rahat yürüyüş rotasını çıkarabilirim!`;
+      recs = [{ title: "Dürümzade & Beyoğlu Lezzet Turu", category: "Sokak Lezzeti", location: "Beyoğlu" }];
+    }
+  } else if (isGeneralFoodQuery) {
+    if (hasSeafoodAllergy) {
+      reply = `${guestName} Bey, İstanbul'un en seçkin restoranlarından, sağlık ve alerji notunuza (**Deniz Ürünleri Hariç**) %100 uygun Lüks & VIP önerilerim:\n\n🍷 **Mikla (Pera / Beyoğlu):** Michelin yıldızlı çağdaş Anadolu mutfağı ve muhteşem panoramik manzara.\n🥩 **Sunset Grill & Bar (Ulus Parkı):** Boğaz manzarasına karşı seçkin ızgara etler, biftekler ve gurme dünya mutfağı.\n🏛️ **Neolokal (Karaköy SALT Galata):** Geleneksel Türk reçetelerinin şık fine-dining yorumu.\n🔥 **Mürver Restaurant (Karaköy):** Odun ateşinde pişen nefis et lezzetleri ve teras atmosferi.\n\nDilerseniz bu restoranlardan istediğiniz mekan için akşam masanızı concierge ekibimiz aracılığıyla anında organize edebilirim!`;
+      recs = [
+        { title: "Mikla Restaurant (Michelin Starred)", category: "Fine Dining", location: "Beyoğlu" },
+        { title: "Sunset Grill & Bar", category: "Lüks Restoran", location: "Ulus" }
+      ];
+      actions = [{
+        id: 'act_fine_dining',
+        type: 'BOOK_APPOINTMENT',
+        label: '🍷 Mikla / Sunset Masası Rezervasyonu İlet',
+        payload: { listing_id: 'exp-restaurant-1', service_title: 'Mikla / Sunset Fine Dining Masa Rezervasyonu', preferred_date: new Date().toISOString().split('T')[0], preferred_time: '20:00', booking_type: 'TABLE_RESERVATION' }
+      }];
+    } else {
+      reply = `${guestName} Bey, İstanbul'un en seçkin gurme lezzet duraklarından Lüks & VIP restoran önerilerim:\n\n🍷 **Mikla (Pera / Beyoğlu):** Michelin yıldızlı çağdaş Anadolu mutfağı ve teras manzarası.\n🌅 **Sunset Grill & Bar (Ulus):** Boğaz manzaralı seçkin ızgara ve uluslararası menü.\n🏛️ **Neolokal (Karaköy):** Tarihi dokuda modern Türk fine-dining deneyimi.\n🐟 **Villa Bosphorus / Park Fora:** Boğaz kıyısında gurme deniz ürünleri ve manzara.\n\nDilerseniz seçtiğiniz restoran için akşam masanızı concierge ekibimiz aracılığıyla anında organize edebilirim!`;
+      recs = [
+        { title: "Mikla Restaurant", category: "Fine Dining", location: "Beyoğlu" },
+        { title: "Sunset Grill & Bar", category: "Lüks Restoran", location: "Ulus" }
+      ];
+      actions = [{
+        id: 'act_fine_dining',
+        type: 'BOOK_APPOINTMENT',
+        label: '🍷 Fine Dining Masa Rezervasyonu İlet',
+        payload: { listing_id: 'exp-restaurant-1', service_title: 'Sunset Grill & Bar Masa Rezervasyonu', preferred_date: new Date().toISOString().split('T')[0], preferred_time: '20:00', booking_type: 'TABLE_RESERVATION' }
+      }];
     }
   } else if (q.includes('wifi') || q.includes('wi-fi') || q.includes('internet') || q.includes('şifre')) {
     reply = `${guestName} Bey, odanızdaki (${hotelName}, Oda ${roomNumber}) yüksek hızlı misafir Wi-Fi ağı:\n\n📶 Ağ Adı (SSID): ${hotelName.split(' ')[0]}_Guest\n🔑 Şifre: purely2026!\n\nÜst bardaki Wi-Fi butonuna tıklayarak şifreyi tek dokunuşla kopyalayabilirsiniz.`;
@@ -184,6 +216,11 @@ export async function askGeminiConcierge(
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const guestName = userPreferences?.first_name || 'Alex';
 
+  const userPrefsPayload: Partial<UserPreferences> = {
+    ...userPreferences,
+    guest_profile_survey: guestProfile
+  };
+
   // 1. Try server-side Gemini 3.6 Flash / Comus AI API route
   try {
     const res = await fetch('/api/ai-chat', {
@@ -191,7 +228,7 @@ export async function askGeminiConcierge(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: userQuery,
-        user_preferences: userPreferences,
+        user_preferences: userPrefsPayload,
         hotelName,
         hotelDistrict,
         roomNumber,
@@ -226,7 +263,7 @@ export async function askGeminiConcierge(
   }
 
   // 2. Direct Gemini 3.6 Flash REST call (e.g. for standalone Capacitor iOS app or direct client access)
-  const directText = await callDirectGeminiRest(userQuery, guestName, hotelName, hotelDistrict, roomNumber, lang, chatHistory);
+  const directText = await callDirectGeminiRest(userQuery, guestName, hotelName, hotelDistrict, roomNumber, lang, chatHistory, guestProfile);
   if (directText) {
     const tokenUsage: TokenUsageInfo = {
       promptTokens: 150,
@@ -247,8 +284,8 @@ export async function askGeminiConcierge(
     };
   }
 
-  // 3. Smart contextual fallback matching query topic
-  const fallback = generateSmartContextualFallback(userQuery, guestName, hotelName, hotelDistrict, roomNumber);
+  // 3. Smart contextual fallback matching query topic and guest profile
+  const fallback = generateSmartContextualFallback(userQuery, guestName, hotelName, hotelDistrict, roomNumber, guestProfile);
 
   return {
     id: `msg-${Date.now()}`,
@@ -259,4 +296,5 @@ export async function askGeminiConcierge(
     recommendations: fallback.recs
   };
 }
+
 

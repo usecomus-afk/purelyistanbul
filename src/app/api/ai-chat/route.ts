@@ -9,6 +9,7 @@ import {
 } from '@/lib/ai-cache-engine';
 import { UserPreferences, ComusAiChatRequest, ComusAiChatResponse, AiActionItem } from '@/types/comusAi';
 import { buildInjectedComusSystemPrompt } from '@/prompts/comusSystemPrompt';
+import { generateSmartContextualFallback } from '@/lib/gemini';
 
 const B64_KEY_FALLBACK = 'QVEuQWI4Uk42Sm5LcTg1RWwtNGdCOHdBTjNlYkl3SzZpUmU5aDlFcUlNTUZuVHFzTVR4WVE=';
 
@@ -133,12 +134,14 @@ export async function POST(req: Request) {
     }
 
     // 3. TIER 2: In-Memory / Semantic Cache Key
+    const survey = prefs.guest_profile_survey || {};
+    const profileSummary = `${guestName}_budget:${survey.budgetLevel || 'luxury'}_allergies:${(survey.allergies || []).join('-')}_style:${survey.travelStyle || 'couple'}_blacklists:${(prefs.blacklisted_offers || []).map(b => b.topic_or_category).join(',')}`;
     const cacheKey = buildCacheKey(
       message,
       hotelName,
       hotelDistrict,
       language,
-      `${guestName}_${(prefs.blacklisted_offers || []).map(b => b.topic_or_category).join(',')}`
+      profileSummary
     );
     const cached = getCachedResponse(cacheKey);
     if (cached && !isAntiNagging) {
@@ -159,7 +162,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Injected Tourist Guardian & Concierge System Prompt
-    const fullSystemPrompt = buildInjectedComusSystemPrompt(prefs, hotelName, hotelDistrict, roomNumber, language);
+    const fullSystemPrompt = buildInjectedComusSystemPrompt(prefs, hotelName, hotelDistrict, roomNumber, language, prefs.guest_profile_survey);
 
     const apiKey = resolveGeminiApiKey();
     let replyText = '';
@@ -264,12 +267,15 @@ export async function POST(req: Request) {
       if (isAntiNagging) {
         const topicName = detectedBlacklistTopic === 'GAYRIMENKUL_YATIRIM' ? 'gayrimenkul ve yatırım' : 'bu öneri';
         replyText = `Anlaşıldı ${guestName} Bey, ${topicName} konusu tercih listenizden tamamen çıkarılmıştır. Bu konuda size bir daha asla öneride bulunmayacağım. Size yardımcı olabileceğim başka bir konu var mı?`;
-      } else if (lowerQuery.includes('sokak') || lowerQuery.includes('lezzet') || lowerQuery.includes('kebap') || lowerQuery.includes('yemek') || lowerQuery.includes('restoran')) {
-        replyText = `${guestName} Bey, İstanbul'un seçkin ve otantik lezzetleri için doğrudan önerilerim:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu, Beyoğlu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🦪 **Şampiyon Kokoreç & Midyeci Ahmet (Balık Pazarı):** Çıtır ekmek arası kokoreç ve taze midye dolma.\n🥩 **Tarihi Sultanahmet Köftecisi (1920 Orijinal Yeşil Tabela):** Gerçek geleneksel ızgara köfte ve piyaz.\n\nDilerseniz bu mekanlara en rahat yürüyüş rotasını çıkarabilir veya akşam için rezervasyonunuzu yapabilirim!`;
-      } else if (lowerQuery.includes('taksi') || lowerQuery.includes('güvenlik') || lowerQuery.includes('dolandırıcı') || lowerQuery.includes('dikkat')) {
-        replyText = `${guestName} Bey, İstanbul'da güvenliğiniz ve konforunuz bizim için birinci önceliktir:\n\n🚕 **Taksi Güvenliği:** Taksilere bindiğinizde taksimetrenin ('Taksimetre') açık olduğundan emin olun. Asla sabit fahiş fiyat tekliflerini kabul etmeyin. Nakit ödemelerde paranın değerini (örn: "500 TL veriyorum") yüksek sesle belirtin.\n👥 **Tanımadığınız Kişiler:** Sokakta "gel bir şeyler içelim" diyerek kulüplere davet eden yabancıların peşinden gitmeyin.\n🚨 **Acil Numaralar:** Turizm Polisi (+90 212 527 45 03), Acil Yardım (112) veya otelimiz resepsiyonuna (Dahili: 0) anında ulaşabilirsiniz.\n\nGüvenli ve konforlu yolculuk için dilediğiniz an otel kapımıza VIP Mercedes Vito transferi organize edebilirim!`;
       } else {
-        replyText = `${guestName} Bey, "${message}" konusundaki sorunuzu aldım. İstanbul'da güvenli seyahat ipuçları, tarihi yarımada rotaları, güncel müze ziyaret saatleri, seçkin gastronomi durakları ve VIP Boğaz turları için her an hizmetinizdeyim.`;
+        const fallback = generateSmartContextualFallback(message, guestName, hotelName, hotelDistrict, roomNumber, prefs.guest_profile_survey);
+        replyText = fallback.reply;
+        if (!recommendations || recommendations.length === 0) {
+          recommendations = fallback.recs;
+        }
+        if (!actions || actions.length === 0) {
+          actions = fallback.actions;
+        }
       }
     }
 

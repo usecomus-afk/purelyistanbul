@@ -809,6 +809,24 @@ export const XeniosStore = {
   setGuestProfile(profile: GuestProfile) {
     try {
       safeSet(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+      const currentPrefs = this.getUserPreferences();
+      const updatedPrefs: UserPreferences = {
+        ...currentPrefs,
+        guest_profile_survey: profile,
+        know_me_profile: {
+          ...currentPrefs.know_me_profile,
+          budget_tier: profile.budgetLevel === 'economy' ? 'BUDGET' : profile.budgetLevel === 'moderate' ? 'MODERATE' : 'LUXURY',
+          interests: {
+            ...currentPrefs.know_me_profile?.interests,
+            gastronomy: (profile.interests || []).includes('Gastronomi'),
+            bosphorus_tours: (profile.interests || []).includes('Boğaz & Deniz'),
+            real_estate_investment: (profile.interests || []).includes('Yatırım'),
+            aesthetic_and_wellness: currentPrefs.know_me_profile?.interests?.aesthetic_and_wellness || { interested: true, sub_categories: ['HYDRAFACIAL', 'SPA_MASSAGE', 'HAMMAM'] },
+            nightlife_pubcrawl: (profile.interests || []).includes('Gece Hayatı')
+          }
+        }
+      };
+      safeSet(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(updatedPrefs));
     } catch (e) {}
   },
 
@@ -816,6 +834,8 @@ export const XeniosStore = {
     const cleared: GuestProfile = { kvkkConsent: false };
     try {
       safeSet(STORAGE_KEYS.PROFILE, JSON.stringify(cleared));
+      const currentPrefs = this.getUserPreferences();
+      safeSet(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify({ ...currentPrefs, guest_profile_survey: cleared }));
     } catch (e) {}
     return cleared;
   },
@@ -824,9 +844,16 @@ export const XeniosStore = {
   // Comus AI User Preferences & Viewed Listings State Engine
   // -------------------------------------------------------------
   getUserPreferences(): UserPreferences {
+    const surveyProfile = this.getGuestProfile();
     try {
       const stored = safeGet(STORAGE_KEYS.USER_PREFERENCES);
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          ...parsed,
+          guest_profile_survey: parsed.guest_profile_survey || surveyProfile
+        };
+      }
     } catch (e) {}
 
     // Default Initial State for Alex Mercer
@@ -841,6 +868,7 @@ export const XeniosStore = {
         district: 'Beyoğlu',
         location: { lat: 41.0312, lng: 28.9744 }
       },
+      guest_profile_survey: surveyProfile,
       know_me_profile: {
         travel_purpose: 'HEALTH_AESTHETICS',
         interests: {
@@ -853,7 +881,7 @@ export const XeniosStore = {
           real_estate_investment: false,
           nightlife_pubcrawl: false
         },
-        budget_tier: 'LUXURY'
+        budget_tier: surveyProfile.budgetLevel === 'economy' ? 'BUDGET' : surveyProfile.budgetLevel === 'moderate' ? 'MODERATE' : 'LUXURY'
       },
       viewed_listings_history: [
         {
