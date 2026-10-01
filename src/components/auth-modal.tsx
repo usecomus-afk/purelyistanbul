@@ -36,6 +36,15 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
   const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+      return () => {
+        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+      };
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     if (isOpen && typeof window !== 'undefined') {
       const isRemembered = localStorage.getItem('xenios_remember_me') === 'true' || localStorage.getItem('xenios_hotel_remember_me') === 'true';
       if (localStorage.getItem('xenios_remember_me') !== null || localStorage.getItem('xenios_hotel_remember_me') !== null) {

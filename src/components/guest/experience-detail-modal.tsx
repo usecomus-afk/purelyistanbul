@@ -39,7 +39,14 @@ export function ExperienceDetailModal({
 }: ExperienceDetailModalProps) {
   const [isLiked, setIsLiked] = useState(false);
 
-  
+  useEffect(() => {
+    if (experience) {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+      return () => {
+        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+      };
+    }
+  }, [experience]);
 
   if (!experience) return null;
 

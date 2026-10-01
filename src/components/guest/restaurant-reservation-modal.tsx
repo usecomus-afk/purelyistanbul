@@ -39,7 +39,12 @@ export function RestaurantReservationModal({
   const [specialNotes, setSpecialNotes] = useState<string>('Boğaz / Manzaralı masa tercihi');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
 
   const timeSlots = ['12:30', '13:30', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { RoomServiceMenuItem, Hotel } from '@/lib/types';
 import { Plus, Minus, Info, Clock, CheckCircle2, ChevronRight, UtensilsCrossed } from 'lucide-react';
@@ -23,6 +23,13 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   // Cart state: itemId -> quantity
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
 
   const categories = useMemo(() => {
     const cats = new Set(items.map(i => i.category));

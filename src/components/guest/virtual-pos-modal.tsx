@@ -37,6 +37,13 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
   const [isProcessing, setIsProcessing] = useState(false);
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
+
   const totalAmount = experience.price * guestCount;
 
   const handlePay = () => {

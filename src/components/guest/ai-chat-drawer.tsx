@@ -59,9 +59,11 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
   useEffect(() => {
     if (isOpen) {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
       const prev = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       return () => {
+        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
         document.body.style.overflow = prev;
       };
     }

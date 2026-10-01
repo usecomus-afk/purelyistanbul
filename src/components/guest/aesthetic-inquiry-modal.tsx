@@ -42,6 +42,13 @@ export function AestheticInquiryModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
+
   // Form Fields
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');

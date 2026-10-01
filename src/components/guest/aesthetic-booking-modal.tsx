@@ -46,6 +46,13 @@ export function AestheticBookingModal({
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
+
   // Guest Form
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');

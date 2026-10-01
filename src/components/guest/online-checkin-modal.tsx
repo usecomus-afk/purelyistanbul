@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Hotel, Language } from '@/lib/types';
 import { getT } from '@/lib/i18n';
 import { 
@@ -36,6 +36,13 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
   const [isProcessingOcr, setIsProcessingOcr] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
 
   // Form Fields
   const [firstName, setFirstName] = useState('');

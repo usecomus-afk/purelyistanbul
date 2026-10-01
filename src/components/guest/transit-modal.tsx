@@ -17,6 +17,13 @@ interface TransitModalProps {
 export function TransitModal({ experience, hotel, lang, onClose }: TransitModalProps) {
   
   const t = getT(lang);
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+    };
+  }, []);
+
   const transit = calculateTransitOptions(hotel.coords, experience.coords, hotel.district, experience.location);
 
   const googleMapsRouteUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(hotel.name + ', ' + hotel.address)}&destination=${encodeURIComponent(experience.location + ', Istanbul')}&travelmode=transit`;
