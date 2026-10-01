@@ -25,15 +25,57 @@ export function GuestTabBar({
   const pathname = usePathname();
   const [currentTab, setCurrentTab] = useState<TabId>(() => propActiveTab || 'services');
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
-  const [shouldShow, setShouldShow] = useState(false);
+  const [shouldShow, setShouldShow] = useState(true);
   const [shouldShowDark, setShouldShowDark] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
-    const isGuestRoute = pathname?.startsWith('/stay') || pathname?.startsWith('/guest');
-    setShouldShow(isNative || isGuestRoute);
+    const isCockpit = pathname?.startsWith('/cockpit') || pathname?.startsWith('/hotel-portal');
+    setShouldShow(!isCockpit);
   }, [pathname]);
 
+  // Scroll listener: hide on scroll down, show on scroll up
+  useEffect(() => {
+    let lastScrollY = typeof window !== 'undefined' ? (window.scrollY || document.documentElement.scrollTop || 0) : 0;
+    let ticking = false;
+
+    const handleScroll = (e?: Event) => {
+      let currentScrollY = 0;
+      const target = e?.target as any;
+
+      if (target && typeof target.scrollTop === 'number' && target !== document && target !== document?.documentElement) {
+        currentScrollY = target.scrollTop;
+      } else {
+        currentScrollY = window.scrollY || document?.documentElement?.scrollTop || window.pageYOffset || 0;
+      }
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const diff = currentScrollY - lastScrollY;
+          
+          if (currentScrollY <= 20) {
+            // At top of page -> always show
+            setIsVisible(true);
+          } else if (diff > 8 && currentScrollY > 40) {
+            // Scrolling DOWN -> hide bottom bar
+            setIsVisible(false);
+          } else if (diff < -8) {
+            // Scrolling UP -> show bottom bar
+            setIsVisible(true);
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll, { capture: true });
+    };
+  }, []);
 
   // Sync prop changes
   useEffect(() => {
@@ -96,10 +138,13 @@ export function GuestTabBar({
   if (!shouldShow) return null;
 
   const isServicesDarkOverall = true; // Always dark theme for all tabs
+  const isHidden = !isVisible || !shouldShowDark;
 
   return (
     <nav
-      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] transition-colors duration-300 ${
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] transition-all duration-300 ease-in-out ${
+        isHidden ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+      } ${
         isServicesDarkOverall
           ? 'bg-black/10 backdrop-blur-[4px] border-t border-white/20 shadow-[0_-8px_24px_rgba(0,0,0,0.3)]'
           : 'bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]'
@@ -112,8 +157,9 @@ export function GuestTabBar({
         width: '100%',
         maxWidth: '100vw',
         zIndex: 99999,
-        transform: 'none',
-        WebkitTransform: 'none'
+        transform: isHidden ? 'translateY(100%)' : 'translateY(0)',
+        WebkitTransform: isHidden ? 'translateY(100%)' : 'translateY(0)',
+        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease-in-out'
       }}
     >
       {/* iOS Overscroll / Rubber Banding gap filler */}
