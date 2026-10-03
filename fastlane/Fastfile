@@ -13,12 +13,29 @@ platform :ios do
 
     setup_ci
 
-    get_certificates
-    get_provisioning_profile(app_identifier: "com.usecomus.olympus")
+    match(
+      type: "appstore",
+      readonly: false,
+      git_url: "git@github.com:usecomus-afk/purelyistanbul-certs.git",
+      app_identifier: "com.usecomus.olympus.R8LQC6KZG8",
+      username: "fastlane"
+    )
+
+    update_app_identifier(
+      xcodeproj: "ios/App/App.xcodeproj",
+      plist_path: "App/Info.plist",
+      app_identifier: "com.usecomus.olympus.R8LQC6KZG8"
+    )
 
     update_project_team(
       path: "ios/App/App.xcodeproj",
       teamid: "R8LQC6KZG8"
+    )
+
+    update_project_provisioning(
+      xcodeproj: "ios/App/App.xcodeproj",
+      profile: ENV["sigh_com.usecomus.olympus.R8LQC6KZG8_appstore_profile-path"],
+      build_configuration: "Release"
     )
 
     increment_build_number(
