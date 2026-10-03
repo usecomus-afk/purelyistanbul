@@ -16,6 +16,11 @@ platform :ios do
     get_certificates(type: "app-store")
     get_provisioning_profile(type: "app-store", app_identifier: "com.usecomus.olympus")
 
+    update_project_team(
+      path: "ios/App/App.xcodeproj",
+      teamid: "R8LQC6KZG8"
+    )
+
     increment_build_number(
       build_number: ENV["GITHUB_RUN_NUMBER"],
       xcodeproj: "ios/App/App.xcodeproj"
@@ -26,7 +31,8 @@ platform :ios do
       scheme: "App",
       export_method: "app-store",
       output_directory: "./build",
-      output_name: "purelyistanbul.ipa"
+      output_name: "purelyistanbul.ipa",
+      xcargs: "DEVELOPMENT_TEAM=R8LQC6KZG8"
     )
 
     upload_to_testflight(
