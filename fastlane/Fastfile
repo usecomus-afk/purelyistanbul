@@ -13,8 +13,8 @@ platform :ios do
 
     setup_ci
 
-    get_certificates(type: "app-store")
-    get_provisioning_profile(type: "app-store", app_identifier: "com.usecomus.olympus")
+    get_certificates
+    get_provisioning_profile(app_identifier: "com.usecomus.olympus")
 
     update_project_team(
       path: "ios/App/App.xcodeproj",
@@ -32,7 +32,7 @@ platform :ios do
       export_method: "app-store",
       output_directory: "./build",
       output_name: "purelyistanbul.ipa",
-      xcargs: "DEVELOPMENT_TEAM=R8LQC6KZG8"
+      xcargs: "DEVELOPMENT_TEAM=R8LQC6KZG8 CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=\"Apple Distribution\""
     )
 
     upload_to_testflight(
