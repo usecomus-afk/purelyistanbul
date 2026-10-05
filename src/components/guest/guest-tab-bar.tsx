@@ -114,8 +114,7 @@ export function GuestTabBar({
     { id: 'services', label: t.tabs.services, iconType: 'lucide', icon: Home },
     { id: 'categories', label: t.tabs.categories, iconType: 'lucide', icon: LayoutGrid },
     { id: 'ai', label: t.tabs.aiGuide, iconType: 'image', imgSrc: '/icons/menu/aiGuide.png' },
-    { id: 'practical', label: t.tabs.practical, iconType: 'image', imgSrc: '/icons/menu/practical.png' },
-    { id: 'invest', label: t.tabs.invest, iconType: 'lucide', icon: Building2 }
+    { id: 'practical', label: t.tabs.practical, iconType: 'image', imgSrc: '/icons/menu/practical.png' }
   ];
 
   const handleTabClick = (tabId: TabId) => {
