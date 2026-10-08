@@ -7,10 +7,26 @@ import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { getModuleConfig, deriveStatus, formatFieldValue, resolvePricing } from '@/lib/service-modules';
+import { getModuleConfig, deriveStatus, formatFieldValue } from '@/lib/service-modules';
 import { ServiceRequestForm } from './service-request-form';
 import { GuestRoomServiceMenu } from './guest-room-service-menu';
-import { Clock, CheckCircle2 } from 'lucide-react';
+import { PaperArtHeader } from './paper-art-header';
+import { 
+  Utensils, 
+  Sparkles, 
+  Bell, 
+  ShieldCheck, 
+  Wifi, 
+  Clock, 
+  CheckCircle2, 
+  Shirt, 
+  Key, 
+  Wrench, 
+  ShoppingBag,
+  Moon,
+  ChevronRight,
+  HeartHandshake
+} from 'lucide-react';
 
 interface InRoomServicesProps {
   hotel: Hotel;
@@ -140,57 +156,140 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     }
   };
 
-  return (
-    <div>
-      {/* Background moved to GuestConciergeView to apply globally */}
-      
-      {/* Grid of In-Room Services */}
-      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0">
-        {services.map((item) => {
-          const settings = moduleSettings[item.key];
-          const isEnabled = settings ? settings.enabled : item.enabled !== false;
-          const serviceTitle = getLocalizedTitle(item);
-          const serviceDesc = getLocalizedDesc(item);
+  // Group services into clean categories for ultra-premium UX
+  const featuredKeys = ['roomservice', 'cleaning', 'towels', 'lateCheckout'];
+  const featuredServices = services.filter(s => featuredKeys.includes(s.key));
+  const housekeepingServices = services.filter(s => ['cleaning', 'towels', 'linens', 'pillows', 'toiletries', 'hygiene', 'dnd'].includes(s.key));
+  const conciergeServices = services.filter(s => !housekeepingServices.some(h => h.id === s.id));
 
-          return (
-            <button
-              key={item.id || item.key}
-              type="button"
-              disabled={!isEnabled}
-              onClick={() => {
-                if (!isEnabled) return;
-                setSelectedService(item);
-                if (item.options && item.options.length > 0) {
-                  setCustomOption(item.options[0]);
-                }
-              }}
-              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
-                isEnabled
-                  ? 'cursor-pointer'
-                  : 'cursor-not-allowed opacity-50 grayscale'
-              }`}
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative">
-                <img
-                  src={item.icon}
-                  alt={serviceTitle}
-                  className="w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)]"
-                />
-              </div>
-              <div className="w-full mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-400 transition-colors leading-tight block drop-shadow-sm">
-                  {serviceTitle}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+  const renderServiceCard = (item: InRoomServiceItem, isFeatured = false) => {
+    const settings = moduleSettings[item.key];
+    const isEnabled = settings ? settings.enabled : item.enabled !== false;
+    const serviceTitle = getLocalizedTitle(item);
+    const serviceDesc = getLocalizedDesc(item);
+
+    return (
+      <button
+        key={item.id || item.key}
+        type="button"
+        disabled={!isEnabled}
+        onClick={() => {
+          if (!isEnabled) return;
+          setSelectedService(item);
+          if (item.options && item.options.length > 0) {
+            setCustomOption(item.options[0]);
+          }
+        }}
+        className={`p-3.5 sm:p-4 flex flex-col justify-between h-full min-h-[135px] sm:min-h-[145px] group relative bg-gradient-to-b from-white/15 via-white/10 to-black/20 backdrop-blur-md rounded-[28px] border border-white/25 shadow-[0_12px_28px_rgba(0,0,0,0.35),inset_0_1px_2px_rgba(255,255,255,0.4)] transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.6)] ${
+          isEnabled
+            ? 'cursor-pointer'
+            : 'cursor-not-allowed opacity-40 grayscale'
+        }`}
+      >
+        {/* Top Icon & Badge Row */}
+        <div className="flex items-center justify-between w-full">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-white/20 p-2 border border-white/30 backdrop-blur-sm shadow-inner flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img
+              src={item.icon}
+              alt={serviceTitle}
+              className="w-full h-full object-contain drop-shadow-md"
+            />
+          </div>
+
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/15 text-white/90 border border-white/20 shadow-xs">
+            {item.key === 'roomservice' ? '7/24 Lezzet' : item.key === 'cleaning' ? 'Günlük' : 'Odaya Özel'}
+          </span>
+        </div>
+
+        {/* Title & Description */}
+        <div className="text-left w-full mt-2">
+          <h4 className="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug drop-shadow-sm flex items-center justify-between">
+            <span>{serviceTitle}</span>
+            <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+          </h4>
+          <p className="text-[11px] text-white/70 line-clamp-1 mt-0.5 font-medium">
+            {serviceDesc}
+          </p>
+        </div>
+      </button>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Paper-Art Header (Matching PDF Page 1) */}
+      <PaperArtHeader lang={lang} />
+
+      {/* Luxury Room Status Banner */}
+      <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-900/30 backdrop-blur-md border border-amber-300/40 shadow-xl flex items-center justify-between gap-3 text-white">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-md font-bold text-sm shrink-0">
+            {roomNumber}
+          </div>
+          <div>
+            <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider block">Oda Konaklama Durumu</span>
+            <strong className="text-sm sm:text-base font-bold text-white block leading-tight">{hotel.name}</strong>
+            <span className="text-[11px] text-white/70">7/24 Dijital Resepsiyon & Concierge Hizmeti</span>
+          </div>
+        </div>
+
+        <div className="hidden xs:flex flex-col items-end shrink-0">
+          <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Canlı Bağlantı
+          </span>
+        </div>
+      </div>
+
+      {/* SECTION 1: Öne Çıkan Hızlı Hizmetler */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-base sm:text-lg font-extrabold font-serif text-white tracking-wide flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Öne Çıkan Hızlı Hizmetler</span>
+          </h2>
+          <span className="text-[11px] text-white/60 font-medium">Tek tıkla talep edin</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {featuredServices.map(item => renderServiceCard(item, true))}
+        </div>
+      </div>
+
+      {/* SECTION 2: Housekeeping & Oda Temizliği */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-base sm:text-lg font-extrabold font-serif text-white tracking-wide flex items-center gap-2">
+            <HeartHandshake className="w-4 h-4 text-sky-400" />
+            <span>Housekeeping & Oda Temizliği</span>
+          </h2>
+          <span className="text-[11px] text-white/60 font-medium">{housekeepingServices.length} Hizmet</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {housekeepingServices.map(item => renderServiceCard(item))}
+        </div>
+      </div>
+
+      {/* SECTION 3: Resepsiyon & Destek Hizmetleri */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-base sm:text-lg font-extrabold font-serif text-white tracking-wide flex items-center gap-2">
+            <Bell className="w-4 h-4 text-emerald-400" />
+            <span>Resepsiyon & Destek Hizmetleri</span>
+          </h2>
+          <span className="text-[11px] text-white/60 font-medium">{conciergeServices.length} Hizmet</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {conciergeServices.map(item => renderServiceCard(item))}
+        </div>
       </div>
 
       {/* Modal for In-Room Request Confirmation */}
       {selectedService && (
         <div 
-          className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-2 pb-20 sm:p-6"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-2 pb-20 sm:p-6 animate-in fade-in"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -214,7 +313,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
               >
                 <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50 p-1.5 border border-amber-200 flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-50 p-1.5 border border-amber-200 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
                       <img
                         src={selectedService.icon}
                         alt={getLocalizedTitle(selectedService)}
@@ -228,124 +327,97 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   </div>
                   <button
                     onClick={() => setSelectedService(null)}
-                    className="text-zinc-400 hover:text-zinc-700 text-xl font-bold p-1 cursor-pointer"
+                    className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center text-sm font-bold cursor-pointer transition"
                   >
                     ✕
                   </button>
                 </div>
 
-                {(() => {
-                  const config = getModuleConfig(selectedService.key);
-                  if (config) {
-                    const settings = moduleSettings[selectedService.key];
-                    return (
-                      <ServiceRequestForm
-                        config={config}
-                        onSubmit={handleStandardRequestSubmit}
-                        onCancel={() => setSelectedService(null)}
-                        isSubmitting={isSubmitting}
-                        pricing={resolvePricing(config, settings?.pricing)}
-                        fieldOptionOverrides={settings?.fieldOptions}
-                      />
-                    );
-                  }
+                <p className="text-xs text-zinc-600 font-medium">
+                  {getLocalizedDesc(selectedService)}
+                </p>
 
-                  // Generic Dynamic Form for Custom In-Room Services
-                  return (
-                    <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
-                      {getLocalizedDesc(selectedService) && (
-                        <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-zinc-700 text-xs">
-                          {getLocalizedDesc(selectedService)}
-                        </div>
-                      )}
-
-                      {/* Options Selection */}
-                      {selectedService.options && selectedService.options.length > 0 && (
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
-                          <select
-                            value={customOption}
-                            onChange={(e) => setCustomOption(e.target.value)}
-                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
-                          >
-                            {selectedService.options.map((opt, i) => (
-                              <option key={i} value={opt}>{opt}</option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {/* Count / Quantity */}
+                {getModuleConfig(selectedService.key) ? (
+                  <ServiceRequestForm
+                    config={getModuleConfig(selectedService.key)!}
+                    onSubmit={handleStandardRequestSubmit}
+                    onCancel={() => setSelectedService(null)}
+                    isSubmitting={isSubmitting}
+                  />
+                ) : (
+                  <form onSubmit={handleCustomRequestSubmit} className="space-y-4">
+                    {selectedService.options && selectedService.options.length > 0 && (
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.quantity || 'Adet'}</label>
-                        <div className="flex items-center gap-2">
-                          {[1, 2, 3, 4, 5].map((num) => (
-                            <button
-                              type="button"
-                              key={num}
-                              onClick={() => setCustomCount(num)}
-                              className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
-                                customCount === num
-                                  ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                                  : 'bg-zinc-50 hover:bg-amber-50 border-zinc-200 text-zinc-700'
-                              }`}
-                            >
-                              {num}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Time Preference */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-amber-600" /> {t.serviceForm?.deliveryTime || 'Zaman'}
-                        </label>
+                        <label className="text-xs font-bold text-zinc-700 block">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
                         <select
-                          value={customTime}
-                          onChange={(e) => setCustomTime(e.target.value)}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                          value={customOption}
+                          onChange={(e) => setCustomOption(e.target.value)}
+                          className="w-full p-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
                         >
-                          <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
-                          <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
-                          <option value={t.serviceForm?.in1Hour || '1 Saat'}>{t.serviceForm?.in1Hour || '1 Saat'}</option>
-                          <option value={t.serviceForm?.tonight || 'Akşam'}>{t.serviceForm?.tonight || 'Akşam'}</option>
-                          <option value={t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}>{t.serviceForm?.tomorrowMorning || 'Yarın Sabah'}</option>
+                          {selectedService.options.map((opt, oIdx) => (
+                            <option key={oIdx} value={opt}>{opt}</option>
+                          ))}
                         </select>
                       </div>
+                    )}
 
-                      {/* Special Note */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800">{t.serviceForm?.specialNote || 'Not'}</label>
-                        <textarea
-                          value={customNote}
-                          onChange={(e) => setCustomNote(e.target.value)}
-                          rows={2}
-                          placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                        <label className="text-xs font-bold text-zinc-700 block">{t.serviceForm?.quantity || 'Adet'}</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          value={customCount}
+                          onChange={(e) => setCustomCount(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-full p-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
                         />
                       </div>
 
-                      {/* Submit Button */}
-                      <div className="flex items-center gap-2 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedService(null)}
-                          className="flex-1 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition text-xs cursor-pointer"
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-zinc-700 block">{t.serviceForm?.deliveryTime || 'Zaman'}</label>
+                        <select
+                          value={customTime}
+                          onChange={(e) => setCustomTime(e.target.value)}
+                          className="w-full p-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
                         >
-                          {t.serviceForm?.cancel || 'Vazgeç'}
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="flex-2 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
-                        >
-                          {isSubmitting ? '...' : (t.serviceForm?.submitRequest || 'Talebi Gönder')}
-                        </button>
+                          <option value="Hemen">{t.serviceForm?.asap || 'Hemen (En Kısa Sürede)'}</option>
+                          <option value="30 dk içinde">30 Dk İçinde</option>
+                          <option value="1 saat içinde">1 Saat İçinde</option>
+                          <option value="Akşam üstü">Akşamüstü</option>
+                        </select>
                       </div>
-                    </form>
-                  );
-                })()}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-zinc-700 block">{t.serviceForm?.specialNote || 'Özel Notunuz'}</label>
+                      <textarea
+                        value={customNote}
+                        onChange={(e) => setCustomNote(e.target.value)}
+                        placeholder="Varsa ekstra isteklerinizi belirtebilirsiniz..."
+                        rows={2}
+                        className="w-full p-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+
+                    <div className="pt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedService(null)}
+                        className="w-1/3 py-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-bold transition cursor-pointer"
+                      >
+                        {(t as any).cancel || 'İptal'}
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-2/3 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-md transition cursor-pointer disabled:opacity-50"
+                      >
+                        {isSubmitting ? (t.serviceForm?.submitting || 'Gönderiliyor...') : (t.serviceForm?.submit || 'Talebi Gönder')}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
           )}

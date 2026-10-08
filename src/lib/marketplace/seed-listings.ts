@@ -5,22 +5,19 @@ const now = new Date().toISOString();
 
 function getCategoryCode(categoryStr: string): string {
   const lower = categoryStr.toLowerCase();
-  if (lower.includes('boğaz') || lower.includes('yat')) return "cat-1";
-  if (lower.includes('tarih') || lower.includes('müze')) return "cat-2";
-  if (lower.includes('gastro') || lower.includes('gurme')) return "cat-3";
-  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('geleneksel')) return "cat-4";
-  if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return "cat-5";
-  if (lower.includes('transfer') || lower.includes('vip')) return "cat-6";
-  if (lower.includes('fotoğraf') || lower.includes('kostüm')) return "cat-7";
-  if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return "cat-8";
-  if (lower.includes('alışveriş') || lower.includes('çarşı')) return "cat-9";
-  if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return "cat-10";
-  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım')) return "cat-11";
-  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('inanç')) return "cat-12";
-  if (lower.includes('macera') || lower.includes('doğa')) return "cat-13";
-  if (lower.includes('restoran')) return "cat-14";
-  if (lower.includes('estetik') || lower.includes('güzellik')) return "cat-15";
-  return "cat-1"; // fallback
+  if (lower.includes('tarih') || lower.includes('müze')) return "cat-1";
+  if (lower.includes('gastro') || lower.includes('gurme')) return "cat-2";
+  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım')) return "cat-3";
+  if (lower.includes('alışveriş') || lower.includes('çarşı')) return "cat-4";
+  if (lower.includes('boğaz') || lower.includes('yat')) return "cat-5";
+  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('inanç')) return "cat-6";
+  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('geleneksel')) return "cat-7";
+  if (lower.includes('fotoğraf') || lower.includes('kostüm')) return "cat-8";
+  if (lower.includes('transfer') || lower.includes('vip')) return "cat-9";
+  if (lower.includes('restoran')) return "cat-10";
+  if (lower.includes('estetik') || lower.includes('güzellik')) return "cat-11";
+  if (lower.includes('yatırım') || lower.includes('invest')) return "cat-12";
+  return "cat-5"; // fallback
 }
 
 export const SEED_LISTINGS: MarketplaceListing[] = rawExperiences.map((exp: any, index: number) => {
