@@ -231,7 +231,7 @@ export default function ModuleSettingsPage() {
   }, [services, requests]);
 
   return (
-    <div className="space-y-6 pb-16 text-zinc-900">
+    <div className="space-y-6 pb-16 text-zinc-900 dark:text-slate-100">
       {/* Header Deck */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200/80 pb-5">
         <div>
@@ -239,12 +239,12 @@ export default function ModuleSettingsPage() {
             <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/30">
               Otel Yönetim Masası
             </span>
-            <span className="text-xs text-zinc-500">Canlı Senkronizasyon</span>
+            <span className="text-xs text-zinc-500 dark:text-slate-400">Canlı Senkronizasyon</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             Otel İçi Hizmetler & Menü Yönetimi
           </h1>
-          <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Misafir odasındaki QR menüde görünen tüm hizmetleri buradan ekleyebilir, fiyatlandırabilir, aktif/pasif edebilir veya anında gizleyebilirsiniz.
           </p>
         </div>
@@ -258,7 +258,7 @@ export default function ModuleSettingsPage() {
                 refresh();
               }
             }}
-            className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#1f232e] text-zinc-700 text-xs font-semibold border border-amber-200/80 flex items-center gap-1.5 transition cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-[#1f232e] text-zinc-700 text-xs font-semibold border border-amber-200/80 flex items-center gap-1.5 transition cursor-pointer"
             title="Varsayılanlara Sıfırla"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -277,33 +277,33 @@ export default function ModuleSettingsPage() {
 
       {/* KPI Stats Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 uppercase font-semibold block flex items-center gap-1">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 uppercase font-semibold block flex items-center gap-1">
             <LayoutGrid className="w-3 h-3 text-amber-400" /> Toplam Hizmet
           </span>
-          <div className="text-xl font-bold text-zinc-900 mt-1 font-mono">{stats.total}</div>
+          <div className="text-xl font-bold text-zinc-900 dark:text-slate-100 mt-1 font-mono">{stats.total}</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-emerald-500/20">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-emerald-500/20">
           <span className="text-[10px] text-emerald-400 uppercase font-semibold block flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Aktif Hizmet
           </span>
           <div className="text-xl font-bold text-emerald-400 mt-1 font-mono">{stats.active}</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Pasif / Kapalı</span>
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 uppercase font-semibold block">Pasif / Kapalı</span>
           <div className="text-xl font-bold text-zinc-700 mt-1 font-mono">{stats.disabled}</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-red-500/20">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-red-500/20">
           <span className="text-[10px] text-red-400 uppercase font-semibold block flex items-center gap-1">
             <EyeOff className="w-3 h-3 text-red-400" /> Gizli Hizmet
           </span>
           <div className="text-xl font-bold text-red-400 mt-1 font-mono">{stats.hidden}</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-500/20 col-span-2 sm:col-span-1">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-500/20 col-span-2 sm:col-span-1">
           <span className="text-[10px] text-amber-400 uppercase font-semibold block flex items-center gap-1">
             <Clock className="w-3 h-3 text-amber-400" /> Bekleyen Talep
           </span>
@@ -312,15 +312,15 @@ export default function ModuleSettingsPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-amber-200/80">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-3 rounded-2xl border border-amber-200/80">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Hizmet adı, departman veya açıklama ara..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
 
@@ -330,7 +330,7 @@ export default function ModuleSettingsPage() {
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
               selectedDept === 'all'
                 ? 'bg-amber-500 border-amber-500 text-black shadow-xs'
-                : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 hover:text-zinc-800'
+                : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200'
             }`}
           >
             Tüm Departmanlar
@@ -342,7 +342,7 @@ export default function ModuleSettingsPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
                 selectedDept === d.split(' ')[0]
                   ? 'bg-amber-500 border-amber-500 text-black shadow-xs'
-                  : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 hover:text-zinc-800'
+                  : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200'
               }`}
             >
               {d.split(' ')[0]}
@@ -354,7 +354,7 @@ export default function ModuleSettingsPage() {
       {/* Services List */}
       <div className="space-y-3">
         {filteredServices.length === 0 ? (
-          <div className="p-8 text-center bg-white rounded-2xl border border-amber-200/80 text-zinc-500 space-y-2">
+          <div className="p-8 text-center bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl border border-amber-200/80 text-zinc-500 dark:text-slate-400 space-y-2">
             <AlertCircle className="w-8 h-8 mx-auto text-amber-500/60" />
             <p className="text-xs">Aramanıza uygun otel içi hizmet bulunamadı.</p>
           </div>
@@ -373,7 +373,7 @@ export default function ModuleSettingsPage() {
                     ? 'border-red-500/30 bg-red-500/[0.02]'
                     : !item.enabled
                     ? 'border-zinc-700/60 bg-white/60 opacity-80'
-                    : 'border-amber-200/80 bg-white hover:border-amber-300'
+                    : 'border-amber-200/80 bg-white dark:bg-slate-900 dark:border-slate-800 hover:border-amber-300'
                 }`}
               >
                 {/* Main Row Bar */}
@@ -389,7 +389,7 @@ export default function ModuleSettingsPage() {
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <strong className="text-sm font-bold text-zinc-900 truncate">{item.label}</strong>
+                        <strong className="text-sm font-bold text-zinc-900 dark:text-slate-100 truncate">{item.label}</strong>
                         {item.isCustom && (
                           <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
                             Özel Hizmet
@@ -412,9 +412,9 @@ export default function ModuleSettingsPage() {
                         ) : null}
                       </div>
 
-                      <p className="text-xs text-zinc-500 truncate mt-0.5">{item.desc}</p>
-                      <div className="flex items-center gap-3 text-[10px] text-zinc-500 mt-1">
-                        <span className="flex items-center gap-1 font-semibold text-zinc-500">
+                      <p className="text-xs text-zinc-500 dark:text-slate-400 truncate mt-0.5">{item.desc}</p>
+                      <div className="flex items-center gap-3 text-[10px] text-zinc-500 dark:text-slate-400 mt-1">
+                        <span className="flex items-center gap-1 font-semibold text-zinc-500 dark:text-slate-400">
                           <Building2 className="w-3 h-3 text-amber-500" /> {item.department}
                         </span>
                         <span>·</span>
@@ -434,7 +434,7 @@ export default function ModuleSettingsPage() {
                     {/* Live Request Direct Link */}
                     <Link
                       href={`/live-requests?module=${item.key || item.id}`}
-                      className="p-2 rounded-xl bg-amber-50/40 hover:bg-[#1a1e27] text-zinc-500 hover:text-amber-400 border border-amber-200/80 text-xs font-semibold flex items-center gap-1 transition"
+                      className="p-2 rounded-xl bg-amber-50/40 hover:bg-[#1a1e27] text-zinc-500 dark:text-slate-400 hover:text-amber-400 border border-amber-200/80 text-xs font-semibold flex items-center gap-1 transition"
                       title="Bu hizmetin canlı taleplerini gör"
                     >
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -455,7 +455,7 @@ export default function ModuleSettingsPage() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1 cursor-pointer ${
                         item.enabled
                           ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25'
-                          : 'bg-zinc-700/40 border-zinc-600 text-zinc-500 hover:bg-zinc-700/60'
+                          : 'bg-zinc-700/40 border-zinc-600 text-zinc-500 dark:text-slate-400 hover:bg-zinc-700/60'
                       }`}
                       title={item.enabled ? 'Hizmeti durdur / pasife al' : 'Hizmeti aktifleştir'}
                     >
@@ -469,7 +469,7 @@ export default function ModuleSettingsPage() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1 cursor-pointer ${
                         item.hidden
                           ? 'bg-red-500/15 border-red-500/40 text-red-400 hover:bg-red-500/25'
-                          : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 hover:text-zinc-800'
+                          : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200'
                       }`}
                       title={item.hidden ? 'Misafir ekranında göster' : 'Misafir ekranından gizle'}
                     >
@@ -489,7 +489,7 @@ export default function ModuleSettingsPage() {
                     {/* Expand Details Arrow */}
                     <button
                       onClick={() => toggleExpand(item.key || item.id)}
-                      className="p-2 rounded-xl bg-amber-50/40 hover:bg-[#1a1e27] text-zinc-500 hover:text-zinc-900 border border-amber-200/80 transition cursor-pointer"
+                      className="p-2 rounded-xl bg-amber-50/40 hover:bg-[#1a1e27] text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:text-slate-100 border border-amber-200/80 transition cursor-pointer"
                       title="Fiyat & Seçenek Detayları"
                     >
                       <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180 text-amber-400' : ''}`} />
@@ -509,13 +509,13 @@ export default function ModuleSettingsPage() {
                         {item.options && item.options.length > 0 ? (
                           <div className="flex flex-wrap gap-1.5">
                             {item.options.map((opt, oIdx) => (
-                              <span key={oIdx} className="px-2.5 py-1 rounded-lg bg-white border border-amber-200/80 text-zinc-700 text-xs">
+                              <span key={oIdx} className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 text-zinc-700 text-xs">
                                 {opt}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-zinc-500">Özel alt seçenek tanımlanmamış (Standart form kullanılır).</p>
+                          <p className="text-xs text-zinc-500 dark:text-slate-400">Özel alt seçenek tanımlanmamış (Standart form kullanılır).</p>
                         )}
                       </div>
 
@@ -524,7 +524,7 @@ export default function ModuleSettingsPage() {
                         <span className="text-[11px] font-bold text-zinc-700 uppercase tracking-wide flex items-center gap-1">
                           <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> Fiyatlandırma
                         </span>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-zinc-500 dark:text-slate-400">
                           {item.price ? (
                             <strong className="text-emerald-400 font-mono text-sm">{item.price} {item.currency || 'TRY'}</strong>
                           ) : (
@@ -544,22 +544,22 @@ export default function ModuleSettingsPage() {
       {/* MODAL: Yeni Hizmet Ekle / Hizmeti Düzenle */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-amber-500/30 max-h-[92vh] overflow-y-auto space-y-4 animate-in zoom-in-95 text-zinc-900">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-amber-500/30 max-h-[92vh] overflow-y-auto space-y-4 animate-in zoom-in-95 text-zinc-900 dark:text-slate-100">
             <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-zinc-900">
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">
                     {editingService ? 'Otel İçi Hizmeti Düzenle' : 'Yeni Otel İçi Hizmet Ekle'}
                   </h3>
-                  <p className="text-[11px] text-zinc-500">Misafir QR menüsünde anında aktif olur.</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafir QR menüsünde anında aktif olur.</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-amber-50/40 hover:bg-[#2c313d] text-zinc-500 hover:text-zinc-900 flex items-center justify-center text-sm font-bold cursor-pointer"
+                className="w-7 h-7 rounded-full bg-amber-50/40 hover:bg-[#2c313d] text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:text-slate-100 flex items-center justify-center text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -575,7 +575,7 @@ export default function ModuleSettingsPage() {
                   value={formLabel}
                   onChange={(e) => setFormLabel(e.target.value)}
                   placeholder="Örn: Bebek Yatağı Talebi / Balayı Oda Süsleme / Ütü Masası"
-                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
                 />
               </div>
 
@@ -585,7 +585,7 @@ export default function ModuleSettingsPage() {
                 <select
                   value={formDept}
                   onChange={(e) => setFormDept(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
                 >
                   {DEPARTMENTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
@@ -601,7 +601,7 @@ export default function ModuleSettingsPage() {
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="Örn: Odanıza 15 dk içinde teslim edilir"
-                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
                 />
               </div>
 
@@ -617,7 +617,7 @@ export default function ModuleSettingsPage() {
                       className={`p-1.5 rounded-xl border flex flex-col items-center justify-center transition cursor-pointer ${
                         formIcon === ico.path
                           ? 'border-amber-500 bg-amber-500/20 shadow-xs'
-                          : 'border-amber-200/80 hover:border-zinc-500 bg-white'
+                          : 'border-amber-200/80 hover:border-zinc-500 bg-white dark:bg-slate-900 dark:border-slate-800'
                       }`}
                       title={ico.name}
                     >
@@ -636,7 +636,7 @@ export default function ModuleSettingsPage() {
                     value={formPrice}
                     onChange={(e) => setFormPrice(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="Boş bırakılırsa Ücretsiz"
-                    className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-mono"
+                    className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-mono"
                   />
                 </div>
 
@@ -646,7 +646,7 @@ export default function ModuleSettingsPage() {
                     type="text"
                     disabled
                     value="TRY (₺)"
-                    className="w-full text-xs p-3 rounded-xl bg-amber-50/40/50 border border-amber-200/80 text-zinc-500 font-mono"
+                    className="w-full text-xs p-3 rounded-xl bg-amber-50/40/50 border border-amber-200/80 text-zinc-500 dark:text-slate-400 font-mono"
                   />
                 </div>
               </div>
@@ -659,7 +659,7 @@ export default function ModuleSettingsPage() {
                   value={formOptionsStr}
                   onChange={(e) => setFormOptionsStr(e.target.value)}
                   placeholder="Örn: Ahşap Beşik, Katlanır Park Yatak, Bebek Nevresimi"
-                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                  className="w-full text-xs p-3 rounded-xl bg-amber-50/40 border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
                 />
               </div>
 

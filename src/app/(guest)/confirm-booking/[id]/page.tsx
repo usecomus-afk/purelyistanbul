@@ -35,45 +35,45 @@ export default function ConfirmBookingPage() {
   if (!booking) {
     return (
       <div className="min-h-screen bg-[#f8f6f0] flex items-center justify-center p-4">
-        <div className="bg-white p-6 rounded-3xl border border-amber-200 text-center space-y-2">
-          <p className="text-xs text-zinc-600">Rezervasyon kaydı bulunamadı veya süre aşımına uğradı.</p>
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200 text-center space-y-2">
+          <p className="text-xs text-zinc-600 dark:text-slate-400">Rezervasyon kaydı bulunamadı veya süre aşımına uğradı.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] flex items-center justify-center p-4 text-zinc-900">
-      <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-amber-200 space-y-4">
+    <div className="min-h-screen bg-[#f8f6f0] flex items-center justify-center p-4 text-zinc-900 dark:text-slate-100">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-xl border border-amber-200 space-y-4">
         <div className="text-center space-y-1 border-b border-amber-100 pb-3">
           <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
             İlan Sahibi Onay Paneli (SMS/E-posta Simülasyonu)
           </span>
-          <h1 className="text-lg font-bold font-serif text-zinc-900 mt-2">{booking.providerName}</h1>
-          <p className="text-xs text-zinc-500">Gelen Rezervasyon Talebi ve Onay Masası</p>
+          <h1 className="text-lg font-bold font-serif text-zinc-900 dark:text-slate-100 mt-2">{booking.providerName}</h1>
+          <p className="text-xs text-zinc-500 dark:text-slate-400">Gelen Rezervasyon Talebi ve Onay Masası</p>
         </div>
 
         {/* Booking Details */}
         <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/70 space-y-2 text-xs">
           <div className="flex justify-between border-b border-amber-100 pb-1.5">
-            <span className="text-zinc-500">Deneyim:</span>
-            <strong className="text-zinc-900 font-bold">{booking.experienceTitle}</strong>
+            <span className="text-zinc-500 dark:text-slate-400">Deneyim:</span>
+            <strong className="text-zinc-900 dark:text-slate-100 font-bold">{booking.experienceTitle}</strong>
           </div>
           <div className="flex justify-between border-b border-amber-100 pb-1.5">
-            <span className="text-zinc-500">Misafir & Otel:</span>
-            <strong className="text-zinc-900">{booking.guestName} ({booking.hotelName} - Oda {booking.roomNumber})</strong>
+            <span className="text-zinc-500 dark:text-slate-400">Misafir & Otel:</span>
+            <strong className="text-zinc-900 dark:text-slate-100">{booking.guestName} ({booking.hotelName} - Oda {booking.roomNumber})</strong>
           </div>
           <div className="flex justify-between border-b border-amber-100 pb-1.5">
-            <span className="text-zinc-500">Tarih & Saat:</span>
-            <strong className="text-zinc-900">{booking.bookingDate} - {booking.bookingTime}</strong>
+            <span className="text-zinc-500 dark:text-slate-400">Tarih & Saat:</span>
+            <strong className="text-zinc-900 dark:text-slate-100">{booking.bookingDate} - {booking.bookingTime}</strong>
           </div>
           <div className="flex justify-between border-b border-amber-100 pb-1.5">
-            <span className="text-zinc-500">Kişi Sayısı & Tutar:</span>
-            <strong className="text-zinc-900 font-mono">{booking.guestCount} Kişi • {booking.amount} {booking.currency} (Ödendi)</strong>
+            <span className="text-zinc-500 dark:text-slate-400">Kişi Sayısı & Tutar:</span>
+            <strong className="text-zinc-900 dark:text-slate-100 font-mono">{booking.guestCount} Kişi • {booking.amount} {booking.currency} (Ödendi)</strong>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Misafir Telefon:</span>
-            <strong className="text-zinc-900 font-mono">{booking.guestPhone}</strong>
+            <span className="text-zinc-500 dark:text-slate-400">Misafir Telefon:</span>
+            <strong className="text-zinc-900 dark:text-slate-100 font-mono">{booking.guestPhone}</strong>
           </div>
         </div>
 
@@ -84,7 +84,7 @@ export default function ConfirmBookingPage() {
             </div>
             <div>
               <h3 className="text-base font-bold text-emerald-800">Rezervasyon Başarıyla Onaylandı!</h3>
-              <p className="text-xs text-zinc-500 mt-0.5">Misafire SMS onayı ve Google Takvim bağlantısı iletildi.</p>
+              <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">Misafire SMS onayı ve Google Takvim bağlantısı iletildi.</p>
             </div>
 
             {booking.calendarLink && (

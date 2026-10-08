@@ -83,7 +83,7 @@ export default function BecomeAHostPage() {
               type="button"
               onClick={() => setBusinessType(t)}
               className={`flex-1 rounded-xl border px-3 py-2 text-xs font-semibold ${
-                businessType === t ? "bg-terracotta text-white border-terracotta" : "border-sand-border bg-white text-ink-muted"
+                businessType === t ? "bg-terracotta text-white border-terracotta" : "border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 text-ink-muted"
               }`}
             >
               {t === "individual" ? "Bireysel" : "Şirket"}
@@ -96,7 +96,7 @@ export default function BecomeAHostPage() {
             placeholder="Vergi No"
             value={taxId}
             onChange={(e) => setTaxId(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm"
+            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm"
           />
         )}
         <input
@@ -104,7 +104,7 @@ export default function BecomeAHostPage() {
           placeholder="Telefon"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm"
+          className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm"
         />
         <textarea
           placeholder="Kendinizden ve vermeyi planladığınız ilan(lar)dan kısaca bahsedin"
@@ -112,7 +112,7 @@ export default function BecomeAHostPage() {
           onChange={(e) => setAbout(e.target.value)}
           required
           rows={4}
-          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm"
+          className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm"
         />
         <button
           type="submit"

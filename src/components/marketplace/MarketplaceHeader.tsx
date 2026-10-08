@@ -54,7 +54,7 @@ export function MarketplaceHeader() {
           {profile?.roles.host && (
             <Link
               href="/marketplace/host/listings"
-              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white transition"
+              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition"
             >
               İlanlarım
             </Link>
@@ -64,7 +64,7 @@ export function MarketplaceHeader() {
             <Link
               href="/marketplace/favorites"
               aria-label="Favorilerim"
-              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white transition text-ink"
+              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition text-ink"
             >
               <Heart className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </Link>
@@ -74,7 +74,7 @@ export function MarketplaceHeader() {
             <div className="relative ml-1">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2.5 rounded-full border border-sand-border bg-white pl-1.5 pr-3.5 py-1.5 text-[13px] font-medium text-ink shadow-[0_1px_3px_rgba(30,33,41,0.06)] hover:shadow-[0_2px_8px_rgba(30,33,41,0.1)] transition"
+                className="flex items-center gap-2.5 rounded-full border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 pl-1.5 pr-3.5 py-1.5 text-[13px] font-medium text-ink shadow-[0_1px_3px_rgba(30,33,41,0.06)] hover:shadow-[0_2px_8px_rgba(30,33,41,0.1)] transition"
               >
                 <span className="w-7 h-7 rounded-full bg-terracotta text-white flex items-center justify-center text-[12px] font-semibold">
                   {profile?.displayName?.[0]?.toUpperCase() ?? "?"}
@@ -87,7 +87,7 @@ export function MarketplaceHeader() {
                   {/* Backdrop */}
                   <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} />
                   <div
-                    className="absolute right-0 mt-2 w-64 rounded-2xl border border-sand-border bg-white shadow-[0_8px_32px_rgba(30,33,41,0.14)] py-1.5 text-[13.5px] z-50"
+                    className="absolute right-0 mt-2 w-64 rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 shadow-[0_8px_32px_rgba(30,33,41,0.14)] py-1.5 text-[13.5px] z-50"
                   >
                     {/* Kullanıcı bilgisi */}
                     <div className="px-4 py-3 border-b border-sand-border/60">
@@ -160,7 +160,7 @@ export function MarketplaceHeader() {
             <div className="flex items-center gap-0.5 sm:gap-1 ml-0.5 sm:ml-1 shrink-0">
               <Link
                 href="/marketplace/account"
-                className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white transition whitespace-nowrap"
+                className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition whitespace-nowrap"
               >
                 Giriş Yap
               </Link>

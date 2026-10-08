@@ -157,12 +157,12 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
   if (!isAuth) {
     return (
       <div className="min-h-screen bg-[#f8f6f0] flex items-center justify-center p-4">
-        <div className="bg-white max-w-md w-full rounded-3xl p-8 shadow-2xl border border-amber-200/90 space-y-6 animate-in zoom-in-95 relative">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 max-w-md w-full rounded-3xl p-8 shadow-2xl border border-amber-200/90 space-y-6 animate-in zoom-in-95 relative">
           <div className="text-center space-y-3">
             <div className="inline-block">
               <BrandMark size={48} showText={true} theme="light" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900">{currentHotel.name}</h3>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">{currentHotel.name}</h3>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
@@ -181,7 +181,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                   value={hotelEmailOrUser}
                   onChange={(e) => setHotelEmailOrUser(e.target.value)}
                   placeholder="manager@hotel.com veya hotel"
-                  className="w-full p-3 pl-9 bg-amber-50/30 border border-amber-200 rounded-xl font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                  className="w-full p-3 pl-9 bg-amber-50/30 border border-amber-200 rounded-xl font-medium text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
                 />
                 <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-3.5" />
               </div>
@@ -209,7 +209,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full p-3 pl-9 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                  className="w-full p-3 pl-9 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
                 />
                 <Lock className="w-4 h-4 text-zinc-400 absolute left-3 top-3.5" />
               </div>
@@ -229,7 +229,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
 
             <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-[11px] text-amber-900 flex items-center justify-between">
               <span>Hızlı Test Erişimi:</span>
-              <strong className="font-mono text-zinc-800">hotel / hotel2026</strong>
+              <strong className="font-mono text-zinc-800 dark:text-slate-200">hotel / hotel2026</strong>
             </div>
 
             <button
@@ -243,7 +243,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
           </form>
 
           <div className="pt-2 text-center border-t border-zinc-100">
-            <Link href="/" className="text-xs text-zinc-500 hover:text-amber-800 font-semibold transition">
+            <Link href="/" className="text-xs text-zinc-500 dark:text-slate-400 hover:text-amber-800 font-semibold transition">
               ← Misafir Ekranına Geri Dön
             </Link>
           </div>
@@ -252,7 +252,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
         {/* FORGOT PASSWORD MODAL */}
         {showForgotModal && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
-            <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-zinc-900 relative">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-zinc-900 dark:text-slate-100 relative">
               <button
                 onClick={() => setShowForgotModal(false)}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center text-sm font-bold cursor-pointer"
@@ -266,8 +266,8 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto shadow-inner">
                       <KeyRound className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold font-serif text-zinc-900">Şifre Sıfırlama Talebi</h3>
-                    <p className="text-zinc-500 text-xs">
+                    <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">Şifre Sıfırlama Talebi</h3>
+                    <p className="text-zinc-500 dark:text-slate-400 text-xs">
                       {currentHotel.name} yetkili hesabınıza ait e-posta adresinizi giriniz.
                     </p>
                   </div>
@@ -280,7 +280,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       placeholder="manager@hotel.com"
-                      className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                      className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
                     />
                   </div>
 
@@ -299,15 +299,15 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-base font-bold font-serif text-zinc-900">Talep Başarıyla İletildi!</h3>
-                    <p className="text-xs text-zinc-600">
+                    <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">Talep Başarıyla İletildi!</h3>
+                    <p className="text-xs text-zinc-600 dark:text-slate-400">
                       <strong>{forgotEmail}</strong> ve <strong>hi@usecomus.com</strong> adreslerine şifre sıfırlama talimatı gönderildi.
                     </p>
                   </div>
 
                   <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-left space-y-1">
                     <span className="text-[10px] uppercase font-bold text-amber-900 block">Kurtarma Referans Kodu:</span>
-                    <strong className="font-mono text-sm text-zinc-900 block">{recoveryCode}</strong>
+                    <strong className="font-mono text-sm text-zinc-900 dark:text-slate-100 block">{recoveryCode}</strong>
                   </div>
 
                   <button

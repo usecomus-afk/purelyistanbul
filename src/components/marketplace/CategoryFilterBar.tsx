@@ -50,7 +50,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
                 </span>
                 <span
                   className={`text-[10px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
-                    isSelected ? "text-amber-900 font-bold" : "text-zinc-600 group-hover:text-zinc-900"
+                    isSelected ? "text-amber-900 font-bold" : "text-zinc-600 dark:text-slate-400 group-hover:text-zinc-900 dark:text-slate-100"
                   }`}
                 >
                   {c.label}

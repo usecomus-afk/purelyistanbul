@@ -109,14 +109,14 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   return (
     <div className="flex flex-col h-[85vh] bg-zinc-50 rounded-t-3xl sm:rounded-3xl overflow-hidden relative shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-white border-b border-zinc-100 z-10 shrink-0">
+      <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-zinc-100 z-10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
             <UtensilsCrossed className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-zinc-900">Oda Servisi Menüsü</h3>
-            <p className="text-[10px] text-zinc-500 font-mono">Oda {roomNumber}</p>
+            <h3 className="font-bold text-zinc-900 dark:text-slate-100">Oda Servisi Menüsü</h3>
+            <p className="text-[10px] text-zinc-500 dark:text-slate-400 font-mono">Oda {roomNumber}</p>
           </div>
         </div>
         <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-700 font-bold bg-zinc-100 hover:bg-zinc-200 rounded-full transition">
@@ -125,7 +125,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Categories */}
-      <div className="flex overflow-x-auto gap-2 p-3 bg-white border-b border-zinc-100 shrink-0 hide-scrollbar">
+      <div className="flex overflow-x-auto gap-2 p-3 bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-zinc-100 shrink-0 hide-scrollbar">
         {categories.map(cat => (
           <button
             key={cat}
@@ -133,7 +133,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
             className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
               selectedCategory === cat 
                 ? 'bg-amber-500 text-white shadow-sm' 
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                : 'bg-zinc-100 text-zinc-600 dark:text-slate-400 hover:bg-zinc-200'
             }`}
           >
             {cat}
@@ -146,7 +146,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
           return (
-            <div key={item.id} className="bg-white rounded-2xl p-4 shadow-xs border border-zinc-100 flex gap-4 transition-all">
+            <div key={item.id} className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl p-4 shadow-xs border border-zinc-100 flex gap-4 transition-all">
               {/* Image placeholder if none */}
               <div className="w-24 h-24 rounded-xl bg-zinc-100 overflow-hidden shrink-0 relative border border-zinc-100">
                 {item.image ? (
@@ -157,7 +157,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                   </div>
                 )}
                 {/* Price tag */}
-                <div className="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-bold text-zinc-900 shadow-sm border border-zinc-200/50">
+                <div className="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-bold text-zinc-900 dark:text-slate-100 shadow-sm border border-zinc-200/50">
                   {item.price}{item.currency === 'EUR' ? '€' : item.currency}
                 </div>
               </div>
@@ -165,10 +165,10 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
               {/* Info */}
               <div className="flex-1 flex flex-col min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <h4 className="font-bold text-zinc-900 text-sm leading-tight line-clamp-2">{item.name}</h4>
+                  <h4 className="font-bold text-zinc-900 dark:text-slate-100 text-sm leading-tight line-clamp-2">{item.name}</h4>
                 </div>
                 
-                <p className="text-[10px] text-zinc-500 mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-[10px] text-zinc-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                   {item.description}
                 </p>
 
@@ -189,10 +189,10 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                     </button>
                   ) : (
                     <div className="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-full p-1 shadow-2xs">
-                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-xs hover:bg-zinc-50 transition">
+                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 flex items-center justify-center text-amber-600 shadow-xs hover:bg-zinc-50 transition">
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="font-extrabold text-sm w-5 text-center text-zinc-900 select-none">{qty}</span>
+                      <span className="font-extrabold text-sm w-5 text-center text-zinc-900 dark:text-slate-100 select-none">{qty}</span>
                       <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-xs hover:bg-amber-600 transition">
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -205,7 +205,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         })}
 
         {filteredItems.length === 0 && (
-          <div className="text-center py-12 text-zinc-500 text-sm">
+          <div className="text-center py-12 text-zinc-500 dark:text-slate-400 text-sm">
             Bu kategoride ürün bulunmuyor.
           </div>
         )}

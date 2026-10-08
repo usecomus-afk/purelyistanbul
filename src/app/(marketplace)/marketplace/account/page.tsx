@@ -103,7 +103,7 @@ function MarketplaceAccountForm() {
     return (
       <div className="max-w-xl mx-auto px-5 py-12 space-y-6">
         <h1 className="text-2xl font-light tracking-tight text-ink">Hesabım</h1>
-        <div className="rounded-3xl border border-sand-border bg-white p-6 space-y-3 shadow-sm">
+        <div className="rounded-3xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-6 space-y-3 shadow-sm">
           <p className="text-sm">
             Hoş geldiniz, <strong className="font-semibold">{profile.displayName}</strong>
           </p>
@@ -149,7 +149,7 @@ function MarketplaceAccountForm() {
         type="button"
         onClick={handleGoogleSignIn}
         disabled={googleSubmitting}
-        className="w-full flex items-center justify-center gap-2.5 rounded-full border border-sand-border bg-white text-ink font-medium py-2.5 text-sm hover:bg-sand-bg transition disabled:opacity-60"
+        className="w-full flex items-center justify-center gap-2.5 rounded-full border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 text-ink font-medium py-2.5 text-sm hover:bg-sand-bg transition disabled:opacity-60"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62Z" />
@@ -174,7 +174,7 @@ function MarketplaceAccountForm() {
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             required
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
           />
         )}
         <input
@@ -183,7 +183,7 @@ function MarketplaceAccountForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+          className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
         />
         <input
           type="password"
@@ -192,7 +192,7 @@ function MarketplaceAccountForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+          className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
         />
 
         {mode === "register" && (

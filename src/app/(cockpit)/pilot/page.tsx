@@ -381,7 +381,7 @@ export default function PilotMasterDeckPage() {
   });
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-16">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-16">
       
       {/* Top Banner with Pilot Identity & Financial Pill */}
       <div className="bg-gradient-to-r from-zinc-900 via-[#171a22] to-zinc-900 p-6 sm:p-7 rounded-3xl border border-amber-500/40 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
@@ -432,7 +432,7 @@ export default function PilotMasterDeckPage() {
             className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
               activeTab === tab.id
                 ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25'
-                : 'bg-white hover:bg-amber-50 text-zinc-700 border border-zinc-200'
+                : 'bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-amber-50 text-zinc-700 border border-zinc-200'
             }`}
           >
             <span>{tab.label}</span>
@@ -452,37 +452,37 @@ export default function PilotMasterDeckPage() {
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Quick Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Aktif Oteller</span>
-              <strong className="text-xl font-bold text-zinc-900 block">{hotels.length}</strong>
+              <strong className="text-xl font-bold text-zinc-900 dark:text-slate-100 block">{hotels.length}</strong>
               <span className="text-[10px] text-emerald-600 font-semibold">{hotels.reduce((s, h) => s + (h.rooms?.length || 0), 0)} Canlı Oda</span>
             </div>
 
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Katalog İlanları</span>
               <strong className="text-xl font-bold text-amber-800 block">{experiences.length}</strong>
-              <span className="text-[10px] text-zinc-500">7 Ana Kategori</span>
+              <span className="text-[10px] text-zinc-500 dark:text-slate-400">7 Ana Kategori</span>
             </div>
 
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Yatırım Projeleri</span>
               <strong className="text-xl font-bold text-blue-700 block">{properties.length}</strong>
               <span className="text-[10px] text-blue-600 font-semibold">{investmentLeads.length} VIP Talep</span>
             </div>
 
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Rezervasyonlar</span>
               <strong className="text-xl font-bold text-emerald-700 block">{bookings.length}</strong>
               <span className="text-[10px] text-emerald-600 font-semibold">Sanal POS Onaylı</span>
             </div>
 
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Oda Talepleri</span>
               <strong className="text-xl font-bold text-orange-600 block">{requests.length}</strong>
               <span className="text-[10px] text-orange-500 font-semibold">{requests.filter(r => r.status === 'pending').length} Bekleyen</span>
             </div>
 
-            <div className="bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs space-y-1">
               <span className="text-[10px] font-bold text-zinc-400 uppercase">Yapay Zekâ AI</span>
               <strong className="text-xl font-bold text-purple-700 block">Gemini 2.5</strong>
               <span className="text-[10px] text-purple-600 font-semibold">%78 Token Tasarrufu</span>
@@ -490,8 +490,8 @@ export default function PilotMasterDeckPage() {
           </div>
 
           {/* Quick Operations Actions */}
-          <div className="bg-white p-6 rounded-3xl border border-amber-200/80 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-600" />
               <span>Hızlı Operasyon Eylemleri</span>
             </h3>
@@ -533,7 +533,7 @@ export default function PilotMasterDeckPage() {
       {/* TAB 2: EXPERIENCES CRUD (DENEYİMLER VE İLANLAR) */}
       {activeTab === 'experiences' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <div className="relative flex-1 sm:w-72">
                 <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
@@ -567,10 +567,10 @@ export default function PilotMasterDeckPage() {
           </div>
 
           {/* Experiences Table */}
-          <div className="bg-white rounded-3xl border border-amber-200/80 shadow-xs overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200/80 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-[#fbf8f1] border-b border-amber-200 text-zinc-600 font-bold uppercase text-[10px]">
+                <thead className="bg-[#fbf8f1] border-b border-amber-200 text-zinc-600 dark:text-slate-400 font-bold uppercase text-[10px]">
                   <tr>
                     <th className="p-3.5">Görsel & Başlık</th>
                     <th className="p-3.5">Kategori</th>
@@ -590,8 +590,8 @@ export default function PilotMasterDeckPage() {
                           className="w-12 h-12 rounded-xl object-cover border border-amber-200 shrink-0"
                         />
                         <div>
-                          <strong className="text-zinc-900 block font-bold text-xs">{exp.title}</strong>
-                          <span className="text-[10px] text-zinc-500 font-mono">ID: {exp.id}</span>
+                          <strong className="text-zinc-900 dark:text-slate-100 block font-bold text-xs">{exp.title}</strong>
+                          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-mono">ID: {exp.id}</span>
                         </div>
                       </td>
                       <td className="p-3.5">
@@ -611,7 +611,7 @@ export default function PilotMasterDeckPage() {
                           >
                             -
                           </button>
-                          <span className="font-mono font-bold text-zinc-800 w-6 text-center">{exp.availableSlots ?? 12}</span>
+                          <span className="font-mono font-bold text-zinc-800 dark:text-slate-200 w-6 text-center">{exp.availableSlots ?? 12}</span>
                           <button
                             onClick={() => handleAdjustSlot(exp.id, 1)}
                             className="w-5 h-5 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center font-bold"
@@ -621,8 +621,8 @@ export default function PilotMasterDeckPage() {
                         </div>
                       </td>
                       <td className="p-3.5">
-                        <span className="text-zinc-800 font-semibold block">{exp.provider}</span>
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1">
+                        <span className="text-zinc-800 dark:text-slate-200 font-semibold block">{exp.provider}</span>
+                        <span className="text-[10px] text-zinc-500 dark:text-slate-400 flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-amber-600" />
                           <span>{exp.location}</span>
                         </span>
@@ -655,7 +655,7 @@ export default function PilotMasterDeckPage() {
       {/* TAB 3: INVEST IN ISTANBUL CRUD (GAYRİMENKUL YATIRIMLARI) */}
       {activeTab === 'invest' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs">
             <div className="relative w-full sm:w-80">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
               <input
@@ -679,7 +679,7 @@ export default function PilotMasterDeckPage() {
           {/* Property Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredProperties.map((p) => (
-              <div key={p.id} className="bg-white rounded-3xl border border-amber-200/80 shadow-xs overflow-hidden flex flex-col justify-between">
+              <div key={p.id} className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200/80 shadow-xs overflow-hidden flex flex-col justify-between">
                 <div>
                   <div className="relative h-44 w-full bg-zinc-900">
                     <img src={p.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'} alt={p.title} className="w-full h-full object-cover" />
@@ -703,8 +703,8 @@ export default function PilotMasterDeckPage() {
 
                   <div className="p-4 space-y-2">
                     <span className="text-[10px] text-amber-800 font-bold uppercase block">{p.propertyType}</span>
-                    <h3 className="text-sm font-bold text-zinc-900 font-serif">{p.title}</h3>
-                    <p className="text-xs text-zinc-500 line-clamp-2">{p.description}</p>
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100 font-serif">{p.title}</h3>
+                    <p className="text-xs text-zinc-500 dark:text-slate-400 line-clamp-2">{p.description}</p>
                     
                     <div className="grid grid-cols-3 gap-1.5 p-2 bg-amber-50/60 rounded-xl text-center text-[10px] font-bold border border-amber-200/60">
                       <div>
@@ -713,11 +713,11 @@ export default function PilotMasterDeckPage() {
                       </div>
                       <div>
                         <span className="text-zinc-400 block text-[9px]">ODA</span>
-                        <span className="text-zinc-800">{p.bedrooms} Y. Odası</span>
+                        <span className="text-zinc-800 dark:text-slate-200">{p.bedrooms} Y. Odası</span>
                       </div>
                       <div>
                         <span className="text-zinc-400 block text-[9px]">ALAN</span>
-                        <span className="text-zinc-800">{p.areaM2} m²</span>
+                        <span className="text-zinc-800 dark:text-slate-200">{p.areaM2} m²</span>
                       </div>
                     </div>
                   </div>
@@ -761,8 +761,8 @@ export default function PilotMasterDeckPage() {
       {/* TAB 4: PARTNER HOTELS CRUD (OTELLER VE ODALAR) */}
       {activeTab === 'hotels' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs">
-            <h3 className="text-sm font-bold text-zinc-900">Partner Otel Portföyü ({hotels.length})</h3>
+          <div className="flex items-center justify-between bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs">
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Partner Otel Portföyü ({hotels.length})</h3>
             <button
               onClick={() => setIsNewHotelModalOpen(true)}
               className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition cursor-pointer"
@@ -774,14 +774,14 @@ export default function PilotMasterDeckPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {hotels.map((h) => (
-              <div key={h.id} className="bg-white rounded-3xl border border-amber-200/80 p-5 shadow-xs space-y-4">
+              <div key={h.id} className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200/80 p-5 shadow-xs space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full">
                       {h.type}
                     </span>
-                    <h3 className="text-base font-bold text-zinc-900 font-serif">{h.name}</h3>
-                    <p className="text-xs text-zinc-500 flex items-center gap-1">
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100 font-serif">{h.name}</h3>
+                    <p className="text-xs text-zinc-500 dark:text-slate-400 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-amber-600" />
                       <span>{h.address}</span>
                     </p>
@@ -809,15 +809,15 @@ export default function PilotMasterDeckPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-[#fbf8f1] p-3 rounded-2xl border border-amber-200/60 text-center">
                   <div>
                     <span className="text-[9px] text-zinc-400 block font-bold">TOPLAM ODA</span>
-                    <strong className="text-zinc-900 font-mono">{h.rooms?.length || 0}</strong>
+                    <strong className="text-zinc-900 dark:text-slate-100 font-mono">{h.rooms?.length || 0}</strong>
                   </div>
                   <div>
                     <span className="text-[9px] text-zinc-400 block font-bold">WIFI AĞI</span>
-                    <strong className="text-zinc-800 font-mono text-[11px] truncate block">{h.rooms?.[0]?.wifiSsid || 'Hotel_Guest'}</strong>
+                    <strong className="text-zinc-800 dark:text-slate-200 font-mono text-[11px] truncate block">{h.rooms?.[0]?.wifiSsid || 'Hotel_Guest'}</strong>
                   </div>
                   <div>
                     <span className="text-[9px] text-zinc-400 block font-bold">KAHVALTI</span>
-                    <strong className="text-zinc-800 text-[11px] block">{h.breakfastHours || '07:30 - 10:30'}</strong>
+                    <strong className="text-zinc-800 dark:text-slate-200 text-[11px] block">{h.breakfastHours || '07:30 - 10:30'}</strong>
                   </div>
                   <div>
                     <span className="text-[9px] text-zinc-400 block font-bold">RESEPSİYON</span>
@@ -835,29 +835,29 @@ export default function PilotMasterDeckPage() {
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Revenue Breakdown */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-2">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-2">
               <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Toplam Brüt Ciro</span>
-              <strong className="text-2xl font-bold font-mono text-zinc-900 block">₺{grossPosRevenue.toLocaleString()}</strong>
-              <p className="text-[11px] text-zinc-500">Sanal POS üzerinden gerçekleşen tüm rezervasyonlar</p>
+              <strong className="text-2xl font-bold font-mono text-zinc-900 dark:text-slate-100 block">₺{grossPosRevenue.toLocaleString()}</strong>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Sanal POS üzerinden gerçekleşen tüm rezervasyonlar</p>
             </div>
 
-            <div className="bg-white p-5 rounded-3xl border border-amber-300 shadow-sm bg-gradient-to-br from-white to-amber-50/50 space-y-2">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-300 shadow-sm bg-gradient-to-br from-white to-amber-50/50 space-y-2">
               <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">Xenios Platform Payı (%15)</span>
               <strong className="text-2xl font-bold font-mono text-amber-700 block">₺{xeniosCommission.toLocaleString()}</strong>
               <p className="text-[11px] text-amber-900/70">Sistem hakediş ve platform net gelir payı</p>
             </div>
 
-            <div className="bg-white p-5 rounded-3xl border border-zinc-200 shadow-xs space-y-2">
+            <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-zinc-200 shadow-xs space-y-2">
               <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Tedarikçi & Otel Hakedişi (%85)</span>
               <strong className="text-2xl font-bold font-mono text-emerald-700 block">₺{providerPayout.toLocaleString()}</strong>
-              <p className="text-[11px] text-zinc-500">Partner deneyim sağlayıcılarına aktarılacak tutar</p>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Partner deneyim sağlayıcılarına aktarılacak tutar</p>
             </div>
           </div>
 
           {/* Bookings Table with Export */}
-          <div className="bg-white rounded-3xl border border-amber-200/80 shadow-xs p-5 space-y-4">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200/80 shadow-xs p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-zinc-900">Sanal POS İşlem Geçmişi ({bookings.length})</h3>
+              <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Sanal POS İşlem Geçmişi ({bookings.length})</h3>
               <button
                 onClick={handleExportCSV}
                 className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition cursor-pointer"
@@ -869,7 +869,7 @@ export default function PilotMasterDeckPage() {
 
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-[#fbf8f1] border-b border-amber-200 text-zinc-600 font-bold uppercase text-[10px]">
+                <thead className="bg-[#fbf8f1] border-b border-amber-200 text-zinc-600 dark:text-slate-400 font-bold uppercase text-[10px]">
                   <tr>
                     <th className="p-3">Sipariş ID</th>
                     <th className="p-3">Misafir & İletişim</th>
@@ -885,18 +885,18 @@ export default function PilotMasterDeckPage() {
                     <tr key={b.id} className="hover:bg-amber-50/30">
                       <td className="p-3 font-mono font-bold text-amber-900">{b.id}</td>
                       <td className="p-3">
-                        <strong className="text-zinc-900 block">{b.guestName || 'Misafir'}</strong>
-                        <span className="text-[10px] text-zinc-500">{b.hotelId || 'Otel'} - Oda {b.roomNumber || '-'}</span>
+                        <strong className="text-zinc-900 dark:text-slate-100 block">{b.guestName || 'Misafir'}</strong>
+                        <span className="text-[10px] text-zinc-500 dark:text-slate-400">{b.hotelId || 'Otel'} - Oda {b.roomNumber || '-'}</span>
                       </td>
-                      <td className="p-3 font-semibold text-zinc-800">{b.experienceTitle}</td>
-                      <td className="p-3 font-mono font-bold text-zinc-900">₺{b.amount?.toLocaleString()}</td>
+                      <td className="p-3 font-semibold text-zinc-800 dark:text-slate-200">{b.experienceTitle}</td>
+                      <td className="p-3 font-mono font-bold text-zinc-900 dark:text-slate-100">₺{b.amount?.toLocaleString()}</td>
                       <td className="p-3 font-mono font-bold text-amber-700">₺{Math.round((b.amount || 0) * 0.15).toLocaleString()}</td>
                       <td className="p-3">
                         <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                           {b.status}
                         </span>
                       </td>
-                      <td className="p-3 text-zinc-500 font-mono text-[10px]">{new Date(b.createdAt).toLocaleDateString()}</td>
+                      <td className="p-3 text-zinc-500 dark:text-slate-400 font-mono text-[10px]">{new Date(b.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -909,15 +909,15 @@ export default function PilotMasterDeckPage() {
       {/* TAB 6: AI & SYSTEM (YAPAY ZEKÂ VE SİSTEM) */}
       {activeTab === 'ai' && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-white p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-amber-100 pb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-300 flex items-center justify-center text-amber-700">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-zinc-900">ComusAI Gemini Concierge & Sistem Yönetimi</h3>
-                  <p className="text-xs text-zinc-500">PWA push bildirimleri ve merkezi yapay zekâ operasyonları</p>
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">ComusAI Gemini Concierge & Sistem Yönetimi</h3>
+                  <p className="text-xs text-zinc-500 dark:text-slate-400">PWA push bildirimleri ve merkezi yapay zekâ operasyonları</p>
                 </div>
               </div>
 
@@ -942,11 +942,11 @@ export default function PilotMasterDeckPage() {
 
             {/* Architecture Details */}
             <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-2 text-xs text-zinc-700">
-              <h4 className="font-bold text-zinc-900 flex items-center gap-1.5">
+              <h4 className="font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>3 Kademeli Akıllı Token Tasarruf Mimarisi</span>
               </h4>
-              <ul className="list-disc list-inside space-y-1 text-[11px] text-zinc-600">
+              <ul className="list-disc list-inside space-y-1 text-[11px] text-zinc-600 dark:text-slate-400">
                 <li><strong>Kademe 1 (0 Token):</strong> Otel Wi-Fi şifresi, kahvaltı saatleri, oda numarası ve ombudsman turizm şikayetleri anında yerel motordan (0 maliyet) döner.</li>
                 <li><strong>Kademe 2 (Önbellek Hit):</strong> Misafir aynı veya benzer soruları sorduğunda yanıt in-memory semantik cache üzerinden üretilir.</li>
                 <li><strong>Kademe 3 (Gemini 2.5 Flash):</strong> Sadece derin konsiyerj, rota planlama ve randevu oluşturma adımlarında canlı LLM çağrısı yapılır.</li>
@@ -960,7 +960,7 @@ export default function PilotMasterDeckPage() {
       {isNewExpModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-4">
           <div className="min-h-full flex items-center justify-center py-6">
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95">
+            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <h3 className="text-base font-bold font-serif">Yeni Deneyim / Restoran İlanı Ekle</h3>
                 <button onClick={() => setIsNewExpModalOpen(false)} className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-sm font-bold">✕</button>
@@ -1060,7 +1060,7 @@ export default function PilotMasterDeckPage() {
       {editingExp && (
         <div className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-4">
           <div className="min-h-full flex items-center justify-center py-6">
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95">
+            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <h3 className="text-base font-bold font-serif">İlanı Düzenle: {editingExp.title}</h3>
                 <button onClick={() => setEditingExp(null)} className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-sm font-bold">✕</button>
@@ -1124,7 +1124,7 @@ export default function PilotMasterDeckPage() {
       {isNewPropModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-4">
           <div className="min-h-full flex items-center justify-center py-6">
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95">
+            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <h3 className="text-base font-bold font-serif">Yeni Gayrimenkul Yatırım Projesi Ekle</h3>
                 <button onClick={() => setIsNewPropModalOpen(false)} className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-sm font-bold">✕</button>
@@ -1222,7 +1222,7 @@ export default function PilotMasterDeckPage() {
       {isNewHotelModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-4">
           <div className="min-h-full flex items-center justify-center py-6">
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95">
+            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <h3 className="text-base font-bold font-serif">Yeni Partner Otel / Konak Ekle</h3>
                 <button onClick={() => setIsNewHotelModalOpen(false)} className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-sm font-bold">✕</button>
@@ -1296,7 +1296,7 @@ export default function PilotMasterDeckPage() {
       {/* MODAL: PWA CANLI DUYURU & BİLDİRİM GÖNDER */}
       {isBroadcastModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 animate-in zoom-in-95">
+          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-2xl border border-amber-200 space-y-4 text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-amber-100 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-300 flex items-center justify-center text-amber-700">

@@ -49,7 +49,7 @@ function HostListingsInner() {
               <Link
                 key={l.id}
                 href={`/marketplace/host/listings/${l.id}/edit`}
-                className="flex items-center gap-4 rounded-2xl border border-sand-border bg-white p-3 hover:shadow-sm transition"
+                className="flex items-center gap-4 rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-3 hover:shadow-sm transition"
               >
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-sand-card shrink-0">
                   {l.coverImageUrl ? (

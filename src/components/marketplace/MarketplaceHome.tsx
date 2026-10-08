@@ -176,7 +176,7 @@ export function MarketplaceHome() {
 
       {/* Arama Kutusu (Kategorilerin Altında) */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-5 md:px-8 pt-8 pb-4 text-center">
-        <div className="flex items-center justify-between gap-3 w-full mx-auto rounded-full border border-sand-border bg-white shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-1.5 pl-5">
+        <div className="flex items-center justify-between gap-3 w-full mx-auto rounded-full border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-1.5 pl-5">
           
           {/* Sol: Arama İkonu ve Input */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -207,7 +207,7 @@ export function MarketplaceHome() {
               {showCategoryDropdown && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setShowCategoryDropdown(false)} />
-                  <div className="absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-[0_8px_32px_rgba(30,33,41,0.14)] border border-sand-border py-2 z-40 max-h-[60vh] overflow-y-auto">
+                  <div className="absolute right-0 top-full mt-4 w-[320px] bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl shadow-[0_8px_32px_rgba(30,33,41,0.14)] border border-sand-border py-2 z-40 max-h-[60vh] overflow-y-auto">
                     <button
                       type="button"
                       onClick={() => { setFilterCategory(""); setShowCategoryDropdown(false); }}
@@ -271,7 +271,7 @@ export function MarketplaceHome() {
           onClick={() => setShowFilters(false)}
         >
           <div
-            className="bg-white rounded-3xl max-w-md w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl border border-sand-border relative"
+            className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl border border-sand-border relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -320,7 +320,7 @@ export function MarketplaceHome() {
                       className={`flex-1 rounded-full border px-3 py-2 text-[12.5px] font-medium transition ${
                         groupType === opt.key
                           ? "bg-ink text-white border-ink"
-                          : "bg-white text-ink-muted border-sand-border hover:border-ink/40"
+                          : "bg-white dark:bg-slate-900 dark:border-slate-800 text-ink-muted border-sand-border hover:border-ink/40"
                       }`}
                     >
                       {opt.label}
@@ -343,7 +343,7 @@ export function MarketplaceHome() {
                       className={`rounded-full border px-3 py-2 text-[12.5px] font-medium transition ${
                         durationBucket === opt.key
                           ? "bg-ink text-white border-ink"
-                          : "bg-white text-ink-muted border-sand-border hover:border-ink/40"
+                          : "bg-white dark:bg-slate-900 dark:border-slate-800 text-ink-muted border-sand-border hover:border-ink/40"
                       }`}
                     >
                       {opt.label}

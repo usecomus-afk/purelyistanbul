@@ -67,18 +67,18 @@ export default function HotelReportsPage() {
   ];
 
   return (
-    <div className="space-y-6 pb-16 text-zinc-900">
+    <div className="space-y-6 pb-16 text-zinc-900 dark:text-slate-100">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-amber-700" />
             <span>Raporlar & Analitik Masası</span>
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
             Misafir uygulama etkileşimi, işlem hacimleri ve Comus AI akıllı rehber kullanım analizleri.
           </p>
         </div>
@@ -92,51 +92,51 @@ export default function HotelReportsPage() {
       {/* Misafir Uygulama Kullanımı - 3 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 text-xs">
-            <span className="font-bold text-zinc-800">Aktif Misafir Oturumu</span>
+          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+            <span className="font-bold text-zinc-800 dark:text-slate-200">Aktif Misafir Oturumu</span>
             <Smartphone className="w-4 h-4 text-amber-600" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-zinc-900">284</span>
+            <span className="text-2xl font-bold font-mono text-zinc-900 dark:text-slate-100">284</span>
             <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
               <ArrowUpRight className="w-3 h-3" /> +18.4%
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500">Bu hafta QR kod taratarak bağlanan misafirler</p>
+          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Bu hafta QR kod taratarak bağlanan misafirler</p>
         </div>
 
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 text-xs">
-            <span className="font-bold text-zinc-800">Ortalama Oturum Süresi</span>
+          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+            <span className="font-bold text-zinc-800 dark:text-slate-200">Ortalama Oturum Süresi</span>
             <Clock className="w-4 h-4 text-sky-600" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-zinc-900">6 dk 42 sn</span>
+            <span className="text-2xl font-bold font-mono text-zinc-900 dark:text-slate-100">6 dk 42 sn</span>
             <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
               <ArrowUpRight className="w-3 h-3" /> +12.1%
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500">Misafir başına PWA & AI asistan etkileşim süresi</p>
+          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Misafir başına PWA & AI asistan etkileşim süresi</p>
         </div>
 
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 text-xs">
-            <span className="font-bold text-zinc-800">Yayınlanan 3. Taraf Aktif İlan</span>
+          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+            <span className="font-bold text-zinc-800 dark:text-slate-200">Yayınlanan 3. Taraf Aktif İlan</span>
             <Store className="w-4 h-4 text-purple-600" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-zinc-900">{activeThirdPartyListings} İlan</span>
+            <span className="text-2xl font-bold font-mono text-zinc-900 dark:text-slate-100">{activeThirdPartyListings} İlan</span>
             <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
               <ArrowUpRight className="w-3 h-3" /> Aktif
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500">Estetik klinikleri, gurme restoranlar ve turlar</p>
+          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Estetik klinikleri, gurme restoranlar ve turlar</p>
         </div>
       </div>
 
       {/* İşlem İstatistikleri Grid - Satın Alma, Rezervasyon, Randevu, Bilgi Alma, İptal */}
-      <div className="bg-white p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+        <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-amber-700" />
           <span>Misafir İşlem & Etkileşim İstatistikleri</span>
         </h2>
@@ -149,7 +149,7 @@ export default function HotelReportsPage() {
               <ShoppingBag className="w-4 h-4 text-amber-700" />
             </div>
             <div className="text-xl font-bold font-mono text-amber-900">{totalPurchases}</div>
-            <span className="text-[10px] text-zinc-500 block">Oda servisi & ödemeler</span>
+            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Oda servisi & ödemeler</span>
           </div>
 
           {/* 2. Rezervasyon */}
@@ -159,7 +159,7 @@ export default function HotelReportsPage() {
               <CalendarCheck className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-xl font-bold font-mono text-emerald-900">{totalReservations}</div>
-            <span className="text-[10px] text-zinc-500 block">Tur & restoran kaydı</span>
+            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Tur & restoran kaydı</span>
           </div>
 
           {/* 3. Randevu */}
@@ -169,7 +169,7 @@ export default function HotelReportsPage() {
               <Users className="w-4 h-4 text-sky-700" />
             </div>
             <div className="text-xl font-bold font-mono text-sky-900">{totalAppointments}</div>
-            <span className="text-[10px] text-zinc-500 block">Estetik & klinik</span>
+            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Estetik & klinik</span>
           </div>
 
           {/* 4. Bilgi Almak İstiyorum */}
@@ -179,7 +179,7 @@ export default function HotelReportsPage() {
               <FileQuestion className="w-4 h-4 text-indigo-700" />
             </div>
             <div className="text-xl font-bold font-mono text-indigo-900">{totalInfoInquiries}</div>
-            <span className="text-[10px] text-zinc-500 block">Danışma & lead talebi</span>
+            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Danışma & lead talebi</span>
           </div>
 
           {/* 5. İptal İşlemleri */}
@@ -189,20 +189,20 @@ export default function HotelReportsPage() {
               <XCircle className="w-4 h-4 text-rose-700" />
             </div>
             <div className="text-xl font-bold font-mono text-rose-900">{totalCancellations}</div>
-            <span className="text-[10px] text-zinc-500 block">İptal edilen rezervasyon</span>
+            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">İptal edilen rezervasyon</span>
           </div>
         </div>
       </div>
 
       {/* Comus AI Rehber Kullanım Dağılımı (Pasta Dilimi & Detay) */}
-      <div className="bg-white p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-6">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
           <div>
-            <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-600" />
               <span>Comus AI Akıllı Asistan Kullanım Dağılımı</span>
             </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
               Misafirlerin yapay zeka asistana yönelttiği soruların kategori bazlı pasta dilim dağılımı
             </p>
           </div>
@@ -255,8 +255,8 @@ export default function HotelReportsPage() {
               {/* Center AI Badge */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                 <Sparkles className="w-5 h-5 text-amber-600" />
-                <span className="text-xs font-bold font-serif text-zinc-900 mt-0.5">Comus AI</span>
-                <span className="text-[9px] font-mono text-zinc-500">%100 Yanıt</span>
+                <span className="text-xs font-bold font-serif text-zinc-900 dark:text-slate-100 mt-0.5">Comus AI</span>
+                <span className="text-[9px] font-mono text-zinc-500 dark:text-slate-400">%100 Yanıt</span>
               </div>
             </div>
           </div>
@@ -268,10 +268,10 @@ export default function HotelReportsPage() {
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                    <span className="font-bold text-zinc-900">{item.label}</span>
+                    <span className="font-bold text-zinc-900 dark:text-slate-100">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-mono text-zinc-500">{item.count} etkileşim</span>
+                    <span className="text-[11px] font-mono text-zinc-500 dark:text-slate-400">{item.count} etkileşim</span>
                     <strong className="font-mono font-bold text-xs" style={{ color: item.color }}>
                       %{item.percent}
                     </strong>
@@ -286,7 +286,7 @@ export default function HotelReportsPage() {
                   />
                 </div>
 
-                <p className="text-[10px] text-zinc-500">{item.desc}</p>
+                <p className="text-[10px] text-zinc-500 dark:text-slate-400">{item.desc}</p>
               </div>
             ))}
           </div>

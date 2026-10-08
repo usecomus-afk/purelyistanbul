@@ -57,7 +57,7 @@ export default function HotelLiveRequestsPage() {
   });
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-12">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
@@ -65,25 +65,25 @@ export default function HotelLiveRequestsPage() {
             <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             Canlı Oda Talepleri & Kat Hizmetleri Masası
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
             Misafir odalarından gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Oda no, hizmet adı veya not ara..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
 
@@ -91,7 +91,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="text-xs bg-white border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Departmanlar</option>
             <option value="Housekeeping">Housekeeping</option>
@@ -104,7 +104,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs bg-white border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Durumlar</option>
             <option value="pending">Bekleyenler</option>
@@ -117,7 +117,7 @@ export default function HotelLiveRequestsPage() {
       {/* Requests List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-3xl border border-amber-200 text-zinc-500 space-y-2 shadow-xs">
+          <div className="p-12 text-center bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200 text-zinc-500 dark:text-slate-400 space-y-2 shadow-xs">
             <BellRing className="w-8 h-8 mx-auto text-amber-600/60" />
             <p className="text-xs font-semibold">Şu anda bekleyen veya filtrelere uyan talep bulunmuyor.</p>
           </div>
@@ -131,7 +131,7 @@ export default function HotelLiveRequestsPage() {
                     ? 'bg-white/70 opacity-80 border-none'
                     : req.priority === 'acil'
                     ? 'bg-red-50/50 border border-red-300 shadow-xs'
-                    : 'bg-white border border-amber-200/80 hover:border-amber-400'
+                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 hover:border-amber-400'
                 }`}
               >
                 <div className="space-y-1.5 min-w-0 flex-1 relative">
@@ -145,7 +145,7 @@ export default function HotelLiveRequestsPage() {
                     <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
                       Oda {req.roomNumber}
                     </span>
-                    <strong className="text-sm font-bold text-zinc-900">{req.serviceTitle}</strong>
+                    <strong className="text-sm font-bold text-zinc-900 dark:text-slate-100">{req.serviceTitle}</strong>
                     
                     {req.priority === 'acil' && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold border border-red-200 flex items-center gap-1">
@@ -153,7 +153,7 @@ export default function HotelLiveRequestsPage() {
                       </span>
                     )}
                     {req.department && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 font-semibold">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 dark:text-slate-400 font-semibold">
                         {req.department}
                       </span>
                     )}
@@ -165,7 +165,7 @@ export default function HotelLiveRequestsPage() {
                     </p>
                   )}
 
-                  <div className="text-[10px] text-zinc-500 flex items-center gap-2 pl-1 font-mono">
+                  <div className="text-[10px] text-zinc-500 dark:text-slate-400 flex items-center gap-2 pl-1 font-mono">
                     <span>Talep Zamanı: {new Date(req.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </div>

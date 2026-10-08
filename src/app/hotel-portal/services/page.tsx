@@ -268,10 +268,10 @@ export default function HotelPortalServicesPage() {
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel?.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             Otel İçi Hizmetler &amp; Menü Yönetimi
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
             Oda servisi (F&amp;B) yiyecek-içecek menüsünü ve otel içi servislerin oda ekranındaki görünürlüğünü yönetin.
           </p>
         </div>
@@ -307,7 +307,7 @@ export default function HotelPortalServicesPage() {
       {activeTab === 'menu' && (
         <div className="space-y-5">
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-3xl border border-amber-200/80 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
               <input
@@ -315,7 +315,7 @@ export default function HotelPortalServicesPage() {
                 value={searchMenu}
                 onChange={e => setSearchMenu(e.target.value)}
                 placeholder="Yemek, içecek veya malzeme ara..."
-                className="w-full pl-10 pr-4 py-2 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                className="w-full pl-10 pr-4 py-2 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-medium text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
               />
             </div>
             <button
@@ -336,7 +336,7 @@ export default function HotelPortalServicesPage() {
                 className={`text-xs px-3.5 py-1.5 rounded-xl whitespace-nowrap font-medium transition cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-amber-500 text-white font-bold shadow-xs'
-                    : 'bg-white text-zinc-600 hover:bg-amber-50 border border-amber-200/70'
+                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-600 dark:text-slate-400 hover:bg-amber-50 border border-amber-200/70'
                 }`}
               >
                 {cat}
@@ -367,11 +367,11 @@ export default function HotelPortalServicesPage() {
                           €{item.price}
                         </span>
                       </div>
-                      <h3 className="text-xs sm:text-sm font-bold text-zinc-900 mt-1 leading-snug line-clamp-1" title={item.name}>
+                      <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-slate-100 mt-1 leading-snug line-clamp-1" title={item.name}>
                         {item.name}
                       </h3>
                       {item.preparationTimeMinutes && (
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1 mt-0.5">
+                        <span className="text-[10px] text-zinc-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
                           <Clock className="w-3 h-3 text-amber-600" />
                           <span>{item.preparationTimeMinutes} dk</span>
                         </span>
@@ -379,10 +379,10 @@ export default function HotelPortalServicesPage() {
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-zinc-600 line-clamp-2 leading-relaxed">{item.description}</p>
+                  <p className="text-[11px] text-zinc-600 dark:text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
 
                   {item.ingredients && (
-                    <div className="text-[10px] text-zinc-500 bg-amber-50/50 p-2 rounded-xl border border-amber-100 line-clamp-1">
+                    <div className="text-[10px] text-zinc-500 dark:text-slate-400 bg-amber-50/50 p-2 rounded-xl border border-amber-100 line-clamp-1">
                       <strong>İçindekiler:</strong> {item.ingredients}
                     </div>
                   )}
@@ -394,7 +394,7 @@ export default function HotelPortalServicesPage() {
                     className={`text-[10px] font-bold px-2.5 py-1 rounded-xl border transition cursor-pointer ${
                       item.available
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
-                        : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
+                        : 'bg-zinc-100 text-zinc-600 dark:text-slate-400 border-zinc-200 hover:bg-zinc-200'
                     }`}
                   >
                     {item.available ? '● Müsait' : '○ Tükendi'}
@@ -421,10 +421,10 @@ export default function HotelPortalServicesPage() {
           </div>
 
           {filteredMenuItems.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-3xl border border-amber-200 p-6 space-y-2">
+            <div className="text-center py-12 bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200 p-6 space-y-2">
               <UtensilsCrossed className="w-10 h-10 text-amber-400 mx-auto" />
-              <h3 className="text-sm font-bold text-zinc-800">Menüde ürün bulunamadı</h3>
-              <p className="text-xs text-zinc-500 max-w-xs mx-auto">
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-slate-200">Menüde ürün bulunamadı</h3>
+              <p className="text-xs text-zinc-500 dark:text-slate-400 max-w-xs mx-auto">
                 Arama kriterlerinize uygun yemek bulunamadı veya bu kategoride henüz ürün yok.
               </p>
               <button
@@ -449,8 +449,8 @@ export default function HotelPortalServicesPage() {
                     <img src={srv.icon} alt={srv.label} className="w-full h-full object-contain" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 truncate">{srv.label}</h3>
-                    <span className="text-[10px] text-zinc-500 block truncate">{srv.department || 'Genel Servis'}</span>
+                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-slate-100 truncate">{srv.label}</h3>
+                    <span className="text-[10px] text-zinc-500 dark:text-slate-400 block truncate">{srv.department || 'Genel Servis'}</span>
                   </div>
                 </div>
                 <button
@@ -458,7 +458,7 @@ export default function HotelPortalServicesPage() {
                   className={`text-xs px-3 py-1.5 rounded-xl font-bold border transition cursor-pointer shrink-0 ${
                     srv.enabled
                       ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
-                      : 'bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200'
+                      : 'bg-zinc-100 text-zinc-500 dark:text-slate-400 border-zinc-200 hover:bg-zinc-200'
                   }`}
                 >
                   {srv.enabled ? 'Aktif' : 'Kapalı'}
@@ -476,7 +476,7 @@ export default function HotelPortalServicesPage() {
           onClick={e => { if (e.target === e.currentTarget) handleCloseModal(); }}
         >
           <div
-            className="bg-white border border-amber-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+            className="bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -486,10 +486,10 @@ export default function HotelPortalServicesPage() {
                   <ChefHat className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold font-serif text-zinc-900">
+                  <h2 className="text-sm sm:text-base font-bold font-serif text-zinc-900 dark:text-slate-100">
                     {editingItem ? 'Ürünü Düzenle' : 'Yeni Oda Servisi Ürünü Ekle'}
                   </h2>
-                  <p className="text-[10px] text-zinc-500">Misafir PWA oda servisi kataloğunda anında canlı yayınlanır</p>
+                  <p className="text-[10px] text-zinc-500 dark:text-slate-400">Misafir PWA oda servisi kataloğunda anında canlı yayınlanır</p>
                 </div>
               </div>
               <button
@@ -504,7 +504,7 @@ export default function HotelPortalServicesPage() {
             <form onSubmit={handleSaveMenuItem} className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
               {/* Name */}
               <div className="space-y-1">
-                <label className="font-bold text-zinc-800 block">
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">
                   Ürün / Yemek Adı <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -513,18 +513,18 @@ export default function HotelPortalServicesPage() {
                   value={formName}
                   onChange={e => setFormName(e.target.value)}
                   placeholder="Örn: Izgara Levrek & Roka Salatası"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
               {/* Category & Price */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-zinc-800 block">Kategori</label>
+                  <label className="font-bold text-zinc-800 dark:text-slate-200 block">Kategori</label>
                   <select
                     value={formCategory}
                     onChange={e => setFormCategory(e.target.value as any)}
-                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
+                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
                   >
                     {MENU_CATEGORIES.filter(c => c !== 'Tümü').map(c => (
                       <option key={c} value={c}>{c}</option>
@@ -532,13 +532,13 @@ export default function HotelPortalServicesPage() {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-zinc-800 block">Fiyat (EUR €) <span className="text-rose-500">*</span></label>
+                  <label className="font-bold text-zinc-800 dark:text-slate-200 block">Fiyat (EUR €) <span className="text-rose-500">*</span></label>
                   <input
                     type="number" min="1" step="0.5" required
                     value={formPrice}
                     onChange={e => setFormPrice(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="25"
-                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                 </div>
               </div>
@@ -546,17 +546,17 @@ export default function HotelPortalServicesPage() {
               {/* Prep Time & Availability */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-zinc-800 block">Hazırlık Süresi (Dk)</label>
+                  <label className="font-bold text-zinc-800 dark:text-slate-200 block">Hazırlık Süresi (Dk)</label>
                   <input
                     type="number" min="5" step="5"
                     value={formPrepTime}
                     onChange={e => setFormPrepTime(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="15"
-                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-zinc-800 block">Stok / Müsaitlik</label>
+                  <label className="font-bold text-zinc-800 dark:text-slate-200 block">Stok / Müsaitlik</label>
                   <div className="flex items-center gap-2 pt-2">
                     <input
                       type="checkbox" id="avail_chk"
@@ -573,31 +573,31 @@ export default function HotelPortalServicesPage() {
 
               {/* Description */}
               <div className="space-y-1">
-                <label className="font-bold text-zinc-800 block">Açıklama &amp; Sunum</label>
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">Açıklama &amp; Sunum</label>
                 <textarea
                   rows={2}
                   value={formDesc}
                   onChange={e => setFormDesc(e.target.value)}
                   placeholder="Yemeğin pişirme tekniği, lezzet notları ve yanında sunulan garnitürler..."
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
               {/* Ingredients */}
               <div className="space-y-1">
-                <label className="font-bold text-zinc-800 block">İçindekiler &amp; Malzemeler (Alerjen Bilgisi İçin)</label>
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">İçindekiler &amp; Malzemeler (Alerjen Bilgisi İçin)</label>
                 <input
                   type="text"
                   value={formIngredients}
                   onChange={e => setFormIngredients(e.target.value)}
                   placeholder="Örn: Balık, Zeytinyağı, Sarımsak, Roka, Limon"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
               {/* ── IMAGE SECTION ─────────────────────────────────────────── */}
               <div className="space-y-3">
-                <label className="font-bold text-zinc-800 block">Ürün Görseli</label>
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">Ürün Görseli</label>
 
                 {/* Upload area */}
                 <div

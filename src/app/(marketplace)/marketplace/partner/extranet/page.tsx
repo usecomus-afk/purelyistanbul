@@ -36,7 +36,7 @@ export default function ExtranetGirisiPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
           />
         </div>
         <div>
@@ -46,7 +46,7 @@ export default function ExtranetGirisiPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
           />
         </div>
         <button

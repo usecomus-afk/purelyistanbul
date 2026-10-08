@@ -182,7 +182,7 @@ export function GuestTabBar({
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all relative cursor-pointer active:scale-90 ${
                 isActive 
                   ? (isServicesDark ? 'text-white font-bold' : 'text-amber-800 font-bold') 
-                  : (isServicesDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 hover:text-zinc-800')
+                  : (isServicesDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200')
               }`}
             >
               <div className={`p-1.5 rounded-2xl transition-all ${

@@ -49,13 +49,13 @@ export default function ListingApprovalsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-bold text-zinc-900">İlan Onayları</h1>
+      <h1 className="text-lg font-bold text-zinc-900 dark:text-slate-100">İlan Onayları</h1>
       <p className="text-xs text-ink-muted">Sadece admin onayı vitrine (/marketplace) çıkışa izin verir.</p>
 
       <div className="space-y-3">
         {listings.length === 0 && <p className="text-xs text-ink-muted">Onay bekleyen ilan yok.</p>}
         {listings.map((l) => (
-          <div key={l.id} className="flex gap-4 rounded-2xl border border-amber-200/80 bg-white p-4">
+          <div key={l.id} className="flex gap-4 rounded-2xl border border-amber-200/80 bg-white dark:bg-slate-900 dark:border-slate-800 p-4">
             <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-sand-card shrink-0">
               {l.coverImageUrl ? (
                 <Image src={l.coverImageUrl} alt={l.title} fill className="object-cover" sizes="96px" />

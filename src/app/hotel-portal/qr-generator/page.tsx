@@ -176,18 +176,18 @@ export default function HotelPortalQrPage() {
     : filteredRooms;
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-16">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-16">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4 print:hidden">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <QrCode className="w-6 h-6 text-amber-700" />
             <span>Oda QR Kodları & iCal Takvim Masası</span>
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
             Her odaya özel dijital concierge standee QR kodları ve OTA takvim senkronizasyon .ics bağlantıları
           </p>
         </div>
@@ -204,7 +204,7 @@ export default function HotelPortalQrPage() {
       </div>
 
       {/* Hotel & Room Selector Control Bar */}
-      <div className="bg-white p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-end">
           {/* 1. Otel Seçimi */}
           <div className="space-y-1">
@@ -219,7 +219,7 @@ export default function HotelPortalQrPage() {
                   setSelectedHotelId(e.target.value);
                   setSelectedRoomNumber('all');
                 }}
-                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
+                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
               >
                 {hotels.map((h) => (
                   <option key={h.id} value={h.id}>
@@ -227,7 +227,7 @@ export default function HotelPortalQrPage() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-3 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
             </div>
           </div>
 
@@ -241,7 +241,7 @@ export default function HotelPortalQrPage() {
               <select
                 value={selectedRoomNumber}
                 onChange={(e) => setSelectedRoomNumber(e.target.value)}
-                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
+                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
               >
                 <option value="all">Tüm Odalar ({rooms.length} Oda)</option>
                 {rooms.map((r) => (
@@ -250,7 +250,7 @@ export default function HotelPortalQrPage() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-3 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
             </div>
           </div>
 
@@ -284,20 +284,20 @@ export default function HotelPortalQrPage() {
                 <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
                   {currentHotel?.name || 'purelyİstanbul Partner Hotel'}
                 </div>
-                <div className="text-2xl font-bold font-serif text-zinc-900">
+                <div className="text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100">
                   ODA {room.number}
                 </div>
-                <div className="text-[11px] text-zinc-500 font-medium">
+                <div className="text-[11px] text-zinc-500 dark:text-slate-400 font-medium">
                   {room.type} • {room.floor}
                 </div>
               </div>
 
               {/* QR Code Canvas */}
-              <div className="p-3 bg-white rounded-2xl border border-amber-300 shadow-inner flex items-center justify-center">
+              <div className="p-3 bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl border border-amber-300 shadow-inner flex items-center justify-center">
                 <QrCodeCardImage url={qrUrl} roomNumber={room.number} />
               </div>
 
-              <p className="text-[11px] text-zinc-600 font-medium px-2 leading-relaxed">
+              <p className="text-[11px] text-zinc-600 dark:text-slate-400 font-medium px-2 leading-relaxed">
                 Kameranızı QR koda doğrultarak oda içi hizmet menüsüne ve dijital concierge rehberine anında bağlanın.
               </p>
 
@@ -311,13 +311,13 @@ export default function HotelPortalQrPage() {
                     </span>
                     <button
                       onClick={() => handleCopy(icsUrl, `ics-${room.number}`)}
-                      className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer bg-white px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs"
+                      className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer bg-white dark:bg-slate-900 dark:border-slate-800 px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs"
                     >
                       {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                       <span>{isCopied ? 'Kopyalandı' : 'Kopyala'}</span>
                     </button>
                   </div>
-                  <div className="text-[10px] font-mono text-zinc-600 truncate" title={icsUrl}>
+                  <div className="text-[10px] font-mono text-zinc-600 dark:text-slate-400 truncate" title={icsUrl}>
                     {icsUrl}
                   </div>
                 </div>
@@ -330,14 +330,14 @@ export default function HotelPortalQrPage() {
                     <>
                       <button
                         onClick={() => handleOpenEditRoom(room)}
-                        className="p-1.5 text-zinc-500 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
                         title="Odayı Düzenle"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteRoom(room.number)}
-                        className="p-1.5 text-zinc-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
                         title="Odayı Sil"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -364,14 +364,14 @@ export default function HotelPortalQrPage() {
       {/* Room Add / Edit Modal */}
       {isRoomModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-              <h3 className="text-sm font-bold font-serif text-zinc-900">
+              <h3 className="text-sm font-bold font-serif text-zinc-900 dark:text-slate-100">
                 {editingRoom ? `Oda ${editingRoom.number} Düzenle` : `Yeni Oda Ekle (${currentHotel?.name})`}
               </h3>
               <button
                 onClick={() => setIsRoomModalOpen(false)}
-                className="w-6 h-6 rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer"
+                className="w-6 h-6 rounded-full bg-zinc-100 text-zinc-500 dark:text-slate-400 hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -386,7 +386,7 @@ export default function HotelPortalQrPage() {
                   value={modalRoomNumber}
                   onChange={(e) => setModalRoomNumber(e.target.value)}
                   placeholder="Örn: 204"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl font-mono text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl font-mono text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
@@ -395,7 +395,7 @@ export default function HotelPortalQrPage() {
                 <select
                   value={modalRoomType}
                   onChange={(e) => setModalRoomType(e.target.value)}
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
                 >
                   <option value="Standart Delüks">Standart Delüks</option>
                   <option value="Junior Suite">Junior Suite</option>
@@ -412,7 +412,7 @@ export default function HotelPortalQrPage() {
                   value={modalFloor}
                   onChange={(e) => setModalFloor(e.target.value)}
                   placeholder="Örn: 2. Kat"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 

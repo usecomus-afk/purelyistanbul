@@ -413,7 +413,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         disabled={isSubmitting}
                         className="w-2/3 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-md transition cursor-pointer disabled:opacity-50"
                       >
-                        {isSubmitting ? (t.serviceForm?.submitting || 'Gönderiliyor...') : (t.serviceForm?.submit || 'Talebi Gönder')}
+                        {isSubmitting ? 'Gonderiliyor...' : (t.serviceForm?.submitRequest || 'Talebi Gonder')}
                       </button>
                     </div>
                   </form>

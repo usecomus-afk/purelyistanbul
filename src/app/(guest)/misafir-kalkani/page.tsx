@@ -98,8 +98,8 @@ export default function MisafirKalkaniPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900">
-      <header className="bg-white border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
+    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900 dark:text-slate-100">
+      <header className="bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-zinc-700 transition">
@@ -122,7 +122,7 @@ export default function MisafirKalkaniPage() {
         {/* Top Header */}
         <div className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 text-white p-6 rounded-3xl shadow-lg space-y-2 relative overflow-hidden">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-white text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
               Turist Güvenlik Rehberi
             </span>
           </div>
@@ -224,17 +224,17 @@ export default function MisafirKalkaniPage() {
 
         {/* 9 Hayati Tuzak ve Güvenlik Rehberi */}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold font-serif text-zinc-900">
+          <h2 className="text-lg font-bold font-serif text-zinc-900 dark:text-slate-100">
             Yaygın Sokak Tuzakları & Hukuki Koruma Rehberi
           </h2>
 
           <div className="space-y-3">
             {shieldTopics.map((item) => (
-              <div key={item.id} className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
+              <div key={item.id} className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setOpenTrap(openTrap === item.id ? null : item.id)}
-                  className="w-full p-4 text-left font-bold text-xs sm:text-sm text-zinc-900 bg-zinc-50/80 hover:bg-amber-50/50 flex items-center justify-between transition cursor-pointer"
+                  className="w-full p-4 text-left font-bold text-xs sm:text-sm text-zinc-900 dark:text-slate-100 bg-zinc-50/80 hover:bg-amber-50/50 flex items-center justify-between transition cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
@@ -242,11 +242,11 @@ export default function MisafirKalkaniPage() {
                     </span>
                     <span>{item.title}</span>
                   </div>
-                  {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
+                  {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-slate-400" /> : <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400" />}
                 </button>
 
                 {openTrap === item.id && (
-                  <div className="p-5 space-y-3.5 text-xs text-zinc-700 bg-white border-t border-zinc-200 leading-relaxed">
+                  <div className="p-5 space-y-3.5 text-xs text-zinc-700 bg-white dark:bg-slate-900 dark:border-slate-800 border-t border-zinc-200 leading-relaxed">
                     <div className="space-y-1">
                       <strong className="text-red-700 block font-bold">⚠️ Karşılaşılan Sorun:</strong>
                       <p>{item.problem}</p>
@@ -263,8 +263,8 @@ export default function MisafirKalkaniPage() {
                     </div>
 
                     <div className="space-y-1 bg-zinc-50 p-3 rounded-xl border border-zinc-200">
-                      <strong className="text-zinc-800 block font-bold">📜 Türkiye'de Hukuk Nasıl İşler?:</strong>
-                      <p className="text-zinc-600">{item.law}</p>
+                      <strong className="text-zinc-800 dark:text-slate-200 block font-bold">📜 Türkiye'de Hukuk Nasıl İşler?:</strong>
+                      <p className="text-zinc-600 dark:text-slate-400">{item.law}</p>
                     </div>
                   </div>
                 )}
@@ -274,28 +274,28 @@ export default function MisafirKalkaniPage() {
         </div>
 
         {/* Emergency Contacts */}
-        <div className="bg-white rounded-3xl p-5 border border-amber-200/60 shadow-sm space-y-3">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-5 border border-amber-200/60 shadow-sm space-y-3">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center p-1 border border-red-200">
               <Image src="/icons/sos-emergency.png" alt="SOS Acil" width={20} height={20} className="object-contain" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900">Resmi Acil & Destek Hatları</h3>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Resmi Acil & Destek Hatları</h3>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 block text-[10px]">Acil Çağrı Merkezi</span>
+              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Acil Çağrı Merkezi</span>
               <strong className="text-red-600 text-sm font-mono">112</strong>
             </div>
             <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 block text-[10px]">Turizm Polisi</span>
+              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Turizm Polisi</span>
               <strong className="text-blue-600 text-sm font-mono">+90 212 527 45 03</strong>
             </div>
             <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 block text-[10px]">İBB Beyaz Masa</span>
-              <strong className="text-zinc-800 text-sm font-mono">153</strong>
+              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">İBB Beyaz Masa</span>
+              <strong className="text-zinc-800 dark:text-slate-200 text-sm font-mono">153</strong>
             </div>
             <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 block text-[10px]">Zabıta İhbar</span>
+              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Zabıta İhbar</span>
               <strong className="text-amber-800 text-sm font-mono">153</strong>
             </div>
           </div>

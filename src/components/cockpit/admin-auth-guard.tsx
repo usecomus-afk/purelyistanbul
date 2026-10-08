@@ -136,7 +136,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="anilaslan@usecomus.com"
-                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
+                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
               />
             </div>
 
@@ -148,7 +148,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
+                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
               />
             </div>
 
@@ -171,7 +171,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
               <Download className="w-3.5 h-3.5 text-amber-400" />
               <span>Pilot PWA Uygulamasını Cihaza Yükle</span>
             </button>
-            <p className="text-[10px] text-zinc-500 text-center mt-2">
+            <p className="text-[10px] text-zinc-500 dark:text-slate-400 text-center mt-2">
               Sadece yetkili purelyİstanbul Pilot proje yöneticileri içindir.
             </p>
           </div>

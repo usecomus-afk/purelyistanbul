@@ -44,7 +44,7 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
   ];
 
   const content = (
-    <div className="flex flex-col h-full bg-white text-zinc-900 border-r border-amber-200/80 shadow-xs">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-900 dark:text-slate-100 border-r border-amber-200/80 shadow-xs">
       {/* Brand Header */}
       <div className="border-b border-amber-100 px-5 py-4 flex items-center justify-between">
         <div>
@@ -56,7 +56,7 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-1.5 rounded-lg bg-zinc-100 text-zinc-600 hover:text-zinc-900 border border-zinc-200 cursor-pointer"
+            className="md:hidden p-1.5 rounded-lg bg-zinc-100 text-zinc-600 dark:text-slate-400 hover:text-zinc-900 dark:text-slate-100 border border-zinc-200 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -91,11 +91,11 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
               className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition ${
                 active
                   ? "bg-amber-500/15 text-amber-950 border border-amber-300 font-bold shadow-xs"
-                  : "text-zinc-600 hover:bg-amber-50/60 hover:text-zinc-900"
+                  : "text-zinc-600 dark:text-slate-400 hover:bg-amber-50/60 hover:text-zinc-900 dark:text-slate-100"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-700' : 'text-zinc-500'}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-700' : 'text-zinc-500 dark:text-slate-400'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
@@ -115,7 +115,7 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white hover:bg-amber-50 text-zinc-700 rounded-xl text-xs font-bold border border-amber-200 shadow-xs transition"
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-amber-50 text-zinc-700 rounded-xl text-xs font-bold border border-amber-200 shadow-xs transition"
         >
           <ArrowLeft className="w-3.5 h-3.5 text-amber-600" />
           <span>Misafir PWA Moduna Geç</span>

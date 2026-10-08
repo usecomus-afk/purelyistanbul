@@ -86,9 +86,9 @@ export default function GuestComplaintsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900">
+    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900 dark:text-slate-100">
       {/* Header */}
-      <header className="bg-white border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
+      <header className="bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-zinc-700 transition">
@@ -107,19 +107,19 @@ export default function GuestComplaintsPage() {
       <main className="max-w-3xl mx-auto p-4 space-y-6">
         
         {/* Mission Statement Hero Banner */}
-        <div className="bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-amber-50/70 p-6 rounded-3xl border border-amber-300 shadow-sm space-y-3 relative overflow-hidden text-zinc-900">
+        <div className="bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-amber-50/70 p-6 rounded-3xl border border-amber-300 shadow-sm space-y-3 relative overflow-hidden text-zinc-900 dark:text-slate-100">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-amber-900 font-serif font-bold">İstanbul'un Misafirleri Başımızın Tacıdır</span>
               </div>
 
-              <p className="text-xs text-zinc-600 leading-relaxed max-w-2xl">
+              <p className="text-xs text-zinc-600 dark:text-slate-400 leading-relaxed max-w-2xl">
                 İstanbul'da karşılaştığınız şüpheli, fahiş fiyatlı veya aldatıcı alışverişleri platformumuza bildirin. 
                 purelyİstanbul olarak işletmeyle resmi iletişime geçerek hatanın telafisini ve haksız tahsil edilen farkın 
-                <strong className="text-zinc-900"> doğrudan hesabınıza iadesini</strong> talep ediyoruz. 
+                <strong className="text-zinc-900 dark:text-slate-100"> doğrudan hesabınıza iadesini</strong> talep ediyoruz. 
                 İyi niyet göstermeyen ve 30 gün içinde telafi etmeyen işletmeleri sonraki misafirleri korumak için 
-                <strong className="text-zinc-900"> Uyarı Panosu'nda</strong> paylaşıyoruz.
+                <strong className="text-zinc-900 dark:text-slate-100"> Uyarı Panosu'nda</strong> paylaşıyoruz.
               </p>
             </div>
             <div className="w-16 h-16 rounded-2xl bg-amber-100/80 p-2 border border-amber-300/80 shrink-0 hidden sm:flex items-center justify-center">
@@ -129,7 +129,7 @@ export default function GuestComplaintsPage() {
         </div>
 
         {/* Mağduriyet Bildirim Formu */}
-        <div className="bg-white p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-5">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-5">
           {submittedCode ? (
             <div className="text-center space-y-4 py-6">
               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
@@ -140,10 +140,10 @@ export default function GuestComplaintsPage() {
                 <span className="text-xs font-mono font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
                   Takip Kodu: {submittedCode}
                 </span>
-                <h3 className="text-lg font-bold font-serif text-zinc-900 mt-2">
+                <h3 className="text-lg font-bold font-serif text-zinc-900 dark:text-slate-100 mt-2">
                   Hakem Bildiriminiz Başarıyla Kaydedildi!
                 </h3>
-                <p className="text-xs text-zinc-500 max-w-md mx-auto">
+                <p className="text-xs text-zinc-500 dark:text-slate-400 max-w-md mx-auto">
                   purelyİstanbul Hukuk ve Hakem heyetimiz ilgili işletmeyle resmi temas başlatacaktır. 
                   Gelişmeler girdiğiniz e-posta adresinize iletilecektir.
                 </p>
@@ -168,7 +168,7 @@ export default function GuestComplaintsPage() {
                 </button>
                 <Link
                   href="/"
-                  className="px-5 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold rounded-xl transition"
+                  className="px-5 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:text-slate-200 text-xs font-bold rounded-xl transition"
                 >
                   Ana Sayfaya Dön
                 </Link>
@@ -177,8 +177,8 @@ export default function GuestComplaintsPage() {
           ) : (
             <form onSubmit={handleFormSubmit} className="space-y-4 text-xs">
               <div className="border-b border-amber-100 pb-3">
-                <h2 className="text-base font-bold font-serif text-zinc-900">Mağduriyet Bildirim Formu</h2>
-                <p className="text-xs text-zinc-500">
+                <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">Mağduriyet Bildirim Formu</h2>
+                <p className="text-xs text-zinc-500 dark:text-slate-400">
                   Lütfen yaşadığınız olayı, ödediğiniz tutarı ve işletme bilgilerini mümkün olduğunca net giriniz.
                 </p>
               </div>
@@ -192,7 +192,7 @@ export default function GuestComplaintsPage() {
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="Örn: Sultanahmet Balıkçısı / 34 TAA 00 Plakalı Taksi"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -201,7 +201,7 @@ export default function GuestComplaintsPage() {
                   <select
                     value={businessCategory}
                     onChange={(e: any) => setBusinessCategory(e.target.value)}
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 cursor-pointer"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 cursor-pointer"
                   >
                     <option value="Restoran / Kafe">Restoran / Kafe / Bar</option>
                     <option value="Taksi / Ulaşım">Taksi / Transfer / Ulaşım</option>
@@ -219,7 +219,7 @@ export default function GuestComplaintsPage() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="Örn: Kapalıçarşı Nuruosmaniye Kapısı"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -230,7 +230,7 @@ export default function GuestComplaintsPage() {
                     value={businessEmail}
                     onChange={(e) => setBusinessEmail(e.target.value)}
                     placeholder="İşletmenin faturadaki e-postası veya telefonu"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100"
                   />
                 </div>
               </div>
@@ -244,34 +244,34 @@ export default function GuestComplaintsPage() {
 
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-600 block">Sizden Alınan Tutar *</label>
+                    <label className="text-[11px] text-zinc-600 dark:text-slate-400 block">Sizden Alınan Tutar *</label>
                     <input
                       type="number"
                       required
                       value={amountPaid}
                       onChange={(e) => setAmountPaid(e.target.value)}
                       placeholder="Örn: 4800"
-                      className="w-full p-2 bg-white border border-amber-200 rounded-xl font-mono font-bold text-zinc-900"
+                      className="w-full p-2 bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 rounded-xl font-mono font-bold text-zinc-900 dark:text-slate-100"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-600 block">Piyasa / Makul Değer</label>
+                    <label className="text-[11px] text-zinc-600 dark:text-slate-400 block">Piyasa / Makul Değer</label>
                     <input
                       type="number"
                       value={amountExpected}
                       onChange={(e) => setAmountExpected(e.target.value)}
                       placeholder="Örn: 1500"
-                      className="w-full p-2 bg-white border border-amber-200 rounded-xl font-mono text-zinc-700"
+                      className="w-full p-2 bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 rounded-xl font-mono text-zinc-700"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-600 block">Para Birimi</label>
+                    <label className="text-[11px] text-zinc-600 dark:text-slate-400 block">Para Birimi</label>
                     <select
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="w-full p-2 bg-white border border-amber-200 rounded-xl font-bold text-zinc-900 cursor-pointer"
+                      className="w-full p-2 bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 rounded-xl font-bold text-zinc-900 dark:text-slate-100 cursor-pointer"
                     >
                       <option value="TRY">Türk Lirası (₺)</option>
                       <option value="EUR">Euro (€)</option>
@@ -289,7 +289,7 @@ export default function GuestComplaintsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Ne zaman oldu? Menüde fiyat yazıyor muydu? Taksici taksimetreyi açtı mı? Ürün sahte mi çıktı? Lütfen tüm detayları anlatınız..."
-                  className="w-full h-28 p-3 bg-amber-50/30 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+                  className="w-full h-28 p-3 bg-amber-50/30 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
                 />
               </div>
 
@@ -304,7 +304,7 @@ export default function GuestComplaintsPage() {
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="Ad Soyad"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -320,7 +320,7 @@ export default function GuestComplaintsPage() {
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     placeholder="adiniz@ornek.com (İade ve dosya takibi için)"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -336,7 +336,7 @@ export default function GuestComplaintsPage() {
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     placeholder="+90 ... veya uluslararası numaranız"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -350,7 +350,7 @@ export default function GuestComplaintsPage() {
                     value={refundIban}
                     onChange={(e) => setRefundIban(e.target.value)}
                     placeholder="TR00 0000 0000 ... veya Banka / Hesap Sahibi"
-                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900"
+                    className="w-full p-2.5 bg-amber-50/30 border border-amber-200 rounded-xl font-mono text-zinc-900 dark:text-slate-100"
                   />
                 </div>
               </div>

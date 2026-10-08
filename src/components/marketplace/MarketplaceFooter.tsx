@@ -130,7 +130,7 @@ export function MarketplaceFooter() {
           onClick={() => setShowContact(false)}
         >
           <div
-            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sand-border relative"
+            className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sand-border relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -153,7 +153,7 @@ export function MarketplaceFooter() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Adınız Soyadınız"
-                className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               />
               <input
                 type="email"
@@ -161,7 +161,7 @@ export function MarketplaceFooter() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="E-posta Adresiniz"
-                className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               />
               <textarea
                 required
@@ -169,7 +169,7 @@ export function MarketplaceFooter() {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Mesajınız"
                 rows={4}
-                className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none"
+                className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none"
               />
               <button
                 type="submit"

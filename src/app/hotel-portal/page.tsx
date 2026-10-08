@@ -175,10 +175,10 @@ export default function HotelPortalDashboard() {
 
             {/* Middle: Title & Description */}
             <div className="space-y-0.5 min-w-0">
-              <h2 className="text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 group-hover:text-amber-800 transition-colors leading-tight truncate">
+              <h2 className="text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-slate-100 group-hover:text-amber-800 transition-colors leading-tight truncate">
                 {mod.title}
               </h2>
-              <p className="text-[9px] sm:text-[10px] md:text-[11px] text-zinc-500 leading-tight line-clamp-1">
+              <p className="text-[9px] sm:text-[10px] md:text-[11px] text-zinc-500 dark:text-slate-400 leading-tight line-clamp-1">
                 {mod.desc}
               </p>
             </div>

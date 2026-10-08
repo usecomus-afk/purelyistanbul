@@ -50,7 +50,7 @@ export default function PartnerKayitPage() {
       </p>
 
       <div className="mt-10 grid sm:grid-cols-2 gap-5">
-        <div className="rounded-2xl border border-sand-border bg-white p-6">
+        <div className="rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-6">
           <h2 className="text-[15px] font-semibold text-ink mb-2">Deneyim Sağlayıcıları İçin Başvuru</h2>
           <p className="text-[14px] text-ink-muted leading-relaxed mb-5">
             Kültürel miras, hamam, gastronomi, tekne/boğaz, sanat, atölye veya transfer alanlarında
@@ -64,7 +64,7 @@ export default function PartnerKayitPage() {
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-sand-border bg-white p-6">
+        <div className="rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-6">
           <h2 className="text-[15px] font-semibold text-ink mb-2">Butik Oteller ve Host'lar İçin Ön Kayıt</h2>
           <p className="text-[14px] text-ink-muted leading-relaxed">
             purelyistanbul.com, platform trafiğini hedeflenen hacme ulaştırdığında devreye

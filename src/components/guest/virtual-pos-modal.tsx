@@ -95,7 +95,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
     >
       <div className="min-h-full flex items-center justify-center py-6">
         <div 
-          className="relative w-full max-w-lg bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 my-auto space-y-4 animate-in zoom-in-95 text-zinc-900"
+          className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 my-auto space-y-4 animate-in zoom-in-95 text-zinc-900 dark:text-slate-100"
           onClick={(e) => e.stopPropagation()}
         >
         
@@ -110,8 +110,8 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
               <span className="text-xs font-mono font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
                 Kod: {createdBooking.confirmationCode}
               </span>
-              <h3 className="text-lg font-bold font-serif text-zinc-900 mt-2">{t.posSuccess}</h3>
-              <p className="text-xs text-zinc-500 mt-1 max-w-xs mx-auto">
+              <h3 className="text-lg font-bold font-serif text-zinc-900 dark:text-slate-100 mt-2">{t.posSuccess}</h3>
+              <p className="text-xs text-zinc-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
                 {createdBooking.experienceTitle} ({createdBooking.guestCount} {t.guestCount})
               </p>
             </div>
@@ -138,7 +138,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
 
               <button
                 onClick={onClose}
-                className="w-full py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-2xl text-xs font-bold transition cursor-pointer"
+                className="w-full py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:text-slate-200 rounded-2xl text-xs font-bold transition cursor-pointer"
               >
                 Kapat
               </button>
@@ -153,8 +153,8 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold font-serif text-zinc-900">{t.posTitle}</h3>
-                  <p className="text-[11px] text-zinc-500">3D Secure 256-Bit SSL</p>
+                  <h3 className="text-sm font-bold font-serif text-zinc-900 dark:text-slate-100">{t.posTitle}</h3>
+                  <p className="text-[11px] text-zinc-500 dark:text-slate-400">3D Secure 256-Bit SSL</p>
                 </div>
               </div>
               <button onClick={onClose} className="text-zinc-400 hover:text-zinc-700 font-bold p-1 cursor-pointer">✕</button>
@@ -163,52 +163,52 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
             {/* Order Summary */}
             <div className="bg-amber-50/70 p-3 rounded-2xl border border-amber-200/60 flex items-center justify-between text-xs">
               <div>
-                <strong className="text-zinc-900 block">{experience.title}</strong>
-                <span className="text-zinc-500">{experience.provider} • {t.room} {roomNumber}</span>
+                <strong className="text-zinc-900 dark:text-slate-100 block">{experience.title}</strong>
+                <span className="text-zinc-500 dark:text-slate-400">{experience.provider} • {t.room} {roomNumber}</span>
               </div>
               <div className="text-right">
-                <span className="text-base font-bold font-mono text-zinc-900">{formatPrice(totalAmount, experience.currency)}</span>
+                <span className="text-base font-bold font-mono text-zinc-900 dark:text-slate-100">{formatPrice(totalAmount, experience.currency)}</span>
                 <span className="text-[10px] text-zinc-400 block">{guestCount} {t.guestCount}</span>
               </div>
             </div>
 
             {/* Guest Details */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-zinc-800">Misafir Bilgileri</h4>
+              <h4 className="text-xs font-bold text-zinc-800 dark:text-slate-200">Misafir Bilgileri</h4>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-zinc-500">Ad Soyad</label>
+                  <label className="text-[10px] font-semibold text-zinc-500 dark:text-slate-400">Ad Soyad</label>
                   <input
                     type="text"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
-                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white"
+                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-zinc-500">Telefon / SMS</label>
+                  <label className="text-[10px] font-semibold text-zinc-500 dark:text-slate-400">Telefon / SMS</label>
                   <input
                     type="text"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
-                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white font-mono"
+                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 font-mono"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-zinc-500">{t.date}</label>
+                  <label className="text-[10px] font-semibold text-zinc-500 dark:text-slate-400">{t.date}</label>
                   <input
                     type="date"
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white"
+                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-zinc-500">{t.guestCount}</label>
+                  <label className="text-[10px] font-semibold text-zinc-500 dark:text-slate-400">{t.guestCount}</label>
                   <select
                     value={guestCount}
                     onChange={(e) => setGuestCount(parseInt(e.target.value, 10))}
-                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white"
+                    className="w-full text-xs p-2 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800"
                   >
                     {[1, 2, 3, 4, 5, 6].map(n => (
                       <option key={n} value={n}>{n} {t.guestCount}</option>
@@ -220,14 +220,14 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
 
             {/* Credit Card Input Form */}
             <div className="space-y-2 pt-2 border-t border-amber-100">
-              <h4 className="text-xs font-bold text-zinc-800">{t.posCardNumber}</h4>
+              <h4 className="text-xs font-bold text-zinc-800 dark:text-slate-200">{t.posCardNumber}</h4>
               <div className="space-y-2">
                 <input
                   type="text"
                   value={cardNumber}
                   onChange={(e) => setCardNumber(e.target.value)}
                   placeholder={t.posCardNumber}
-                  className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white font-mono"
+                  className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 font-mono"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -235,14 +235,14 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
                     value={cardExpiry}
                     onChange={(e) => setCardExpiry(e.target.value)}
                     placeholder={t.posExpiry}
-                    className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white font-mono"
+                    className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 font-mono"
                   />
                   <input
                     type="password"
                     value={cardCvv}
                     onChange={(e) => setCardCvv(e.target.value)}
                     placeholder={t.posCvv}
-                    className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white font-mono"
+                    className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 font-mono"
                   />
                 </div>
               </div>

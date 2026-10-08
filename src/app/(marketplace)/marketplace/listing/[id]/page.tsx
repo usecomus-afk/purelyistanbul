@@ -122,7 +122,7 @@ export default function ListingDetailPage() {
 
         {/* Sağ: sticky rezervasyon kutusu */}
         <div className="lg:self-start lg:sticky lg:top-28">
-          <div className="rounded-3xl border border-sand-border bg-white shadow-[0_4px_24px_rgba(30,33,41,0.07)] p-6 space-y-5">
+          <div className="rounded-3xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 shadow-[0_4px_24px_rgba(30,33,41,0.07)] p-6 space-y-5">
             <p className="text-[19px]">
               <span className="font-semibold text-ink">
                 {listing.pricing.basePrice.toLocaleString("tr-TR")} {listing.pricing.currency}

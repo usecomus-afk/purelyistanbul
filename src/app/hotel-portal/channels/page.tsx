@@ -119,17 +119,17 @@ export default function HotelChannelsPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12 text-zinc-900">
+    <div className="space-y-6 pb-12 text-zinc-900 dark:text-slate-100">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             iCal & OTA Kanal Entegrasyon Masası
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
             Airbnb, Booking.com, VRBO ve Expedia takvimlerini purelyİstanbul oda envanteri ile 2 yönlü canlı senkronize edin.
           </p>
         </div>
@@ -153,26 +153,26 @@ export default function HotelChannelsPage() {
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-zinc-900">{ch.name}</span>
+                <span className="font-bold text-sm text-zinc-900 dark:text-slate-100">{ch.name}</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   {ch.status}
                 </span>
               </div>
 
               <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-100 text-[11px] space-y-1">
-                <div className="flex items-center justify-between text-zinc-600">
+                <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
                   <span>Kapsam:</span>
-                  <strong className="text-zinc-900">{ch.roomNumber === 'all' ? 'Tüm Odalar' : `Oda ${ch.roomNumber}`}</strong>
+                  <strong className="text-zinc-900 dark:text-slate-100">{ch.roomNumber === 'all' ? 'Tüm Odalar' : `Oda ${ch.roomNumber}`}</strong>
                 </div>
-                <div className="flex items-center justify-between text-zinc-600">
+                <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
                   <span>Son Eşitleme:</span>
-                  <strong className="text-zinc-900">{ch.lastSync || '5 dk önce'}</strong>
+                  <strong className="text-zinc-900 dark:text-slate-100">{ch.lastSync || '5 dk önce'}</strong>
                 </div>
               </div>
             </div>
 
             <div className="pt-2 border-t border-zinc-100 flex items-center justify-between">
-              <span className="text-[10px] text-zinc-500 truncate max-w-[120px]" title={ch.feedUrl}>
+              <span className="text-[10px] text-zinc-500 dark:text-slate-400 truncate max-w-[120px]" title={ch.feedUrl}>
                 {ch.feedUrl}
               </span>
               <button
@@ -188,8 +188,8 @@ export default function HotelChannelsPage() {
       </div>
 
       {/* Add New Channel Feed Form */}
-      <div className="bg-white p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+        <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
           <CalendarSync className="w-4 h-4 text-amber-700" />
           <span>Yeni OTA / Dış iCal Kanalı Bağla</span>
         </h2>
@@ -200,7 +200,7 @@ export default function HotelChannelsPage() {
             <select
               value={newChanName}
               onChange={(e) => setNewChanName(e.target.value)}
-              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
+              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
             >
               <option value="Airbnb">Airbnb iCal Feed</option>
               <option value="Booking.com">Booking.com iCal Feed</option>
@@ -216,7 +216,7 @@ export default function HotelChannelsPage() {
             <select
               value={newChanRoom}
               onChange={(e) => setNewChanRoom(e.target.value)}
-              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
+              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
             >
               <option value="all">Tüm Odalar (Genel Otel Akışı)</option>
               {rooms.map((r) => (
@@ -235,7 +235,7 @@ export default function HotelChannelsPage() {
               value={newChanUrl}
               onChange={(e) => setNewChanUrl(e.target.value)}
               placeholder="https://www.airbnb.com/calendar/ical/12345.ics?s=abcdef"
-              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
             />
           </div>
 
@@ -250,14 +250,14 @@ export default function HotelChannelsPage() {
       </div>
 
       {/* Room-by-Room iCal Export & Import Table */}
-      <div className="bg-white p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
               <DoorOpen className="w-4 h-4 text-amber-700" />
               <span>Odalara Özel iCal Dışa Aktarma (.ics) ve İçe Aktarma Masası</span>
             </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
               Bu bağlantıları Airbnb veya Booking.com portalındaki "Takvimi İçe Aktar" alanına yapıştırınız.
             </p>
           </div>
@@ -279,8 +279,8 @@ export default function HotelChannelsPage() {
                     {room.number}
                   </div>
                   <div>
-                    <h3 className="font-bold text-zinc-900">Oda {room.number}</h3>
-                    <span className="text-[10px] text-zinc-500">{room.type || 'Standart Delüks'} • {room.floor || '2. Kat'}</span>
+                    <h3 className="font-bold text-zinc-900 dark:text-slate-100">Oda {room.number}</h3>
+                    <span className="text-[10px] text-zinc-500 dark:text-slate-400">{room.type || 'Standart Delüks'} • {room.floor || '2. Kat'}</span>
                   </div>
                 </div>
 

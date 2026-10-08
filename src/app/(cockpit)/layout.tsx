@@ -25,18 +25,18 @@ export default function CockpitLayout({
 
   return (
     <AdminAuthGuard>
-      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 flex flex-col md:flex-row">
+      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 flex flex-col md:flex-row">
         <CockpitSideNav
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />
 
         {/* Mobile Top Header */}
-        <div className="md:hidden flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] bg-white border-b border-amber-200/80 sticky top-0 z-40 shadow-xs">
+        <div className="md:hidden flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/80 sticky top-0 z-40 shadow-xs">
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 rounded-xl bg-amber-50 text-zinc-700 hover:text-zinc-900 border border-amber-200 cursor-pointer"
+              className="p-2 rounded-xl bg-amber-50 text-zinc-700 hover:text-zinc-900 dark:text-slate-100 border border-amber-200 cursor-pointer"
               aria-label="Menüyü Aç"
             >
               <Menu className="w-4 h-4" />
@@ -54,7 +54,7 @@ export default function CockpitLayout({
             </Link>
             <button
               onClick={handleLogout}
-              className="p-1.5 bg-zinc-100 hover:bg-red-50 text-zinc-600 hover:text-red-700 border border-zinc-200 rounded-xl transition cursor-pointer"
+              className="p-1.5 bg-zinc-100 hover:bg-red-50 text-zinc-600 dark:text-slate-400 hover:text-red-700 border border-zinc-200 rounded-xl transition cursor-pointer"
               title="Çıkış Yap"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -67,7 +67,7 @@ export default function CockpitLayout({
           <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-amber-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
             <div className="flex items-center gap-3">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-              <span className="text-xs text-zinc-800 font-bold">
+              <span className="text-xs text-zinc-800 dark:text-slate-200 font-bold">
                 purelyİstanbul Master Operations Deck • Proje Yöneticisi Paneli
               </span>
               <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono font-bold border border-amber-300">
@@ -85,7 +85,7 @@ export default function CockpitLayout({
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-3 py-1.5 bg-white hover:bg-red-50 text-zinc-600 hover:text-red-700 border border-zinc-200 hover:border-red-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-3 py-1.5 bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-red-50 text-zinc-600 dark:text-slate-400 hover:text-red-700 border border-zinc-200 hover:border-red-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Çıkış</span>

@@ -19,7 +19,7 @@ export default function IletisimPage() {
       <ul className="!mt-0 space-y-5">
         {CHANNELS.map(({ icon: Icon, label, value }) => (
           <li key={label} className="!pl-0 flex items-start gap-4 before:content-none">
-            <span className="w-9 h-9 rounded-full border border-sand-border bg-white flex items-center justify-center shrink-0">
+            <span className="w-9 h-9 rounded-full border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 flex items-center justify-center shrink-0">
               <Icon className="w-4 h-4 text-terracotta" strokeWidth={1.75} />
             </span>
             <span>

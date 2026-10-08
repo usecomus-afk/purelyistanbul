@@ -111,7 +111,7 @@ export function HotelLiveAlertBanner() {
               title={prefs.soundEnabled ? "Sesi Kapat" : "Sesi Aç"}
               className="p-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition cursor-pointer"
             >
-              {prefs.soundEnabled ? <Volume2 className="w-4 h-4 text-amber-400" /> : <VolumeX className="w-4 h-4 text-zinc-500" />}
+              {prefs.soundEnabled ? <Volume2 className="w-4 h-4 text-amber-400" /> : <VolumeX className="w-4 h-4 text-zinc-500 dark:text-slate-400" />}
             </button>
             <button
               onClick={handleDismiss}

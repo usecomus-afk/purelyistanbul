@@ -153,7 +153,7 @@ export function AestheticBookingModal({
       }}
     >
       <div 
-        className="bg-white border border-rose-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-white dark:bg-slate-900 dark:border-slate-800 border border-rose-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -173,7 +173,7 @@ export function AestheticBookingModal({
               <span className="text-[10px] uppercase font-bold text-rose-800 tracking-wider block truncate">
                 {t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik"}
               </span>
-              <h2 className="text-xs sm:text-sm font-bold font-serif text-zinc-900 leading-snug line-clamp-1" title={experience.title}>
+              <h2 className="text-xs sm:text-sm font-bold font-serif text-zinc-900 dark:text-slate-100 leading-snug line-clamp-1" title={experience.title}>
                 {experience.title}
               </h2>
             </div>
@@ -183,7 +183,7 @@ export function AestheticBookingModal({
             type="button"
             onClick={onClose}
             aria-label="Kapat"
-            className="w-8 h-8 rounded-full bg-white hover:bg-rose-100 text-zinc-600 hover:text-zinc-900 border border-rose-200 flex items-center justify-center transition cursor-pointer shrink-0 shadow-xs active:scale-95"
+            className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-rose-100 text-zinc-600 dark:text-slate-400 hover:text-zinc-900 dark:text-slate-100 border border-rose-200 flex items-center justify-center transition cursor-pointer shrink-0 shadow-xs active:scale-95"
           >
             <X className="w-4 h-4" />
           </button>
@@ -196,15 +196,15 @@ export function AestheticBookingModal({
             <div className="space-y-4">
               <div className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200 text-left flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                <div className="text-[11px] text-zinc-600">
-                  <strong className="text-zinc-900 block font-medium">Sağlayıcı: {experience.provider} ({experience.location})</strong>
+                <div className="text-[11px] text-zinc-600 dark:text-slate-400">
+                  <strong className="text-zinc-900 dark:text-slate-100 block font-medium">Sağlayıcı: {experience.provider} ({experience.location})</strong>
                   <span>Tarih ve saat seçtiğinizde kliniğin CRM takvimi anlık kilitlenir.</span>
                 </div>
               </div>
 
               {/* Date Selector */}
               <div>
-                <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1.5">
+                <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1.5">
                   Randevu Tarihi
                 </label>
                 <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ export function AestheticBookingModal({
                     value={selectedDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
+                    className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
                   />
                 </div>
               </div>
@@ -221,7 +221,7 @@ export function AestheticBookingModal({
               {/* Live Slots Grid */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] uppercase font-bold text-zinc-500">
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400">
                     Müsait Saat Dilimleri (Canlı CRM)
                   </label>
                   {isLoadingSlots && (
@@ -237,7 +237,7 @@ export function AestheticBookingModal({
                     <span>Kliniğin uygun seansları çekiliyor...</span>
                   </div>
                 ) : slots.length === 0 ? (
-                  <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 text-center text-zinc-500">
+                  <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 text-center text-zinc-500 dark:text-slate-400">
                     Seçilen tarihte uygun seans bulunamadı. Lütfen başka bir gün seçiniz.
                   </div>
                 ) : (
@@ -251,11 +251,11 @@ export function AestheticBookingModal({
                         className={`p-3 rounded-2xl border text-center transition cursor-pointer ${
                           !s.is_available
                             ? 'bg-zinc-100 border-zinc-200 text-zinc-400 cursor-not-allowed line-through'
-                            : 'bg-white hover:bg-rose-50/80 border-rose-200 text-zinc-900 font-bold hover:border-rose-400 shadow-2xs'
+                            : 'bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-rose-50/80 border-rose-200 text-zinc-900 dark:text-slate-100 font-bold hover:border-rose-400 shadow-2xs'
                         }`}
                       >
                         <span className="block text-xs">{s.start_time}</span>
-                        <span className="text-[9px] text-zinc-500 font-normal">
+                        <span className="text-[9px] text-zinc-500 dark:text-slate-400 font-normal">
                           {s.is_available ? `${experience.price} ${experience.currency}` : 'Dolu'}
                         </span>
                       </button>
@@ -294,7 +294,7 @@ export function AestheticBookingModal({
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Adınız Soyadınız *</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Adınız Soyadınız *</label>
                   <div className="relative">
                     <User className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3" />
                     <input
@@ -303,14 +303,14 @@ export function AestheticBookingModal({
                       placeholder="Örn: Alex Mercer"
                       value={guestName}
                       onChange={(e) => setGuestName(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
+                      className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Telefon / WhatsApp *</label>
+                    <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Telefon / WhatsApp *</label>
                     <div className="relative">
                       <Phone className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3" />
                       <input
@@ -319,13 +319,13 @@ export function AestheticBookingModal({
                         placeholder="+90 532 ..."
                         value={guestPhone}
                         onChange={(e) => setGuestPhone(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
+                        className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">E-Posta (İsteğe bağlı)</label>
+                    <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">E-Posta (İsteğe bağlı)</label>
                     <div className="relative">
                       <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3" />
                       <input
@@ -333,20 +333,20 @@ export function AestheticBookingModal({
                         placeholder="alex@example.com"
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
+                        className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-medium text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Özel İstek / Sağlık Notu</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Özel İstek / Sağlık Notu</label>
                   <textarea
                     rows={2}
                     placeholder="Varsa alerjileriniz veya kliniğe iletmek istediğiniz özel notunuz..."
                     value={guestNotes}
                     onChange={(e) => setGuestNotes(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden resize-none"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-rose-500 outline-hidden resize-none"
                   />
                 </div>
               </div>
@@ -386,27 +386,27 @@ export function AestheticBookingModal({
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-zinc-900">Randevunuz Onaylandı!</h3>
-                <p className="text-xs text-zinc-500 mt-1">
+                <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">Randevunuz Onaylandı!</h3>
+                <p className="text-xs text-zinc-500 dark:text-slate-400 mt-1">
                   Randevu kaydı kliniğin takvimine işlendi. Konakladığınız otel ({hotel.name}) koordinatörlüğü ile klinik karşılamanız organize edilecektir.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 text-left space-y-1.5 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Klinik:</span>
-                  <strong className="text-zinc-900">{experience.provider}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Klinik:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100">{experience.provider}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Tarih & Saat:</span>
-                  <strong className="text-zinc-900">{selectedDate} - {selectedSlot?.start_time}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Tarih & Saat:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100">{selectedDate} - {selectedSlot?.start_time}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Misafir:</span>
-                  <strong className="text-zinc-900">{guestName}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Misafir:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100">{guestName}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Kayıt Referansı:</span>
+                  <span className="text-zinc-500 dark:text-slate-400">Kayıt Referansı:</span>
                   <strong className="text-rose-900 font-mono font-bold">{confirmedBookingId}</strong>
                 </div>
               </div>

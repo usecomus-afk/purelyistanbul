@@ -25,7 +25,7 @@ export function BrandMark({
       {showIcon && (
         <div 
           className={`relative overflow-hidden rounded-xl shadow-xs transition-transform group-hover:scale-105 shrink-0 ${
-            theme === 'dark' ? 'bg-zinc-800/80 ring-1 ring-amber-500/30' : 'bg-white ring-1 ring-amber-200/70'
+            theme === 'dark' ? 'bg-zinc-800/80 ring-1 ring-amber-500/30' : 'bg-white dark:bg-slate-900 dark:border-slate-800 ring-1 ring-amber-200/70'
           }`}
           style={{ width: size, height: size }}
         >
@@ -43,7 +43,7 @@ export function BrandMark({
       {showText && (
         <div className="flex flex-col leading-none">
           <span className={`font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
-            theme === 'dark' ? 'text-white' : 'text-zinc-900'
+            theme === 'dark' ? 'text-white' : 'text-zinc-900 dark:text-slate-100'
           }`}>
             purely<span className="text-red-600 font-bold">istanbul</span>
           </span>

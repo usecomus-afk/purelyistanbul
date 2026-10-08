@@ -40,12 +40,19 @@ export default function RootLayout({
             __html: `
               (function(){
                 try {
+                  var theme = localStorage.getItem('theme_preference') || 'system';
+                  if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                  
                   var played = sessionStorage.getItem('purely_splash_played') ||
                                sessionStorage.getItem('xenios_splash_played');
                   var path = window.location.pathname;
                   var skipPaths = ['/hotel-portal','/dashboard','/qr-generator'];
                   var isSkipPath = skipPaths.some(function(p){ return path.startsWith(p); });
-                  if (!played && !isSkipPath) {
+                  if (!played && !isSkipPath && !document.documentElement.classList.contains('dark')) {
                     document.documentElement.style.backgroundColor = '#F3F2EE';
                   }
                 } catch(e){}

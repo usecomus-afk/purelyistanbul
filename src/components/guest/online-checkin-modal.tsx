@@ -156,7 +156,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white border border-amber-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         
         {/* Gizli Kamera / Dosya Seçici Input (capture="environment") */}
         <input 
@@ -181,10 +181,10 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
               />
             </div>
             <div>
-              <h2 className="text-sm sm:text-base font-bold font-serif text-zinc-900">
+              <h2 className="text-sm sm:text-base font-bold font-serif text-zinc-900 dark:text-slate-100">
                 Online Check-in & Kimlik Teyidi
               </h2>
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">
                 {hotel.name} • Oda {roomNumber}
               </p>
             </div>
@@ -192,7 +192,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center transition cursor-pointer"
+            className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 dark:text-slate-400 flex items-center justify-center transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -208,7 +208,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   <ShieldCheck className="w-4 h-4 text-amber-600" />
                   <span>Resmi EGM Kimlik Bildirim Sistemi (KBS) Uyumu</span>
                 </div>
-                <p className="text-[11px] text-zinc-600 leading-relaxed">
+                <p className="text-[11px] text-zinc-600 dark:text-slate-400 leading-relaxed">
                   Resepsiyonda beklemeden odanıza geçebilmeniz için pasaport veya kimliğinizi kameranızla çekip saniyeler içinde check-in yapabilirsiniz.
                 </p>
               </div>
@@ -219,8 +219,8 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   <Camera className="w-7 h-7" />
                 </div>
                 <div>
-                  <strong className="text-xs text-zinc-800 block">Kamera ile Pasaport / Kimlik Çekin</strong>
-                  <span className="text-[10px] text-zinc-500">Otomatik OCR & EGM KBS Belge Okuyucu</span>
+                  <strong className="text-xs text-zinc-800 dark:text-slate-200 block">Kamera ile Pasaport / Kimlik Çekin</strong>
+                  <span className="text-[10px] text-zinc-500 dark:text-slate-400">Otomatik OCR & EGM KBS Belge Okuyucu</span>
                 </div>
 
                 <button
@@ -280,8 +280,8 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="text-[11px] text-zinc-500 min-w-0">
-                    <strong className="text-zinc-800 block truncate">Taranan Pasaport Fotoğrafı</strong>
+                  <div className="text-[11px] text-zinc-500 dark:text-slate-400 min-w-0">
+                    <strong className="text-zinc-800 dark:text-slate-200 block truncate">Taranan Pasaport Fotoğrafı</strong>
                     <span className="text-[10px] text-emerald-600 block font-medium">✓ OCR ile metinler başarıyla ayrıştırıldı</span>
                   </div>
                 </div>
@@ -289,33 +289,33 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Ad (First Name)</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Ad (First Name)</label>
                   <input
                     type="text"
                     value={firstName}
                     placeholder="Adınız"
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Soyad (Last Name)</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Soyad (Last Name)</label>
                   <input
                     type="text"
                     value={lastName}
                     placeholder="Soyadınız"
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Belge Türü</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Belge Türü</label>
                   <select
                     value={documentType}
                     onChange={(e) => setDocumentType(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   >
                     <option value="PASSPORT">Pasaport (Passport)</option>
                     <option value="TCKN">T.C. Kimlik Kartı</option>
@@ -324,34 +324,34 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Belge No</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Belge No</label>
                   <input
                     type="text"
                     value={documentNumber}
                     placeholder="Pasaport veya TCKN No"
                     onChange={(e) => setDocumentNumber(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-mono font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-mono font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Uyruk (ISO 3-Letter)</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Uyruk (ISO 3-Letter)</label>
                   <input
                     type="text"
                     value={nationality}
                     placeholder="TUR, DEU, USA..."
                     onChange={(e) => setNationality(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">Doğum Tarihi</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 dark:text-slate-400 block mb-1">Doğum Tarihi</label>
                   <input
                     type="date"
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl font-bold text-zinc-800 dark:text-slate-200 text-xs focus:ring-2 focus:ring-amber-500 outline-hidden"
                   />
                 </div>
               </div>
@@ -392,24 +392,24 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-zinc-900">Check-in Başarıyla Tamamlandı!</h3>
-                <p className="text-xs text-zinc-500 mt-1">
+                <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">Check-in Başarıyla Tamamlandı!</h3>
+                <p className="text-xs text-zinc-500 dark:text-slate-400 mt-1">
                   Bilgileriniz otel resepsiyonuna ve EGM KBS sistemine iletildi. Anahtarınızı resepsiyondan doğrudan alabilirsiniz.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 text-left space-y-1.5 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Misafir:</span>
-                  <strong className="text-zinc-900">{firstName} {lastName}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Misafir:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100">{firstName} {lastName}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Oda No:</span>
-                  <strong className="text-zinc-900">{roomNumber}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Oda No:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100">{roomNumber}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Pasaport / Kimlik:</span>
-                  <strong className="text-zinc-900 font-mono">{documentNumber}</strong>
+                  <span className="text-zinc-500 dark:text-slate-400">Pasaport / Kimlik:</span>
+                  <strong className="text-zinc-900 dark:text-slate-100 font-mono">{documentNumber}</strong>
                 </div>
               </div>
 

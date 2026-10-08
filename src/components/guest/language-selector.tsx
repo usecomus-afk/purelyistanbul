@@ -21,7 +21,7 @@ export function LanguageSelector({ currentLang, onSelect, theme = 'light' }: { c
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] font-bold transition cursor-pointer ${
-          theme === 'dark' ? 'text-white hover:bg-white/10' : 'text-zinc-800 hover:bg-amber-50'
+          theme === 'dark' ? 'text-white hover:bg-white/10' : 'text-zinc-800 dark:text-slate-200 hover:bg-amber-50'
         }`}
       >
         <span>{langs.find(l => l.code === currentLang)?.flag || '🇹🇷'}</span>
@@ -31,7 +31,7 @@ export function LanguageSelector({ currentLang, onSelect, theme = 'light' }: { c
       {isOpen && (
         <>
           <div className="fixed inset-0 z-[90] bg-transparent" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-36 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 p-1.5 z-[100] animate-in fade-in zoom-in-95 text-zinc-900">
+          <div className="absolute right-0 top-full mt-2 w-36 bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl shadow-2xl border-2 border-amber-300 p-1.5 z-[100] animate-in fade-in zoom-in-95 text-zinc-900 dark:text-slate-100">
             {langs.map(l => (
               <button
                 key={l.code}

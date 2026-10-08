@@ -83,7 +83,7 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
             <button
               onClick={() => scrollBy("left")}
               disabled={!canScrollLeft}
-              className="w-8 h-8 rounded-full border border-ink/20 bg-white flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
+              className="w-8 h-8 rounded-full border border-ink/20 bg-white dark:bg-slate-900 dark:border-slate-800 flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Önceki"
             >
               <ChevronLeft className="w-4 h-4 text-ink" />
@@ -91,7 +91,7 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
             <button
               onClick={() => scrollBy("right")}
               disabled={!canScrollRight}
-              className="w-8 h-8 rounded-full border border-ink/20 bg-white flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
+              className="w-8 h-8 rounded-full border border-ink/20 bg-white dark:bg-slate-900 dark:border-slate-800 flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Sonraki"
             >
               <ChevronRight className="w-4 h-4 text-ink" />

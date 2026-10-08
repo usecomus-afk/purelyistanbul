@@ -76,36 +76,36 @@ export default function CockpitComplaintsPage() {
   const filtered = complaints.filter(c => filter === 'all' || c.status === filter);
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-12">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
-          <h1 className="text-xl font-bold font-serif text-zinc-900 flex items-center gap-2">
+          <h1 className="text-xl font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <Scale className="w-5 h-5 text-amber-700" />
             <span>Misafir Hakları & Hakem Masası</span>
           </h1>
-          <p className="text-xs text-zinc-500">İstanbul Misafirlerinin Fahiş Fiyat, Aldatma ve Mağduriyet Dosyaları</p>
+          <p className="text-xs text-zinc-500 dark:text-slate-400">İstanbul Misafirlerinin Fahiş Fiyat, Aldatma ve Mağduriyet Dosyaları</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-2xl bg-white border border-amber-200/80 shadow-xs">
-          <span className="text-[10px] text-zinc-500 font-bold uppercase">Toplam Dosya</span>
-          <div className="text-xl font-bold text-zinc-900 mt-1 font-mono">{complaints.length}</div>
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-bold uppercase">Toplam Dosya</span>
+          <div className="text-xl font-bold text-zinc-900 dark:text-slate-100 mt-1 font-mono">{complaints.length}</div>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-amber-200/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs">
           <span className="text-[10px] text-amber-700 font-bold uppercase">İncelemede</span>
           <div className="text-xl font-bold text-amber-700 mt-1 font-mono">
             {complaints.filter(c => c.status === 'under_review').length}
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-emerald-200/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-emerald-200/80 shadow-xs">
           <span className="text-[10px] text-emerald-700 font-bold uppercase">İade Edilenler</span>
           <div className="text-xl font-bold text-emerald-700 mt-1 font-mono">
             {complaints.filter(c => c.status === 'resolved_refunded').length}
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-red-200/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-red-200/80 shadow-xs">
           <span className="text-[10px] text-red-700 font-bold uppercase">Kara Liste</span>
           <div className="text-xl font-bold text-red-700 mt-1 font-mono">
             {complaints.filter(c => c.status === 'published_blacklisted').length}
@@ -128,7 +128,7 @@ export default function CockpitComplaintsPage() {
             className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
               filter === tab.id
                 ? 'bg-amber-500 border-amber-500 text-zinc-950 shadow-xs'
-                : 'bg-white border-amber-200 text-zinc-600 hover:bg-amber-50'
+                : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200 text-zinc-600 dark:text-slate-400 hover:bg-amber-50'
             }`}
           >
             {tab.label}
@@ -139,14 +139,14 @@ export default function CockpitComplaintsPage() {
       {/* Complaints List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="p-8 text-center bg-white rounded-3xl border border-amber-200 text-zinc-500">
+          <div className="p-8 text-center bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200 text-zinc-500 dark:text-slate-400">
             Filtreye uygun şikayet veya mağduriyet kaydı bulunmuyor.
           </div>
         ) : (
           filtered.map((comp) => (
             <div
               key={comp.id}
-              className="p-5 rounded-3xl bg-white border border-amber-200/80 hover:border-amber-400 shadow-xs transition space-y-4"
+              className="p-5 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 hover:border-amber-400 shadow-xs transition space-y-4"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="space-y-1">
@@ -154,14 +154,14 @@ export default function CockpitComplaintsPage() {
                     <span className="font-mono text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
                       {comp.trackingCode}
                     </span>
-                    <strong className="text-base text-zinc-900 font-bold">{comp.businessName}</strong>
-                    <span className="text-[10px] text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200">
+                    <strong className="text-base text-zinc-900 dark:text-slate-100 font-bold">{comp.businessName}</strong>
+                    <span className="text-[10px] text-zinc-500 dark:text-slate-400 bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200">
                       {comp.businessCategory}
                     </span>
                     
                   </div>
 
-                  <p className="text-xs text-zinc-600 flex items-center gap-2">
+                  <p className="text-xs text-zinc-600 dark:text-slate-400 flex items-center gap-2">
                     <span>{comp.location}</span>
                     <span>•</span>
                     <span>Olay Tarihi: {comp.incidentDate}</span>
@@ -169,11 +169,11 @@ export default function CockpitComplaintsPage() {
                 </div>
 
                 <div className="text-left sm:text-right">
-                  <div className="text-xs text-zinc-500">Talep Edilen Fark:</div>
+                  <div className="text-xs text-zinc-500 dark:text-slate-400">Talep Edilen Fark:</div>
                   <strong className="text-base font-mono font-bold text-red-600">
                     {comp.discrepancyAmount} {comp.currency}
                   </strong>
-                  <span className="text-[10px] text-zinc-500 block">
+                  <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">
                     (Ödenen: {comp.amountPaid} {comp.currency} / Normal: {comp.amountExpected} {comp.currency})
                   </span>
                 </div>
@@ -181,21 +181,21 @@ export default function CockpitComplaintsPage() {
 
               {/* Description */}
               <div className="p-3 bg-amber-50/50 rounded-2xl border border-amber-100 text-xs text-zinc-700 leading-relaxed">
-                <strong className="text-zinc-900 block font-bold mb-0.5">Misafir Beyanı:</strong>
+                <strong className="text-zinc-900 dark:text-slate-100 block font-bold mb-0.5">Misafir Beyanı:</strong>
                 {comp.description}
               </div>
 
               {/* Guest & Hotel Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-zinc-50 p-3 rounded-2xl border border-zinc-200">
                 <div className="space-y-0.5">
-                  <span className="text-zinc-500 text-[10px]">Misafir İletişim:</span>
-                  <div className="font-bold text-zinc-900">{comp.guestName}</div>
-                  <div className="text-zinc-500 font-mono text-[11px]">{comp.guestEmail} • {comp.guestPhone}</div>
+                  <span className="text-zinc-500 dark:text-slate-400 text-[10px]">Misafir İletişim:</span>
+                  <div className="font-bold text-zinc-900 dark:text-slate-100">{comp.guestName}</div>
+                  <div className="text-zinc-500 dark:text-slate-400 font-mono text-[11px]">{comp.guestEmail} • {comp.guestPhone}</div>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-zinc-500 text-[10px]">Konaklanan Tesis:</span>
-                  <div className="font-bold text-zinc-900">{comp.hotelName}</div>
-                  <div className="text-zinc-500 font-mono text-[11px]">Oda {comp.roomNumber}</div>
+                  <span className="text-zinc-500 dark:text-slate-400 text-[10px]">Konaklanan Tesis:</span>
+                  <div className="font-bold text-zinc-900 dark:text-slate-100">{comp.hotelName}</div>
+                  <div className="text-zinc-500 dark:text-slate-400 font-mono text-[11px]">Oda {comp.roomNumber}</div>
                 </div>
               </div>
 
@@ -228,9 +228,9 @@ export default function CockpitComplaintsPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleSendEmail(comp)}
-                    className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl text-xs font-bold border border-zinc-200 transition cursor-pointer flex items-center gap-1"
+                    className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:text-slate-200 rounded-xl text-xs font-bold border border-zinc-200 transition cursor-pointer flex items-center gap-1"
                   >
-                    <Mail className="w-3.5 h-3.5 text-zinc-600" />
+                    <Mail className="w-3.5 h-3.5 text-zinc-600 dark:text-slate-400" />
                     <span>Resmi Yazı Gönder</span>
                   </button>
 

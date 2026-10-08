@@ -43,7 +43,7 @@ export function CookieConsentBanner() {
       aria-label="Çerez İzinleri" 
       className="fixed inset-x-0 bottom-0 z-[9999999] p-3 sm:p-5 pointer-events-none pb-[calc(5.2rem+env(safe-area-inset-bottom))] sm:pb-5"
     >
-      <div className="max-w-2xl mx-auto rounded-3xl border-2 border-amber-300/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.18)] p-4 sm:p-5 pointer-events-auto text-zinc-900 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="max-w-2xl mx-auto rounded-3xl border-2 border-amber-300/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.18)] p-4 sm:p-5 pointer-events-auto text-zinc-900 dark:text-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-300">
         {!managing ? (
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -51,8 +51,8 @@ export function CookieConsentBanner() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div className="flex-1 space-y-1">
-                <h4 className="text-xs sm:text-sm font-bold text-zinc-900 font-serif">Çerez Tercihleri ve Gizlilik</h4>
-                <p className="text-[11.5px] sm:text-xs text-zinc-600 leading-relaxed">
+                <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-slate-100 font-serif">Çerez Tercihleri ve Gizlilik</h4>
+                <p className="text-[11.5px] sm:text-xs text-zinc-600 dark:text-slate-400 leading-relaxed">
                   Deneyiminizi iyileştirmek için çerezler kullanıyoruz. Zorunlu çerezler sitenin
                   çalışması için gereklidir; analitik ve pazarlama çerezlerini onaylamak size kalmıştır.
                 </p>
@@ -64,7 +64,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => setManaging(true)}
-                className="text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 underline text-center sm:text-left py-1 cursor-pointer transition"
+                className="text-[11px] font-semibold text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200 underline text-center sm:text-left py-1 cursor-pointer transition"
               >
                 Tercihleri Özelleştir
               </button>
@@ -73,7 +73,7 @@ export function CookieConsentBanner() {
                 <button
                   type="button"
                   onClick={rejectNonEssential}
-                  className="flex-1 sm:flex-none text-center rounded-full border border-zinc-300 hover:bg-zinc-100 active:bg-zinc-200 text-zinc-800 px-4 py-2 text-xs font-bold transition cursor-pointer"
+                  className="flex-1 sm:flex-none text-center rounded-full border border-zinc-300 hover:bg-zinc-100 active:bg-zinc-200 text-zinc-800 dark:text-slate-200 px-4 py-2 text-xs font-bold transition cursor-pointer"
                 >
                   Reddet
                 </button>

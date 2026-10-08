@@ -52,8 +52,8 @@ export default function AdilAlisverisPolitikasiPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900">
-      <header className="bg-white border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
+    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900 dark:text-slate-100">
+      <header className="bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-zinc-700 transition">
@@ -94,8 +94,8 @@ export default function AdilAlisverisPolitikasiPage() {
         </div>
 
         {/* 1. Şikayet Nasıl Yapılır? */}
-        <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
-          <h2 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
+          <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center">1</span>
             <span>Şikayet Nasıl Yapabilirsin?</span>
           </h2>
@@ -103,30 +103,30 @@ export default function AdilAlisverisPolitikasiPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse border border-zinc-200 rounded-xl overflow-hidden">
               <thead>
-                <tr className="bg-amber-50 text-zinc-800 font-bold border-b border-zinc-200">
+                <tr className="bg-amber-50 text-zinc-800 dark:text-slate-200 font-bold border-b border-zinc-200">
                   <th className="p-2.5">Kanıt Türü</th>
                   <th className="p-2.5">Nedir?</th>
                   <th className="p-2.5">Örnek</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 text-zinc-600">
+              <tbody className="divide-y divide-zinc-200 text-zinc-600 dark:text-slate-400">
                 <tr>
-                  <td className="p-2.5 font-bold text-zinc-900">Fatura / Fiş</td>
+                  <td className="p-2.5 font-bold text-zinc-900 dark:text-slate-100">Fatura / Fiş</td>
                   <td className="p-2.5">İşletmeden aldığın ödeme belgesi</td>
                   <td className="p-2.5">Restoran fişi, tur makbuzu, ürün faturası</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold text-zinc-900">Ekran Görüntüsü</td>
+                  <td className="p-2.5 font-bold text-zinc-900 dark:text-slate-100">Ekran Görüntüsü</td>
                   <td className="p-2.5">Telefon, app veya web ekran görüntüsü</td>
                   <td className="p-2.5">Yanlış fiyat, ödeme onayı, konuşma</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold text-zinc-900">Konum Bilgisi</td>
+                  <td className="p-2.5 font-bold text-zinc-900 dark:text-slate-100">Konum Bilgisi</td>
                   <td className="p-2.5">İşletmenin harita konumu veya adresi</td>
                   <td className="p-2.5">Google Maps linki, sokak adı</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold text-zinc-900">Taksi Plakası</td>
+                  <td className="p-2.5 font-bold text-zinc-900 dark:text-slate-100">Taksi Plakası</td>
                   <td className="p-2.5">Taksi dolandırıcılığı yaşandıysa</td>
                   <td className="p-2.5">Sarı plaka numarası (Örn: 34 TAA 01)</td>
                 </tr>
@@ -136,21 +136,21 @@ export default function AdilAlisverisPolitikasiPage() {
         </div>
 
         {/* 2. purelyİstanbul Ne Yapacak? 7 Günlük Süreç */}
-        <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
-          <h2 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
+          <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center">2</span>
             <span>purelyİstanbul Ne Yapacak? (7 Günlük İnceleme ve Yaptırım Akışı)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <strong className="text-zinc-900 font-bold block">Adım 3: Araştırma (1-2 Gün)</strong>
-              <p className="text-zinc-600">Kanıtların doğruluğu, piyasa rayiçleri ve olayın ciddiyeti incelenir.</p>
+              <strong className="text-zinc-900 dark:text-slate-100 font-bold block">Adım 3: Araştırma (1-2 Gün)</strong>
+              <p className="text-zinc-600 dark:text-slate-400">Kanıtların doğruluğu, piyasa rayiçleri ve olayın ciddiyeti incelenir.</p>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <strong className="text-zinc-900 font-bold block">Adım 4: İşletmeye Bildirim (Gün 2-3)</strong>
-              <p className="text-zinc-600">İşletmeye resmi e-posta gönderilir: 'Bir hata mı yapıldı? Turisti telafi etmeyi kabul ediyor musunuz?'</p>
+              <strong className="text-zinc-900 dark:text-slate-100 font-bold block">Adım 4: İşletmeye Bildirim (Gün 2-3)</strong>
+              <p className="text-zinc-600 dark:text-slate-400">İşletmeye resmi e-posta gönderilir: 'Bir hata mı yapıldı? Turisti telafi etmeyi kabul ediyor musunuz?'</p>
             </div>
           </div>
 
@@ -169,34 +169,34 @@ export default function AdilAlisverisPolitikasiPage() {
         </div>
 
         {/* 3. Kurumsal Bildirimler */}
-        <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
-          <h2 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
+          <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center">3</span>
             <span>Kurumsal Bildirimler (Resmi Devlet Kurumları)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 bg-zinc-50 border border-zinc-200 rounded-2xl space-y-1">
-              <strong className="text-zinc-900 font-bold flex items-center gap-1.5">
+              <strong className="text-zinc-900 dark:text-slate-100 font-bold flex items-center gap-1.5">
                 <Landmark className="w-4 h-4 text-red-600" />
                 <span>CİMER (Cumhurbaşkanlığı İletişim)</span>
               </strong>
-              <p className="text-zinc-500">Turist dolandırıcılığı, sahte acenteler ve esnaf usulsüzlükleri Kültür & Turizm ve Ticaret Bakanlığı'na sevk edilir.</p>
+              <p className="text-zinc-500 dark:text-slate-400">Turist dolandırıcılığı, sahte acenteler ve esnaf usulsüzlükleri Kültür & Turizm ve Ticaret Bakanlığı'na sevk edilir.</p>
             </div>
 
             <div className="p-3.5 bg-zinc-50 border border-zinc-200 rounded-2xl space-y-1">
-              <strong className="text-zinc-900 font-bold flex items-center gap-1.5">
+              <strong className="text-zinc-900 dark:text-slate-100 font-bold flex items-center gap-1.5">
                 <Car className="w-4 h-4 text-amber-600" />
                 <span>İBB TUDES (Toplu Ulaşım Hizmetleri)</span>
               </strong>
-              <p className="text-zinc-500">Taksi plakasıyla bildirilen fazla ücret, taksimetre açmama ve güzergah uzatma şikayetleri doğrudan cezai işleme alınır.</p>
+              <p className="text-zinc-500 dark:text-slate-400">Taksi plakasıyla bildirilen fazla ücret, taksimetre açmama ve güzergah uzatma şikayetleri doğrudan cezai işleme alınır.</p>
             </div>
           </div>
         </div>
 
         {/* SSS */}
-        <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
-          <h2 className="text-base font-bold font-serif text-zinc-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 border border-amber-200/80 shadow-sm space-y-4">
+          <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-amber-600" />
             <span>Sık Sorulan Sorular (SSS)</span>
           </h2>
@@ -207,13 +207,13 @@ export default function AdilAlisverisPolitikasiPage() {
                 <button
                   type="button"
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full p-3.5 text-left font-bold text-zinc-900 bg-zinc-50 hover:bg-amber-50/50 flex items-center justify-between transition cursor-pointer"
+                  className="w-full p-3.5 text-left font-bold text-zinc-900 dark:text-slate-100 bg-zinc-50 hover:bg-amber-50/50 flex items-center justify-between transition cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  {openFaq === idx ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
+                  {openFaq === idx ? <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-slate-400" /> : <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400" />}
                 </button>
                 {openFaq === idx && (
-                  <div className="p-3.5 text-zinc-600 bg-white border-t border-zinc-200 leading-relaxed">
+                  <div className="p-3.5 text-zinc-600 dark:text-slate-400 bg-white dark:bg-slate-900 dark:border-slate-800 border-t border-zinc-200 leading-relaxed">
                     {faq.a}
                   </div>
                 )}

@@ -55,7 +55,7 @@ export default function GuestLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 w-full pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] antialiased">
+      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 w-full pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] antialiased">
         {children}
       </div>
       {/* Alt Navibar doğrudan root layout seviyesinde render edilir */}

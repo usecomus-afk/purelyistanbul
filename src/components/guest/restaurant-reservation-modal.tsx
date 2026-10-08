@@ -111,7 +111,7 @@ export function RestaurantReservationModal({
     >
       <div className="min-h-full flex items-center justify-center py-6">
         <div 
-          className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-amber-200 animate-in zoom-in-95 flex flex-col overflow-hidden text-zinc-900"
+          className="relative w-full max-w-lg bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl shadow-2xl border border-amber-200 animate-in zoom-in-95 flex flex-col overflow-hidden text-zinc-900 dark:text-slate-100"
           onClick={(e) => e.stopPropagation()}
         >
         {/* Header */}
@@ -138,8 +138,8 @@ export function RestaurantReservationModal({
           {/* Hotel & Guest Room Info */}
           <div className="p-3 bg-amber-50/80 rounded-2xl border border-amber-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[10px] text-zinc-500 font-semibold block">Otel & Oda Bilgisi</span>
-              <strong className="text-zinc-900 font-bold">{hotel.name} — Oda {roomNumber}</strong>
+              <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-semibold block">Otel & Oda Bilgisi</span>
+              <strong className="text-zinc-900 dark:text-slate-100 font-bold">{hotel.name} — Oda {roomNumber}</strong>
             </div>
             <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-bold text-[10px] flex items-center gap-1">
               <ShieldCheck className="w-3 h-3 text-amber-700" /> Concierge Güvencesi
@@ -148,7 +148,7 @@ export function RestaurantReservationModal({
 
           {/* 1. Kişi Sayısı */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-amber-600" /> Kişi Sayısı *
             </label>
             <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ export function RestaurantReservationModal({
           {/* 2. Tarih & Saat */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+              <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-amber-600" /> Tarih *
               </label>
               <input
@@ -180,18 +180,18 @@ export function RestaurantReservationModal({
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+              <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-600" /> Saat *
               </label>
               <select
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+                className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
               >
                 {timeSlots.map((slot) => (
                   <option key={slot} value={slot}>{slot}</option>
@@ -202,7 +202,7 @@ export function RestaurantReservationModal({
 
           {/* 3. Cep Telefonu */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5 text-amber-600" /> Cep Telefonu *
             </label>
             <input
@@ -211,13 +211,13 @@ export function RestaurantReservationModal({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+90 5xx xxx xx xx (Rezervasyon onayı SMS/WhatsApp ile iletilir)"
-              className="w-full text-xs p-3 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+              className="w-full text-xs p-3 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
             />
           </div>
 
           {/* 4. Ad Soyad (İsteğe Bağlı) */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
               <User className="w-3.5 h-3.5 text-amber-600" /> Adınız & Soyadınız
             </label>
             <input
@@ -225,13 +225,13 @@ export function RestaurantReservationModal({
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
               placeholder="Örn: David Miller / Ayşe Yılmaz"
-              className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 font-medium"
+              className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
             />
           </div>
 
           {/* Masa / Özel İstek */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Masa Tercihi & Not
             </label>
             <input
@@ -239,7 +239,7 @@ export function RestaurantReservationModal({
               value={specialNotes}
               onChange={(e) => setSpecialNotes(e.target.value)}
               placeholder="Örn: Manzaralı masa, doğum günü kutlaması, sigarasız alan vb."
-              className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900"
+              className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
             />
           </div>
 

@@ -71,7 +71,7 @@ export default function HostApplicationsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-bold text-zinc-900">Host Başvuruları</h1>
+      <h1 className="text-lg font-bold text-zinc-900 dark:text-slate-100">Host Başvuruları</h1>
       <p className="text-xs text-ink-muted">
         Komisyon oranı henüz sabitlenmedi — her başvuruyu onaylarken host payını (%) siz belirlersiniz;
         kalan yüzde platforma kalır. Onay sonrası kullanıcı Firestore üzerinden anında bilgilendirilir.
@@ -82,7 +82,7 @@ export default function HostApplicationsPage() {
           <p className="text-xs text-ink-muted">Henüz başvuru yok.</p>
         )}
         {applications.map((app) => (
-          <div key={app.id} className="rounded-2xl border border-amber-200/80 bg-white p-4 space-y-2">
+          <div key={app.id} className="rounded-2xl border border-amber-200/80 bg-white dark:bg-slate-900 dark:border-slate-800 p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold">{app.applicantName}</p>

@@ -151,33 +151,33 @@ export function PropertyAdminPanel() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 font-semibold uppercase">Toplam İlan</span>
-          <div className="text-xl font-bold text-zinc-900 mt-1 font-mono">{stats.total}</div>
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-semibold uppercase">Toplam İlan</span>
+          <div className="text-xl font-bold text-zinc-900 dark:text-slate-100 mt-1 font-mono">{stats.total}</div>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 font-semibold uppercase">Aktif İlan</span>
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-semibold uppercase">Aktif İlan</span>
           <div className="text-xl font-bold text-emerald-400 mt-1 font-mono">{stats.active}</div>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 font-semibold uppercase">Askıda</span>
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-semibold uppercase">Askıda</span>
           <div className="text-xl font-bold text-red-400 mt-1 font-mono">{stats.suspended}</div>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-amber-200/80">
-          <span className="text-[10px] text-zinc-500 font-semibold uppercase">Yatırım Talebi</span>
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
+          <span className="text-[10px] text-zinc-500 dark:text-slate-400 font-semibold uppercase">Yatırım Talebi</span>
           <div className="text-xl font-bold text-amber-400 mt-1 font-mono">{stats.leadsTotal}</div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="İlan, bölge veya mülk tipi ara..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-amber-200/80 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
         <button
@@ -195,7 +195,7 @@ export function PropertyAdminPanel() {
             <div
               key={p.id}
               className={`rounded-3xl p-4 border space-y-3 flex flex-col justify-between transition ${
-                suspended ? 'bg-white/50 border-red-500/30' : 'bg-white border-amber-200/80 hover:border-amber-500/40'
+                suspended ? 'bg-white/50 border-red-500/30' : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200/80 hover:border-amber-500/40'
               }`}
             >
               <div className="space-y-2">
@@ -212,8 +212,8 @@ export function PropertyAdminPanel() {
                   )}
                 </div>
 
-                <h3 className={`text-sm font-bold font-serif line-clamp-2 ${suspended ? 'text-zinc-500' : 'text-zinc-900'}`}>{p.title}</h3>
-                <p className="text-xs text-zinc-500 flex items-center gap-1"><MapPin className="w-3 h-3 shrink-0" /> {p.district}</p>
+                <h3 className={`text-sm font-bold font-serif line-clamp-2 ${suspended ? 'text-zinc-500 dark:text-slate-400' : 'text-zinc-900 dark:text-slate-100'}`}>{p.title}</h3>
+                <p className="text-xs text-zinc-500 dark:text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3 shrink-0" /> {p.district}</p>
 
                 <div className="flex flex-wrap gap-1">
                   {p.personas.map((persona) => (
@@ -253,31 +253,31 @@ export function PropertyAdminPanel() {
           );
         })}
         {filtered.length === 0 && (
-          <div className="col-span-full text-center text-zinc-500 text-xs py-12">Aramanızla eşleşen ilan bulunamadı.</div>
+          <div className="col-span-full text-center text-zinc-500 dark:text-slate-400 text-xs py-12">Aramanızla eşleşen ilan bulunamadı.</div>
         )}
       </div>
 
       {/* Investment Leads */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-1.5"><TrendingUp className="w-4 h-4 text-amber-400" /> Yatırım Talepleri</h3>
+        <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-1.5"><TrendingUp className="w-4 h-4 text-amber-400" /> Yatırım Talepleri</h3>
         {leads.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 text-center text-zinc-500 border border-amber-200/80 text-xs">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-8 text-center text-zinc-500 dark:text-slate-400 border border-amber-200/80 text-xs">
             Henüz bir yatırım talebi gelmedi.
           </div>
         ) : (
           <div className="space-y-2.5">
             {leads.map((lead) => (
-              <div key={lead.id} className="p-4 rounded-2xl bg-white border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div key={lead.id} className="p-4 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <strong className="text-sm text-zinc-900">{lead.guestName}</strong>
+                    <strong className="text-sm text-zinc-900 dark:text-slate-100">{lead.guestName}</strong>
                     {lead.personaGuess && (
                       <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-400">{PERSONA_LABELS[lead.personaGuess]}</span>
                     )}
                   </div>
-                  <p className="text-zinc-500">İlgilendiği İlan: <strong className="text-zinc-800">{lead.propertyTitle}</strong></p>
-                  <p className="text-zinc-500">{lead.hotelName} • Oda {lead.roomNumber} • {new Date(lead.createdAt).toLocaleString('tr-TR')}</p>
-                  {lead.note && <p className="text-zinc-500 italic">"{lead.note}"</p>}
+                  <p className="text-zinc-500 dark:text-slate-400">İlgilendiği İlan: <strong className="text-zinc-800 dark:text-slate-200">{lead.propertyTitle}</strong></p>
+                  <p className="text-zinc-500 dark:text-slate-400">{lead.hotelName} • Oda {lead.roomNumber} • {new Date(lead.createdAt).toLocaleString('tr-TR')}</p>
+                  {lead.note && <p className="text-zinc-500 dark:text-slate-400 italic">"{lead.note}"</p>}
                 </div>
                 <a
                   href={lead.guestContact.includes('@') ? `mailto:${lead.guestContact}` : `tel:${lead.guestContact}`}
@@ -337,13 +337,13 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-6 border border-amber-500/40 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-zinc-900 animate-in zoom-in-95">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-2xl w-full p-6 border border-amber-500/40 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
           <div className="flex items-center gap-2">
             <Building2 className="w-5 h-5 text-amber-400" />
-            <h2 className="text-base font-bold font-serif text-zinc-900">{title}</h2>
+            <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">{title}</h2>
           </div>
-          <button onClick={onCancel} className="w-8 h-8 rounded-full bg-amber-50/40 hover:bg-white/10 flex items-center justify-center text-zinc-500">
+          <button onClick={onCancel} className="w-8 h-8 rounded-full bg-amber-50/40 hover:bg-white/10 flex items-center justify-center text-zinc-500 dark:text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -355,7 +355,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <input
                 type="text" required value={values.title}
                 onChange={(e) => set({ title: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 font-semibold"
+                className="w-full px-3.5 py-2.5 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100 font-semibold"
               />
             </div>
             <div>
@@ -363,7 +363,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <input
                 type="text" value={values.district}
                 onChange={(e) => set({ district: e.target.value })}
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
             <div>
@@ -372,7 +372,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 type="text" value={values.propertyType}
                 onChange={(e) => set({ propertyType: e.target.value })}
                 placeholder="Örn: Rezidans, Yalı, Penthouse, Villa"
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
             <div>
@@ -389,7 +389,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 <input
                   type="number" value={values.bedrooms}
                   onChange={(e) => set({ bedrooms: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                  className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
                 />
               </div>
               <div className="flex-1">
@@ -397,7 +397,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 <input
                   type="number" value={values.areaM2}
                   onChange={(e) => set({ areaM2: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                  className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
                 />
               </div>
             </div>
@@ -409,7 +409,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                   <button
                     key={key} type="button" onClick={() => togglePersona(key)}
                     className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition ${
-                      values.personas.includes(key) ? 'bg-amber-500 border-amber-500 text-black' : 'bg-amber-50/40 border-amber-200/80 text-zinc-500'
+                      values.personas.includes(key) ? 'bg-amber-500 border-amber-500 text-black' : 'bg-amber-50/40 border-amber-200/80 text-zinc-500 dark:text-slate-400'
                     }`}
                   >
                     {label}
@@ -435,7 +435,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 type="text" value={values.roiEstimate}
                 onChange={(e) => set({ roiEstimate: e.target.value })}
                 placeholder="Örn: %8-10 Yıllık Kira Getirisi"
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
 
@@ -444,7 +444,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <input
                 type="text" value={values.developer}
                 onChange={(e) => set({ developer: e.target.value })}
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
             <div>
@@ -452,7 +452,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <input
                 type="text" value={values.contactPhone}
                 onChange={(e) => set({ contactPhone: e.target.value })}
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 font-mono"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100 font-mono"
               />
             </div>
             <div className="sm:col-span-2">
@@ -460,7 +460,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <input
                 type="text" value={values.contactWebsite}
                 onChange={(e) => set({ contactWebsite: e.target.value })}
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
 
@@ -472,14 +472,14 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={values.image} alt="Önizleme" className="w-full h-full object-cover" onError={() => setImageError(true)} onLoad={() => setImageError(false)} />
                   ) : (
-                    <Building2 className="w-5 h-5 text-zinc-600" />
+                    <Building2 className="w-5 h-5 text-zinc-600 dark:text-slate-400" />
                   )}
                 </div>
                 <input
                   type="text" value={values.image}
                   onChange={(e) => { setImageError(false); set({ image: e.target.value }); }}
                   placeholder="https://... (boş bırakılırsa yer tutucu görsel kullanılır)"
-                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 font-mono text-[11px]"
+                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100 font-mono text-[11px]"
                 />
               </div>
             </div>
@@ -491,13 +491,13 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                   type="number" step="0.0001" value={values.lat}
                   onChange={(e) => set({ lat: Number(e.target.value) })}
                   placeholder="Enlem (lat)"
-                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 font-mono"
+                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100 font-mono"
                 />
                 <input
                   type="number" step="0.0001" value={values.lng}
                   onChange={(e) => set({ lng: Number(e.target.value) })}
                   placeholder="Boylam (lng)"
-                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 font-mono"
+                  className="flex-1 px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100 font-mono"
                 />
               </div>
             </div>
@@ -507,7 +507,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               <textarea
                 rows={3} value={values.description}
                 onChange={(e) => set({ description: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-800"
+                className="w-full px-3.5 py-2.5 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-800 dark:text-slate-200"
               />
             </div>
             <div className="sm:col-span-2">
@@ -516,7 +516,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 type="text" value={values.highlights}
                 onChange={(e) => set({ highlights: e.target.value })}
                 placeholder="Örn: Boğaz Manzarası, 7/24 Güvenlik, Kapalı Otopark"
-                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
               />
             </div>
           </div>

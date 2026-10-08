@@ -154,15 +154,15 @@ export default function QrGeneratorPage() {
   });
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-16">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-16">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4 print:hidden">
         <div>
-          <h1 className="text-xl font-bold font-serif text-zinc-900 flex items-center gap-2">
+          <h1 className="text-xl font-bold font-serif text-zinc-900 dark:text-slate-100 flex items-center gap-2">
             <QrCode className="w-5 h-5 text-amber-700" />
             <span>Toplu QR Kod Üretici & Oda Envanter Masası</span>
           </h1>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-500 dark:text-slate-400">
             Her odaya özel dijital concierge ve oda içi hizmet QR standee üretimi ve oda yönetimi
           </p>
         </div>
@@ -177,7 +177,7 @@ export default function QrGeneratorPage() {
       </div>
 
       {/* Hotel & Room Selector Control Bar */}
-      <div className="bg-white p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {/* 1. Otel Seçimi */}
           <div className="space-y-1.5">
@@ -192,7 +192,7 @@ export default function QrGeneratorPage() {
                   setSelectedHotelId(e.target.value);
                   setSelectedRoomNumber('all');
                 }}
-                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
+                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
               >
                 {hotels.map((h) => (
                   <option key={h.id} value={h.id}>
@@ -200,7 +200,7 @@ export default function QrGeneratorPage() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-3 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
             </div>
           </div>
 
@@ -214,7 +214,7 @@ export default function QrGeneratorPage() {
               <select
                 value={selectedRoomNumber}
                 onChange={(e) => setSelectedRoomNumber(e.target.value)}
-                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
+                className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
               >
                 <option value="all">Tüm Odalar ({rooms.length} Oda)</option>
                 {rooms.map((r) => (
@@ -223,7 +223,7 @@ export default function QrGeneratorPage() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-3 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
             </div>
           </div>
 
@@ -249,27 +249,27 @@ export default function QrGeneratorPage() {
           return (
             <div
               key={room.number}
-              className="bg-white rounded-3xl p-6 border-2 border-amber-200 shadow-sm flex flex-col items-center justify-between text-center space-y-4 relative overflow-hidden group hover:border-amber-400 transition"
+              className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 border-2 border-amber-200 shadow-sm flex flex-col items-center justify-between text-center space-y-4 relative overflow-hidden group hover:border-amber-400 transition"
             >
               {/* Hotel & Room Header Badge */}
               <div className="space-y-1 w-full border-b border-amber-100 pb-3">
                 <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
                   {currentHotel?.name || 'Xenios Partner Hotel'}
                 </div>
-                <div className="text-xl font-bold font-serif text-zinc-900">
+                <div className="text-xl font-bold font-serif text-zinc-900 dark:text-slate-100">
                   ODA {room.number}
                 </div>
-                <div className="text-[11px] text-zinc-500">
+                <div className="text-[11px] text-zinc-500 dark:text-slate-400">
                   {room.type} • {room.floor}
                 </div>
               </div>
 
               {/* QR Code Canvas */}
-              <div className="p-3 bg-white rounded-2xl border border-amber-300 shadow-xs flex items-center justify-center">
+              <div className="p-3 bg-white dark:bg-slate-900 dark:border-slate-800 rounded-2xl border border-amber-300 shadow-xs flex items-center justify-center">
                 <QrCodeCardImage url={qrUrl} roomNumber={room.number} />
               </div>
 
-              <p className="text-[11px] text-zinc-600 font-medium px-2 leading-relaxed">
+              <p className="text-[11px] text-zinc-600 dark:text-slate-400 font-medium px-2 leading-relaxed">
                 Kameranızı QR koda doğrultarak oda içi hizmet menüsüne ve İstanbul rehberine anında bağlanın.
               </p>
 
@@ -278,14 +278,14 @@ export default function QrGeneratorPage() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleOpenEditRoom(room)}
-                    className="p-1.5 text-zinc-500 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
+                    className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
                     title="Odayı Düzenle"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => handleDeleteRoom(room.number)}
-                    className="p-1.5 text-zinc-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                    className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
                     title="Odayı Sil"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -309,14 +309,14 @@ export default function QrGeneratorPage() {
       {/* Room Add / Edit Modal */}
       {isRoomModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
+          <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-              <h3 className="text-sm font-bold font-serif text-zinc-900">
+              <h3 className="text-sm font-bold font-serif text-zinc-900 dark:text-slate-100">
                 {editingRoom ? `Oda ${editingRoom.number} Düzenle` : `Yeni Oda Ekle (${currentHotel?.name})`}
               </h3>
               <button
                 onClick={() => setIsRoomModalOpen(false)}
-                className="w-6 h-6 rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer"
+                className="w-6 h-6 rounded-full bg-zinc-100 text-zinc-500 dark:text-slate-400 hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -331,7 +331,7 @@ export default function QrGeneratorPage() {
                   value={modalRoomNumber}
                   onChange={(e) => setModalRoomNumber(e.target.value)}
                   placeholder="Örn: 204"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl font-bold font-mono text-zinc-900"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl font-bold font-mono text-zinc-900 dark:text-slate-100"
                 />
               </div>
 
@@ -340,7 +340,7 @@ export default function QrGeneratorPage() {
                 <select
                   value={modalRoomType}
                   onChange={(e) => setModalRoomType(e.target.value)}
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 cursor-pointer"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 cursor-pointer"
                 >
                   <option value="Standart Delüks">Standart Delüks</option>
                   <option value="Panoramik Boğaz Süiti">Panoramik Boğaz Süiti</option>
@@ -357,7 +357,7 @@ export default function QrGeneratorPage() {
                   value={modalFloor}
                   onChange={(e) => setModalFloor(e.target.value)}
                   placeholder="Örn: 2. Kat"
-                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100"
                 />
               </div>
 

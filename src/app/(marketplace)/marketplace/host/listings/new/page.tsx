@@ -35,7 +35,7 @@ function NewListingInner() {
       <button
         onClick={handleCreate}
         disabled={creating}
-        className="w-full rounded-2xl border border-sand-border bg-white p-6 text-left hover:border-terracotta/50 hover:shadow-sm transition disabled:opacity-60"
+        className="w-full rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-6 text-left hover:border-terracotta/50 hover:shadow-sm transition disabled:opacity-60"
       >
         <Compass className="w-6 h-6 text-terracotta mb-3" />
         <p className="text-sm font-semibold text-ink">{creating ? "Oluşturuluyor..." : "Deneyim İlanı Oluştur"}</p>

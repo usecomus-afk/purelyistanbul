@@ -226,7 +226,7 @@ export default function HotelProfileManagementPage() {
   };
 
   return (
-    <div className="space-y-6 text-zinc-900 pb-16">
+    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-16">
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-amber-50/70 p-6 rounded-3xl border border-amber-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
@@ -234,34 +234,34 @@ export default function HotelProfileManagementPage() {
             <span className="text-[10px] uppercase font-bold tracking-widest text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-full border border-amber-300 font-mono">
               OTEL & YÖNETİCİ PROFİLİ
             </span>
-            <span className="text-xs text-zinc-600 font-medium">{currentHotel.name}</span>
+            <span className="text-xs text-zinc-600 dark:text-slate-400 font-medium">{currentHotel.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100">
             Profil & Kurumsal Tesis Bilgileri
           </h1>
-          <p className="text-xs text-zinc-600 max-w-2xl leading-relaxed">
+          <p className="text-xs text-zinc-600 dark:text-slate-400 max-w-2xl leading-relaxed">
             Otel bilgileri, yönetici iletişim detayları, bildirim e-postaları ve portal giriş şifrenizi bu masadan yönetebilirsiniz.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-2xl border border-amber-200 shadow-xs">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2 rounded-2xl border border-amber-200 shadow-xs">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="text-xs font-bold text-zinc-800">Doğrulanmış Partner Otel</span>
+            <span className="text-xs font-bold text-zinc-800 dark:text-slate-200">Doğrulanmış Partner Otel</span>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSaveHotelAndManager} className="space-y-6">
         {/* 1. OTEL BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white border border-amber-200/80 shadow-xs space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">Otel Adı & Tesis Bilgileri</h2>
-              <p className="text-[11px] text-zinc-500">Misafirlerin dijital concierge ekranında gördüğü otel detayları.</p>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Otel Adı & Tesis Bilgileri</h2>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafirlerin dijital concierge ekranında gördüğü otel detayları.</p>
             </div>
           </div>
 
@@ -274,7 +274,7 @@ export default function HotelProfileManagementPage() {
                 value={hotelName}
                 onChange={(e) => setHotelName(e.target.value)}
                 placeholder="Ör: Old City Heritage Hotel Istanbul"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
               />
             </div>
 
@@ -283,7 +283,7 @@ export default function HotelProfileManagementPage() {
               <select
                 value={hotelType}
                 onChange={(e) => setHotelType(e.target.value)}
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
               >
                 <option value="Butik Otel & Konak">Butik Otel & Konak</option>
                 <option value="5 Yıldızlı Lüks Otel">5 Yıldızlı Lüks Otel</option>
@@ -299,7 +299,7 @@ export default function HotelProfileManagementPage() {
                 value={hotelDistrict}
                 onChange={(e) => setHotelDistrict(e.target.value)}
                 placeholder="Sultanahmet / Fatih"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -310,7 +310,7 @@ export default function HotelProfileManagementPage() {
                 value={hotelAddress}
                 onChange={(e) => setHotelAddress(e.target.value)}
                 placeholder="Ör: Alemdar Mah. Yerebatan Cad. No:18 Sultanahmet, Fatih, İstanbul"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -321,7 +321,7 @@ export default function HotelProfileManagementPage() {
                 value={hotelPhone}
                 onChange={(e) => setHotelPhone(e.target.value)}
                 placeholder="+90 212 514 00 00"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -332,7 +332,7 @@ export default function HotelProfileManagementPage() {
                 value={hotelWebsite}
                 onChange={(e) => setHotelWebsite(e.target.value)}
                 placeholder="https://heritagehotel.com"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -343,7 +343,7 @@ export default function HotelProfileManagementPage() {
                 value={receptionExt}
                 onChange={(e) => setReceptionExt(e.target.value)}
                 placeholder="9 veya 0"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -354,7 +354,7 @@ export default function HotelProfileManagementPage() {
                 value={breakfastHours}
                 onChange={(e) => setBreakfastHours(e.target.value)}
                 placeholder="07:30 - 10:30"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -365,7 +365,7 @@ export default function HotelProfileManagementPage() {
                 value={checkoutTime}
                 onChange={(e) => setCheckoutTime(e.target.value)}
                 placeholder="11:30 veya 12:00"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -376,7 +376,7 @@ export default function HotelProfileManagementPage() {
                 value={wifiSsid}
                 onChange={(e) => setWifiSsid(e.target.value)}
                 placeholder="Hotel_Guest"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -387,21 +387,21 @@ export default function HotelProfileManagementPage() {
                 value={wifiPass}
                 onChange={(e) => setWifiPass(e.target.value)}
                 placeholder="Xenios2026!"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
           </div>
         </div>
 
         {/* 2. KULLANICI & YETKİLİ BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white border border-amber-200/80 shadow-xs space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
               <User className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">Kullanıcı & Otel Yetkilisi Bilgileri</h2>
-              <p className="text-[11px] text-zinc-500">Xenios operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Kullanıcı & Otel Yetkilisi Bilgileri</h2>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Xenios operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
             </div>
           </div>
 
@@ -414,7 +414,7 @@ export default function HotelProfileManagementPage() {
                 value={managerName}
                 onChange={(e) => setManagerName(e.target.value)}
                 placeholder="Ahmet Yılmaz"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
               />
             </div>
 
@@ -425,7 +425,7 @@ export default function HotelProfileManagementPage() {
                 value={managerTitle}
                 onChange={(e) => setManagerTitle(e.target.value)}
                 placeholder="Genel Müdür / Ön Büro Müdürü"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -436,21 +436,21 @@ export default function HotelProfileManagementPage() {
                 value={managerPhone}
                 onChange={(e) => setManagerPhone(e.target.value)}
                 placeholder="+90 532 555 44 33"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
           </div>
         </div>
 
         {/* 3. E-POSTA & BİLDİRİM BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white border border-amber-200/80 shadow-xs space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
               <Mail className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">E-Posta & Bildirim İletişimi</h2>
-              <p className="text-[11px] text-zinc-500">Giriş hesabı ve rezervasyon/talep bildirim adresleri.</p>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">E-Posta & Bildirim İletişimi</h2>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Giriş hesabı ve rezervasyon/talep bildirim adresleri.</p>
             </div>
           </div>
 
@@ -463,7 +463,7 @@ export default function HotelProfileManagementPage() {
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
                 placeholder="heritage@xenios.istanbul"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -475,7 +475,7 @@ export default function HotelProfileManagementPage() {
                 value={notificationEmail}
                 onChange={(e) => setNotificationEmail(e.target.value)}
                 placeholder="concierge@heritagehotel.com"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
           </div>
@@ -504,15 +504,15 @@ export default function HotelProfileManagementPage() {
         </div>
 
         {/* 4. SESLİ BİLDİRİM & CANLI TALEP ALARM AYARLARI */}
-        <div className="p-6 rounded-3xl bg-white border border-amber-200/80 shadow-xs space-y-5">
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-5">
           <div className="flex items-center justify-between border-b border-amber-100 pb-3 gap-2">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
                 <Volume2 className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-zinc-900">Sesli Bildirim & Canlı Talep Uyarı Ayarları</h2>
-                <p className="text-[11px] text-zinc-500">Misafir odalarından gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
+                <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Sesli Bildirim & Canlı Talep Uyarı Ayarları</h2>
+                <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafir odalarından gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
               </div>
             </div>
 
@@ -522,7 +522,7 @@ export default function HotelProfileManagementPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs ${
                 audioPrefs.soundEnabled
                   ? 'bg-amber-500 text-zinc-950 hover:bg-amber-600'
-                  : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200 border border-zinc-200'
+                  : 'bg-zinc-100 text-zinc-500 dark:text-slate-400 hover:bg-zinc-200 border border-zinc-200'
               }`}
             >
               {audioPrefs.soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -562,12 +562,12 @@ export default function HotelProfileManagementPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-zinc-900 text-xs">{s.name}</span>
+                      <span className="font-bold text-zinc-900 dark:text-slate-100 text-xs">{s.name}</span>
                       {audioPrefs.selectedSound === s.id && (
                         <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
                       )}
                     </div>
-                    <span className="text-[10px] text-zinc-500">{s.desc}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-slate-400">{s.desc}</span>
                   </button>
                 ))}
               </div>
@@ -600,7 +600,7 @@ export default function HotelProfileManagementPage() {
 
               <div className="pt-2 border-t border-amber-200/60 space-y-2">
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span className="font-semibold text-zinc-800 text-xs">Ekranda Canlı Pop-up Kartı Göster</span>
+                  <span className="font-semibold text-zinc-800 dark:text-slate-200 text-xs">Ekranda Canlı Pop-up Kartı Göster</span>
                   <input
                     type="checkbox"
                     checked={audioPrefs.visualBannerEnabled}
@@ -608,7 +608,7 @@ export default function HotelProfileManagementPage() {
                     className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
                   />
                 </label>
-                <p className="text-[10px] text-zinc-500 leading-relaxed">
+                <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
                   Yeni bir misafir talebi geldiğinde ekranın sağ üst köşesinde oda numarası ve notunu içeren canlı kart belirir.
                 </p>
               </div>
@@ -618,7 +618,7 @@ export default function HotelProfileManagementPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Smartphone className="w-4 h-4 text-amber-800" />
-                    <span className="font-bold text-zinc-800 text-xs">Telefon & Kilit Ekranı Bildirimi</span>
+                    <span className="font-bold text-zinc-800 dark:text-slate-200 text-xs">Telefon & Kilit Ekranı Bildirimi</span>
                   </div>
                   {permissionStatus === 'granted' ? (
                     <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300 flex items-center gap-1">
@@ -635,7 +635,7 @@ export default function HotelProfileManagementPage() {
                   )}
                 </div>
 
-                <p className="text-[10px] text-zinc-500 leading-relaxed">
+                <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
                   Uygulama arka plandayken veya kilit ekranındayken misafir taleplerini telefon bildirimi olarak alın. İzin verildiğinde iPhone <strong>Ayarlar &gt; Bildirimler &gt; Xenios</strong> altında listelenir.
                 </p>
               </div>
@@ -657,14 +657,14 @@ export default function HotelProfileManagementPage() {
       </form>
 
       {/* 4. ŞİFRE DEĞİŞİKLİĞİ FORMU */}
-      <div className="p-6 rounded-3xl bg-white border border-amber-200/80 shadow-xs space-y-4">
+      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
         <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
           <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
             <KeyRound className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-zinc-900">Güvenlik & Şifre Değişikliği</h2>
-            <p className="text-[11px] text-zinc-500">Partner otel yönetim paneli giriş şifrenizi yenileyin.</p>
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Güvenlik & Şifre Değişikliği</h2>
+            <p className="text-[11px] text-zinc-500 dark:text-slate-400">Partner otel yönetim paneli giriş şifrenizi yenileyin.</p>
           </div>
         </div>
 
@@ -678,7 +678,7 @@ export default function HotelProfileManagementPage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -690,7 +690,7 @@ export default function HotelProfileManagementPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="En az 6 karakter"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
@@ -702,13 +702,13 @@ export default function HotelProfileManagementPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Yeni şifrenizi tekrar girin"
-                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
+                className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-zinc-100">
-            <p className="text-[11px] text-zinc-500">
+            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
               Şifrenizi unuttuysanız giriş ekranındaki <strong className="text-amber-800">"Şifremi Unuttum"</strong> akışını kullanabilirsiniz.
             </p>
 

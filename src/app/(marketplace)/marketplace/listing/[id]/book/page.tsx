@@ -37,7 +37,7 @@ export default function BookingSummaryPage() {
       <h1 className="text-xl font-light tracking-tight text-ink mb-1">Rezervasyon Özeti</h1>
       <p className="text-sm text-ink-muted mb-6">{listing.title}</p>
 
-      <div className="rounded-2xl border border-sand-border bg-white p-5 space-y-2 text-sm mb-6">
+      <div className="rounded-2xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 p-5 space-y-2 text-sm mb-6">
         <div className="flex justify-between">
           <span className="text-ink-muted">{listing.type === "stay" ? "Giriş" : "Tarih"}</span>
           <span>{checkIn || "—"}</span>
