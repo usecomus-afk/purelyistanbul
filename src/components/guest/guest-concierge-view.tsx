@@ -223,7 +223,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className="w-full text-slate-900 min-h-screen relative">
+    <div className="w-full text-slate-900 h-[100dvh] overflow-y-auto relative">
       {/* Global Fixed Background for Guest App */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Image 
