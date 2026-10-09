@@ -145,7 +145,7 @@ export function GuestTabBar({
         isHidden ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       } ${
         isServicesDarkOverall
-          ? 'bg-black/10 backdrop-blur-[4px] border-t border-white/20 shadow-[0_-8px_24px_rgba(0,0,0,0.3)]'
+          ? 'bg-amber-500/95 backdrop-blur-[4px] border-t border-amber-400 shadow-[0_-8px_24px_rgba(245,158,11,0.3)]'
           : 'bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]'
       }`}
       style={{
@@ -165,7 +165,7 @@ export function GuestTabBar({
       <div 
         className={`absolute top-full left-0 right-0 h-[100px] -mt-[1px] transition-colors duration-300 ${
           isServicesDarkOverall
-            ? 'bg-black/10 backdrop-blur-[4px]' 
+            ? 'bg-amber-500/95 backdrop-blur-[4px]' 
             : 'bg-white/95 backdrop-blur-md'
         }`}
       />
@@ -182,7 +182,7 @@ export function GuestTabBar({
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all relative cursor-pointer active:scale-90 ${
                 isActive 
                   ? (isServicesDark ? 'text-white font-bold' : 'text-amber-800 font-bold') 
-                  : (isServicesDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200')
+                  : (isServicesDark ? 'text-white/80 hover:text-white' : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200')
               }`}
             >
               <div className={`p-1.5 rounded-2xl transition-all ${
