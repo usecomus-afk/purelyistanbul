@@ -245,13 +245,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
   return (
     <div 
-      className="fixed top-0 left-0 right-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-slate-900 dark:border-slate-800 w-full sm:max-w-lg h-full sm:h-[82vh] max-h-full sm:max-h-[82vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900 dark:text-slate-100"
+        className="bg-white dark:bg-slate-900 dark:border-slate-800 w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900 dark:text-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
         
