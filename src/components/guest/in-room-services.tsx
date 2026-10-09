@@ -146,9 +146,11 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
       
       {/* Grid of In-Room Services */}
       <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0">
-        {services.map((item) => {
+        {services.filter(item => {
           const settings = moduleSettings[item.key];
-          const isEnabled = settings ? settings.enabled : item.enabled !== false;
+          return settings ? settings.enabled : item.enabled !== false;
+        }).map((item) => {
+          const isEnabled = true;
           const serviceTitle = getLocalizedTitle(item);
           const serviceDesc = getLocalizedDesc(item);
 
