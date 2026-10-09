@@ -199,13 +199,13 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
     <div className="space-y-4 text-xs">
       <div className="flex items-center justify-between border-b border-amber-100 pb-2">
         <div>
-          <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">{t.title}</h3>
-          <p className="text-[11px] text-zinc-500 dark:text-slate-400">{t.subtitle}</p>
+          <h3 className="text-sm font-bold text-slate-900 ">{t.title}</h3>
+          <p className="text-[11px] text-slate-500 ">{t.subtitle}</p>
         </div>
         {(onClose || onCancel) && (
           <button
             onClick={onClose || onCancel}
-            className="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 dark:text-slate-400 font-bold cursor-pointer"
+            className="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-slate-600  font-bold cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -214,7 +214,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
 
       {/* Travel Style */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
+        <label className="text-xs font-bold text-slate-800  flex items-center gap-1.5">
           <Compass className="w-3.5 h-3.5 text-amber-600" /> {t.travelStyle}
         </label>
         <div className="grid grid-cols-2 gap-1.5">
@@ -226,7 +226,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
               className={`p-2.5 rounded-xl font-semibold text-xs border text-left transition cursor-pointer ${
                 profile.travelStyle === item.value
                   ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200 text-zinc-700 hover:bg-amber-50'
+                  : 'bg-white   border-amber-200 text-slate-700 hover:bg-amber-50'
               }`}
             >
               {item.label}
@@ -237,7 +237,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
 
       {/* Budget Level */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200">{t.budgetLevel}</label>
+        <label className="text-xs font-bold text-slate-800 ">{t.budgetLevel}</label>
         <div className="grid grid-cols-3 gap-1.5">
           {t.budgetLevels.map((item: any) => (
             <button
@@ -247,7 +247,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
               className={`py-2 px-1 text-center rounded-xl font-semibold text-xs border transition cursor-pointer ${
                 profile.budgetLevel === item.value
                   ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200 text-zinc-700 hover:bg-amber-50'
+                  : 'bg-white   border-amber-200 text-slate-700 hover:bg-amber-50'
               }`}
             >
               {item.label}
@@ -258,7 +258,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
 
       {/* Interests */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
+        <label className="text-xs font-bold text-slate-800  flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-amber-600" /> {t.interestsTitle}
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -272,7 +272,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
                 className={`px-2.5 py-1.5 rounded-xl font-medium text-xs border transition cursor-pointer ${
                   active
                     ? 'bg-amber-500 border-amber-500 text-white'
-                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200 text-zinc-700 hover:bg-amber-50'
+                    : 'bg-white   border-amber-200 text-slate-700 hover:bg-amber-50'
                 }`}
               >
                 {item}
@@ -284,7 +284,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
 
       {/* Health & Allergies */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
+        <label className="text-xs font-bold text-slate-800  flex items-center gap-1.5">
           <HeartPulse className="w-3.5 h-3.5 text-rose-600" /> {t.healthTitle}
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -298,7 +298,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
                 className={`px-2.5 py-1.5 rounded-xl font-medium text-xs border transition cursor-pointer ${
                   active
                     ? 'bg-rose-500 border-rose-500 text-white'
-                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-rose-200 text-zinc-700 hover:bg-rose-50'
+                    : 'bg-white   border-rose-200 text-slate-700 hover:bg-rose-50'
                 }`}
               >
                 {item}
@@ -317,7 +317,7 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
           onChange={(e) => setConsent(e.target.checked)}
           className="mt-0.5 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
         />
-        <label htmlFor="kvkkConsent" className="text-[11px] text-zinc-700 leading-snug cursor-pointer">
+        <label htmlFor="kvkkConsent" className="text-[11px] text-slate-700 leading-snug cursor-pointer">
           {t.kvkkConsent}
         </label>
       </div>
@@ -328,9 +328,9 @@ export function GuestPreferenceSurvey({ initialProfile, lang = 'tr', onSave, onC
           type="button"
           onClick={onClear}
           title={t.clearBtn}
-          className="px-3.5 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold flex items-center gap-1.5 cursor-pointer"
+          className="px-3.5 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-700 font-bold flex items-center gap-1.5 cursor-pointer"
         >
-          <Trash2 className="w-3.5 h-3.5 text-zinc-500 dark:text-slate-400" />
+          <Trash2 className="w-3.5 h-3.5 text-slate-500 " />
           <span>{t.clearBtn}</span>
         </button>
 

@@ -57,12 +57,12 @@ export function PaperArtHeader({
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Neyi keşfetmek istersiniz?"
-            className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-800 placeholder-slate-400 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+            className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-white   text-slate-800 placeholder-slate-400 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
           />
         </div>
         <button
           type="button"
-          className="p-2.5 bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-700 hover:bg-slate-50 border border-slate-200 rounded-2xl shadow-sm cursor-pointer transition flex items-center justify-center shrink-0"
+          className="p-2.5 bg-white   text-slate-700 hover:bg-slate-50 border border-slate-200 rounded-2xl shadow-sm cursor-pointer transition flex items-center justify-center shrink-0"
           title="Filtrele"
         >
           <SlidersHorizontal className="w-4 h-4 text-slate-600" />
@@ -121,7 +121,7 @@ export function PaperArtHeader({
               className={`text-xs px-4 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer ${
                 isActive
                   ? 'bg-slate-900 text-white shadow-md'
-                  : 'bg-white/90 text-slate-700 hover:bg-white dark:bg-slate-900 dark:border-slate-800 border border-slate-200'
+                  : 'bg-white/90 text-slate-700 hover:bg-white   border border-slate-200'
               }`}
             >
               {pill.label}

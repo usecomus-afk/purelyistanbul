@@ -38,18 +38,18 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
     >
       <div className="min-h-full flex items-center justify-center py-6">
         <div 
-          className="relative w-full max-w-xl bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 my-auto space-y-4 animate-in zoom-in-95 text-zinc-900 dark:text-slate-100"
+          className="relative w-full max-w-xl bg-white   rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 my-auto space-y-4 animate-in zoom-in-95 text-slate-900 "
           onClick={(e) => e.stopPropagation()}
         >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-amber-100 pb-3">
           <div>
-            <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">{t.transitTitle}</h3>
-            <p className="text-xs text-zinc-500 dark:text-slate-400">
-              <span className="font-semibold text-zinc-700">{hotel.name}</span> → <span className="text-amber-800 font-semibold">{experience.title}</span>
+            <h3 className="text-base font-bold font-serif text-slate-900 ">{t.transitTitle}</h3>
+            <p className="text-xs text-slate-500 ">
+              <span className="font-semibold text-slate-700">{hotel.name}</span> → <span className="text-amber-800 font-semibold">{experience.title}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-800 dark:text-slate-200 font-bold">
+          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-slate-800  font-bold">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -59,8 +59,8 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
           <div className="flex items-center gap-2">
             <Compass className="w-5 h-5 text-amber-700" />
             <div>
-              <span className="text-xs text-zinc-600 dark:text-slate-400 block">Kuşuçuşu / Rota Mesafesi</span>
-              <strong className="text-sm text-zinc-900 dark:text-slate-100 font-mono font-bold">~{transit.distanceKm} km</strong>
+              <span className="text-xs text-slate-600  block">Kuşuçuşu / Rota Mesafesi</span>
+              <strong className="text-sm text-slate-900  font-mono font-bold">~{transit.distanceKm} km</strong>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
             href={googleMapsRouteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-900 dark:text-slate-100 border border-amber-300 rounded-xl text-xs font-bold hover:bg-amber-50 shadow-sm transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white   text-slate-900  border border-amber-300 rounded-xl text-xs font-bold hover:bg-amber-50 shadow-sm transition"
           >
             <span>Google Haritalarda Aç</span>
             <ExternalLink className="w-3 h-3 text-amber-700" />
@@ -85,16 +85,16 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
                   🚕
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 dark:text-slate-100">{t.taxiOption}</h4>
-                  <span className="text-[11px] text-zinc-500 dark:text-slate-400">~{transit.taxi.durationMin} dakika</span>
+                  <h4 className="text-xs font-bold text-slate-900 ">{t.taxiOption}</h4>
+                  <span className="text-[11px] text-slate-500 ">~{transit.taxi.durationMin} dakika</span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs font-bold text-zinc-900 dark:text-slate-100 font-mono">~{transit.taxi.costTl} TL</span>
+                <span className="text-xs font-bold text-slate-900  font-mono">~{transit.taxi.costTl} TL</span>
                 <span className="text-[10px] text-zinc-400 block">Taksimetre tahmini</span>
               </div>
             </div>
-            <p className="text-[11px] text-zinc-600 dark:text-slate-400">{transit.taxi.desc}</p>
+            <p className="text-[11px] text-slate-600 ">{transit.taxi.desc}</p>
           </div>
 
           {/* 2. VIP Transfer */}
@@ -137,8 +137,8 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
                   />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 dark:text-slate-100">{t.transitOption}</h4>
-                  <span className="text-[11px] text-zinc-500 dark:text-slate-400">~{transit.publicTransit.durationMin} dakika ({transit.publicTransit.lineName})</span>
+                  <h4 className="text-xs font-bold text-slate-900 ">{t.transitOption}</h4>
+                  <span className="text-[11px] text-slate-500 ">~{transit.publicTransit.durationMin} dakika ({transit.publicTransit.lineName})</span>
                 </div>
               </div>
               <div className="text-right">
@@ -147,7 +147,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
               </div>
             </div>
 
-            <div className="bg-white/80 p-2.5 rounded-xl text-[11px] text-zinc-700 space-y-1 border border-blue-100">
+            <div className="bg-white/80 p-2.5 rounded-xl text-[11px] text-slate-700 space-y-1 border border-blue-100">
               <strong className="text-blue-900 block text-[10px] uppercase tracking-wider">Adım Adım Güzergah:</strong>
               {transit.publicTransit.routeSteps.map((step, sIdx) => (
                 <div key={sIdx} className="flex items-start gap-1.5">
@@ -162,7 +162,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
         <div className="pt-2">
           <button
             onClick={onClose}
-            className="w-full py-2.5 bg-zinc-100 hover:bg-zinc-200 rounded-xl text-xs font-bold text-zinc-800 dark:text-slate-200 transition"
+            className="w-full py-2.5 bg-zinc-100 hover:bg-zinc-200 rounded-xl text-xs font-bold text-slate-800  transition"
           >
             Kapat
           </button>

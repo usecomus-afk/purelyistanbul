@@ -137,19 +137,19 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 relative text-zinc-900 dark:text-slate-100 flex flex-col max-h-[92vh] overflow-y-auto">
+      <div className="bg-white   rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 relative text-slate-900  flex flex-col max-h-[92vh] overflow-y-auto">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 dark:text-slate-400 transition cursor-pointer"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-slate-600  transition cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Brand Header */}
         <div className="text-center space-y-1 mb-5">
-          <div className="w-12 h-12 mx-auto mb-2 rounded-2xl overflow-hidden shadow-sm border border-amber-200 p-0.5 bg-white dark:bg-slate-900 dark:border-slate-800">
+          <div className="w-12 h-12 mx-auto mb-2 rounded-2xl overflow-hidden shadow-sm border border-amber-200 p-0.5 bg-white  ">
             <Image
               src="/logo.png"
               alt="purelyİstanbul"
@@ -161,10 +161,10 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 block">
             purelyİstanbul
           </span>
-          <h2 className="text-xl font-bold font-serif text-zinc-900 dark:text-slate-100">
+          <h2 className="text-xl font-bold font-serif text-slate-900 ">
             {mode === 'login' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}
           </h2>
-          <p className="text-xs text-zinc-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 ">
             {mode === 'login' 
               ? 'Oda hizmetleri, rezervasyonlarınız ve otel personeli için giriş yapın.' 
               : 'İstanbul misafir ayrıcalıklarından ve hızlı rezervasyondan yararlanın.'}
@@ -178,8 +178,8 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             onClick={() => setMode('login')}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
               mode === 'login'
-                ? 'bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-900 dark:text-slate-100 shadow-sm'
-                : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200'
+                ? 'bg-white   text-slate-900  shadow-sm'
+                : 'text-slate-500  hover:text-slate-800 '
             }`}
           >
             Giriş Yap
@@ -189,8 +189,8 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             onClick={() => setMode('register')}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
               mode === 'register'
-                ? 'bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-900 dark:text-slate-100 shadow-sm'
-                : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200'
+                ? 'bg-white   text-slate-900  shadow-sm'
+                : 'text-slate-500  hover:text-slate-800 '
             }`}
           >
             Kayıt Ol
@@ -206,13 +206,13 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
               className={`p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between ${
                 role === 'guest'
                   ? 'bg-amber-50/80 border-amber-500 ring-2 ring-amber-400/40 text-amber-950'
-                  : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-zinc-200 text-zinc-600 dark:text-slate-400 hover:border-zinc-300'
+                  : 'bg-white   border-zinc-200 text-slate-600  hover:border-zinc-300'
               }`}
             >
               <User className={`w-4 h-4 mb-1 ${role === 'guest' ? 'text-amber-700' : 'text-zinc-400'}`} />
               <div>
                 <strong className="text-xs block font-bold">Misafir Girişi</strong>
-                <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Otel & Şehir Hizmetleri</span>
+                <span className="text-[10px] text-slate-500  block">Otel & Şehir Hizmetleri</span>
               </div>
             </button>
 
@@ -222,13 +222,13 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
               className={`p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between ${
                 role === 'hotel'
                   ? 'bg-amber-500/15 border-amber-500 ring-2 ring-amber-400 text-amber-950'
-                  : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-zinc-200 text-zinc-600 dark:text-slate-400 hover:border-zinc-300'
+                  : 'bg-white   border-zinc-200 text-slate-600  hover:border-zinc-300'
               }`}
             >
               <Building2 className={`w-4 h-4 mb-1 ${role === 'hotel' ? 'text-amber-700' : 'text-zinc-400'}`} />
               <div>
                 <strong className="text-xs block font-bold">Otel Personeli</strong>
-                <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Oda & Talep Yönetimi</span>
+                <span className="text-[10px] text-slate-500  block">Oda & Talep Yönetimi</span>
               </div>
             </button>
           </div>
@@ -239,7 +239,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           {mode === 'register' && (
             <>
               <div>
-                <label className="text-[11px] font-bold text-zinc-700 block mb-1">Ad Soyad</label>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">Ad Soyad</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                   <input
@@ -254,7 +254,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-zinc-700 block mb-1">Telefon Numarası</label>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">Telefon Numarası</label>
                 <div className="relative">
                   <Phone className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                   <input
@@ -271,7 +271,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
 
           {mode === 'login' && role === 'hotel' && (
             <div>
-              <label className="text-[11px] font-bold text-zinc-700 block mb-1">Otel / Tesis Kodu</label>
+              <label className="text-[11px] font-bold text-slate-700 block mb-1">Otel / Tesis Kodu</label>
               <div className="relative">
                 <Building2 className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                 <input
@@ -287,7 +287,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           )}
 
           <div>
-            <label className="text-[11px] font-bold text-zinc-700 block mb-1">E-Posta Adresi</label>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">E-Posta Adresi</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
               <input
@@ -302,7 +302,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-zinc-700 block mb-1">Şifre</label>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">Şifre</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
               <input
@@ -324,7 +324,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 accent-amber-500 cursor-pointer"
               />
-              <span className="text-xs font-semibold text-zinc-700">Beni Hatırla</span>
+              <span className="text-xs font-semibold text-slate-700">Beni Hatırla</span>
             </label>
           </div>
 

@@ -256,7 +256,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   return (
                     <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
                       {getLocalizedDesc(selectedService) && (
-                        <div className="p-3 bg-amber-50/70 dark:bg-amber-500/10 rounded-2xl border border-amber-200/60 dark:border-amber-500/20 text-zinc-700 dark:text-amber-100/70 text-xs">
+                        <div className="p-3 bg-amber-50/70  rounded-2xl border border-amber-200/60  text-slate-700  text-xs">
                           {getLocalizedDesc(selectedService)}
                         </div>
                       )}
@@ -264,11 +264,11 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                       {/* Options Selection */}
                       {selectedService.options && selectedService.options.length > 0 && (
                         <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-zinc-800 dark:text-slate-200">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
+                          <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
                           <select
                             value={customOption}
                             onChange={(e) => setCustomOption(e.target.value)}
-                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
+                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  font-medium"
                           >
                             {selectedService.options.map((opt, i) => (
                               <option key={i} value={opt}>{opt}</option>
@@ -279,7 +279,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Count / Quantity */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200">{t.serviceForm?.quantity || 'Adet'}</label>
+                        <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.quantity || 'Adet'}</label>
                         <div className="flex items-center gap-2">
                           {[1, 2, 3, 4, 5].map((num) => (
                             <button
@@ -289,7 +289,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                               className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
                                 customCount === num
                                   ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                                  : 'bg-zinc-50 dark:bg-slate-800/50 hover:bg-amber-50 dark:hover:bg-slate-700/50 border-zinc-200 dark:border-slate-700/50 text-zinc-700 dark:text-slate-300'
+                                  : 'bg-zinc-50  hover:bg-amber-50  border-zinc-200  text-slate-700 '
                               }`}
                             >
                               {num}
@@ -300,13 +300,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Time Preference */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-slate-800  flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-amber-600" /> {t.serviceForm?.deliveryTime || 'Zaman'}
                         </label>
                         <select
                           value={customTime}
                           onChange={(e) => setCustomTime(e.target.value)}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  font-medium"
                         >
                           <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
                           <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
@@ -318,13 +318,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Special Note */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-800 dark:text-slate-200">{t.serviceForm?.specialNote || 'Not'}</label>
+                        <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.specialNote || 'Not'}</label>
                         <textarea
                           value={customNote}
                           onChange={(e) => setCustomNote(e.target.value)}
                           rows={2}
                           placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900 "
                         />
                       </div>
 
@@ -333,7 +333,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         <button
                           type="button"
                           onClick={() => setSelectedService(null)}
-                          className="flex-1 py-3 rounded-2xl bg-zinc-100 dark:bg-slate-800/50 hover:bg-zinc-200 dark:hover:bg-slate-700/50 text-zinc-700 dark:text-slate-300 font-bold transition text-xs cursor-pointer"
+                          className="flex-1 py-3 rounded-2xl bg-zinc-100  hover:bg-zinc-200  text-slate-700  font-bold transition text-xs cursor-pointer"
                         >
                           {t.serviceForm?.cancel || 'Vazgeç'}
                         </button>

@@ -124,7 +124,7 @@ export function ExperienceDetailModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100000] bg-white dark:bg-slate-900 dark:border-slate-800 overflow-y-scroll overflow-x-hidden text-zinc-900 dark:text-slate-100"
+      className="fixed inset-0 z-[100000] bg-white   overflow-y-scroll overflow-x-hidden text-slate-900 "
       style={{ 
         WebkitOverflowScrolling: 'touch'
       }}
@@ -134,20 +134,20 @@ export function ExperienceDetailModal({
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200/80 px-4 py-3 flex items-center justify-between shadow-xs">
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-800 dark:text-slate-200 transition cursor-pointer"
+          className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-800  transition cursor-pointer"
           aria-label="Geri Dön"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <span className="text-xs font-semibold text-zinc-600 dark:text-slate-400 truncate max-w-[200px] sm:max-w-md">
+        <span className="text-xs font-semibold text-slate-600  truncate max-w-[200px] sm:max-w-md">
           {experience.location} · {experience.categoryTag || experience.category}
         </span>
 
         <div className="flex items-center gap-1">
           <button
             onClick={handleShare}
-            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-700 transition cursor-pointer"
+            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-700 transition cursor-pointer"
             title="Paylaş"
           >
             <Share2 className="w-4 h-4" />
@@ -157,7 +157,7 @@ export function ExperienceDetailModal({
               setIsLiked(!isLiked);
               toast.success(isLiked ? "Favorilerden çıkarıldı" : "Favorilere eklendi!");
             }}
-            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-700 transition cursor-pointer"
+            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-700 transition cursor-pointer"
             title="Favorilere Ekle"
           >
             <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
@@ -180,7 +180,7 @@ export function ExperienceDetailModal({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
           
           {/* TÜRSAB / Verified Badge */}
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 text-zinc-900 dark:text-slate-100 text-xs font-bold shadow-md backdrop-blur-md">
+          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 text-slate-900  text-xs font-bold shadow-md backdrop-blur-md">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>{isRestaurant ? 'Doğrulanmış Restoran' : t.tursabCertified}</span>
           </div>
@@ -199,7 +199,7 @@ export function ExperienceDetailModal({
               {getLocalizedTag()}
             </span>
             {experience.cuisine && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-800 dark:text-slate-200">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-slate-800 ">
                 🍽️ {experience.cuisine}
               </span>
             )}
@@ -210,11 +210,11 @@ export function ExperienceDetailModal({
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-zinc-900 dark:text-slate-100 leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900  leading-tight">
             {experience.title}
           </h1>
 
-          <p className="text-sm text-zinc-600 dark:text-slate-400 leading-relaxed font-sans">
+          <p className="text-sm text-slate-600  leading-relaxed font-sans">
             {experience.agentNote}
           </p>
 
@@ -229,7 +229,7 @@ export function ExperienceDetailModal({
                 {experience.specialties.map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-800 dark:text-slate-200 border border-amber-300 shadow-2xs"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-white   text-slate-800  border border-amber-300 shadow-2xs"
                   >
                     <span className="text-amber-600">✦</span>
                     {item}
@@ -239,7 +239,7 @@ export function ExperienceDetailModal({
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-xs font-bold text-zinc-900 dark:text-slate-100 pt-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900  pt-1">
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>purelyİstanbul Güvencesi</span>
@@ -249,7 +249,7 @@ export function ExperienceDetailModal({
 
         {/* NELER YAPACAKSINIZ? (Timeline Step-by-Step) */}
         <div className="space-y-4 pb-7 border-b border-zinc-200">
-          <h2 className="text-lg sm:text-xl font-bold font-serif text-zinc-900 dark:text-slate-100">
+          <h2 className="text-lg sm:text-xl font-bold font-serif text-slate-900 ">
             {t.programSteps}
           </h2>
 
@@ -265,8 +265,8 @@ export function ExperienceDetailModal({
                   />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-zinc-900 dark:text-slate-100">{step.title}</h4>
-                  <p className="text-xs text-zinc-600 dark:text-slate-400 leading-relaxed">{step.desc}</p>
+                  <h4 className="text-sm font-bold text-slate-900 ">{step.title}</h4>
+                  <p className="text-xs text-slate-600  leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -275,7 +275,7 @@ export function ExperienceDetailModal({
 
         {/* BULUŞACAĞIMIZ YER (Meeting Point & Map) */}
         <div className="space-y-3 pb-7 border-b border-zinc-200">
-          <h2 className="text-lg sm:text-xl font-bold font-serif text-zinc-900 dark:text-slate-100">
+          <h2 className="text-lg sm:text-xl font-bold font-serif text-slate-900 ">
             {experience.location}, İstanbul
           </h2>
 
@@ -339,7 +339,7 @@ export function ExperienceDetailModal({
                 {isRestaurant ? t.priceLevel : t.price}
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="text-base sm:text-lg font-bold font-mono text-zinc-900 dark:text-slate-100">
+                <span className="text-base sm:text-lg font-bold font-mono text-slate-900 ">
                   {experience.priceLevel || formatPrice(experience.price, experience.currency)}
                 </span>
               </div>
@@ -369,7 +369,7 @@ export function ExperienceDetailModal({
                       onOpenAestheticInquiry(experience);
                     }
                   }}
-                  className="px-3.5 sm:px-5 py-3 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-rose-50/80 text-rose-900 text-xs sm:text-sm font-bold border border-rose-300 shadow-sm flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer"
+                  className="px-3.5 sm:px-5 py-3 rounded-2xl bg-white   hover:bg-rose-50/80 text-rose-900 text-xs sm:text-sm font-bold border border-rose-300 shadow-sm flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer"
                 >
                   <Phone className="w-4 h-4 text-rose-600" />
                   <span>Bilgi Almak İstiyorum</span>
@@ -392,7 +392,7 @@ export function ExperienceDetailModal({
                 <button
                   type="button"
                   onClick={() => onOpenTransit(experience)}
-                  className="px-3.5 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:text-slate-200 text-xs sm:text-sm font-bold border border-zinc-200 flex items-center gap-1.5 transition cursor-pointer"
+                  className="px-3.5 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-slate-800  text-xs sm:text-sm font-bold border border-zinc-200 flex items-center gap-1.5 transition cursor-pointer"
                   title="Yol Tarifi"
                 >
                   <Navigation className="w-4 h-4 text-amber-700" />

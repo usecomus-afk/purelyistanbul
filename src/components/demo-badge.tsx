@@ -51,7 +51,7 @@ export function DemoBadge({ label = "Örnek Vaka", size = "sm", className = "" }
           }}
         >
           <div
-            className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900 dark:text-slate-100"
+            className="bg-white   rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-slate-900 "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3 border-b border-amber-100 pb-3">
@@ -60,19 +60,19 @@ export function DemoBadge({ label = "Örnek Vaka", size = "sm", className = "" }
                   <AlertTriangle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">Örnek Demo Vaka</h3>
-                  <p className="text-xs text-zinc-500 dark:text-slate-400">Sistem Tanıtım ve Test Verisi</p>
+                  <h3 className="text-base font-bold font-serif text-slate-900 ">Örnek Demo Vaka</h3>
+                  <p className="text-xs text-slate-500 ">Sistem Tanıtım ve Test Verisi</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 dark:text-slate-400 flex items-center justify-center text-sm font-bold cursor-pointer"
+                className="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-slate-500  flex items-center justify-center text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-2 text-xs text-zinc-600 dark:text-slate-400 leading-relaxed">
+            <div className="space-y-2 text-xs text-slate-600  leading-relaxed">
               <p>
                 Bu kayıt, platformun işleyişini ve panel özelliklerini göstermek amacıyla oluşturulmuş <strong>örnek / demo</strong> bir vakadır.
               </p>
@@ -85,7 +85,7 @@ export function DemoBadge({ label = "Örnek Vaka", size = "sm", className = "" }
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-xs font-bold text-slate-700 hover:bg-zinc-50 transition cursor-pointer"
               >
                 Kapat
               </button>

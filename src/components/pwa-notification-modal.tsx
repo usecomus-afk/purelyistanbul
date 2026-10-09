@@ -50,7 +50,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 space-y-5 animate-in zoom-in-95 text-zinc-900 dark:text-slate-100">
+      <div className="bg-white   rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 space-y-5 animate-in zoom-in-95 text-slate-900 ">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-amber-100 pb-3">
           <div className="flex items-center gap-2">
@@ -58,13 +58,13 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
               <BellRing className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold font-serif text-zinc-900 dark:text-slate-100">PWA Bildirim Ayarları</h3>
-              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Oda talepleri, bilet onayları & VIP duyurular</p>
+              <h3 className="text-sm font-bold font-serif text-slate-900 ">PWA Bildirim Ayarları</h3>
+              <p className="text-[11px] text-slate-500 ">Oda talepleri, bilet onayları & VIP duyurular</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-zinc-100 text-zinc-500 dark:text-slate-400 hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer transition"
+            className="w-7 h-7 rounded-full bg-zinc-100 text-slate-500  hover:bg-zinc-200 flex items-center justify-center text-xs font-bold cursor-pointer transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -73,7 +73,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
         {/* Permission Status Box */}
         <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-800 dark:text-slate-200">Tarayıcı & Cihaz İzni:</span>
+            <span className="text-xs font-bold text-slate-800 ">Tarayıcı & Cihaz İzni:</span>
             {permission === 'granted' ? (
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center gap-1 border border-emerald-300">
                 <CheckCircle2 className="w-3 h-3" /> İzin Verildi
@@ -91,7 +91,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
               </button>
             )}
           </div>
-          <p className="text-[11px] text-zinc-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-slate-600  leading-relaxed">
             {permission === 'granted'
               ? 'purelyİstanbul PWA bildirimleri aktif. Oda içi hizmet taleplerinizde ve rezervasyonlarınızda anında bildirim alacaksınız.'
               : 'Mobil veya masaüstü ekranınız kilitliyken bile anlık durum güncellemelerini almak için bildirimlere izin verin.'}
@@ -100,7 +100,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
 
         {/* Channel Preferences Toggles */}
         <div className="space-y-2.5 text-xs">
-          <div className="font-bold text-zinc-700 text-[11px] uppercase tracking-wider font-mono">
+          <div className="font-bold text-slate-700 text-[11px] uppercase tracking-wider font-mono">
             Bildirim Kanalları
           </div>
 
@@ -109,8 +109,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div className="flex items-center gap-2.5">
               <Hotel className="w-4 h-4 text-amber-700" />
               <div>
-                <strong className="text-zinc-900 dark:text-slate-100 block font-bold text-[11px]">Oda İçi Hizmet Güncellemeleri</strong>
-                <span className="text-[10px] text-zinc-500 dark:text-slate-400">Temizlik, havlu, kahvaltı kapıda durumu</span>
+                <strong className="text-slate-900  block font-bold text-[11px]">Oda İçi Hizmet Güncellemeleri</strong>
+                <span className="text-[10px] text-slate-500 ">Temizlik, havlu, kahvaltı kapıda durumu</span>
               </div>
             </div>
             <button
@@ -119,7 +119,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
                 prefs.roomRequests ? 'bg-emerald-600' : 'bg-zinc-300'
               }`}
             >
-              <div className={`w-5 h-5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 transition transform ${
+              <div className={`w-5 h-5 rounded-full bg-white   transition transform ${
                 prefs.roomRequests ? 'translate-x-4' : 'translate-x-0'
               }`} />
             </button>
@@ -130,8 +130,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div className="flex items-center gap-2.5">
               <Compass className="w-4 h-4 text-sky-600" />
               <div>
-                <strong className="text-zinc-900 dark:text-slate-100 block font-bold text-[11px]">Tur & Bilet Onayları</strong>
-                <span className="text-[10px] text-zinc-500 dark:text-slate-400">Yat turu, restoran ve transfer saatleri</span>
+                <strong className="text-slate-900  block font-bold text-[11px]">Tur & Bilet Onayları</strong>
+                <span className="text-[10px] text-slate-500 ">Yat turu, restoran ve transfer saatleri</span>
               </div>
             </div>
             <button
@@ -140,7 +140,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
                 prefs.tourBookings ? 'bg-emerald-600' : 'bg-zinc-300'
               }`}
             >
-              <div className={`w-5 h-5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 transition transform ${
+              <div className={`w-5 h-5 rounded-full bg-white   transition transform ${
                 prefs.tourBookings ? 'translate-x-4' : 'translate-x-0'
               }`} />
             </button>
@@ -149,10 +149,10 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
           {/* 3. Sesli Uyarı */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
             <div className="flex items-center gap-2.5">
-              {prefs.sound ? <Volume2 className="w-4 h-4 text-zinc-700" /> : <VolumeX className="w-4 h-4 text-zinc-400" />}
+              {prefs.sound ? <Volume2 className="w-4 h-4 text-slate-700" /> : <VolumeX className="w-4 h-4 text-zinc-400" />}
               <div>
-                <strong className="text-zinc-900 dark:text-slate-100 block font-bold text-[11px]">Ses & Titreşim Uyarısı</strong>
-                <span className="text-[10px] text-zinc-500 dark:text-slate-400">Bildirim geldiğinde hafif ses ve titreşim</span>
+                <strong className="text-slate-900  block font-bold text-[11px]">Ses & Titreşim Uyarısı</strong>
+                <span className="text-[10px] text-slate-500 ">Bildirim geldiğinde hafif ses ve titreşim</span>
               </div>
             </div>
             <button
@@ -161,7 +161,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
                 prefs.sound ? 'bg-emerald-600' : 'bg-zinc-300'
               }`}
             >
-              <div className={`w-5 h-5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 transition transform ${
+              <div className={`w-5 h-5 rounded-full bg-white   transition transform ${
                 prefs.sound ? 'translate-x-4' : 'translate-x-0'
               }`} />
             </button>

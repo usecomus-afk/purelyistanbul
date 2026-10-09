@@ -251,7 +251,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       }}
     >
       <div 
-        className="bg-white dark:bg-slate-900 dark:border-slate-800 w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-zinc-900 dark:text-slate-100"
+        className="bg-white   w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-slate-900 "
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -340,7 +340,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                     <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs space-y-2 ${
                       isUser
                         ? 'bg-amber-500 text-white rounded-tr-xs'
-                        : 'bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-800 dark:text-slate-200 border border-amber-200/80 rounded-tl-xs'
+                        : 'bg-white   text-slate-800  border border-amber-200/80 rounded-tl-xs'
                     }`}>
                       <div className="whitespace-pre-wrap leading-relaxed">
                         {msg.text}
@@ -394,7 +394,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
             </div>
 
             {/* Quick Suggestion Chips */}
-            <div className="p-2.5 bg-white dark:bg-slate-900 dark:border-slate-800 border-t border-amber-100 overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
+            <div className="p-2.5 bg-white   border-t border-amber-100 overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
               {(t.quickChips || []).map((chip, idx) => (
                 <button
                   key={idx}
@@ -412,14 +412,14 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 e.preventDefault();
                 handleSend();
               }}
-              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white dark:bg-slate-900 dark:border-slate-800 border-t border-amber-200 flex items-center gap-2 shrink-0"
+              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white   border-t border-amber-200 flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t.aiPlaceholder}
-                className="flex-1 text-xs p-3 rounded-2xl border border-amber-200 bg-[#fbf8f1] focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 placeholder:text-zinc-400"
+                className="flex-1 text-xs p-3 rounded-2xl border border-amber-200 bg-[#fbf8f1] focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  placeholder:text-zinc-400"
               />
               <button
                 type="submit"
