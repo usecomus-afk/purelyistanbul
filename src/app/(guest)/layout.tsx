@@ -55,11 +55,12 @@ export default function GuestLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 w-full pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] antialiased">
-        {children}
+      <div className="h-[100dvh] overflow-hidden bg-[#f8f6f0] text-slate-900 w-full antialiased relative">
+        <div className="w-full h-full overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom))]">
+          {children}
+        </div>
+        <MobileFooterNav />
       </div>
-      {/* Alt Navibar doğrudan root layout seviyesinde render edilir */}
-      <MobileFooterNav />
     </>
   );
 }
