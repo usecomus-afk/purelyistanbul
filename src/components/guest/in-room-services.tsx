@@ -190,7 +190,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
       {/* Modal for In-Room Request Confirmation */}
       {selectedService && (
         <div 
-          className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-2 pb-20 sm:p-6"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-white/40 backdrop-blur-md p-2 pb-20 sm:p-6"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -209,7 +209,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
           ) : (
             <div className="min-h-full flex items-center justify-center py-6">
               <div 
-                className="relative w-full max-w-md bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl dark:border-slate-700/50 rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900 dark:text-slate-100"
+                className="relative w-full max-w-md bg-white/70 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-900/15 animate-in zoom-in-95 space-y-4 text-slate-900"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between border-b border-amber-100 pb-3">
@@ -222,13 +222,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                       />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">{getLocalizedTitle(selectedService)}</h3>
-                      <p className="text-xs text-zinc-500 dark:text-slate-400">{hotel.name} - {t.room} {roomNumber}</p>
+                      <h3 className="text-base font-bold text-slate-900">{getLocalizedTitle(selectedService)}</h3>
+                      <p className="text-xs text-slate-600">{hotel.name} - {t.room} {roomNumber}</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setSelectedService(null)}
-                    className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-xl font-bold p-1 cursor-pointer"
+                    className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 cursor-pointer"
                   >
                     ✕
                   </button>
