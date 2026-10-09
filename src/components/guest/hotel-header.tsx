@@ -96,7 +96,7 @@ export function HotelHeader({
   };
 
   return (
-    <header className="pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 overflow-hidden transition-colors duration-300 bg-transparent border-b-transparent">
+    <header className="pt-10 pb-3 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-4">
         
         {/* Centered Logo/Name */}
