@@ -223,18 +223,18 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className="w-full text-white min-h-screen relative">
+    <div className="w-full text-slate-900 min-h-screen relative">
       {/* Global Fixed Background for Guest App */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Image 
-          src="/images/services-bg.jpg" 
+          src="/images/light-mosque-bg.jpg" 
           alt="Guest Background"
           fill
           priority
           quality={80}
           unoptimized className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
       </div>
 
       <div className="relative z-10 w-full h-full">
@@ -269,25 +269,25 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           <div className="space-y-4">
             {selectedCategory && selectedCategory !== 'all' ? (
               <div>
-                <h2 className="text-xl font-bold font-serif text-white">{getCategoryLabel(selectedCategory)}</h2>
+                <h2 className="text-xl font-bold font-serif text-slate-900">{getCategoryLabel(selectedCategory)}</h2>
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-bold font-serif text-white">{t.experiencesTitle}</h2>
-                <p className="text-xs text-white/70">{t.experiencesSubtitle}</p>
+                <h2 className="text-xl font-bold font-serif text-slate-900">{t.experiencesTitle}</h2>
+                <p className="text-xs text-slate-600">{t.experiencesSubtitle}</p>
               </div>
             )}
 
             {/* Search & Category Filter */}
             <div className="space-y-2.5">
               <div className="relative">
-                <Search className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
+                <Search className="w-4 h-4 text-slate-600 absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/50 backdrop-blur-md rounded-2xl border border-slate-900/10 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
@@ -300,8 +300,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                       onClick={() => setSelectedCategory(cat)}
                       className={`text-[11px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-medium transition cursor-pointer ${
                         selectedCategory === cat
-                          ? 'bg-white/20 text-white font-bold shadow-sm'
-                          : 'bg-black/20 backdrop-blur-md text-white/80 hover:bg-white/10 border border-amber-200/60'
+                          ? 'bg-white/60 text-slate-900 font-bold shadow-sm'
+                          : 'bg-white/50 backdrop-blur-md text-slate-700 hover:bg-white/50 border border-amber-200/60'
                       }`}
                     >
                       {getCategoryLabel(cat)}
@@ -330,10 +330,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             </div>
 
             {filteredExperiences.length === 0 && (
-              <div className="text-center py-12 bg-black/20 backdrop-blur-md rounded-3xl border border-white/20 p-6 space-y-2">
+              <div className="text-center py-12 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-900/10 p-6 space-y-2">
                 <Compass className="w-10 h-10 text-amber-500/40 mx-auto" />
-                <h3 className="text-sm font-bold text-white">{t.noRequests}</h3>
-                <p className="text-xs text-white/70 max-w-xs mx-auto">
+                <h3 className="text-sm font-bold text-slate-900">{t.noRequests}</h3>
+                <p className="text-xs text-slate-600 max-w-xs mx-auto">
                   Arama kriterlerinize uygun ilan bulunamadı. Lütfen filtreyi temizleyiniz.
                 </p>
                 <button
@@ -341,7 +341,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     setSelectedCategory('all');
                     setSearchQuery('');
                   }}
-                  className="mt-2 text-xs font-bold text-amber-700 bg-white/10 px-4 py-2 rounded-xl border border-amber-200"
+                  className="mt-2 text-xs font-bold text-amber-700 bg-white/50 px-4 py-2 rounded-xl border border-amber-200"
                 >
                   {t.allCategories}
                 </button>
@@ -354,10 +354,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {activeTab === 'categories' && (
           <div className="space-y-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold font-serif text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
                 <span>{t.categoriesTitle}</span>
               </h2>
-              <p className="text-xs text-white/70 max-w-xl font-medium">
+              <p className="text-xs text-slate-600 max-w-xl font-medium">
                 {t.categoriesSubtitle}
               </p>
             </div>
@@ -403,7 +403,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                     }}
-                    className="p-4 sm:p-5 flex flex-col items-center text-center justify-start gap-3 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)]"
+                    className="p-4 sm:p-5 flex flex-col items-center text-center justify-start gap-3 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-slate-900/15 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)]"
                   >
                     {/* 3D Icon Box matching in-room services */}
                     <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
@@ -418,10 +418,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
                     {/* Title & Description */}
                     <div className="w-full">
-                      <span className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-400 transition-colors leading-tight block">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-amber-400 transition-colors leading-tight block">
                         {cat.key}
                       </span>
-                      <span className="text-[10px] text-white/60 line-clamp-1 mt-0.5 block">
+                      <span className="text-[10px] text-slate-600 line-clamp-1 mt-0.5 block">
                         {cat.desc}
                       </span>
                     </div>
@@ -436,8 +436,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {activeTab === 'practical' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold font-serif text-white">{t.practicalTitle}</h2>
-              <p className="text-xs text-white/70">{t.practicalSubtitle}</p>
+              <h2 className="text-xl font-bold font-serif text-slate-900">{t.practicalTitle}</h2>
+              <p className="text-xs text-slate-600">{t.practicalSubtitle}</p>
             </div>
 
             {/* Xenios Fair Shopping Policy & Misafir Kalkanı Component */}
@@ -533,7 +533,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       {/* In-Room Requests Modal (Triggered from Top Hotel Card) */}
       {showRequestsModal && (
         <div 
-          className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-3 sm:p-6"
+          className="fixed inset-0 z-50 overflow-y-scroll bg-white/80 backdrop-blur-sm p-3 sm:p-6"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowRequestsModal(false);
@@ -541,29 +541,29 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         >
           <div className="min-h-full flex items-center justify-center py-6">
             <div 
-              className="relative w-full max-w-lg bg-black/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-white"
+              className="relative w-full max-w-lg bg-white/50 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-slate-900"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-amber-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center text-amber-700">
+                  <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center text-amber-700">
                     <Bell className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">{t.activeRequests}</h3>
-                    <p className="text-[11px] text-white/70">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
+                    <h3 className="text-sm font-bold text-slate-900">{t.activeRequests}</h3>
+                    <p className="text-[11px] text-slate-600">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowRequestsModal(false)} 
-                  className="w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center text-sm font-bold cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-white/60 hover:bg-black/60 text-slate-900 flex items-center justify-center text-sm font-bold cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               {requests.length === 0 ? (
-                <div className="py-8 text-center text-white/60 space-y-2">
+                <div className="py-8 text-center text-slate-600 space-y-2">
                   <Bell className="w-8 h-8 mx-auto text-amber-400 opacity-50" />
                   <p className="text-xs">{t.noRequests}</p>
                 </div>
@@ -572,13 +572,13 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   {requests.map((req) => (
                     <div
                       key={req.id}
-                      className="bg-white/10 p-3.5 rounded-2xl border border-white/20 flex items-center justify-between gap-3 text-xs"
+                      className="bg-white/50 p-3.5 rounded-2xl border border-slate-900/10 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="space-y-1">
-                        <strong className="text-white block">{req.serviceTitle}</strong>
-                        {req.notes && <p className="text-[11px] text-white/80">{req.notes}</p>}
-                        <div className="flex items-center gap-1 text-[10px] text-white/60 font-mono">
-                          <Clock className="w-3.5 h-3.5 text-white/60" />
+                        <strong className="text-slate-900 block">{req.serviceTitle}</strong>
+                        {req.notes && <p className="text-[11px] text-slate-700">{req.notes}</p>}
+                        <div className="flex items-center gap-1 text-[10px] text-slate-600 font-mono">
+                          <Clock className="w-3.5 h-3.5 text-slate-600" />
                           <span>{new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       </div>

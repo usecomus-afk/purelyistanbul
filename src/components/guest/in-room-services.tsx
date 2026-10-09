@@ -164,7 +164,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-white/30 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
+              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-slate-900/15 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
@@ -178,7 +178,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 />
               </div>
               <div className="w-full mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-400 transition-colors leading-tight block drop-shadow-sm">
+                <span className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-amber-400 transition-colors leading-tight block drop-shadow-sm">
                   {serviceTitle}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
           ) : (
             <div className="min-h-full flex items-center justify-center py-6">
               <div 
-                className="relative w-full max-w-md bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900 dark:text-slate-100"
+                className="relative w-full max-w-md bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl dark:border-slate-700/50 rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 animate-in zoom-in-95 space-y-4 text-zinc-900 dark:text-slate-100"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between border-b border-amber-100 pb-3">
@@ -228,7 +228,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   </div>
                   <button
                     onClick={() => setSelectedService(null)}
-                    className="text-zinc-400 hover:text-zinc-700 text-xl font-bold p-1 cursor-pointer"
+                    className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-xl font-bold p-1 cursor-pointer"
                   >
                     ✕
                   </button>
@@ -254,7 +254,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   return (
                     <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
                       {getLocalizedDesc(selectedService) && (
-                        <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-zinc-700 text-xs">
+                        <div className="p-3 bg-amber-50/70 dark:bg-amber-500/10 rounded-2xl border border-amber-200/60 dark:border-amber-500/20 text-zinc-700 dark:text-amber-100/70 text-xs">
                           {getLocalizedDesc(selectedService)}
                         </div>
                       )}
@@ -266,7 +266,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                           <select
                             value={customOption}
                             onChange={(e) => setCustomOption(e.target.value)}
-                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
+                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
                           >
                             {selectedService.options.map((opt, i) => (
                               <option key={i} value={opt}>{opt}</option>
@@ -287,7 +287,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                               className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
                                 customCount === num
                                   ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                                  : 'bg-zinc-50 hover:bg-amber-50 border-zinc-200 text-zinc-700'
+                                  : 'bg-zinc-50 dark:bg-slate-800/50 hover:bg-amber-50 dark:hover:bg-slate-700/50 border-zinc-200 dark:border-slate-700/50 text-zinc-700 dark:text-slate-300'
                               }`}
                             >
                               {num}
@@ -304,7 +304,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         <select
                           value={customTime}
                           onChange={(e) => setCustomTime(e.target.value)}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100 font-medium"
                         >
                           <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
                           <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
@@ -322,7 +322,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                           onChange={(e) => setCustomNote(e.target.value)}
                           rows={2}
                           placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-900 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
+                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white dark:bg-slate-800/50 dark:border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-zinc-900 dark:text-slate-100"
                         />
                       </div>
 
@@ -331,7 +331,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         <button
                           type="button"
                           onClick={() => setSelectedService(null)}
-                          className="flex-1 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition text-xs cursor-pointer"
+                          className="flex-1 py-3 rounded-2xl bg-zinc-100 dark:bg-slate-800/50 hover:bg-zinc-200 dark:hover:bg-slate-700/50 text-zinc-700 dark:text-slate-300 font-bold transition text-xs cursor-pointer"
                         >
                           {t.serviceForm?.cancel || 'Vazgeç'}
                         </button>

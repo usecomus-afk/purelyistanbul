@@ -101,47 +101,47 @@ export function HotelHeader({
         
         {/* Centered Logo/Name */}
         {activeTab === 'services' ? (
-          <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-white/95 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center mt-2 mb-1">
+          <h1 className="font-serif text-[14px] sm:text-[16px] tracking-[0.25em] font-light text-slate-900 uppercase  text-center mt-2 mb-1">
             {hotel.name}
           </h1>
         ) : (
-          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-2xl sm:text-3xl text-white leading-none select-none drop-shadow-md mt-2 mb-1">
+          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-serif font-bold text-2xl sm:text-3xl text-slate-900 leading-none select-none  mt-2 mb-1">
             purely<span className="text-red-500 font-bold">istanbul</span>
           </a>
         )}
 
             {/* NEW DESIGN: Unified Single Pill */}
-            <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-black/10 backdrop-blur-[4px] border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] relative z-50">
+            <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-black/10 backdrop-blur-[4px] border border-slate-900/15 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] relative z-50">
               
               {/* 1. PWA Notification Bell */}
               <button
                 type="button"
                 onClick={() => setShowPwaModal(true)}
-                className="w-8 h-8 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/10 text-white"
+                className="w-8 h-8 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/50 text-slate-900"
                 title="PWA Bildirim Ayarları"
               >
-                <BellRing className="w-4 h-4 text-white" />
+                <BellRing className="w-4 h-4 text-slate-900" />
                 {pwaPerm === 'granted' && (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-1 right-1 ring-1.5 ring-white" />
                 )}
               </button>
 
-              <span className="w-px h-4 bg-white/30" />
+              <span className="w-px h-4 bg-white/70" />
 
               {/* 2. Language Selector */}
               <LanguageSelector currentLang={lang} onSelect={onLanguageChange} theme="dark" />
 
-              <span className="w-px h-4 bg-white/30" />
+              <span className="w-px h-4 bg-white/70" />
 
               {/* 3. Building Modal Trigger */}
-              <button onClick={() => setShowHotelModal(true)} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition cursor-pointer">
-                <Building2 className="w-4 h-4 text-white" />
+              <button onClick={() => setShowHotelModal(true)} className="w-8 h-8 rounded-full hover:bg-white/50 flex items-center justify-center transition cursor-pointer">
+                <Building2 className="w-4 h-4 text-slate-900" />
               </button>
 
-              <span className="w-px h-4 bg-white/30" />
+              <span className="w-px h-4 bg-white/70" />
 
               {/* 4. Wi-Fi & Room Badge */}
-              <button onClick={() => setShowHotelModal(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 border border-white/30 rounded-full text-white text-xs font-bold transition cursor-pointer shadow-2xs">
+              <button onClick={() => setShowHotelModal(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/60 hover:bg-white/70 border border-slate-900/15 rounded-full text-slate-900 text-xs font-bold transition cursor-pointer shadow-2xs">
                 <Wifi className="w-3.5 h-3.5" />
                 <ChevronDown className="w-3 h-3 opacity-80" />
                 <span>Oda {roomNumber}</span>
@@ -150,7 +150,7 @@ export function HotelHeader({
               {/* TEST MODE ONLY: Auth & Portal */}
               {roomNumber.toUpperCase() === 'TEST' && (
                 <>
-                  <span className="w-px h-4 bg-white/30" />
+                  <span className="w-px h-4 bg-white/70" />
                   <a
                     href="/hotel-portal"
                     className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 text-amber-950 font-bold flex items-center gap-1 text-[10px] cursor-pointer"
