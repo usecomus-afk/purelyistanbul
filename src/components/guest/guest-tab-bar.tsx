@@ -145,7 +145,7 @@ export function GuestTabBar({
         isHidden ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       } ${
         isServicesDarkOverall
-          ? 'bg-amber-500/95 backdrop-blur-[4px] border-t border-amber-400 shadow-[0_-8px_24px_rgba(245,158,11,0.3)]'
+          ? 'bg-white/80 backdrop-blur-md border-t border-slate-900/10 shadow-sm'
           : 'bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]'
       }`}
       style={{
@@ -165,7 +165,7 @@ export function GuestTabBar({
       <div 
         className={`absolute top-full left-0 right-0 h-[100px] -mt-[1px] transition-colors duration-300 ${
           isServicesDarkOverall
-            ? 'bg-amber-500/95 backdrop-blur-[4px]' 
+            ? 'bg-white/80 backdrop-blur-md' 
             : 'bg-white/95 backdrop-blur-md'
         }`}
       />
@@ -181,14 +181,14 @@ export function GuestTabBar({
               onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all relative cursor-pointer active:scale-90 ${
                 isActive 
-                  ? (isServicesDark ? 'text-white font-bold' : 'text-amber-800 font-bold') 
-                  : (isServicesDark ? 'text-white/80 hover:text-white' : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-800 dark:text-slate-200')
+                  ? 'text-amber-600 font-bold' 
+                  : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               <div className={`p-1.5 rounded-2xl transition-all ${
                 isActive 
-                  ? (isServicesDark ? 'bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] scale-105' : 'btn-3d text-amber-800 scale-105') 
-                  : (isServicesDark ? 'hover:bg-white/10' : 'hover:bg-amber-50/80')
+                  ? 'bg-amber-500 text-white shadow-md scale-105' 
+                  : 'hover:bg-amber-50'
               }`}>
                 {tab.iconType === 'image' && tab.imgSrc ? (
                   <div className="w-5 h-5 relative flex items-center justify-center">
@@ -196,7 +196,7 @@ export function GuestTabBar({
                       src={tab.imgSrc}
                       alt={tab.label}
                       style={{ width: '22px', height: '22px', objectFit: 'contain' }}
-                      className={isServicesDark && tab.id === 'ai' ? 'brightness-0 invert' : ''}
+                      className={isActive ? 'brightness-0 invert' : ''}
                     />
                   </div>
                 ) : (
