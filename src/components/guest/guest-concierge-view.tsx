@@ -156,6 +156,24 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     };
   }, []);
 
+  // Lock vertical movement when on the Otel ('services') page
+  useEffect(() => {
+    const container = document.getElementById('guest-scroll-container');
+    if (container) {
+      if (activeTab === 'services') {
+        container.style.overflowY = 'hidden';
+        container.scrollTop = 0;
+      } else {
+        container.style.overflowY = 'auto';
+      }
+    }
+    return () => {
+      if (container) {
+        container.style.overflowY = 'auto';
+      }
+    };
+  }, [activeTab]);
+
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
   const t = getT(lang);
 
@@ -223,7 +241,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className="w-full text-slate-900 min-h-full relative">
+    <div className={`w-full text-slate-900 ${activeTab === 'services' ? 'fixed inset-0 h-[100dvh] w-screen overflow-hidden overscroll-none' : 'min-h-[100dvh]'} relative`}>
       {/* Global Fixed Background for Guest App */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Image 
@@ -237,7 +255,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
       </div>
 
-      <div className="relative z-10 w-full h-full">
+      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none' : 'h-full pb-32 overflow-y-auto'}`}>
         {/* Hotel Header & Credentials */}
       <HotelHeader
         hotel={currentHotel}
@@ -251,7 +269,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'mt-1 sm:mt-2 space-y-3 sm:space-y-4' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'mt-1 sm:mt-2 space-y-3 sm:space-y-4 overflow-hidden' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (

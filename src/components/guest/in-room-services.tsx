@@ -166,21 +166,21 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] group relative bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-slate-900/15 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)] ${
+              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] sm:min-h-[130px] group relative bg-gradient-to-b from-[#fdfdfd] to-[#e6e8eb] rounded-[24px] border border-white/60 shadow-[0_8px_15px_rgba(0,0,0,0.12),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform relative">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
                 <img
                   src={item.icon}
                   alt={serviceTitle}
-                  className="w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)]"
+                  className="w-full h-full object-contain drop-shadow-sm"
                 />
               </div>
               <div className="w-full mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-amber-400 transition-colors leading-tight block drop-shadow-sm">
+                <span className="text-[13px] sm:text-[15px] font-[800] text-[#1e293b] leading-tight block">
                   {serviceTitle}
                 </span>
               </div>
