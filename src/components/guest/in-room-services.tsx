@@ -143,7 +143,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   return (\n    <div className="h-full flex flex-col flex-1">\n      {/* Background moved to GuestConciergeView to apply globally */}\n      \n      {/* Grid of In-Room Services */}\n      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0 flex-1 grid-rows-4 h-full items-stretch">
         {services.filter(item => {
           const settings = moduleSettings[item.key];
-          return settings ? settings.enabled : item.enabled !== false;
+          if (item.hidden || (settings && settings.hidden)) return false;\n          return settings ? settings.enabled : item.enabled !== false;
         }).map((item) => {
           const isEnabled = true;
           const serviceTitle = getLocalizedTitle(item);

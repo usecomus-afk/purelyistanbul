@@ -461,12 +461,12 @@ export const XeniosStore = {
       { id: 'pillows', key: 'pillows', label: 'Ekstra Yastık', desc: 'Ortopedik / ekstra yastık', icon: '/icons/menu/pillows.png', department: 'Housekeeping', enabled: true, hidden: false, order: 6 },
       { id: 'toiletries', key: 'toiletries', label: 'Banyo Bukleti', desc: 'Şampuan, duş jeli, sabun', icon: '/icons/menu/toiletries.png', department: 'Housekeeping', enabled: true, hidden: false, order: 7 },
       { id: 'hygiene', key: 'hygiene', label: 'Hijyen & Bakım Seti', desc: 'Diş & tıraş seti, terlik', icon: '/icons/menu/hygiene.png', department: 'Housekeeping', enabled: true, hidden: false, order: 8 },
-      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: true, hidden: false, order: 9 },
-      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: true, hidden: false, order: 10 },
-      { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 11 },
-      { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: true, hidden: false, order: 12 },
-      { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / Ön Büro', enabled: true, hidden: false, order: 13 },
-      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: true, hidden: false, order: 14 }
+      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: false, hidden: true, order: 9 },
+      { id: 'safe', key: 'safe', label: 'Kasa & G�venlik', desc: 'Kasa kullan�m� & g�venlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & G�venlik', enabled: false, hidden: true, order: 10 },
+      { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve ayd�nlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: false, hidden: true, order: 11 },
+      { id: 'laundry', key: 'laundry', label: '�ama��rhane & �t�', desc: 'Kuru temizleme ve �t�', icon: '/icons/menu/laundry.png', department: 'Housekeeping (�ama��rhane)', enabled: false, hidden: true, order: 12 },
+      { id: 'lateCheckout', key: 'lateCheckout', label: 'Ge� ��k�� Talebi', desc: \"Saat 14:00'e kadar ge� ��k��\", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / �n B�ro', enabled: false, hidden: true, order: 13 },
+      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama s�resini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: false, hidden: true, order: 14 }
     ];
 
     let items: InRoomServiceItem[] = defaultServices;
