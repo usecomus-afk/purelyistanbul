@@ -55,8 +55,8 @@ export default function GuestLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="h-[100dvh] overflow-hidden bg-[#f8f6f0] text-slate-900 w-full antialiased relative">
-        <div className="w-full h-full overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom))]">
+      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden text-slate-900 w-full antialiased relative overscroll-none">
+        <div id="guest-scroll-container" className="w-full h-full overflow-y-auto overscroll-none pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
           {children}
         </div>
         <MobileFooterNav />
