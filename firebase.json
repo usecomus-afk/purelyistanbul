@@ -1,4 +1,4 @@
-﻿{
+{
   "firestore": {
     "rules": "firestore.rules"
   },
@@ -17,6 +17,11 @@
     "ignore": [
       "node_modules",
       ".git",
+      ".next",
+      "android",
+      "ios",
+      "latest_ipa",
+      "fastlane",
       "firebase-debug.log",
       "firebase-debug.*.log"
     ]
