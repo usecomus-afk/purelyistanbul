@@ -339,8 +339,8 @@ export const XeniosStore = {
   },
 
   getLanguage(): Language {
-    const l = safeGet(STORAGE_KEYS.LANG, 'tr');
-    return (['tr', 'en', 'ar', 'ru', 'de', 'fr'].includes(l) ? l : 'tr') as Language;
+    const l = safeGet(STORAGE_KEYS.LANG, 'en');
+    return (['tr', 'en', 'ar', 'ru', 'de', 'fr'].includes(l) ? l : 'en') as Language;
   },
 
   setLanguage(lang: Language) {
@@ -465,7 +465,7 @@ export const XeniosStore = {
       { id: 'safe', key: 'safe', label: 'Kasa & G�venlik', desc: 'Kasa kullan�m� & g�venlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & G�venlik', enabled: false, hidden: true, order: 10 },
       { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve ayd�nlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: false, hidden: true, order: 11 },
       { id: 'laundry', key: 'laundry', label: '�ama��rhane & �t�', desc: 'Kuru temizleme ve �t�', icon: '/icons/menu/laundry.png', department: 'Housekeeping (�ama��rhane)', enabled: false, hidden: true, order: 12 },
-      { id: 'lateCheckout', key: 'lateCheckout', label: 'Ge� ��k�� Talebi', desc: \"Saat 14:00'e kadar ge� ��k��\", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / �n B�ro', enabled: false, hidden: true, order: 13 },
+      { id: 'lateCheckout', key: 'lateCheckout', label: 'Ge� ��k�� Talebi', desc: "Saat 14:00'e kadar ge� ��k��", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / �n B�ro', enabled: false, hidden: true, order: 13 },
       { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama s�resini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: false, hidden: true, order: 14 }
     ];
 

@@ -44,7 +44,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const [activeHotelId, setActiveHotelId] = useState(() => initialHotelId || XeniosStore.getActiveHotelId());
   const [activeRoomNumber, setActiveRoomNumber] = useState(() => initialRoomId || XeniosStore.getActiveRoomId());
-  const [lang, setLang] = useState<Language>('tr');
+  const [lang, setLang] = useState<Language>('en');
   const [activeTab, setActiveTab] = useState<'services' | 'experiences' | 'categories' | 'ai' | 'practical' | 'invest'>('services');
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -159,15 +159,29 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   // Lock vertical movement when on the Otel ('services') page
   useEffect(() => {
     const container = document.getElementById('guest-scroll-container');
-    if (container) {
-      if (activeTab === 'services') {
+    if (activeTab === 'services') {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.overscrollBehavior = 'none';
+      if (container) {
         container.style.overflowY = 'hidden';
         container.scrollTop = 0;
-      } else {
+      }
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.overscrollBehavior = '';
+      if (container) {
         container.style.overflowY = 'auto';
       }
     }
     return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.overscrollBehavior = '';
       if (container) {
         container.style.overflowY = 'auto';
       }
@@ -269,7 +283,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 h-full flex flex-col pt-1 pb-[100px] overflow-hidden' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[64px] overflow-hidden' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
@@ -421,26 +435,23 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                     }}
-                    className="p-4 sm:p-5 flex flex-col items-center text-center justify-start gap-3 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-black/10 backdrop-blur-[3px] rounded-[24px] border border-slate-900/15 shadow-[0_16px_32px_rgba(0,0,0,0.5),inset_0_2px_2px_rgba(255,255,255,0.6),inset_0_-4px_6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:bg-black/15 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.8),inset_0_-6px_8px_rgba(0,0,0,0.7)]"
+                    className="p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-gradient-to-b from-[#fdfdfd] to-[#e6e8eb] rounded-[24px] border border-white/60 shadow-[0_8px_15px_rgba(0,0,0,0.12),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)]"
                   >
                     {/* 3D Icon Box matching in-room services */}
-                    <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform relative">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
                       <img
                         src={cat.iconPath}
                         alt={cat.key}
-                        className={`w-full h-full object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)] ${
+                        className={`w-full h-full object-contain drop-shadow-sm ${
                           cat.iconPath.includes('kulturel-miras') ? 'scale-[1.25]' : ''
                         }`}
                       />
                     </div>
 
                     {/* Title & Description */}
-                    <div className="w-full">
-                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-amber-400 transition-colors leading-tight block">
+                    <div className="w-full mt-1">
+                      <span className="text-[13px] sm:text-[15px] font-[800] text-[#1e293b] leading-tight block">
                         {cat.key}
-                      </span>
-                      <span className="text-[10px] text-slate-600 line-clamp-1 mt-0.5 block">
-                        {cat.desc}
                       </span>
                     </div>
                   </button>

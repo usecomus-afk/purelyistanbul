@@ -4,7 +4,7 @@
   "webDir": "out",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://purelyistanbul.com",
+    "url": "https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app",
     "cleartext": false,
     "androidScheme": "https"
   },

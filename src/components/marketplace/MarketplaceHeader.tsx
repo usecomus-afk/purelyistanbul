@@ -40,14 +40,20 @@ export function MarketplaceHeader() {
         <BrandMark href="https://www.purelyistanbul.com" theme="light" />
 
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 shrink-0">
+          <Link
+            href="/istanbul-tourist-guide"
+            className="hidden md:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white transition whitespace-nowrap"
+          >
+            Istanbul Tourist Guide
+          </Link>
           {hotelSession && (
             <Link
               href={`/stay/${hotelSession.hotelId}/${hotelSession.roomId}`}
               className="inline-flex items-center gap-1.5 text-[11px] sm:text-[12.5px] font-semibold text-amber-900 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 px-3 py-1.5 rounded-full transition shadow-2xs shrink-0"
             >
               <span>🏨</span>
-              <span className="hidden sm:inline">Odanıza Dönün</span>
-              <span className="font-mono text-amber-950 font-bold">(Oda {hotelSession.roomId})</span>
+              <span className="hidden sm:inline">Back to Your Room</span>
+              <span className="font-mono text-amber-950 font-bold">(Room {hotelSession.roomId})</span>
             </Link>
           )}
 
@@ -56,14 +62,14 @@ export function MarketplaceHeader() {
               href="/marketplace/host/listings"
               className="hidden sm:inline-flex text-[13px] font-medium text-ink px-4 py-2 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition"
             >
-              İlanlarım
+              My Listings
             </Link>
           )}
 
           {user && (
             <Link
               href="/marketplace/favorites"
-              aria-label="Favorilerim"
+              aria-label="Favorites"
               className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition text-ink"
             >
               <Heart className="w-[18px] h-[18px]" strokeWidth={1.75} />
@@ -79,7 +85,7 @@ export function MarketplaceHeader() {
                 <span className="w-7 h-7 rounded-full bg-terracotta text-white flex items-center justify-center text-[12px] font-semibold">
                   {profile?.displayName?.[0]?.toUpperCase() ?? "?"}
                 </span>
-                <span className="hidden md:inline">{profile?.displayName ?? "Hesap"}</span>
+                <span className="hidden md:inline">{profile?.displayName ?? "Account"}</span>
               </button>
 
               {menuOpen && (
@@ -91,7 +97,7 @@ export function MarketplaceHeader() {
                   >
                     {/* Kullanıcı bilgisi */}
                     <div className="px-4 py-3 border-b border-sand-border/60">
-                      <p className="font-semibold text-ink truncate">{profile?.displayName ?? "Kullanıcı"}</p>
+                      <p className="font-semibold text-ink truncate">{profile?.displayName ?? "User"}</p>
                       <p className="text-xs text-ink-muted truncate">{user?.email}</p>
                     </div>
 
@@ -99,15 +105,15 @@ export function MarketplaceHeader() {
                     <div className="py-1 border-b border-sand-border/60">
                       <Link href="/marketplace/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">👤</span>
-                        <span>Profilim</span>
+                        <span>My Profile</span>
                       </Link>
                       <Link href="/marketplace/favorites" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">❤️</span>
-                        <span>Favorilerim</span>
+                        <span>Favorites</span>
                       </Link>
                       <Link href="/marketplace/legal/misafir-kalkani" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">🛡️</span>
-                        <span>Misafir Kalkanı</span>
+                        <span>Guest Shield</span>
                       </Link>
                     </div>
 
@@ -116,17 +122,17 @@ export function MarketplaceHeader() {
                       {profile?.roles.host ? (
                         <Link href="/marketplace/host/listings" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                           <span className="text-base">🏠</span>
-                          <span>İlanlarımı Yönet</span>
+                          <span>Manage My Listings</span>
                         </Link>
                       ) : (
                         <Link href="/marketplace/become-a-host" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                           <span className="text-base">➕</span>
-                          <span>İlan Sahibi Ol</span>
+                          <span>Become a Host</span>
                         </Link>
                       )}
                       <Link href="/marketplace/partner/istirak" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">🤝</span>
-                        <span>İş Ortaklığı</span>
+                        <span>Partnership</span>
                       </Link>
                     </div>
 
@@ -134,11 +140,11 @@ export function MarketplaceHeader() {
                     <div className="py-1 border-b border-sand-border/60">
                       <Link href="/marketplace/iletisim" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">💬</span>
-                        <span>Destek & İletişim</span>
+                        <span>Support & Contact</span>
                       </Link>
                       <Link href="/marketplace/legal/calisma-seklimiz" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1">
                         <span className="text-base">ℹ️</span>
-                        <span>Nasıl Çalışır?</span>
+                        <span>How It Works</span>
                       </Link>
                     </div>
 
@@ -149,7 +155,7 @@ export function MarketplaceHeader() {
                         className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-sand-bg transition rounded-xl mx-1 text-left text-ink-muted"
                       >
                         <span className="text-base">🚪</span>
-                        <span>Çıkış Yap</span>
+                        <span>Log Out</span>
                       </button>
                     </div>
                   </div>
@@ -162,13 +168,13 @@ export function MarketplaceHeader() {
                 href="/marketplace/account"
                 className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white dark:bg-slate-900 dark:border-slate-800 transition whitespace-nowrap"
               >
-                Giriş Yap
+                Log In
               </Link>
               <Link
                 href="/marketplace/account?mode=register"
                 className="text-[11.5px] sm:text-[13px] font-semibold text-white bg-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
               >
-                Kayıt Ol
+                Sign Up
               </Link>
             </div>
           )}

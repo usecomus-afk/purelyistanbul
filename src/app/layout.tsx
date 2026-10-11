@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="en">
       <head>
         {/* Blocking script: hides body instantly on first paint to prevent
             the marketplace page flashing before the splash GIF mounts.

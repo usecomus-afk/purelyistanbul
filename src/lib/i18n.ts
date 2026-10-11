@@ -1770,13 +1770,7 @@ export const translations = {
 };
 
 export function detectBrowserLanguage(): Language {
-  if (typeof window === 'undefined') return 'tr';
-  const navLang = (navigator.language || '').toLowerCase();
-  if (navLang.startsWith('tr')) return 'tr';
-  if (navLang.startsWith('ar')) return 'ar';
-  if (navLang.startsWith('ru')) return 'ru';
-  if (navLang.startsWith('de')) return 'de';
-  if (navLang.startsWith('fr')) return 'fr';
+  // English is the primary language of the site and app; other languages are opt-in via the language selector.
   return 'en';
 }
 
