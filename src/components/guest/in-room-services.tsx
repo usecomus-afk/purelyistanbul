@@ -1,6 +1,5 @@
 "use client";
 
-import Image from 'next/image';
 import { Language, Hotel, ModuleAdminSettingsMap, InRoomServiceItem } from '@/lib/types';
 import { getT } from '@/lib/i18n';
 import { XeniosStore } from '@/lib/store';
@@ -10,13 +9,31 @@ import { toast } from 'sonner';
 import { getModuleConfig, deriveStatus, formatFieldValue, resolvePricing } from '@/lib/service-modules';
 import { ServiceRequestForm } from './service-request-form';
 import { GuestRoomServiceMenu } from './guest-room-service-menu';
-import { Clock, CheckCircle2 } from 'lucide-react';
+import { LuxuryServiceIcon } from './luxury-service-icon';
+import { Clock } from 'lucide-react';
 
 interface InRoomServicesProps {
   hotel: Hotel;
   roomNumber: string;
   lang: Language;
 }
+
+const BUILTIN_LUXURY_KEYS = new Set([
+  'roomservice',
+  'dnd',
+  'cleaning',
+  'linens',
+  'towels',
+  'toiletries',
+  'hygiene',
+  'technical',
+  'lateCheckout',
+  'extendStay',
+  'pillows',
+  'minibar',
+  'safe',
+  'laundry',
+]);
 
 export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps) {
   const t = getT(lang);
@@ -140,60 +157,71 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     }
   };
 
+  const renderServiceVisual = (item: InRoomServiceItem, sizeClass: string) => {
+    if (BUILTIN_LUXURY_KEYS.has(item.key) || !item.icon || item.icon.startsWith('/icons/menu/')) {
+      return <LuxuryServiceIcon serviceKey={item.key} className={sizeClass} />;
+    }
+    return (
+      <div className={`${sizeClass} shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative`}>
+        <img
+          src={item.icon}
+          alt={getLocalizedTitle(item)}
+          className="w-full h-full object-contain drop-shadow-sm"
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="h-full flex flex-col flex-1 min-h-0">
-      {/* Background moved to GuestConciergeView to apply globally */}
-      
-      {/* Grid of In-Room Services */}
-      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
-        {services.filter(item => {
-          const settings = moduleSettings[item.key];
-          if (item.hidden || (settings && settings.hidden)) return false;
-          return settings ? settings.enabled : item.enabled !== false;
-        }).map((item) => {
-          const isEnabled = true;
-          const serviceTitle = getLocalizedTitle(item);
-          const serviceDesc = getLocalizedDesc(item);
+      {/* 2x4 Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
+      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1.5 sm:p-4 -mx-1 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
+        {services
+          .filter((item) => {
+            const settings = moduleSettings[item.key];
+            if (item.hidden || (settings && settings.hidden)) return false;
+            return settings ? settings.enabled : item.enabled !== false;
+          })
+          .map((item) => {
+            const isEnabled = true;
+            const serviceTitle = getLocalizedTitle(item);
 
-          return (
-            <button
-              key={item.id || item.key}
-              type="button"
-              disabled={!isEnabled}
-              onClick={() => {
-                if (!isEnabled) return;
-                setSelectedService(item);
-                if (item.options && item.options.length > 0) {
-                  setCustomOption(item.options[0]);
-                }
-              }}
-              className={`p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-0 group relative bg-gradient-to-br from-[#ffffff] to-[#e8eaed] rounded-[24px] border-2 border-white/80 shadow-[0_10px_20px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] active:translate-y-0 active:shadow-[0_5px_10px_rgba(0,0,0,0.15),inset_2px_2px_4px_rgba(255,255,255,1),inset_-2px_-2px_4px_rgba(0,0,0,0.08)] ${
-                isEnabled
-                  ? 'cursor-pointer'
-                  : 'cursor-not-allowed opacity-50 grayscale'
-              }`}
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
-                <img
-                  src={item.icon}
-                  alt={serviceTitle}
-                  className="w-full h-full object-contain drop-shadow-sm"
-                />
-              </div>
-              <div className="w-full mt-1">
-                <span className="text-[13px] sm:text-[15px] font-[800] text-[#1e293b] leading-tight block">
-                  {serviceTitle}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={item.id || item.key}
+                type="button"
+                disabled={!isEnabled}
+                onClick={() => {
+                  if (!isEnabled) return;
+                  setSelectedService(item);
+                  if (item.options && item.options.length > 0) {
+                    setCustomOption(item.options[0]);
+                  }
+                }}
+                className={`luxury-service-card px-3 py-2.5 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative ${
+                  isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50 grayscale'
+                }`}
+              >
+                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
+                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
+                  {renderServiceVisual(item, "w-14 h-14 sm:w-16 sm:h-16")}
+                </div>
+
+                {/* Clean Modern Sans-Serif Card Label */}
+                <div className="w-full mt-0.5 px-1">
+                  <span className="font-luxury-sans text-[12.5px] sm:text-[14px] font-medium tracking-[0.01em] text-[#221F1C] leading-snug block">
+                    {serviceTitle}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
       </div>
 
       {/* Modal for In-Room Request Confirmation */}
       {selectedService && (
-        <div 
-          className="fixed inset-0 z-[100] overflow-y-auto bg-white/40 backdrop-blur-md p-2 pb-20 sm:p-6"
+        <div
+          className="fixed inset-0 z-[100] overflow-y-auto bg-black/25 backdrop-blur-md p-2 pb-20 sm:p-6"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -204,34 +232,36 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
           {selectedService.key === 'roomservice' ? (
             <div className="min-h-full flex items-center justify-center py-2 pb-20 sm:py-6" onClick={(e) => e.stopPropagation()}>
               <div className="w-full max-w-lg">
-                <GuestRoomServiceMenu hotel={hotel} roomNumber={roomNumber} lang={lang} onClose={() => {
-                  setSelectedService(null);
-                }} />
+                <GuestRoomServiceMenu
+                  hotel={hotel}
+                  roomNumber={roomNumber}
+                  lang={lang}
+                  onClose={() => {
+                    setSelectedService(null);
+                  }}
+                />
               </div>
             </div>
           ) : (
             <div className="min-h-full flex items-center justify-center py-6">
-              <div 
-                className="relative w-full max-w-md bg-white/70 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-900/15 animate-in zoom-in-95 space-y-4 text-slate-900"
+              <div
+                className="relative w-full max-w-md bg-[#FAF8F4]/95 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-[0_24px_48px_rgba(28,24,18,0.18)] border border-[#DFD5C5] animate-in zoom-in-95 space-y-4 text-[#221F1C]"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+                <div className="flex items-center justify-between border-b border-[#E8DFD1] pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50 p-1.5 border border-amber-200 flex items-center justify-center shrink-0 overflow-hidden">
-                      <img
-                        src={selectedService.icon}
-                        alt={getLocalizedTitle(selectedService)}
-                        className="object-contain w-full h-full"
-                      />
+                    <div className="w-12 h-12 rounded-2xl bg-[#F5EFE4] p-1 border border-[#D8C7A8] flex items-center justify-center shrink-0 overflow-hidden">
+                      {renderServiceVisual(selectedService, "w-10 h-10")}
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">{getLocalizedTitle(selectedService)}</h3>
-                      <p className="text-xs text-slate-600">{hotel.name} - {t.room} {roomNumber}</p>
+                      <h3 className="text-base font-semibold text-[#1E1C19]">{getLocalizedTitle(selectedService)}</h3>
+                      <p className="text-xs text-[#6E675F]">{hotel.name} - {t.room} {roomNumber}</p>
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setSelectedService(null)}
-                    className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 cursor-pointer"
+                    className="text-[#8C8479] hover:text-[#221F1C] text-lg font-medium p-1 cursor-pointer transition"
                   >
                     ✕
                   </button>
@@ -257,7 +287,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   return (
                     <form onSubmit={handleCustomRequestSubmit} className="space-y-4 text-xs">
                       {getLocalizedDesc(selectedService) && (
-                        <div className="p-3 bg-amber-50/70  rounded-2xl border border-amber-200/60  text-slate-700  text-xs">
+                        <div className="p-3 bg-[#F5EFE4] rounded-2xl border border-[#DFD2BC] text-[#4A443D] text-xs">
                           {getLocalizedDesc(selectedService)}
                         </div>
                       )}
@@ -265,11 +295,11 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                       {/* Options Selection */}
                       {selectedService.options && selectedService.options.length > 0 && (
                         <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
+                          <label className="text-xs font-semibold text-[#2C2825]">{t.serviceForm?.optionChoice || 'Seçenek'}</label>
                           <select
                             value={customOption}
                             onChange={(e) => setCustomOption(e.target.value)}
-                            className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  font-medium"
+                            className="w-full text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C] font-medium"
                           >
                             {selectedService.options.map((opt, i) => (
                               <option key={i} value={opt}>{opt}</option>
@@ -280,17 +310,17 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Count / Quantity */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.quantity || 'Adet'}</label>
+                        <label className="text-xs font-semibold text-[#2C2825]">{t.serviceForm?.quantity || 'Adet'}</label>
                         <div className="flex items-center gap-2">
                           {[1, 2, 3, 4, 5].map((num) => (
                             <button
                               type="button"
                               key={num}
                               onClick={() => setCustomCount(num)}
-                              className={`flex-1 py-2 rounded-xl font-bold transition text-xs cursor-pointer border ${
+                              className={`flex-1 py-2 rounded-xl font-semibold transition text-xs cursor-pointer border ${
                                 customCount === num
-                                  ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                                  : 'bg-zinc-50  hover:bg-amber-50  border-zinc-200  text-slate-700 '
+                                  ? 'bg-[#9E7B42] border-[#9E7B42] text-white shadow-xs'
+                                  : 'bg-white hover:bg-[#F5EFE4] border-[#DFD5C5] text-[#3A3530]'
                               }`}
                             >
                               {num}
@@ -301,13 +331,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Time Preference */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-800  flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-amber-600" /> {t.serviceForm?.deliveryTime || 'Zaman'}
+                        <label className="text-xs font-semibold text-[#2C2825] flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#9E7B42]" /> {t.serviceForm?.deliveryTime || 'Zaman'}
                         </label>
                         <select
                           value={customTime}
                           onChange={(e) => setCustomTime(e.target.value)}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  font-medium"
+                          className="w-full text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C] font-medium"
                         >
                           <option value={t.serviceForm?.asap || 'Hemen'}>{t.serviceForm?.asap || 'Hemen'}</option>
                           <option value={t.serviceForm?.in30Min || '30 Dakika'}>{t.serviceForm?.in30Min || '30 Dakika'}</option>
@@ -319,13 +349,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
 
                       {/* Special Note */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-800 ">{t.serviceForm?.specialNote || 'Not'}</label>
+                        <label className="text-xs font-semibold text-[#2C2825]">{t.serviceForm?.specialNote || 'Not'}</label>
                         <textarea
                           value={customNote}
                           onChange={(e) => setCustomNote(e.target.value)}
                           rows={2}
                           placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                          className="w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white   focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900 "
+                          className="w-full text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C]"
                         />
                       </div>
 
@@ -334,14 +364,14 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         <button
                           type="button"
                           onClick={() => setSelectedService(null)}
-                          className="flex-1 py-3 rounded-2xl bg-zinc-100  hover:bg-zinc-200  text-slate-700  font-bold transition text-xs cursor-pointer"
+                          className="flex-1 py-3 rounded-2xl bg-[#EFECE6] hover:bg-[#E5E0D7] text-[#3A3530] font-semibold transition text-xs cursor-pointer"
                         >
                           {t.serviceForm?.cancel || 'Vazgeç'}
                         </button>
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-2 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
+                          className="flex-2 py-3 rounded-2xl bg-gradient-to-r from-[#B89146] to-[#8E6928] hover:from-[#A8823A] hover:to-[#7D5B20] text-white font-semibold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
                         >
                           {isSubmitting ? '...' : (t.serviceForm?.submitRequest || 'Talebi Gönder')}
                         </button>
@@ -357,4 +387,3 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     </div>
   );
 }
-

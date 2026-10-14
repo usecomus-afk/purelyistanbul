@@ -1,9 +1,24 @@
 import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { PwaRegister } from "@/components/pwa-register";
 import { AppIntroSplash } from "@/components/app-intro-splash";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "./globals.css";
+
+const luxurySerif = Cormorant_Garamond({
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-luxury-serif",
+  display: "swap",
+});
+
+const luxurySans = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-luxury-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "purelyİstanbul - Digital Guest Directory & Concierge",
@@ -30,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${luxurySerif.variable} ${luxurySans.variable}`}>
       <head>
         {/* Blocking script: hides body instantly on first paint to prevent
             the marketplace page flashing before the splash GIF mounts.
