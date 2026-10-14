@@ -15,14 +15,21 @@ import {
   limit,
   Unsubscribe 
 } from 'firebase/firestore';
-import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest } from './types';
+import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner } from './types';
 import { XeniosStore } from './store';
+import {
+  experienceToMarketplaceListing,
+  hotelToMarketplaceListing,
+  propertyToMarketplaceListing
+} from './marketplace/seed-listings';
 
 // Collection Names
 export const COLLECTIONS = {
   HOTELS: 'hotels',
   EXPERIENCES: 'experiences',
   PROPERTIES: 'properties',
+  SUPPLIERS: 'suppliers',
+  MARKETPLACE_LISTINGS: 'marketplace_listings',
   BOOKINGS: 'bookings',
   COMPLAINTS: 'complaints',
   REQUESTS: 'service_requests',
@@ -32,7 +39,230 @@ export const COLLECTIONS = {
   ADMINS: 'admins'
 };
 
+function stripUndefined<T extends Record<string, any>>(obj: T): T {
+  const clean: Record<string, any> = {};
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v !== undefined) clean[k] = v;
+  });
+  return clean as T;
+}
+
 export const FirestoreService = {
+  // 🌐 CATALOG REALTIME SYNC (Experiences, Hotels, Properties, Suppliers -> Web Marketplace + Mobile App)
+  async upsertExperience(exp: Experience): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await setDoc(doc(db, COLLECTIONS.EXPERIENCES, exp.id), stripUndefined({
+        ...exp,
+        updatedAt: new Date().toISOString()
+      }));
+
+      // Mirror to marketplace_listings so Web Marketplace updates live alongside Mobile Concierge
+      const mpListing = experienceToMarketplaceListing(exp, 0);
+      const mpStatus = exp.status === 'suspended' || exp.publishToWeb === false ? 'suspended' : 'approved';
+      await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, exp.id), stripUndefined({
+        ...mpListing,
+        status: mpStatus,
+        updatedAt: new Date().toISOString()
+      }));
+    } catch (e) {
+      console.warn('Firestore upsertExperience error:', e);
+    }
+  },
+
+  async deleteExperienceRemote(id: string): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.EXPERIENCES, id));
+      await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id));
+    } catch (e) {
+      console.warn('Firestore deleteExperienceRemote error:', e);
+    }
+  },
+
+  async upsertHotel(hotel: Hotel): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await setDoc(doc(db, COLLECTIONS.HOTELS, hotel.id), stripUndefined({
+        ...hotel,
+        updatedAt: new Date().toISOString()
+      }));
+
+      if (hotel.publishToWeb) {
+        const mpListing = hotelToMarketplaceListing(hotel, 0);
+        await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, hotel.id), stripUndefined({
+          ...mpListing,
+          status: hotel.status === 'suspended' ? 'suspended' : 'approved',
+          updatedAt: new Date().toISOString()
+        }));
+      }
+    } catch (e) {
+      console.warn('Firestore upsertHotel error:', e);
+    }
+  },
+
+  async deleteHotelRemote(id: string): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.HOTELS, id));
+      await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
+    } catch (e) {
+      console.warn('Firestore deleteHotelRemote error:', e);
+    }
+  },
+
+  async upsertProperty(prop: PropertyListing): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await setDoc(doc(db, COLLECTIONS.PROPERTIES, prop.id), stripUndefined({
+        ...prop,
+        updatedAt: new Date().toISOString()
+      }));
+
+      if (prop.publishToWeb) {
+        const mpListing = propertyToMarketplaceListing(prop);
+        await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, prop.id), stripUndefined({
+          ...mpListing,
+          status: prop.status === 'suspended' ? 'suspended' : 'approved',
+          updatedAt: new Date().toISOString()
+        }));
+      }
+    } catch (e) {
+      console.warn('Firestore upsertProperty error:', e);
+    }
+  },
+
+  async deletePropertyRemote(id: string): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.PROPERTIES, id));
+      await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
+    } catch (e) {
+      console.warn('Firestore deletePropertyRemote error:', e);
+    }
+  },
+
+  async upsertSupplier(supplier: SupplierPartner): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await setDoc(doc(db, COLLECTIONS.SUPPLIERS, supplier.id), stripUndefined({
+        ...supplier,
+        updatedAt: new Date().toISOString()
+      }));
+    } catch (e) {
+      console.warn('Firestore upsertSupplier error:', e);
+    }
+  },
+
+  async deleteSupplierRemote(id: string): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.SUPPLIERS, id));
+    } catch (e) {
+      console.warn('Firestore deleteSupplierRemote error:', e);
+    }
+  },
+
+  /**
+   * Subscribes to remote Firestore catalog collections (experiences, hotels, properties, suppliers)
+   * and merges remote docs into XeniosStore so both Web and Mobile App stay in real-time sync.
+   */
+  subscribeToCatalogSync(): Unsubscribe {
+    if (!db || !isFirebaseConfigured || typeof window === 'undefined') {
+      return () => {};
+    }
+
+    const unsubs: Unsubscribe[] = [];
+
+    try {
+      // 1. Experiences listener
+      unsubs.push(
+        onSnapshot(
+          query(collection(db, COLLECTIONS.EXPERIENCES), limit(250)),
+          (snap) => {
+            if (snap.empty) return;
+            const remoteMap = new Map<string, Experience>();
+            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as Experience), id: d.id }));
+            const current = XeniosStore.getExperiences();
+            const mergedMap = new Map<string, Experience>();
+            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+            current.forEach((item) => {
+              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+            });
+            XeniosStore.saveExperiences(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
+
+      // 2. Hotels listener
+      unsubs.push(
+        onSnapshot(
+          query(collection(db, COLLECTIONS.HOTELS), limit(200)),
+          (snap) => {
+            if (snap.empty) return;
+            const remoteMap = new Map<string, Hotel>();
+            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as Hotel), id: d.id }));
+            const current = XeniosStore.getHotels();
+            const mergedMap = new Map<string, Hotel>();
+            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+            current.forEach((item) => {
+              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+            });
+            XeniosStore.saveHotels(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
+
+      // 3. Properties listener
+      unsubs.push(
+        onSnapshot(
+          query(collection(db, COLLECTIONS.PROPERTIES), limit(200)),
+          (snap) => {
+            if (snap.empty) return;
+            const remoteMap = new Map<string, PropertyListing>();
+            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as PropertyListing), id: d.id }));
+            const current = XeniosStore.getPropertyListings();
+            const mergedMap = new Map<string, PropertyListing>();
+            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+            current.forEach((item) => {
+              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+            });
+            XeniosStore.savePropertyListings(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
+
+      // 4. Suppliers listener
+      unsubs.push(
+        onSnapshot(
+          query(collection(db, COLLECTIONS.SUPPLIERS), limit(250)),
+          (snap) => {
+            if (snap.empty) return;
+            const remoteMap = new Map<string, SupplierPartner>();
+            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as SupplierPartner), id: d.id }));
+            const current = XeniosStore.getSuppliers();
+            const mergedMap = new Map<string, SupplierPartner>();
+            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+            current.forEach((item) => {
+              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+            });
+            XeniosStore.saveSuppliers(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
+    } catch (e) {
+      console.warn('Catalog realtime subscription error:', e);
+    }
+
+    return () => {
+      unsubs.forEach((u) => u());
+    };
+  },
+
   // 🛎️ LIVE ROOM REQUESTS WITH REALTIME FIRESTORE LISTENER
   subscribeToLiveRequests(
     hotelId: string | null,
@@ -263,25 +493,31 @@ export const FirestoreService = {
       const hotels = XeniosStore.getHotels();
       const experiences = XeniosStore.getExperiences();
       const properties = XeniosStore.getPropertyListings();
+      const suppliers = XeniosStore.getSuppliers();
 
       // Upload Hotels
       for (const h of hotels) {
-        await setDoc(doc(db, COLLECTIONS.HOTELS, h.id), h);
+        await this.upsertHotel(h);
       }
 
-      // Upload Experiences
+      // Upload Experiences + Marketplace Mirror
       for (const exp of experiences) {
-        await setDoc(doc(db, COLLECTIONS.EXPERIENCES, exp.id), exp);
+        await this.upsertExperience(exp);
       }
 
       // Upload Properties
       for (const prop of properties) {
-        await setDoc(doc(db, COLLECTIONS.PROPERTIES, prop.id), prop);
+        await this.upsertProperty(prop);
+      }
+
+      // Upload Suppliers
+      for (const sup of suppliers) {
+        await this.upsertSupplier(sup);
       }
 
       return {
         success: true,
-        message: `Başarıyla aktarıldı: ${hotels.length} Otel, ${experiences.length} Deneyim/Restoran, ${properties.length} Yatırım Portföyü Cloud Firestore'a yazıldı.`
+        message: `Başarıyla aktarıldı: ${hotels.length} Otel, ${experiences.length} İlan/Deneyim, ${properties.length} Mülk Portföyü ve ${suppliers.length} Anlaşmalı İşletme Cloud Firestore'a ve Web/Mobil vitrine senkronize edildi.`
       };
     } catch (e: any) {
       return {
@@ -291,3 +527,4 @@ export const FirestoreService = {
     }
   }
 };
+

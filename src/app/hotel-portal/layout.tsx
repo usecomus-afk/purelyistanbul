@@ -84,10 +84,10 @@ export default function HotelPortalLayout({
   return (
     <HotelAuthGuard>
       <HotelLiveAlertBanner />
-      <div className={`${isSubPage ? 'min-h-screen' : 'h-[100dvh] max-h-[100dvh] overflow-hidden'} bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 flex flex-col overscroll-none`}>
+      <div className={`${isSubPage ? 'min-h-screen' : 'h-[100dvh] max-h-[100dvh] overflow-hidden touch-none'} bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 flex flex-col overscroll-none`}>
         {/* Modern Top Header Bar */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2 pt-3 sm:py-2.5">
-          <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2.5 pt-[max(2.75rem,calc(env(safe-area-inset-top)+0.5rem))] sm:py-3">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
             
             {/* Left: Title */}
             <div className="flex items-center min-w-0 shrink">
@@ -96,7 +96,7 @@ export default function HotelPortalLayout({
                   <Building2 className="w-4.5 h-4.5 text-amber-800" />
                 </div>
                 <div className="min-w-0 shrink">
-                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-zinc-900 dark:text-slate-100 tracking-tight block leading-tight truncate">
+                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-black tracking-tight block leading-tight truncate">
                     OTEL YÖNETİM PANELİ
                   </span>
                 </div>
@@ -137,7 +137,7 @@ export default function HotelPortalLayout({
                 className={`p-2 rounded-2xl border transition shadow-xs flex items-center gap-1.5 text-xs font-bold cursor-pointer ${
                   audioPrefs.soundEnabled
                     ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
-                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-500 dark:text-slate-400 border-zinc-200'
+                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-500 border-zinc-200'
                 }`}
               >
                 {audioPrefs.soundEnabled ? (
@@ -159,11 +159,11 @@ export default function HotelPortalLayout({
                 className={`p-2 rounded-2xl border transition relative shadow-xs flex items-center gap-1.5 text-xs font-bold ${
                   pendingReqCount > 0
                     ? 'bg-rose-50 border-rose-300 text-rose-800 hover:bg-rose-100'
-                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 border-amber-200 text-zinc-700 hover:bg-amber-50'
+                    : 'bg-white border-amber-200 text-zinc-700 hover:bg-amber-50'
                 }`}
                 title="Canlı Oda Talepleri"
               >
-                <BellRing className={`w-4 h-4 ${pendingReqCount > 0 ? 'text-rose-600 animate-bounce' : 'text-zinc-600 dark:text-slate-400'}`} />
+                <BellRing className={`w-4 h-4 ${pendingReqCount > 0 ? 'text-rose-600 animate-bounce' : 'text-zinc-600'}`} />
                 {pendingReqCount > 0 && (
                   <span className="flex items-center gap-1 text-[11px]">
                     <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
@@ -175,7 +175,7 @@ export default function HotelPortalLayout({
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="p-2 sm:px-3 sm:py-1.5 bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-rose-50 text-zinc-600 dark:text-slate-400 hover:text-rose-700 border border-zinc-200 hover:border-rose-200 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="p-2 sm:px-3 sm:py-1.5 bg-white hover:bg-rose-50 text-zinc-600 hover:text-rose-700 border border-zinc-200 hover:border-rose-200 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
                 title="Çıkış Yap"
               >
                 <LogOut className="w-4 h-4" />
@@ -187,12 +187,13 @@ export default function HotelPortalLayout({
         </header>
 
         {/* Main Content Area */}
-        <main className={`flex-1 w-full max-w-6xl mx-auto ${isSubPage ? 'p-3.5 sm:p-6 md:p-8 space-y-6 overflow-y-auto' : 'p-2 sm:p-3 md:p-4 overflow-hidden flex flex-col min-h-0'}`}>
+        <main className={`flex-1 w-full max-w-6xl mx-auto ${isSubPage ? 'p-3.5 sm:p-6 md:p-8 space-y-6 overflow-y-auto' : 'px-3.5 pt-2.5 pb-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] sm:p-4 overflow-hidden touch-none flex flex-col min-h-0'}`}>
           {children}
         </main>
       </div>
     </HotelAuthGuard>
   );
 }
+
 
 

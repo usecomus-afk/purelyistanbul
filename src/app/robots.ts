@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/hotel-portal/', '/api/'],
+      disallow: ['/dashboard/', '/hotel-portal/', '/api/', '/usepurelydashboard', '/usepurelydashboard/', '/pilot/', '/admin/'],
     },
     sitemap: 'https://www.purelyistanbul.com/sitemap.xml',
   };

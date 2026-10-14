@@ -30,33 +30,32 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
 
   // Xenios Proje Yöneticisi Master Admin Menüsü
   const navItems = [
-    { href: "/pilot", label: "Pilot & Kurucu Masası", icon: Sparkles, badge: "Pilot" },
-    { href: "/dashboard", label: "Yönetici Özeti & Finans", icon: LayoutDashboard },
+    { href: "/usepurelydashboard", label: "Sade Yönetim Paneli (Yeni)", icon: Sparkles, badge: "Comus" },
+    { href: "/admin", label: "İlan, İşletme & Mülk Yönetimi", icon: Lock, badge: "Admin" },
     { href: "/hotels", label: "Partner Oteller & Tesisler", icon: Building2 },
-    { href: "/admin", label: "İlan & Portföy Yönetimi", icon: Lock, badge: "Admin" },
-    { href: "/host-applications", label: "Host Başvuruları (Marketplace)", icon: Building2, badge: "Yeni" },
-    { href: "/listing-approvals", label: "İlan Onayları (Marketplace)", icon: ImageOff, badge: "Yeni" },
-    { href: "/disputes", label: "Misafir Hakları & Hakem", icon: Scale, badge: "Hakem" },
-    { href: "/bookings", label: "Sanal POS & Finansal Raporlar", icon: CreditCard },
-    { href: "/experiences", label: "Deneyim Kataloğu", icon: Compass },
+    { href: "/host-applications", label: "Host Başvuruları (Marketplace)", icon: Building2, badge: "Web" },
+    { href: "/listing-approvals", label: "İlan Onayları (Marketplace)", icon: ImageOff, badge: "Web" },
     { href: "/qr-generator", label: "Toplu QR Kod Üretici", icon: QrCode },
+    { href: "/dashboard", label: "Finans & Gelir Özeti", icon: LayoutDashboard },
+    { href: "/bookings", label: "Sanal POS & Rezervasyonlar", icon: CreditCard },
+    { href: "/disputes", label: "Misafir Hakları & Hakem", icon: Scale },
     { href: "/settings", label: "Sistem & AI Ayarları", icon: Settings },
   ];
 
   const content = (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-900 dark:text-slate-100 border-r border-amber-200/80 shadow-xs">
+    <div className="flex flex-col h-full bg-[#FFFCFA] text-[#2C2C1A] border-r border-[#C8C4B0]">
       {/* Brand Header */}
-      <div className="border-b border-amber-100 px-5 py-4 flex items-center justify-between">
+      <div className="border-b border-[#C8C4B0]/60 px-5 py-4 flex items-center justify-between shrink-0">
         <div>
           <BrandMark size={36} showText={true} theme="light" />
-          <p className="text-[10px] text-amber-800 font-mono tracking-wider mt-1 uppercase font-bold">
-            Master Proje Yöneticisi
+          <p className="text-[10px] text-[#3B6D11] tracking-widest mt-1 uppercase font-semibold">
+            Purelyİstanbul Yönetim
           </p>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-1.5 rounded-lg bg-zinc-100 text-zinc-600 dark:text-slate-400 hover:text-zinc-900 dark:text-slate-100 border border-zinc-200 cursor-pointer"
+            className="md:hidden p-1.5 rounded-lg bg-[#EDE8DE] text-[#6B6B55] hover:text-[#2C2C1A] border border-[#C8C4B0] cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -64,17 +63,17 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
       </div>
 
       {/* Switcher to Partner Hotel Dashboard */}
-      <div className="p-3 border-b border-amber-100 bg-amber-50/50">
+      <div className="p-3 border-b border-[#C8C4B0]/60 bg-[#F6F1E8]/60 shrink-0">
         <Link
           href="/hotel-portal"
           onClick={onClose}
-          className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-300 text-amber-950 text-xs font-bold transition shadow-xs group"
+          className="flex items-center justify-between p-2.5 rounded-xl bg-[#EAF3DE] hover:bg-[#d8ebc2] border border-[#C0DD97] text-[#2C2C1A] text-xs font-medium transition group"
         >
           <div className="flex items-center gap-2">
-            <Hotel className="w-4 h-4 text-amber-700" />
+            <Hotel className="w-4 h-4 text-[#3B6D11]" />
             <span>Otel Yönetim Paneli</span>
           </div>
-          <ArrowUpRight className="w-3.5 h-3.5 text-amber-800 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-[#3B6D11] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </Link>
       </div>
 
@@ -88,20 +87,18 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition ${
+              className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs transition ${
                 active
-                  ? "bg-amber-500/15 text-amber-950 border border-amber-300 font-bold shadow-xs"
-                  : "text-zinc-600 dark:text-slate-400 hover:bg-amber-50/60 hover:text-zinc-900 dark:text-slate-100"
+                  ? "bg-[#EAF3DE] text-[#2C2C1A] border border-[#C0DD97] font-semibold"
+                  : "text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#2C2C1A] font-normal"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-700' : 'text-zinc-500 dark:text-slate-400'}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-[#3B6D11]' : 'text-[#6B6B55]'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                  item.badge === 'Hakem' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
-                }`}>
+                <span className="text-[9px] px-2 py-0.5 rounded-full font-medium bg-[#EAF3DE] text-[#3B6D11] border border-[#C0DD97]">
                   {item.badge}
                 </span>
               )}
@@ -111,14 +108,14 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
       </nav>
 
       {/* Return to Guest App */}
-      <div className="p-3 border-t border-amber-100 space-y-2 bg-amber-50/30">
+      <div className="p-3 border-t border-[#C8C4B0]/60 bg-[#F6F1E8]/40 shrink-0">
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-amber-50 text-zinc-700 rounded-xl text-xs font-bold border border-amber-200 shadow-xs transition"
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#FFFCFA] hover:bg-[#EAF3DE] text-[#2C2C1A] rounded-full text-xs font-medium border border-[#C8C4B0] transition"
         >
-          <ArrowLeft className="w-3.5 h-3.5 text-amber-600" />
-          <span>Misafir PWA Moduna Geç</span>
+          <ArrowLeft className="w-3.5 h-3.5 text-[#3B6D11]" />
+          <span>purelyistanbul.com Vitrine Dön</span>
         </Link>
       </div>
     </div>
@@ -126,16 +123,16 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
 
   return (
     <>
-      {/* Desktop Static Sidebar */}
-      <aside className="hidden w-64 shrink-0 md:flex md:flex-col">
+      {/* Desktop Sticky Sidebar with Independent Scroll */}
+      <aside className="hidden w-64 shrink-0 md:flex md:flex-col md:sticky md:top-0 md:h-screen md:overflow-y-auto">
         {content}
       </aside>
 
       {/* Mobile Slide-over Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
+          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10 overflow-y-auto">
             {content}
           </div>
         </div>

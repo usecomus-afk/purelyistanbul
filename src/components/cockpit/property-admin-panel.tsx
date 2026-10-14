@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { XeniosStore } from '@/lib/store';
-import { PropertyListing, InvestmentLead, InvestorPersona } from '@/lib/types';
+import { PropertyListing, InvestmentLead, InvestorPersona, SupplierPartner } from '@/lib/types';
 import { toast } from 'sonner';
 import {
   Plus, Search, Edit3, Trash2, Save, X, Power, EyeOff, Building2, Phone, Mail,
@@ -14,13 +14,17 @@ type PropertyDraft = {
   priceUSD: number; bedrooms: number; areaM2: number; description: string;
   highlights: string; developer: string; contactPhone: string; contactWebsite: string;
   image: string; lat: number; lng: number; citizenshipEligible: boolean; roiEstimate: string;
+  supplierId: string; commissionRate: number; managementType: 'sale' | 'short_term_rental' | 'both';
+  publishToWeb: boolean; publishToMobile: boolean;
 };
 
 const EMPTY_DRAFT: PropertyDraft = {
   title: '', district: 'Beşiktaş / Boğaz Hattı', propertyType: 'Rezidans Dairesi', personas: ['citizenship'],
   priceUSD: 400000, bedrooms: 2, areaM2: 100, description: '', highlights: '',
   developer: '', contactPhone: '+90 212 000 00 00', contactWebsite: 'https://',
-  image: '', lat: 41.0082, lng: 28.9784, citizenshipEligible: false, roiEstimate: ''
+  image: '', lat: 41.0082, lng: 28.9784, citizenshipEligible: false, roiEstimate: '',
+  supplierId: '', commissionRate: 4, managementType: 'both',
+  publishToWeb: true, publishToMobile: true
 };
 
 const PERSONA_LABELS: Record<InvestorPersona, string> = {
@@ -35,7 +39,12 @@ function propertyToDraft(p: PropertyListing): PropertyDraft {
     priceUSD: p.priceUSD, bedrooms: p.bedrooms, areaM2: p.areaM2, description: p.description,
     highlights: p.highlights.join(', '), developer: p.developer, contactPhone: p.contactPhone,
     contactWebsite: p.contactWebsite, image: p.image, lat: p.coords?.lat ?? 41.0082, lng: p.coords?.lng ?? 28.9784,
-    citizenshipEligible: p.citizenshipEligible, roiEstimate: p.roiEstimate ?? ''
+    citizenshipEligible: p.citizenshipEligible, roiEstimate: p.roiEstimate ?? '',
+    supplierId: p.supplierId ?? '',
+    commissionRate: p.commissionRate ?? 4,
+    managementType: p.managementType ?? (p.airbnbEligible ? 'both' : 'sale'),
+    publishToWeb: p.publishToWeb ?? false,
+    publishToMobile: p.publishToMobile !== false
   };
 }
 
@@ -56,7 +65,13 @@ function draftToPropertyPatch(draft: PropertyDraft): Partial<PropertyListing> {
     image: draft.image,
     coords: { lat: Number(draft.lat) || 41.0082, lng: Number(draft.lng) || 28.9784 },
     citizenshipEligible: draft.citizenshipEligible,
-    roiEstimate: draft.roiEstimate.trim() || undefined
+    roiEstimate: draft.roiEstimate.trim() || undefined,
+    supplierId: draft.supplierId || undefined,
+    commissionRate: Number(draft.commissionRate) || 4,
+    managementType: draft.managementType,
+    airbnbEligible: draft.managementType !== 'sale',
+    publishToWeb: draft.publishToWeb,
+    publishToMobile: draft.publishToMobile
   };
 }
 
@@ -329,6 +344,22 @@ interface PropertyFormModalProps {
 function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onSubmit }: PropertyFormModalProps) {
   const set = (patch: Partial<PropertyDraft>) => onChange({ ...values, ...patch });
   const [imageError, setImageError] = useState(false);
+  const suppliers = useMemo(() => XeniosStore.getSuppliers(), []);
+
+  const handleSelectSupplier = (supId: string) => {
+    const found = suppliers.find((s) => s.id === supId);
+    if (found) {
+      set({
+        supplierId: found.id,
+        developer: found.name,
+        contactPhone: found.phone || values.contactPhone,
+        contactWebsite: found.website || values.contactWebsite,
+        commissionRate: found.commissionRate ?? values.commissionRate
+      });
+    } else {
+      set({ supplierId: '' });
+    }
+  };
 
   const togglePersona = (persona: InvestorPersona) => {
     const has = values.personas.includes(persona);
@@ -350,6 +381,24 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
 
         <form onSubmit={onSubmit} className="space-y-4 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/80">
+              <label className="text-[11px] font-bold text-amber-900 block mb-1">
+                Anlaşmalı Mülk Yönetimi / Gayrimenkul Firması Seç (Otomatik Doldurur)
+              </label>
+              <select
+                value={values.supplierId}
+                onChange={(e) => handleSelectSupplier(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-zinc-900"
+              >
+                <option value="">-- Manuel Firma Girişi veya Listeden Seçin --</option>
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.category} • %{s.commissionRate} Komisyon)
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="sm:col-span-2">
               <label className="text-[11px] font-bold text-zinc-700 block mb-1">İlan Başlığı</label>
               <input
@@ -373,6 +422,26 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
                 onChange={(e) => set({ propertyType: e.target.value })}
                 placeholder="Örn: Rezidans, Yalı, Penthouse, Villa"
                 className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-900 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-zinc-700 block mb-1">Mülk Yönetim & Kullanım Modeli</label>
+              <select
+                value={values.managementType}
+                onChange={(e) => set({ managementType: e.target.value as any })}
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl text-zinc-900"
+              >
+                <option value="both">Satılık + Kısa Dönem Kiralama (Airbnb/Mülk Yönetimi)</option>
+                <option value="short_term_rental">Sadece Kısa Dönem Kiralama & Mülk Yönetimi</option>
+                <option value="sale">Sadece Satılık Gayrimenkul Yatırımı</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-zinc-700 block mb-1">Purelyİstanbul Komisyon Oranı (%)</label>
+              <input
+                type="number" min={0} max={100} step={0.5} value={values.commissionRate}
+                onChange={(e) => set({ commissionRate: Number(e.target.value) })}
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl text-amber-800 font-bold font-mono"
               />
             </div>
             <div>
@@ -429,6 +498,27 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
               </label>
             </div>
 
+            <div className="sm:col-span-2 flex flex-wrap items-center gap-4 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/70">
+              <label className="flex items-center gap-2 text-xs font-bold text-zinc-800 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={values.publishToWeb}
+                  onChange={(e) => set({ publishToWeb: e.target.checked })}
+                  className="accent-amber-500 w-4 h-4"
+                />
+                Web Sitesinde (Marketplace Vitrininde) Yayınla
+              </label>
+              <label className="flex items-center gap-2 text-xs font-bold text-zinc-800 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={values.publishToMobile}
+                  onChange={(e) => set({ publishToMobile: e.target.checked })}
+                  className="accent-amber-500 w-4 h-4"
+                />
+                Mobil App & Otel Concierge'da Yayınla
+              </label>
+            </div>
+
             <div className="sm:col-span-2">
               <label className="text-[11px] font-bold text-zinc-700 block mb-1">Kira Getirisi Tahmini (Opsiyonel)</label>
               <input
@@ -440,7 +530,7 @@ function PropertyFormModal({ title, submitLabel, values, onChange, onCancel, onS
             </div>
 
             <div>
-              <label className="text-[11px] font-bold text-zinc-700 block mb-1">Geliştirici / Danışmanlık Firması</label>
+              <label className="text-[11px] font-bold text-zinc-700 block mb-1">Geliştirici / Mülk Yönetim Firması</label>
               <input
                 type="text" value={values.developer}
                 onChange={(e) => set({ developer: e.target.value })}

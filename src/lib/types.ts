@@ -31,6 +31,51 @@ export interface Hotel {
   receptionExt: string;
   featured?: boolean;
   modules?: HotelModules;
+  status?: 'active' | 'suspended';
+  supplierId?: string;
+  commissionRate?: number;
+  contactEmail?: string;
+  managerName?: string;
+  publishToWeb?: boolean;
+  publishToMobile?: boolean;
+}
+
+export type SupplierType =
+  | 'tour_operator'
+  | 'restaurant'
+  | 'yacht_charter'
+  | 'property_management'
+  | 'hotel'
+  | 'transfer_vip'
+  | 'clinic_wellness'
+  | 'hammam_spa'
+  | 'other';
+
+export type SupplierContractStatus = 'active' | 'pending' | 'suspended';
+
+export interface SupplierPartner {
+  id: string;
+  name: string;
+  legalName?: string;
+  type: SupplierType;
+  category: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  website?: string;
+  district: string;
+  address?: string;
+  taxId?: string;
+  tursabNo?: string;
+  iban?: string;
+  commissionRate: number;
+  contractStatus: SupplierContractStatus;
+  contractStartDate?: string;
+  contractNotes?: string;
+  publishToWeb?: boolean;
+  publishToMobile?: boolean;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export type ExperienceStatus = 'active' | 'suspended';
@@ -40,6 +85,7 @@ export interface Experience {
   category: string;
   provider: string;
   title: string;
+  desc?: string;
   location: string;
   phone: string;
   website: string;
@@ -59,11 +105,17 @@ export interface Experience {
   cuisine?: string;
   priceLevel?: string;
   specialties?: string[];
+  features?: string[];
   reviewsCount?: string;
   providerEmail?: string;
   capacity?: number;
   availableSlots?: number;
   quotaNote?: string;
+  supplierId?: string;
+  commissionRate?: number;
+  listingType?: 'experience' | 'stay';
+  publishToWeb?: boolean;
+  publishToMobile?: boolean;
 }
 
 export type ServiceStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
@@ -173,6 +225,11 @@ export interface PropertyListing {
   airbnbEligible?: boolean;
   /** Admin-controlled listing status. Missing/undefined is treated as 'active' for older records. */
   status?: PropertyStatus;
+  supplierId?: string;
+  commissionRate?: number;
+  managementType?: 'sale' | 'short_term_rental' | 'both';
+  publishToWeb?: boolean;
+  publishToMobile?: boolean;
 }
 
 export interface InvestmentLead {

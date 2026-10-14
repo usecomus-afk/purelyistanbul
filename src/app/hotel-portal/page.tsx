@@ -132,61 +132,33 @@ export default function HotelPortalDashboard() {
 
   return (
     <div className="h-full flex-1 flex flex-col justify-between overflow-hidden">
-      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 md:gap-3.5 h-full flex-1">
+      <div className="grid grid-cols-2 grid-rows-4 gap-2.5 sm:gap-3.5 h-full flex-1">
         {modules.map((mod) => (
           <Link
             key={mod.id}
             href={mod.href}
-            className="btn-3d p-2 sm:p-2.5 md:p-3.5 flex flex-col justify-between gap-1 sm:gap-1.5 group cursor-pointer text-left h-full min-h-0 shadow-xs"
+            className="p-2.5 sm:p-3 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative bg-gradient-to-br from-[#ffffff] to-[#e8eaed] rounded-[22px] border-2 border-white/80 shadow-[0_8px_16px_rgba(0,0,0,0.12),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] active:translate-y-0 active:shadow-[0_4px_8px_rgba(0,0,0,0.15),inset_2px_2px_4px_rgba(255,255,255,1),inset_-2px_-2px_4px_rgba(0,0,0,0.08)] cursor-pointer"
           >
-            {/* Top Row: Icon & Badge */}
-            <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-2xl bg-amber-50/90 border border-amber-200/80 p-1 sm:p-1.5 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden relative">
-                <Image
-                  src={mod.iconPath}
-                  alt={mod.title}
-                  width={56}
-                  height={56}
-                  unoptimized
-                  className="w-full h-full object-contain"
-                />
-                {mod.hasPulse && (
-                  <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
-                  </span>
-                )}
-              </div>
-
-              {mod.badge && (
-                <span
-                  className={`text-[8.5px] sm:text-[9.5px] font-bold px-2 py-0.5 rounded-full border shadow-2xs shrink-0 truncate max-w-[100px] sm:max-w-none ${
-                    mod.badgeType === 'danger'
-                      ? 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
-                      : mod.badgeType === 'success'
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-amber-50 text-amber-900 border-amber-200'
-                  }`}
-                >
-                  {mod.badge}
+            <div className="w-12 h-12 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
+              <Image
+                src={mod.iconPath}
+                alt={mod.title}
+                width={64}
+                height={64}
+                unoptimized
+                className="w-full h-full object-contain drop-shadow-sm"
+              />
+              {mod.hasPulse && (
+                <span className="absolute top-0 right-0 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
                 </span>
               )}
             </div>
-
-            {/* Middle: Title & Description */}
-            <div className="space-y-0.5 min-w-0">
-              <h2 className="text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-slate-100 group-hover:text-amber-800 transition-colors leading-tight truncate">
+            <div className="w-full">
+              <span className="text-[12px] sm:text-[14px] font-[800] text-[#1e293b] leading-snug block px-1">
                 {mod.title}
-              </h2>
-              <p className="text-[9px] sm:text-[10px] md:text-[11px] text-zinc-500 dark:text-slate-400 leading-tight line-clamp-1">
-                {mod.desc}
-              </p>
-            </div>
-
-            {/* Bottom: Action Arrow */}
-            <div className="pt-1 border-t border-zinc-100 flex items-center justify-between text-[9px] sm:text-[10px] md:text-[11px] font-bold text-amber-700 group-hover:text-amber-900">
-              <span>Modülü Aç</span>
-              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform text-amber-600" />
+              </span>
             </div>
           </Link>
         ))}
@@ -194,4 +166,5 @@ export default function HotelPortalDashboard() {
     </div>
   );
 }
+
 

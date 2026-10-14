@@ -95,7 +95,7 @@ export function GuestTabBar({
 
   return (
     <nav
-      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-2 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom))] transition-all duration-300 ease-in-out bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] pointer-events-auto ${
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-2 py-1 transition-all duration-300 ease-in-out bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] pointer-events-auto ${
         isHidden ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
       style={{

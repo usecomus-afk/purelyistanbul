@@ -422,8 +422,8 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
               </div>
             </div>
 
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{lt.officialIstanbulkartTitle}</h3>
-            <p className="text-xs text-white/85 leading-relaxed">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{lt.officialIstanbulkartTitle}</h3>
+            <p className="text-xs text-slate-900/85 leading-relaxed">
               {lt.officialIstanbulkartDesc}
             </p>
           </div>
@@ -432,7 +432,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             href="https://www.istanbulkart.istanbul"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-slate-900 text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
           >
             <span>{lt.officialIstanbulkartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -464,8 +464,8 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
               </div>
             </div>
 
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{lt.officialMuzekartTitle}</h3>
-            <p className="text-xs text-white/85 leading-relaxed">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{lt.officialMuzekartTitle}</h3>
+            <p className="text-xs text-slate-900/85 leading-relaxed">
               {lt.officialMuzekartDesc}
             </p>
           </div>
@@ -474,7 +474,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             href="https://muze.gov.tr"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-slate-900 text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
           >
             <span>{lt.officialMuzekartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -486,7 +486,7 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
       <div className="space-y-5">
           
           <div className="space-y-3">
-            <h3 className="text-base font-bold font-serif text-white">
+            <h3 className="text-base font-bold font-serif text-slate-900">
               {lt.shieldTitle}
             </h3>
 
@@ -496,19 +496,19 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                   <button
                     type="button"
                     onClick={() => setOpenTrap(openTrap === item.id ? null : item.id)}
-                    className="w-full p-4 text-left font-bold text-xs sm:text-sm text-white bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
+                    className="w-full p-4 text-left font-bold text-xs sm:text-sm text-slate-900 bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-amber-600 text-slate-900 text-xs font-bold flex items-center justify-center shrink-0">
                         {item.id}
                       </span>
                       <span>{item.title}</span>
                     </div>
-                    {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-white/70" /> : <ChevronDown className="w-4 h-4 text-white/70" />}
+                    {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
                   </button>
 
                   {openTrap === item.id && (
-                    <div className="p-5 space-y-3.5 text-xs text-white/90 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
+                    <div className="p-5 space-y-3.5 text-xs text-slate-900/90 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
                       <div className="space-y-1">
                         <strong className="text-red-700 block font-bold">{lt.problemLabel}</strong>
                         <div>{item.problem}</div>
@@ -525,8 +525,8 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                       </div>
 
                       <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/20">
-                        <strong className="text-white block font-bold">{lt.lawLabel}</strong>
-                        <p className="text-white/80">{item.law}</p>
+                        <strong className="text-slate-900 block font-bold">{lt.lawLabel}</strong>
+                        <p className="text-slate-700">{item.law}</p>
                       </div>
                     </div>
                   )}
@@ -541,23 +541,23 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
               <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center p-1 border border-red-200">
                 <Image src="/icons/sos-emergency.png" alt="SOS Acil" width={20} height={20} className="object-contain" />
               </div>
-              <h3 className="text-sm font-bold text-white">{lt.emergencyContactsTitle}</h3>
+              <h3 className="text-sm font-bold text-slate-900">{lt.emergencyContactsTitle}</h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-white/70 block text-[10px]">{lt.emergencyCallCenter}</span>
+                <span className="text-slate-600 block text-[10px]">{lt.emergencyCallCenter}</span>
                 <strong className="text-red-600 text-sm font-mono">112</strong>
               </div>
               <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-white/70 block text-[10px]">{lt.tourismPolice}</span>
-                <strong className="text-white text-sm font-mono font-bold">+90 212 527 45 03</strong>
+                <span className="text-slate-600 block text-[10px]">{lt.tourismPolice}</span>
+                <strong className="text-slate-900 text-sm font-mono font-bold">+90 212 527 45 03</strong>
               </div>
               <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-white/70 block text-[10px]">{lt.ibbWhiteDesk}</span>
-                <strong className="text-white text-sm font-mono">153</strong>
+                <span className="text-slate-600 block text-[10px]">{lt.ibbWhiteDesk}</span>
+                <strong className="text-slate-900 text-sm font-mono">153</strong>
               </div>
               <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-white/70 block text-[10px]">{lt.zabıta}</span>
+                <span className="text-slate-600 block text-[10px]">{lt.zabıta}</span>
                 <strong className="text-amber-800 text-sm font-mono">153</strong>
               </div>
             </div>
@@ -572,10 +572,10 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
             <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-red-600 text-white text-xs font-bold uppercase tracking-wider shadow-md">
               {lt.badExperienceBadge}
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-serif text-white mt-2">
+            <h2 className="text-xl sm:text-2xl font-bold font-serif text-slate-900 mt-2">
               {lt.policyMainTitle}
             </h2>
-            <p className="text-xs sm:text-sm text-white/80 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-700 max-w-xl">
               {lt.policyMainDesc}
             </p>
           </div>
@@ -593,8 +593,8 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                 />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">{lt.sorryTitle}</h4>
-                <p className="text-xs text-white/80 mt-0.5 max-w-md">
+                <h4 className="text-sm font-bold text-slate-900">{lt.sorryTitle}</h4>
+                <p className="text-xs text-slate-700 mt-0.5 max-w-md">
                   {lt.sorryDesc}
                 </p>
               </div>
@@ -610,37 +610,37 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
         </div>
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
+            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
               <span>{lt.howToComplainTitle}</span>
             </h3>
 
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse border border-white/20 rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-white/10 text-white font-bold border-b border-white/20">
+                  <tr className="bg-white/10 text-slate-900 font-bold border-b border-white/20">
                     <th className="p-2.5">{lt.proofType}</th>
                     <th className="p-2.5">{lt.whatIsIt}</th>
                     <th className="p-2.5">{lt.example}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/20 text-white/80">
+                <tbody className="divide-y divide-white/20 text-slate-700">
                   <tr>
-                    <td className="p-2.5 font-bold text-white">{lt.proofReceipt}</td>
+                    <td className="p-2.5 font-bold text-slate-900">{lt.proofReceipt}</td>
                     <td className="p-2.5">{lt.proofReceiptDesc}</td>
                     <td className="p-2.5">{lt.proofReceiptEx}</td>
                   </tr>
                   <tr>
-                    <td className="p-2.5 font-bold text-white">{lt.proofScreenshot}</td>
+                    <td className="p-2.5 font-bold text-slate-900">{lt.proofScreenshot}</td>
                     <td className="p-2.5">{lt.proofScreenshotDesc}</td>
                     <td className="p-2.5">{lt.proofScreenshotEx}</td>
                   </tr>
                   <tr>
-                    <td className="p-2.5 font-bold text-white">{lt.proofLocation}</td>
+                    <td className="p-2.5 font-bold text-slate-900">{lt.proofLocation}</td>
                     <td className="p-2.5">{lt.proofLocationDesc}</td>
                     <td className="p-2.5">{lt.proofLocationEx}</td>
                   </tr>
                   <tr>
-                    <td className="p-2.5 font-bold text-white">{lt.proofTaxi}</td>
+                    <td className="p-2.5 font-bold text-slate-900">{lt.proofTaxi}</td>
                     <td className="p-2.5">{lt.proofTaxiDesc}</td>
                     <td className="p-2.5">{lt.proofTaxiEx}</td>
                   </tr>
@@ -650,45 +650,45 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
           </div>
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
+            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
               <span>{lt.whatHappensNextTitle}</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-1">
-                <strong className="text-white font-bold block">{lt.step1Title}</strong>
-                <p className="text-white/80">{lt.step1Desc}</p>
+                <strong className="text-slate-900 font-bold block">{lt.step1Title}</strong>
+                <p className="text-slate-700">{lt.step1Desc}</p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-1">
-                <strong className="text-white font-bold block">{lt.step2Title}</strong>
-                <p className="text-white/80">{lt.step2Desc}</p>
+                <strong className="text-slate-900 font-bold block">{lt.step2Title}</strong>
+                <p className="text-slate-700">{lt.step2Desc}</p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-2.5">
-                <strong className="text-white font-bold block">{lt.step3Title}</strong>
+                <strong className="text-slate-900 font-bold block">{lt.step3Title}</strong>
 
                 <div className="p-3 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl space-y-1">
-                  <strong className="text-white font-bold flex items-center gap-1.5">
+                  <strong className="text-slate-900 font-bold flex items-center gap-1.5">
                     <Landmark className="w-4 h-4 text-red-600" />
                     <span>{lt.cimerTitle}</span>
                   </strong>
-                  <p className="text-white/70">{lt.cimerDesc}</p>
+                  <p className="text-slate-600">{lt.cimerDesc}</p>
                 </div>
 
                 <div className="p-3 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl space-y-1">
-                  <strong className="text-white font-bold flex items-center gap-1.5">
+                  <strong className="text-slate-900 font-bold flex items-center gap-1.5">
                     <Car className="w-4 h-4 text-amber-600" />
                     <span>{lt.tudesTitle}</span>
                   </strong>
-                  <p className="text-white/70">{lt.tudesDesc}</p>
+                  <p className="text-slate-600">{lt.tudesDesc}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-white flex items-center gap-2">
+            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-amber-600" />
               <span>{lt.faqTitle}</span>
             </h3>
@@ -699,13 +699,13 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
                   <button
                     type="button"
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full p-3.5 text-left font-bold text-white bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
+                    className="w-full p-3.5 text-left font-bold text-slate-900 bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
                   >
                     <span>{faq.q}</span>
-                    {openFaq === idx ? <ChevronUp className="w-4 h-4 text-white/70" /> : <ChevronDown className="w-4 h-4 text-white/70" />}
+                    {openFaq === idx ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
                   </button>
                   {openFaq === idx && (
-                    <div className="p-3.5 text-white/80 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
+                    <div className="p-3.5 text-slate-700 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
                       {faq.a}
                     </div>
                   )}

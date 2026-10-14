@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CockpitSideNav } from "@/components/cockpit/side-nav";
 import { AdminAuthGuard } from "@/components/cockpit/admin-auth-guard";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
-import { ArrowLeft, Menu, Hotel, QrCode, LogOut } from "lucide-react";
+import { ArrowLeft, Menu, Hotel, QrCode, LogOut, Sparkles } from "lucide-react";
 import { XeniosStore } from "@/lib/store";
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
@@ -17,6 +17,13 @@ export default function CockpitLayout({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+    document.body.style.overflow = "auto";
+    document.body.style.position = "static";
+    document.body.style.height = "auto";
+  }, []);
+
   const handleLogout = () => {
     XeniosStore.setMasterAdminLoggedIn(false);
     auth?.signOut().catch(() => {});
@@ -25,18 +32,18 @@ export default function CockpitLayout({
 
   return (
     <AdminAuthGuard>
-      <div className="min-h-screen bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 flex flex-col md:flex-row">
+      <div className="min-h-screen bg-[#F6F1E8] text-[#2C2C1A] flex flex-col md:flex-row">
         <CockpitSideNav
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />
 
         {/* Mobile Top Header */}
-        <div className="md:hidden flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/80 sticky top-0 z-40 shadow-xs">
+        <div className="md:hidden flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] bg-[#FFFCFA] border-b border-[#C8C4B0] sticky top-0 z-40 shadow-xs">
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 rounded-xl bg-amber-50 text-zinc-700 hover:text-zinc-900 dark:text-slate-100 border border-amber-200 cursor-pointer"
+              className="p-2 rounded-xl bg-[#EAF3DE] text-[#3B6D11] border border-[#C0DD97] cursor-pointer"
               aria-label="Menüyü Aç"
             >
               <Menu className="w-4 h-4" />
@@ -46,15 +53,15 @@ export default function CockpitLayout({
 
           <div className="flex items-center gap-2">
             <Link
-              href="/hotel-portal"
-              className="px-2.5 py-1.5 bg-amber-500/15 text-amber-900 border border-amber-300 rounded-xl text-[11px] font-bold flex items-center gap-1 shadow-xs"
+              href="/usepurelydashboard"
+              className="px-2.5 py-1.5 bg-[#3B6D11] text-white rounded-full text-[11px] font-medium flex items-center gap-1 shadow-xs"
             >
-              <Hotel className="w-3 h-3 text-amber-700" />
-              <span>Otel Paneli</span>
+              <Sparkles className="w-3 h-3" />
+              <span>Sade Panel</span>
             </Link>
             <button
               onClick={handleLogout}
-              className="p-1.5 bg-zinc-100 hover:bg-red-50 text-zinc-600 dark:text-slate-400 hover:text-red-700 border border-zinc-200 rounded-xl transition cursor-pointer"
+              className="p-1.5 bg-[#EDE8DE] hover:bg-red-50 text-[#6B6B55] hover:text-red-700 border border-[#C8C4B0] rounded-full transition cursor-pointer"
               title="Çıkış Yap"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -63,29 +70,32 @@ export default function CockpitLayout({
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-y-auto">
-          <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-amber-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-[#C8C4B0] bg-[#FFFCFA]/95 backdrop-blur-md sticky top-0 z-30">
             <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-              <span className="text-xs text-zinc-800 dark:text-slate-200 font-bold">
-                purelyİstanbul Master Operations Deck • Proje Yöneticisi Paneli
+              <span className="w-2.5 h-2.5 rounded-full bg-[#639922] animate-pulse" />
+              <span className="text-xs text-[#2C2C1A] font-medium">
+                purelyİstanbul Yönetim Masası
               </span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono font-bold border border-amber-300">
-                43 Partner Otel Aktif
-              </span>
+              <Link
+                href="/usepurelydashboard"
+                className="text-[11px] px-3 py-1 rounded-full bg-[#EAF3DE] text-[#3B6D11] font-medium border border-[#C0DD97] hover:bg-[#3B6D11] hover:text-white transition"
+              >
+                ✨ Yeni Sade Dashboard&apos;a Geç (/usepurelydashboard) →
+              </Link>
             </div>
 
             <div className="flex items-center gap-3">
               <Link
                 href="/hotel-portal"
-                className="px-3.5 py-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-950 border border-amber-300 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
+                className="px-3.5 py-1.5 bg-[#EDE8DE] hover:bg-[#EAF3DE] text-[#2C2C1A] border border-[#C8C4B0] rounded-full text-xs font-medium flex items-center gap-1.5 transition"
               >
-                <Hotel className="w-3.5 h-3.5 text-amber-700" />
-                <span>Otel Yönetim Paneline Geç ↗</span>
+                <Hotel className="w-3.5 h-3.5 text-[#3B6D11]" />
+                <span>Otel Yönetim Paneli ↗</span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-3 py-1.5 bg-white dark:bg-slate-900 dark:border-slate-800 hover:bg-red-50 text-zinc-600 dark:text-slate-400 hover:text-red-700 border border-zinc-200 hover:border-red-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-3.5 py-1.5 bg-[#FFFCFA] hover:bg-red-50 text-[#6B6B55] hover:text-red-700 border border-[#C8C4B0] hover:border-red-200 rounded-full text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Çıkış</span>

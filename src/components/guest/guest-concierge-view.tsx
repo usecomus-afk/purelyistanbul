@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
+import { FirestoreService } from '@/lib/firestore-service';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
 import { HotelHeader } from '@/components/guest/hotel-header';
@@ -39,8 +40,10 @@ interface GuestConciergeViewProps {
 }
 
 export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConciergeViewProps = {}) {
-  const hotels = XeniosStore.getHotels();
-  const allExperiences = XeniosStore.getExperiences() as Experience[];
+  const [hotels, setHotels] = useState<Hotel[]>(() => XeniosStore.getHotels());
+  const [allExperiences, setAllExperiences] = useState<Experience[]>(() =>
+    XeniosStore.getExperiences().filter((e) => e.status !== 'suspended' && e.publishToMobile !== false)
+  );
 
   const [activeHotelId, setActiveHotelId] = useState(() => initialHotelId || XeniosStore.getActiveHotelId());
   const [activeRoomNumber, setActiveRoomNumber] = useState(() => initialRoomId || XeniosStore.getActiveRoomId());
@@ -89,6 +92,17 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     XeniosStore.setLanguage(detected);
 
     setRequests(XeniosStore.getRequests());
+
+    const handleCatalogUpdate = () => {
+      setHotels(XeniosStore.getHotels());
+      setAllExperiences(
+        XeniosStore.getExperiences().filter((e) => e.status !== 'suspended' && e.publishToMobile !== false)
+      );
+    };
+    handleCatalogUpdate();
+    const unsubCatalog = FirestoreService.subscribeToCatalogSync();
+    window.addEventListener('xenios_experiences_updated', handleCatalogUpdate);
+    window.addEventListener('xenios_hotels_updated', handleCatalogUpdate);
 
     const handleReqUpdate = () => {
       setRequests(XeniosStore.getRequests());
@@ -148,6 +162,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     }
 
     return () => {
+      unsubCatalog();
+      window.removeEventListener('xenios_experiences_updated', handleCatalogUpdate);
+      window.removeEventListener('xenios_hotels_updated', handleCatalogUpdate);
       window.removeEventListener('xenios_requests_updated', handleReqUpdate);
       window.removeEventListener('xenios_session_updated', handleSessionUpdate);
       window.removeEventListener('storage', handleSessionUpdate);
@@ -269,7 +286,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
       </div>
 
-      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none' : 'h-full pb-32 overflow-y-auto'}`}>
+      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none touch-none' : 'h-full pb-[80px] overflow-y-auto'}`}>
         {/* Hotel Header & Credentials */}
       <HotelHeader
         hotel={currentHotel}
@@ -283,7 +300,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[64px] overflow-hidden' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[96px] overflow-hidden touch-none' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
@@ -435,10 +452,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                     }}
-                    className="p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-gradient-to-b from-[#fdfdfd] to-[#e6e8eb] rounded-[24px] border border-white/60 shadow-[0_8px_15px_rgba(0,0,0,0.12),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)]"
+                    className="p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#e8eaed] rounded-[24px] border-2 border-white/80 shadow-[0_10px_20px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] active:translate-y-0 active:shadow-[0_5px_10px_rgba(0,0,0,0.15),inset_2px_2px_4px_rgba(255,255,255,1),inset_-2px_-2px_4px_rgba(0,0,0,0.08)]"
                   >
                     {/* 3D Icon Box matching in-room services */}
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
                       <img
                         src={cat.iconPath}
                         alt={cat.key}
@@ -651,3 +668,4 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     </div>
   );
 }
+

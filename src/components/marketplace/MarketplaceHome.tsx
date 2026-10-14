@@ -11,7 +11,8 @@ import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { CategoryShelf } from "@/components/marketplace/CategoryShelf";
 import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
-import { SEED_LISTINGS } from "@/lib/marketplace/seed-listings";
+import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
+import { FirestoreService } from "@/lib/firestore-service";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
 import { toast } from "sonner";
 
@@ -46,6 +47,7 @@ function matchesDurationBucket(minutes: number | undefined, bucket: DurationBuck
 export function MarketplaceHome() {
   const { user } = useAuth();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
+  const [catalogListings, setCatalogListings] = useState<MarketplaceListing[]>(SEED_LISTINGS);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(MARKETPLACE_CATEGORIES[0]?.key ?? "");
   const [search, setSearch] = useState("");
@@ -79,6 +81,16 @@ export function MarketplaceHome() {
   }
 
   useEffect(() => {
+    const refreshCatalog = () => {
+      setCatalogListings(getLiveCatalogListings());
+    };
+    refreshCatalog();
+
+    const unsubCatalog = FirestoreService.subscribeToCatalogSync();
+    window.addEventListener("xenios_experiences_updated", refreshCatalog);
+    window.addEventListener("xenios_properties_updated", refreshCatalog);
+    window.addEventListener("xenios_hotels_updated", refreshCatalog);
+
     const unsub = watchApprovedListings((data) => {
       setListings(data);
       setLoading(false);
@@ -88,14 +100,32 @@ export function MarketplaceHome() {
     const timeout = setTimeout(() => setLoading(false), 5000);
     return () => {
       unsub();
+      unsubCatalog();
+      window.removeEventListener("xenios_experiences_updated", refreshCatalog);
+      window.removeEventListener("xenios_properties_updated", refreshCatalog);
+      window.removeEventListener("xenios_hotels_updated", refreshCatalog);
       clearTimeout(timeout);
     };
   }, []);
 
-  // Henüz onaylı gerçek host ilanı yokken vitrin boş görünmesin diye markanın
-  // kendi örnek ilanları gösterilir; gerçek bir ilan onaylandığı an bunlar
-  // otomatik olarak devre dışı kalır.
-  const source = !loading && listings.length === 0 ? SEED_LISTINGS : listings;
+  // Admin panelinden eklenen/düzenlenen katalog ilanları ile onaylı host ilanları
+  // tek bir vitrinde birleştirilir (aynı id varsa güncel kayıt baz alınır).
+  const source = useMemo(() => {
+    const map = new Map<string, MarketplaceListing>();
+    listings.forEach((item) => {
+      if (item.status === "approved") {
+        map.set(item.id, item);
+      }
+    });
+    catalogListings.forEach((item) => {
+      if (item.status === "approved") {
+        map.set(item.id, item);
+      } else {
+        map.delete(item.id);
+      }
+    });
+    return Array.from(map.values());
+  }, [listings, catalogListings]);
   const withCover = useMemo(() => source.filter((l) => !!l.coverImageUrl), [source]);
 
   const searchResults = useMemo(() => {

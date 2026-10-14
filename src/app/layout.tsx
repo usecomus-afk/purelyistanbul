@@ -40,8 +40,12 @@ export default function RootLayout({
             __html: `
               (function(){
                 try {
+                  var path = window.location.pathname || '';
+                  var adminLightPaths = ['/usepurelydashboard', '/pilot', '/admin', '/dashboard', '/hotel-portal', '/qr-generator'];
+                  var isAdminLightPath = adminLightPaths.some(function(p){ return path.startsWith(p); });
+
                   var theme = localStorage.getItem('theme_preference') || 'system';
-                  if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  if (!isAdminLightPath && (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches))) {
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');
@@ -49,10 +53,7 @@ export default function RootLayout({
                   
                   var played = sessionStorage.getItem('purely_splash_played') ||
                                sessionStorage.getItem('xenios_splash_played');
-                  var path = window.location.pathname;
-                  var skipPaths = ['/hotel-portal','/dashboard','/qr-generator'];
-                  var isSkipPath = skipPaths.some(function(p){ return path.startsWith(p); });
-                  if (!played && !isSkipPath && !document.documentElement.classList.contains('dark')) {
+                  if (!played && !isAdminLightPath && !document.documentElement.classList.contains('dark')) {
                     document.documentElement.style.backgroundColor = '#F3F2EE';
                   }
                 } catch(e){}

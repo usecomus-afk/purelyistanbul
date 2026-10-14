@@ -105,9 +105,11 @@ service cloud.firestore {
     match /marketplace_listings/{listingId} {
       allow read: if resource.data.status == 'approved' ||
         (isAuthenticated() && (resource.data.hostId == request.auth.uid || isAdmin()));
-      allow create: if isAuthenticated() &&
+      allow create: if isAdmin() || (
+        isAuthenticated() &&
         request.resource.data.hostId == request.auth.uid &&
-        request.resource.data.status in ['draft', 'pending_review'];
+        request.resource.data.status in ['draft', 'pending_review']
+      );
       allow update: if isAdmin() || (
         isAuthenticated() && resource.data.hostId == request.auth.uid &&
         request.resource.data.hostId == request.auth.uid &&
@@ -179,6 +181,74 @@ service cloud.firestore {
         request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 320 &&
         request.resource.data.message is string &&
         request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 4000;
+    }
+
+    // ------------------------------------------------------------------
+    // Core Catalog & Operations Collections (firestore-service.ts & Admin Sync)
+    // ------------------------------------------------------------------
+
+    // 16. Oteller (Hotels) — herkes okuyabilir, admin ve otel yöneticisi/pilot yazabilir.
+    match /hotels/{hotelId} {
+      allow read: if true;
+      allow write: if isAdmin() || isPilotOrHotelManager();
+    }
+
+    // 17. Deneyimler ve Restoranlar (Experiences) — herkes okuyabilir, sadece admin yazabilir.
+    match /experiences/{experienceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 18. Gayrimenkul ve Yatırım Portföyü (Properties) — herkes okuyabilir, sadece admin yazabilir.
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 19. Tedarikçiler (Suppliers) — yetkili personel okuyabilir, sadece admin yazabilir.
+    match /suppliers/{supplierId} {
+      allow read: if isAdmin() || isPilotOrHotelManager();
+      allow write: if isAdmin();
+    }
+
+    // 20. Oda ve Konsiyerj Talepleri (Service Requests) — misafir oluşturabilir ve takip edebilir,
+    // durum güncelleme ve silme işlemleri admin veya otel/pilot masası tarafından yapılır.
+    match /service_requests/{requestId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin() || isPilotOrHotelManager();
+    }
+
+    // 21. Yatırım Talepleri (Investment Leads) — ziyaretçiler talep bırakabilir,
+    // sadece admin ve yetkili personel görüntüleyip yönetebilir.
+    match /investment_leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin() || isPilotOrHotelManager();
+    }
+
+    // 22. Şikayet ve Çözüm Masası (Complaints) — herkes okuyup oluşturabilir,
+    // yanıt ve durum güncellemeleri admin veya yetkili personel tarafından yapılır.
+    match /complaints/{complaintId} {
+      allow read, create: if true;
+      allow update, delete: if isAdmin() || isPilotOrHotelManager();
+    }
+
+    // 23. Admin Profilleri (Admins) — sadece admin okuyup yazabilir.
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+
+    // 24. Bildirim Kuyruğu Logları (Notifications Log) — sistem/istemci log bırakabilir,
+    // sadece admin ve yetkili personel okuyup yönetebilir.
+    match /notifications_log/{logId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin() || isPilotOrHotelManager();
+    }
+
+    // 25. AI Konsiyerj Logları (AI Logs) — istemci log bırakabilir, sadece admin okuyup yönetebilir.
+    match /ai_logs/{logId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
   }
 }

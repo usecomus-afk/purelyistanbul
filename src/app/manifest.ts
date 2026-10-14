@@ -1,9 +1,9 @@
-import { MetadataRoute } from 'next';
+﻿import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'purelyİstanbul - Digital Guest Directory',
-    short_name: 'purelyİstanbul',
+    short_name: 'purely',
     description: 'purelyİstanbul In-Room Hotel Services & Curated Experiences Concierge',
     start_url: '/',
     display: 'standalone',

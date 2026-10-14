@@ -89,91 +89,88 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
 
   if (isAuth === null) {
     return (
-      <div className="min-h-screen bg-[#0b0c0f] flex items-center justify-center p-4">
-        <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-[#F6F1E8] flex items-center justify-center p-4">
+        <div className="w-8 h-8 rounded-full border-2 border-[#3B6D11] border-t-transparent animate-spin" />
       </div>
     );
   }
 
   if (!isAuth) {
     return (
-      <div className="min-h-screen bg-[#0b0c0f] flex items-center justify-center p-4 text-white relative overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="bg-[#12141a] max-w-md w-full rounded-3xl p-7 sm:p-8 shadow-2xl border border-amber-500/30 space-y-6 animate-in zoom-in-95 relative z-10">
+      <div className="min-h-screen bg-[#F6F1E8] flex items-center justify-center p-4 text-[#2C2C1A] relative overflow-y-auto">
+        <div className="bg-[#FFFCFA] max-w-md w-full rounded-2xl p-7 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-[#C8C4B0] space-y-6 relative z-10">
           <div className="text-center space-y-3">
             <div className="inline-block">
-              <BrandMark size={48} showText={true} theme="dark" />
+              <BrandMark size={44} showText={true} theme="light" />
             </div>
-            
+
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold uppercase tracking-wider font-mono">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>Pilot Proje Yöneticisi PWA</span>
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#EAF3DE] text-[#3B6D11] border border-[#C0DD97] text-[11px] font-medium uppercase tracking-widest">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#3B6D11]" />
+                <span>Yönetici Girişi</span>
               </div>
-              <h1 className="text-lg font-bold font-serif text-white mt-2">
-                Master Operations Deck
+              <h1 className="text-2xl font-light font-serif text-[#2C2C1A] mt-3">
+                Purelyİstanbul <em className="italic text-[#3B6D11]">Yönetim</em> Masası
               </h1>
-              <p className="text-xs text-zinc-400 max-w-xs mx-auto mt-1">
-                İstanbul genelinde deneyimler, partner oteller, yatırım ilanları, finansal ve yapay zekâ kontrol masası.
+              <p className="text-xs text-[#6B6B55] max-w-xs mx-auto mt-1.5 leading-relaxed">
+                purelyistanbul.com Web, iOS App ve PWA yönetim paneline erişmek için yönetici bilgilerinizle giriş yapın.
               </p>
             </div>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             {error && (
-              <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/50 text-red-300 font-medium">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 font-medium">
                 {error}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label className="font-bold text-zinc-300 block">Pilot E-Posta / Kullanıcı Adı</label>
+              <label className="font-medium text-[#6B6B55] uppercase tracking-wider text-[11px] block">
+                Yönetici E-Posta / Kullanıcı Adı
+              </label>
               <input
                 type="text"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="anilaslan@usecomus.com"
-                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
+                className="w-full px-3.5 py-3 bg-[#FFFCFA] border border-[#C8C4B0] rounded-xl font-normal text-[#2C2C1A] placeholder:text-[#6B6B55]/60 focus:outline-none focus:border-[#3B6D11] text-sm"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-zinc-300 block">Güvenlik Şifresi</label>
+              <label className="font-medium text-[#6B6B55] uppercase tracking-wider text-[11px] block">
+                Güvenlik Şifresi
+              </label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full p-3 bg-[#171a22] border border-amber-500/30 rounded-xl font-medium text-white placeholder:text-zinc-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-xs"
+                className="w-full px-3.5 py-3 bg-[#FFFCFA] border border-[#C8C4B0] rounded-xl font-normal text-[#2C2C1A] placeholder:text-[#6B6B55]/60 focus:outline-none focus:border-[#3B6D11] text-sm"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition cursor-pointer"
+              className="w-full py-3.5 bg-[#3B6D11] hover:bg-[#27500A] text-white font-medium rounded-full text-sm flex items-center justify-center gap-2 transition cursor-pointer"
             >
-              <span>Pilot Masasına Güvenli Giriş Yap</span>
+              <span>Yönetim Paneline Giriş Yap</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          {/* Dedicated PWA Install Banner */}
-          <div className="pt-4 border-t border-zinc-800/80">
+          <div className="pt-4 border-t border-[#C8C4B0]/60">
             <button
               type="button"
               onClick={handleInstallPwa}
-              className="w-full py-2.5 px-3 bg-[#1a1d26] hover:bg-[#222733] text-amber-300 border border-amber-500/30 rounded-xl text-[11px] font-bold flex items-center justify-center gap-2 transition cursor-pointer"
+              className="w-full py-2.5 px-4 bg-transparent hover:border-[#3B6D11] hover:text-[#3B6D11] text-[#6B6B55] border border-[#C8C4B0] rounded-full text-xs font-normal flex items-center justify-center gap-2 transition cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-amber-400" />
-              <span>Pilot PWA Uygulamasını Cihaza Yükle</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Yönetici PWA Uygulamasını Cihaza Yükle</span>
             </button>
-            <p className="text-[10px] text-zinc-500 dark:text-slate-400 text-center mt-2">
-              Sadece yetkili purelyİstanbul Pilot proje yöneticileri içindir.
-            </p>
           </div>
         </div>
       </div>

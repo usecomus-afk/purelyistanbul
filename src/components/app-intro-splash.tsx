@@ -26,6 +26,9 @@ function shouldSkipSplash(pathname: string | null | undefined): boolean {
     sessionStorage.getItem("xenios_splash_played");
   if (
     alreadyPlayed ||
+    pathname?.startsWith("/usepurelydashboard") ||
+    pathname?.startsWith("/pilot") ||
+    pathname?.startsWith("/admin") ||
     pathname?.startsWith("/hotel-portal") ||
     pathname?.startsWith("/dashboard") ||
     pathname?.startsWith("/qr-generator")

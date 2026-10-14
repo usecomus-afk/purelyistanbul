@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { XeniosStore } from '@/lib/store';
+import { SupplierAdminPanel } from '@/components/cockpit/supplier-admin-panel';
 import { Booking, Complaint, PropertyListing, Experience, ServiceRequest, Hotel } from '@/lib/types';
 import Link from 'next/link';
 import {
@@ -503,66 +504,18 @@ export default function MasterAdminDashboard() {
         </div>
       )}
 
-      {/* TAB 2: İLAN SAHİPLERİ & İLETİŞİM REHBERİ */}
+      {/* TAB 2: ANLAŞMALI İŞLETMELER, TEDARİKÇİLER & MÜLK YÖNETİCİLERİ */}
       {activeTab === 'providers' && (
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-100 pb-3">
-            <div>
-              <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">İlan Sahipleri & Sağlayıcılar İletişim Rehberi</h3>
-              <p className="text-xs text-zinc-500 dark:text-slate-400">Tüm tur sağlayıcıları, restoran yöneticileri ve gayrimenkul danışmanlarının doğrudan e-posta ve telefonları</p>
-            </div>
-
-            <div className="relative">
-              <input
-                type="text"
-                value={providerSearch}
-                onChange={(e) => setProviderSearch(e.target.value)}
-                placeholder="Sağlayıcı veya ilan ara..."
-                className="text-xs bg-amber-50/40 border border-amber-200 rounded-xl px-3 py-2 text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 w-64"
-              />
-            </div>
+          <div className="border-b border-amber-100 pb-3">
+            <h3 className="text-base font-bold text-zinc-900 dark:text-slate-100">
+              Purelyİstanbul Anlaşmalı İşletmeler, Tedarikçiler & Mülk Yöneticileri
+            </h3>
+            <p className="text-xs text-zinc-500 dark:text-slate-400">
+              Yeni işletme kaydı, sözleşme/komisyon oranı yönetimi, iletişim rehberi ve bağlı ilan takibi
+            </p>
           </div>
-
-          <div className="space-y-2.5">
-            {providersList.map((p) => (
-              <div
-                key={p.id}
-                className="p-4 rounded-2xl bg-amber-50/30 border border-amber-100 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs hover:border-amber-300 transition"
-              >
-                <div className="space-y-1 min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                      p.type === 'property' ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
-                    }`}>
-                      {p.category}
-                    </span>
-                    <strong className="text-sm text-zinc-900 dark:text-slate-100 font-bold truncate">{p.name}</strong>
-                  </div>
-                  <p className="text-[11px] text-zinc-600 dark:text-slate-400 truncate">
-                    İlan: <strong>{p.listingTitle}</strong>
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 text-xs shrink-0">
-                  <a
-                    href={`mailto:${p.email}`}
-                    className="flex items-center gap-1.5 text-zinc-700 hover:text-amber-800 font-medium bg-white dark:bg-slate-900 dark:border-slate-800 px-3 py-1.5 rounded-xl border border-amber-200 transition"
-                  >
-                    <Mail className="w-3.5 h-3.5 text-amber-600" />
-                    <span>{p.email}</span>
-                  </a>
-
-                  <a
-                    href={`tel:${p.phone.replace(/\s/g, '')}`}
-                    className="flex items-center gap-1.5 text-zinc-900 dark:text-slate-100 hover:text-amber-800 font-mono font-bold bg-white dark:bg-slate-900 dark:border-slate-800 px-3 py-1.5 rounded-xl border border-amber-200 transition"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{p.phone}</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+          <SupplierAdminPanel />
         </div>
       )}
 

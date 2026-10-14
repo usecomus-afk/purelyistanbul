@@ -1,4 +1,4 @@
-import { Hotel, Room, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo } from './types';
+import { Hotel, Room, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
 import { UserPreferences } from '@/types/comusAi';
 import rawHotels from '@/data/hotels.json';
 import rawExperiences from '@/data/experiences.json';
@@ -19,6 +19,7 @@ const STORAGE_KEYS = {
   MODULE_SETTINGS: 'xenios_module_settings',
   IN_ROOM_SERVICES: 'xenios_in_room_services_v2',
   PROPERTIES: 'xenios_custom_properties',
+  SUPPLIERS: 'xenios_custom_suppliers',
   INVESTMENT_LEADS: 'xenios_investment_leads',
   HIDE_DEMO_DATA: 'xenios_hide_demo_data',
   ROOM_SERVICE_MENU: 'xenios_room_service_menu',
@@ -26,6 +27,82 @@ const STORAGE_KEYS = {
   AI_TOKEN_USAGE: 'xenios_ai_token_usage',
   AI_CHAT_MESSAGES: 'xenios_ai_chat_messages'
 };
+
+function inferSupplierType(category: string): SupplierType {
+  const c = (category || '').toLowerCase();
+  if (c.includes('yat') || c.includes('boğaz')) return 'yacht_charter';
+  if (c.includes('restoran') || c.includes('gastro') || c.includes('gurme')) return 'restaurant';
+  if (c.includes('hamam') || c.includes('spa')) return 'hammam_spa';
+  if (c.includes('estetik') || c.includes('klinik') || c.includes('sağlık')) return 'clinic_wellness';
+  if (c.includes('transfer') || c.includes('vip')) return 'transfer_vip';
+  return 'tour_operator';
+}
+
+function buildDefaultSuppliers(): SupplierPartner[] {
+  const map = new Map<string, SupplierPartner>();
+  const now = '2026-01-15T10:00:00.000Z';
+
+  (rawExperiences as Experience[]).forEach((exp, idx) => {
+    const name = (exp.provider || exp.title || 'Purelyİstanbul Partner').trim();
+    const key = name.toLowerCase();
+    if (!map.has(key)) {
+      map.set(key, {
+        id: `sup-exp-${idx + 1}`,
+        name,
+        legalName: `${name} Turizm & Hizmet A.Ş.`,
+        type: inferSupplierType(exp.category),
+        category: exp.category,
+        contactPerson: 'Operasyon & Rezervasyon Yetkilisi',
+        phone: exp.phone || '+90 212 514 00 00',
+        email: exp.providerEmail || `operasyon@${name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'partner'}.com`,
+        website: exp.website || 'https://',
+        district: exp.location || 'Sultanahmet, Fatih',
+        address: exp.location || 'İstanbul',
+        taxId: `3400${100000 + idx}`,
+        tursabNo: inferSupplierType(exp.category) === 'tour_operator' ? `A-${12400 + idx}` : undefined,
+        commissionRate: exp.commissionRate ?? 15,
+        contractStatus: exp.status === 'suspended' ? 'suspended' : 'active',
+        contractStartDate: '2026-01-01',
+        contractNotes: exp.agentNote || 'Purelyİstanbul doğrudan anlaşmalı tedarikçi.',
+        publishToWeb: true,
+        publishToMobile: true,
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+  });
+
+  (rawProperties as PropertyListing[]).forEach((prop, idx) => {
+    const name = (prop.agency || prop.developer || 'TEKCE Overseas / Istanbul Homes').trim();
+    const key = `prop-${name.toLowerCase()}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        id: `sup-prop-${idx + 1}`,
+        name,
+        legalName: `${name} Gayrimenkul Yatırım A.Ş.`,
+        type: 'property_management',
+        category: 'Mülk & Gayrimenkul Yönetimi',
+        contactPerson: 'Portföy & Yatırım Direktörü',
+        phone: prop.contactPhone || '+90 850 811 07 00',
+        email: 'invest@purelyistanbul.com',
+        website: prop.contactWebsite || 'https://',
+        district: prop.district || 'Beşiktaş / Sarıyer',
+        address: prop.district || 'İstanbul',
+        taxId: `3499${200000 + idx}`,
+        commissionRate: prop.commissionRate ?? 4,
+        contractStatus: 'active',
+        contractStartDate: '2026-01-01',
+        contractNotes: 'Anlaşmalı mülk yönetimi ve yatırım danışmanlığı partneri.',
+        publishToWeb: true,
+        publishToMobile: true,
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+  });
+
+  return Array.from(map.values());
+}
 
 const DEFAULT_MODULE_SETTING: ModuleAdminSettings = { enabled: true, hidden: false };
 
@@ -76,7 +153,10 @@ export const XeniosStore = {
   getHotels(): Hotel[] {
     try {
       const stored = safeGet('xenios_custom_hotels');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
     return hotelsData;
   },
@@ -90,18 +170,37 @@ export const XeniosStore = {
 
   addHotel(hotel: Hotel) {
     const list = this.getHotels();
-    list.push(hotel);
+    list.unshift(hotel);
     this.saveHotels(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.upsertHotel(hotel).catch(() => {});
+    }).catch(() => {});
   },
 
   updateHotel(id: string, updated: Partial<Hotel>) {
-    const list = this.getHotels().map(h => h.id === id ? { ...h, ...updated } : h);
+    let target: Hotel | undefined;
+    const list = this.getHotels().map(h => {
+      if (h.id === id) {
+        target = { ...h, ...updated };
+        return target;
+      }
+      return h;
+    });
     this.saveHotels(list);
+    if (target) {
+      const synced = target;
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertHotel(synced).catch(() => {});
+      }).catch(() => {});
+    }
   },
 
   deleteHotel(id: string) {
     const list = this.getHotels().filter(h => h.id !== id);
     this.saveHotels(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.deleteHotelRemote(id).catch(() => {});
+    }).catch(() => {});
   },
 
   getHotelById(id: string): Hotel | undefined {
@@ -141,6 +240,9 @@ export const XeniosStore = {
       if (!h.rooms.some(r => r.number === room.number)) {
         h.rooms.push(room);
         this.saveHotels(hotels);
+        import('./firestore-service').then(({ FirestoreService }) => {
+          FirestoreService.upsertHotel(h).catch(() => {});
+        }).catch(() => {});
       }
     }
   },
@@ -151,6 +253,9 @@ export const XeniosStore = {
     if (h && h.rooms) {
       h.rooms = h.rooms.map(r => r.number === roomNumber ? { ...r, ...updated } : r);
       this.saveHotels(hotels);
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertHotel(h).catch(() => {});
+      }).catch(() => {});
     }
   },
 
@@ -160,6 +265,9 @@ export const XeniosStore = {
     if (h && h.rooms) {
       h.rooms = h.rooms.filter(r => r.number !== roomNumber);
       this.saveHotels(hotels);
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertHotel(h).catch(() => {});
+      }).catch(() => {});
     }
   },
 
@@ -189,7 +297,10 @@ export const XeniosStore = {
   getExperiences(): Experience[] {
     try {
       const stored = safeGet('xenios_custom_experiences');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
     return rawExperiences as Experience[];
   },
@@ -202,46 +313,127 @@ export const XeniosStore = {
   },
 
   updateExperience(id: string, updated: Partial<Experience>) {
-    const list = this.getExperiences().map(e => e.id === id ? { ...e, ...updated } : e);
-    this.saveExperiences(list);
-  },
-
-  updateExperienceQuota(id: string, availableSlots: number, capacity?: number) {
+    let target: Experience | undefined;
     const list = this.getExperiences().map(e => {
       if (e.id === id) {
-        return {
-          ...e,
-          availableSlots: Math.max(0, availableSlots),
-          capacity: capacity !== undefined ? capacity : (e.capacity || 20)
-        };
+        target = { ...e, ...updated };
+        return target;
       }
       return e;
     });
     this.saveExperiences(list);
+    if (target) {
+      const synced = target;
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertExperience(synced).catch(() => {});
+      }).catch(() => {});
+    }
+  },
+
+  updateExperienceQuota(id: string, availableSlots: number, capacity?: number) {
+    let target: Experience | undefined;
+    const list = this.getExperiences().map(e => {
+      if (e.id === id) {
+        target = {
+          ...e,
+          availableSlots: Math.max(0, availableSlots),
+          capacity: capacity !== undefined ? capacity : (e.capacity || 20)
+        };
+        return target;
+      }
+      return e;
+    });
+    this.saveExperiences(list);
+    if (target) {
+      const synced = target;
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertExperience(synced).catch(() => {});
+      }).catch(() => {});
+    }
   },
 
   addExperience(exp: Experience) {
     const list = this.getExperiences();
     list.unshift(exp);
     this.saveExperiences(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.upsertExperience(exp).catch(() => {});
+    }).catch(() => {});
   },
 
   deleteExperience(id: string) {
     const list = this.getExperiences().filter(e => e.id !== id);
     this.saveExperiences(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.deleteExperienceRemote(id).catch(() => {});
+    }).catch(() => {});
   },
 
   getExperienceById(id: string) {
     return this.getExperiences().find((e: any) => e.id === id);
   },
 
-  // Invest & Live in Istanbul — Emlak Vitrini
+  // Agreed Suppliers & Partner Businesses (Anlaşmalı İşletmeler & Tedarikçiler)
+  getSuppliers(): SupplierPartner[] {
+    try {
+      const stored = safeGet(STORAGE_KEYS.SUPPLIERS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return buildDefaultSuppliers();
+  },
+
+  saveSuppliers(suppliers: SupplierPartner[]) {
+    safeSet(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_suppliers_updated'));
+    }
+  },
+
+  addSupplier(supplier: SupplierPartner) {
+    const list = this.getSuppliers();
+    list.unshift(supplier);
+    this.saveSuppliers(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.upsertSupplier(supplier).catch(() => {});
+    }).catch(() => {});
+  },
+
+  updateSupplier(id: string, updated: Partial<SupplierPartner>) {
+    let target: SupplierPartner | undefined;
+    const list = this.getSuppliers().map(s => {
+      if (s.id === id) {
+        target = { ...s, ...updated, updatedAt: new Date().toISOString() };
+        return target;
+      }
+      return s;
+    });
+    this.saveSuppliers(list);
+    if (target) {
+      const synced = target;
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertSupplier(synced).catch(() => {});
+      }).catch(() => {});
+    }
+  },
+
+  deleteSupplier(id: string) {
+    const list = this.getSuppliers().filter(s => s.id !== id);
+    this.saveSuppliers(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.deleteSupplierRemote(id).catch(() => {});
+    }).catch(() => {});
+  },
+
+  // Invest & Live in Istanbul — Emlak & Mülk Yönetimi Vitrini
   getPropertyListings(): PropertyListing[] {
     try {
       const stored = safeGet(STORAGE_KEYS.PROPERTIES);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id?.startsWith('invest-')) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
@@ -260,16 +452,35 @@ export const XeniosStore = {
     const list = this.getPropertyListings();
     list.unshift(property);
     this.savePropertyListings(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.upsertProperty(property).catch(() => {});
+    }).catch(() => {});
   },
 
   updatePropertyListing(id: string, updated: Partial<PropertyListing>) {
-    const list = this.getPropertyListings().map(p => p.id === id ? { ...p, ...updated } : p);
+    let target: PropertyListing | undefined;
+    const list = this.getPropertyListings().map(p => {
+      if (p.id === id) {
+        target = { ...p, ...updated };
+        return target;
+      }
+      return p;
+    });
     this.savePropertyListings(list);
+    if (target) {
+      const synced = target;
+      import('./firestore-service').then(({ FirestoreService }) => {
+        FirestoreService.upsertProperty(synced).catch(() => {});
+      }).catch(() => {});
+    }
   },
 
   deletePropertyListing(id: string) {
     const list = this.getPropertyListings().filter(p => p.id !== id);
     this.savePropertyListings(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.deletePropertyRemote(id).catch(() => {});
+    }).catch(() => {});
   },
 
   trackPropertyView(property: PropertyListing) {

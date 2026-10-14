@@ -140,10 +140,16 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     }
   };
 
-  return (\n    <div className="h-full flex flex-col flex-1">\n      {/* Background moved to GuestConciergeView to apply globally */}\n      \n      {/* Grid of In-Room Services */}\n      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0 flex-1 grid-rows-4 h-full items-stretch">
+  return (
+    <div className="h-full flex flex-col flex-1 min-h-0">
+      {/* Background moved to GuestConciergeView to apply globally */}
+      
+      {/* Grid of In-Room Services */}
+      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-2 sm:p-4 -mx-2 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
         {services.filter(item => {
           const settings = moduleSettings[item.key];
-          if (item.hidden || (settings && settings.hidden)) return false;\n          return settings ? settings.enabled : item.enabled !== false;
+          if (item.hidden || (settings && settings.hidden)) return false;
+          return settings ? settings.enabled : item.enabled !== false;
         }).map((item) => {
           const isEnabled = true;
           const serviceTitle = getLocalizedTitle(item);
@@ -161,7 +167,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                   setCustomOption(item.options[0]);
                 }
               }}
-              className={`p-3 flex flex-col items-center text-center justify-start gap-2 h-full min-h-[110px] sm:min-h-[130px] group relative bg-gradient-to-b from-[#fdfdfd] to-[#e6e8eb] rounded-[24px] border border-white/60 shadow-[0_8px_15px_rgba(0,0,0,0.12),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.9),inset_0_-4px_6px_rgba(0,0,0,0.1)] ${
+              className={`p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-0 group relative bg-gradient-to-br from-[#ffffff] to-[#e8eaed] rounded-[24px] border-2 border-white/80 shadow-[0_10px_20px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] active:translate-y-0 active:shadow-[0_5px_10px_rgba(0,0,0,0.15),inset_2px_2px_4px_rgba(255,255,255,1),inset_-2px_-2px_4px_rgba(0,0,0,0.08)] ${
                 isEnabled
                   ? 'cursor-pointer'
                   : 'cursor-not-allowed opacity-50 grayscale'
@@ -351,3 +357,4 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     </div>
   );
 }
+
