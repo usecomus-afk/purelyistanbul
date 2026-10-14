@@ -1,8 +1,7 @@
 "use client";
 
 import { Language } from '@/lib/types';
-import { XeniosStore } from '@/lib/store';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const langs: { code: Language; flag: string; label: string }[] = [
   { code: 'tr', flag: '🇹🇷', label: 'TR' },
@@ -21,13 +20,13 @@ export function LanguageSelector({ currentLang, onSelect, theme = 'light' }: { c
       <button 
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium tracking-wider transition cursor-pointer ${
+        className={`flex items-center gap-1.5 px-1.5 py-1 rounded-full text-[11.5px] font-bold tracking-wide transition cursor-pointer ${
           theme === 'dark'
             ? 'text-white hover:bg-white/10'
-            : 'text-[#282522] hover:bg-[#F3EDE2]/80'
+            : 'text-[#5C4938] hover:bg-[#EFE7DA]/80'
         }`}
       >
-        <span className="text-[11px] leading-none">{langs.find(l => l.code === currentLang)?.flag || '🇹🇷'}</span>
+        <span className="text-[12px] leading-none">{langs.find(l => l.code === currentLang)?.flag || '🇬🇧'}</span>
         <span>{currentLang.toUpperCase()}</span>
       </button>
 

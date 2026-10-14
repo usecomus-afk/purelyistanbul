@@ -96,80 +96,85 @@ export function HotelHeader({
   };
 
   return (
-    <header className="pt-7 pb-2.5 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
-      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-2.5">
+    <header className="pt-6 pb-2 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
+      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
         
-        {/* Centered Logo/Name — Thin European Luxury Serif */}
+        {/* Centered Logo/Name — Two-line European Luxury Serif */}
         {activeTab === 'services' ? (
-          <div className="flex flex-col items-center gap-1 mt-1">
-            <h1 className="font-luxury-serif text-[15px] sm:text-[18px] tracking-[0.26em] font-light text-[#1E1C19] uppercase text-center leading-snug select-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-              {hotel.name}
-            </h1>
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#B89146]/55 to-transparent" />
-          </div>
+          <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5">
+            {hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
+              <>
+                {hotel.name.slice(0, -9)}
+                <br />
+                ISTANBUL
+              </>
+            ) : (
+              hotel.name
+            )}
+          </h1>
         ) : (
-          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-luxury-serif font-semibold text-2xl sm:text-3xl text-[#1E1C19] leading-none select-none mt-1 mb-0.5">
+          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-luxury-serif font-semibold text-2xl sm:text-3xl text-[#141414] leading-none select-none mt-1 mb-0.5">
             purely<span className="text-[#9E7B42] font-semibold">istanbul</span>
           </a>
         )}
 
-        {/* Clean Top Bar with Delicate Line Icons */}
-        <div className="flex items-center gap-1 sm:gap-1.5 px-2 py-1 rounded-full bg-white/82 backdrop-blur-xl border border-[#DFD5C5]/90 shadow-[0_8px_24px_-4px_rgba(32,26,18,0.08),inset_0_1px_1.5px_rgba(255,255,255,0.98)] relative z-50">
+        {/* Clean Neomorphic Top Bar Pill */}
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
           
-          {/* 1. Notification Icon */}
+          {/* 1. Notification Bell Icon */}
           <button
             type="button"
             onClick={() => setShowPwaModal(true)}
-            className="w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-[#F3EDE2]/80 text-[#2C2825]"
+            className="w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/60 text-[#8C6D46]"
             title="PWA Bildirim Ayarları"
           >
-            <BellRing className="w-3.5 h-3.5 text-[#2C2825] stroke-[1.35]" />
+            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[#8C6D46]" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             {pwaPerm === 'granted' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-[#9E7B42] absolute top-1.5 right-1.5 ring-1 ring-white" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8C6D46] absolute top-1.5 right-1.5 ring-1 ring-white" />
             )}
           </button>
 
-          <span className="w-px h-3.5 bg-[#D5C7B2]/70" />
+          <span className="w-px h-4 bg-[#C4B7A3]" />
 
           {/* 2. Language Selector */}
           <LanguageSelector currentLang={lang} onSelect={onLanguageChange} theme="light" />
 
-          <span className="w-px h-3.5 bg-[#D5C7B2]/70" />
+          <span className="w-px h-4 bg-[#C4B7A3]" />
 
           {/* 3. Building Icon */}
           <button
             type="button"
             onClick={() => setShowHotelModal(true)}
-            className="w-7 h-7 rounded-full hover:bg-[#F3EDE2]/80 flex items-center justify-center transition cursor-pointer"
+            className="w-7 h-7 rounded-full hover:bg-white/60 flex items-center justify-center transition cursor-pointer"
             title={hotel.name}
           >
-            <Building2 className="w-3.5 h-3.5 text-[#2C2825] stroke-[1.35]" />
+            <Building2 className="w-4 h-4 text-[#8C6D46] stroke-[1.6]" />
           </button>
 
-          <span className="w-px h-3.5 bg-[#D5C7B2]/70" />
+          <span className="w-px h-4 bg-[#C4B7A3]" />
 
           {/* 4. Wi-Fi & Room Number ("Oda TEST") */}
           <button
             type="button"
             onClick={() => setShowHotelModal(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FAF7F2]/90 hover:bg-[#F3EDE2] border border-[#DCCEB8]/70 rounded-full text-[#23201D] text-[11px] font-medium tracking-wide transition cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
+            className="flex items-center gap-1.5 px-3 py-1 bg-[#FAF8F4]/90 hover:bg-white border border-[#CFC4B2] rounded-full text-[#141414] text-[11.5px] font-bold transition cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
           >
-            <Wifi className="w-3.5 h-3.5 text-[#9E7B42] stroke-[1.4]" />
-            <ChevronDown className="w-3 h-3 text-[#6E675F] stroke-[1.4]" />
+            <Wifi className="w-3.5 h-3.5 text-[#8C6D46] stroke-[1.6]" />
+            <ChevronDown className="w-3 h-3 text-[#8C6D46] stroke-[1.6]" />
             <span>Oda {roomNumber}</span>
           </button>
 
-          {/* 5. Panel Button */}
+          {/* 5. Panel Button (No vertical divider before Panel, matching reference image) */}
           {roomNumber.toUpperCase() === 'TEST' && (
-            <>
-              <span className="w-px h-3.5 bg-[#D5C7B2]/70" />
-              <a
-                href="/hotel-portal"
-                className="px-3 py-1 rounded-full bg-gradient-to-b from-[#FAF6EE] to-[#EFE5D4] hover:from-[#F5EFE2] hover:to-[#E8DAC2] border border-[#C8AD78]/55 text-[#6E501E] font-medium flex items-center gap-1 text-[10.5px] tracking-wider cursor-pointer shadow-[0_2px_6px_rgba(140,108,50,0.08),inset_0_1px_1px_rgba(255,255,255,0.95)] transition"
-              >
-                Panel
-              </a>
-            </>
+            <a
+              href="/hotel-portal"
+              className="px-3.5 py-1 rounded-full bg-white hover:bg-[#FAF7F2] text-[#5C3D1E] font-bold flex items-center text-[11px] cursor-pointer shadow-[0_2px_6px_rgba(32,24,16,0.06)] transition"
+            >
+              Panel
+            </a>
           )}
         </div>
       </div>

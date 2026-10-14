@@ -274,18 +274,17 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   return (
     <div className={`w-full text-[#221F1C] ${activeTab === 'services' ? 'fixed inset-0 h-[100dvh] w-screen overflow-hidden overscroll-none' : 'min-h-[100dvh]'} relative`}>
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#F5EFE6]">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
         <Image 
           src="/images/light-mosque-bg.jpg" 
           alt="Historic Istanbul Mosque Silhouette"
           fill
           priority
-          quality={85}
+          quality={90}
           unoptimized
-          className="object-cover object-center scale-[1.04] blur-[4px] sepia-[0.46] saturate-[0.65] brightness-[1.02] contrast-[0.92]"
+          className="object-cover object-center scale-[1.01] blur-[2px] sepia-[0.18] saturate-[0.88] brightness-[1.01] contrast-[0.98]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/78 via-[#F3ECE0]/64 to-[#EBE1D1]/80 backdrop-blur-[3px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,rgba(255,253,249,0.52)_0%,rgba(197,160,89,0.08)_60%,rgba(166,134,82,0.16)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
       </div>
 
       <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none touch-none' : 'h-full pb-[80px] overflow-y-auto'}`}>

@@ -198,19 +198,27 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                     setCustomOption(item.options[0]);
                   }
                 }}
-                className={`luxury-service-card px-3 py-2.5 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative ${
+                className={`luxury-service-card px-3 py-2 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative ${
                   isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50 grayscale'
                 }`}
               >
                 {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
                 <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
-                  {renderServiceVisual(item, "w-14 h-14 sm:w-16 sm:h-16")}
+                  {renderServiceVisual(item, "w-16 h-16 sm:w-20 sm:h-20")}
                 </div>
 
-                {/* Clean Modern Sans-Serif Card Label */}
-                <div className="w-full mt-0.5 px-1">
-                  <span className="font-luxury-sans text-[12.5px] sm:text-[14px] font-medium tracking-[0.01em] text-[#221F1C] leading-snug block">
-                    {serviceTitle}
+                {/* Clean Bold Modern Sans-Serif Card Label */}
+                <div className="w-full px-1">
+                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block">
+                    {serviceTitle === 'Late Check-out Request' ? (
+                      <>
+                        Late Check-out
+                        <br />
+                        Request
+                      </>
+                    ) : (
+                      serviceTitle
+                    )}
                   </span>
                 </div>
               </button>
