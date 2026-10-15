@@ -100,23 +100,17 @@ export function HotelHeader({
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
         
         {/* Centered Logo/Name — Two-line European Luxury Serif */}
-        {activeTab === 'services' ? (
-          <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5">
-            {hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
-              <>
-                {hotel.name.slice(0, -9)}
-                <br />
-                ISTANBUL
-              </>
-            ) : (
-              hotel.name
-            )}
-          </h1>
-        ) : (
-          <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className="flex items-baseline justify-center tracking-tight font-luxury-serif font-semibold text-2xl sm:text-3xl text-[#141414] leading-none select-none mt-1 mb-0.5">
-            purely<span className="text-[#9E7B42] font-semibold">istanbul</span>
-          </a>
-        )}
+        <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5">
+          {hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
+            <>
+              {hotel.name.slice(0, -9)}
+              <br />
+              ISTANBUL
+            </>
+          ) : (
+            hotel.name
+          )}
+        </h1>
 
         {/* Clean Neomorphic Top Bar Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">

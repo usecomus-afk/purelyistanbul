@@ -8,6 +8,7 @@ import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
 import { HotelHeader } from '@/components/guest/hotel-header';
 import { InRoomServices } from '@/components/guest/in-room-services';
+import { LuxuryCategoryIcon } from '@/components/guest/luxury-category-icon';
 import { ExperienceCard } from '@/components/guest/experience-card';
 import { ExperienceDetailModal } from '@/components/guest/experience-detail-modal';
 import { GuestTabBar } from '@/components/guest/guest-tab-bar';
@@ -301,7 +302,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[96px] overflow-hidden touch-none' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[96px] overflow-hidden touch-none' : activeTab === 'categories' ? 'pt-1 pb-[28px]' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
@@ -400,82 +401,44 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           </div>
         )}
 
-        {/* TAB 3: Category Catalog View */}
+        {/* TAB 3: Category Catalog View — Identical Luxury Visual Style to Hotel Services Page */}
         {activeTab === 'categories' && (
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
-                <span>{t.categoriesTitle}</span>
-              </h2>
-              <p className="text-xs text-slate-600 max-w-xl font-medium">
-                {t.categoriesSubtitle}
-              </p>
-            </div>
+          <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1.5 sm:p-4 -mx-1 sm:mx-0">
+            {categoryShowcase.map((cat, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  if ((cat as any).tab === 'invest') {
+                    setActiveTab('invest');
+                    if (typeof window !== 'undefined') {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                    return;
+                  }
+                  const target = (cat as any).targetCategory || cat.rawKey;
+                  const matched = categories.find(c => c === target || c.toLowerCase().includes(target.toLowerCase())) || target;
+                  setSelectedCategory(matched);
+                  setActiveTab('experiences');
+                  if (typeof window !== 'undefined') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="luxury-service-card px-3 py-3 flex flex-col items-center text-center justify-center gap-1.5 min-h-[126px] sm:min-h-[144px] group relative cursor-pointer"
+              >
+                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
+                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
+                  <LuxuryCategoryIcon categoryKey={cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
+                </div>
 
-            {/* 2-Column Grid matching In-Room Services modular style */}
-            <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 pt-1">
-              {categoryShowcase.map((cat, idx) => {
-                const isScaledUp = [
-                  'invest.png',
-                  'onerdigimiz-restoranlar.png',
-                  'bogaz-yatturlari.png',
-                  'tarih-muzeler.png',
-                  'gastronomi-gurme.png',
-                  'fotograf-kostum.png',
-                  'macera-doga.png',
-                  'turk-hamami-spa.png',
-                  'alisveris-carsilar.png',
-                  'sanat-semazen.png',
-                  'kulturel-miras.png',
-                  'ozel-vip-transfer.png',
-                  'aesthetic-beauty.png'
-                ].some(iconName => cat.iconPath.endsWith(iconName));
-
-                const isAesthetic = cat.iconPath.endsWith('aesthetic-beauty.png');
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      if ((cat as any).tab === 'invest') {
-                        setActiveTab('invest');
-                        if (typeof window !== 'undefined') {
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                        return;
-                      }
-                      const target = (cat as any).targetCategory || cat.rawKey;
-                      const matched = categories.find(c => c === target || c.toLowerCase().includes(target.toLowerCase())) || target;
-                      setSelectedCategory(matched);
-                      setActiveTab('experiences');
-                      if (typeof window !== 'undefined') {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }
-                    }}
-                    className="p-3 flex flex-col items-center text-center justify-center gap-2 h-full min-h-[155px] sm:min-h-[170px] group relative cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#e8eaed] rounded-[24px] border-2 border-white/80 shadow-[0_10px_20px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(0,0,0,0.15),inset_4px_4px_8px_rgba(255,255,255,1),inset_-4px_-4px_8px_rgba(0,0,0,0.08)] active:translate-y-0 active:shadow-[0_5px_10px_rgba(0,0,0,0.15),inset_2px_2px_4px_rgba(255,255,255,1),inset_-2px_-2px_4px_rgba(0,0,0,0.08)]"
-                  >
-                    {/* 3D Icon Box matching in-room services */}
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform relative">
-                      <img
-                        src={cat.iconPath}
-                        alt={cat.key}
-                        className={`w-full h-full object-contain drop-shadow-sm ${
-                          cat.iconPath.includes('kulturel-miras') ? 'scale-[1.25]' : ''
-                        }`}
-                      />
-                    </div>
-
-                    {/* Title & Description */}
-                    <div className="w-full mt-1">
-                      <span className="text-[13px] sm:text-[15px] font-[800] text-[#1e293b] leading-tight block">
-                        {cat.key}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                {/* Clean Bold Modern Sans-Serif Card Label */}
+                <div className="w-full px-1">
+                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block">
+                    {cat.key}
+                  </span>
+                </div>
+              </button>
+            ))}
           </div>
         )}
 
