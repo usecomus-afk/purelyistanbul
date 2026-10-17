@@ -10,10 +10,9 @@
  * firestore.rules'daki isAdmin() kontrolünü ekstra bir girişe gerek kalmadan
  * geçer.
  *
- * Kimlik bilgileri iki şekilde sağlanabilir (öncelik sırasıyla):
+ * Kimlik bilgileri öncelik sırasıyla sağlanabilir:
  *  1) FIREBASE_ADMIN_PROJECT_ID / FIREBASE_ADMIN_CLIENT_EMAIL / FIREBASE_ADMIN_PRIVATE_KEY
- *     (Railway gibi ortamlarda düz env var olarak servis hesabı — .env.example'a bakın)
- *  2) GOOGLE_APPLICATION_CREDENTIALS (bir servis hesabı JSON dosyasının yolu)
+ *  2) Google Cloud Run / Firebase App Hosting yerleşik servis hesabı (ADC: K_SERVICE / FIREBASE_CONFIG / GOOGLE_APPLICATION_CREDENTIALS)
  * Hiçbiri yoksa bu modül null döner; admin girişi çalışmaya devam eder ama
  * custom token üretilmez (cockpit erişimi bozulmaz, sadece marketplace admin
  * eylemleri için ayrı bir Firebase girişi gerekir — bkz. admin-login route).
@@ -31,15 +30,22 @@ function initAdminApp(): App | null {
     return app;
   }
 
-  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+  const projectId =
+    process.env.FIREBASE_ADMIN_PROJECT_ID ||
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
+    'xenios-prod-c55cd';
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
   try {
     if (projectId && clientEmail && privateKey) {
       app = initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
-    } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      app = initializeApp();
+    } else if (
+      process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      process.env.K_SERVICE ||
+      process.env.FIREBASE_CONFIG
+    ) {
+      app = initializeApp({ projectId });
     } else if (projectId && process.env.FIREBASE_AUTH_EMULATOR_HOST) {
       // Yerel Firebase Auth emülatörüne karşı test için — gerçek servis hesabı gerekmez.
       // FIREBASE_AUTH_EMULATOR_HOST prod ortamında asla set edilmemelidir.
