@@ -276,10 +276,17 @@ export default function UsePurelyDashboardPage() {
   // Module toggles (persisted in localStorage for instant UI feedback)
   const [disabledModules, setDisabledModules] = useState<string[]>([]);
 
-  // 1. Force Light Mode & Unlock Body Scroll on Mount
+  // 1. Force Light Mode & Unlock Document Scroll on Mount
   useEffect(() => {
     document.documentElement.classList.remove("dark");
-    document.body.style.overflow = "auto";
+    document.documentElement.style.overflowY = "auto";
+    document.documentElement.style.overflowX = "hidden";
+    document.documentElement.style.overscrollBehavior = "auto";
+    document.documentElement.style.height = "auto";
+    document.body.style.overflow = "visible";
+    document.body.style.overflowX = "hidden";
+    document.body.style.overflowY = "visible";
+    document.body.style.overscrollBehavior = "auto";
     document.body.style.position = "static";
     document.body.style.height = "auto";
 
@@ -441,6 +448,9 @@ export default function UsePurelyDashboardPage() {
     setActiveTab(tab);
     setMobileNavOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    document
+      .getElementById("dashboard-main-scroll")
+      ?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Listing Handlers
@@ -1143,10 +1153,10 @@ export default function UsePurelyDashboardPage() {
   return (
     <div
       data-comus-dashboard="true"
-      className="min-h-screen flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
+      className="min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
     >
       {/* Desktop Sticky Left Sidebar (Independently Scrollable) */}
-      <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
+      <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-screen md:overflow-y-auto">
         {sidebarContent}
       </aside>
 
@@ -1164,7 +1174,10 @@ export default function UsePurelyDashboardPage() {
       )}
 
       {/* Main Scrollable Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div
+        id="dashboard-main-scroll"
+        className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto"
+      >
         {/* Top Sticky Header */}
         <header className="sticky top-0 z-30 bg-[#F6F1E8]/90 backdrop-blur-md border-b border-[#C8C4B0] px-4 md:px-10 py-3.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
