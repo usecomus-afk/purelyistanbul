@@ -175,7 +175,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   return (
     <div className="h-full flex flex-col flex-1 min-h-0">
       {/* 2x4 Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
-      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1.5 sm:p-4 -mx-1 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
+      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-4 px-1.5 pt-0.5 pb-2.5 sm:p-4 -mx-1 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
         {services
           .filter((item) => {
             const settings = moduleSettings[item.key];
