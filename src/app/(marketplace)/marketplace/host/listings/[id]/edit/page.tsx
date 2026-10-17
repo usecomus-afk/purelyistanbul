@@ -167,7 +167,7 @@ function EditListingInner() {
                   <button
                     onClick={() => setCoverImage(listing!.id, img.url)}
                     title="Kapak fotoğrafı yap"
-                    className="p-1.5 rounded-full bg-white/90 hover:bg-white dark:bg-slate-900 dark:border-slate-800"
+                    className="p-1.5 rounded-full bg-white/90 hover:bg-white"
                   >
                     <Star className="w-3.5 h-3.5 text-terracotta" />
                   </button>
@@ -175,7 +175,7 @@ function EditListingInner() {
                 <button
                   onClick={() => removeListingImage(listing!, img)}
                   title="Sil"
-                  className="p-1.5 rounded-full bg-white/90 hover:bg-white dark:bg-slate-900 dark:border-slate-800"
+                  className="p-1.5 rounded-full bg-white/90 hover:bg-white"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-red-600" />
                 </button>
@@ -214,7 +214,7 @@ function EditListingInner() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             placeholder="Örn: Boğaz manzaralı, tarihi Sultanahmet dairesi"
           />
         </div>
@@ -225,7 +225,7 @@ function EditListingInner() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={5}
-            className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
           />
         </div>
 
@@ -236,7 +236,7 @@ function EditListingInner() {
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
               placeholder="Örn: Sultanahmet, Fatih"
-              className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
           </div>
           <div>
@@ -249,7 +249,7 @@ function EditListingInner() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               >
                 <option value="">Kategori seçin</option>
                 {categoryConfigs
@@ -274,7 +274,7 @@ function EditListingInner() {
               min={0}
               value={basePrice}
               onChange={(e) => setBasePrice(Number(e.target.value))}
-              className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
           </div>
           <div>
@@ -282,7 +282,7 @@ function EditListingInner() {
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             >
               {CURRENCIES.map((c) => (
                 <option key={c} value={c}>
@@ -298,7 +298,7 @@ function EditListingInner() {
               min={1}
               value={capacity}
               onChange={(e) => setCapacity(Number(e.target.value))}
-              className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
           </div>
         </div>
@@ -329,7 +329,7 @@ function EditListingInner() {
                 }
               }}
               placeholder="Örn: Wi-Fi, Klima, Deniz manzarası — Enter'a basın"
-              className="flex-1 rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              className="flex-1 rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
             <button
               onClick={addAmenity}

@@ -132,68 +132,68 @@ export const translations = {
     "listingsCount": "İlan",
     "inspectListings": "İlanları İncele",
     "categoriesList": {      "invest": {
-        "title": "İstanbul'da Yatırım",
+        "title": "Invest in Istanbul",
         "desc": "Vatandaşlığa uygun lüks rezidanslar, tarihi yalılar & Airbnb mülkleri"
       },
       "dayTrips": {
-        "title": "Günübirlik Şehir Dışı Turlar",
+        "title": "Day Trips Out of City",
         "desc": "Bursa, Sapanca & Adalar turları"
       },
       "nightlife": {
-        "title": "Gece Hayatı & Bar Turları",
+        "title": "Nightlife & Pub Crawls",
         "desc": "Pub Crawl, Boğaz'da parti tekneleri & club geçişleri"
       },
       "family": {
-        "title": "Aile, Çocuk & Tematik Parklar",
+        "title": "Family, Kids & Theme Parks",
         "desc": "Akvaryum, Vialand & Rahmi Koç Müzesi"
       },
 
       "restaurants": {
-        "title": "Önerdiğimiz Restoranlar",
+        "title": "Recommended Restaurants",
         "desc": "Michelin yıldızlı şefler, tarihi lezzetler & Boğaz manzaralı teraslar"
       },
       "bosphorus": {
-        "title": "Boğaz Turları & Yat",
+        "title": "Bosphorus & Yacht Cruises",
         "desc": "Akşam yemekli turlar, özel yat kiralama & Adalar rotaları"
       },
       "history": {
-        "title": "Tarih & Müzeler",
+        "title": "History & Museums",
         "desc": "Ayasofya, Topkapı Sarayı, Yerebatan & Arkeoloji Müzeleri"
       },
       "gastronomy": {
-        "title": "Gastronomi & Gurme",
+        "title": "Gastronomy & Food Tours",
         "desc": "Sokak lezzetleri, Türk kahvesi atölyesi & Boğaz meyhaneleri"
       },
       "photo": {
-        "title": "Fotoğraf & Kostüm",
+        "title": "Photography & Costumes",
         "desc": "Uçuşan elbise çekimi & otantik Osmanlı kaftan çekimleri"
       },
       "adventure": {
-        "title": "Macera & Doğa",
+        "title": "Adventure & Nature",
         "desc": "Orman içi zipline, ip parkuru & kano safarileri"
       },
       "hamam": {
-        "title": "Türk Hamamı & Spa",
+        "title": "Turkish Bath & Spa",
         "desc": "Tarihi Kılıç Ali Paşa, Hürrem Sultan & VIP köpük masajı"
       },
       "shopping": {
-        "title": "Alışveriş & Çarşılar",
+        "title": "Shopping & Bazaars",
         "desc": "Kapalıçarşı, Mısır Çarşısı & el dokuma halı rehberi"
       },
       "art": {
-        "title": "Sanat & Semazen",
+        "title": "Art & Whirling Dervishes",
         "desc": "Mevlevi Sema ayini, ebru & mozaik lamba yapımı"
       },
       "culture": {
-        "title": "Kültürel Miras",
+        "title": "Cultural Heritage",
         "desc": "Fener-Balat, Musevi Sinagogları & Süryani mirası"
       },
       "transfer": {
-        "title": "Özel VIP Transfer",
+        "title": "Private VIP Transfer",
         "desc": "Havalimanı karşılama, şoförlü lüks Mercedes Vito"
       },
       "aesthetic": {
-        "title": "Medikal Estetik & Güzellik",
+        "title": "Aesthetic & Beauty Clinics",
         "desc": "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı"
       },
     },

@@ -55,20 +55,14 @@ export default function RootLayout({
             __html: `
               (function(){
                 try {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.style.colorScheme = 'light';
                   var path = window.location.pathname || '';
                   var adminLightPaths = ['/usepurelydashboard', '/pilot', '/admin', '/dashboard', '/hotel-portal', '/qr-generator'];
                   var isAdminLightPath = adminLightPaths.some(function(p){ return path.startsWith(p); });
-
-                  var theme = localStorage.getItem('theme_preference') || 'system';
-                  if (!isAdminLightPath && (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches))) {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                  
                   var played = sessionStorage.getItem('purely_splash_played') ||
                                sessionStorage.getItem('xenios_splash_played');
-                  if (!played && !isAdminLightPath && !document.documentElement.classList.contains('dark')) {
+                  if (!played && !isAdminLightPath) {
                     document.documentElement.style.backgroundColor = '#F3F2EE';
                   }
                 } catch(e){}

@@ -11,17 +11,17 @@ export function getCategoryCode(categoryStr: string): string {
   if (lower.includes('konaklama') || lower.includes('otel') || lower.includes('stay')) return "konaklama";
   // "yatırım" içinde "yat" geçtiği için yatırım kontrolü Boğaz/Yat kontrolünden ÖNCE yapılmalı
   if (lower.includes('yatırım') || lower.includes('invest') || lower.includes('mülk') || lower.includes('gayrimenkul')) return "cat-12";
-  if (lower.includes('tarih') || lower.includes('müze')) return "cat-1";
-  if (lower.includes('gastro') || lower.includes('gurme')) return "cat-2";
-  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım')) return "cat-3";
-  if (lower.includes('alışveriş') || lower.includes('çarşı')) return "cat-4";
-  if (lower.includes('boğaz') || lower.includes('yat')) return "cat-5";
-  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('inanç')) return "cat-6";
-  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('geleneksel')) return "cat-7";
-  if (lower.includes('fotoğraf') || lower.includes('kostüm')) return "cat-8";
+  if (lower.includes('tarih') || lower.includes('müze') || lower.includes('history') || lower.includes('museum')) return "cat-1";
+  if (lower.includes('gastro') || lower.includes('gurme') || lower.includes('food')) return "cat-2";
+  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım') || lower.includes('art') || lower.includes('dervish')) return "cat-3";
+  if (lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('shopping') || lower.includes('bazaar')) return "cat-4";
+  if (lower.includes('boğaz') || lower.includes('yat') || lower.includes('bosphorus') || lower.includes('yacht') || lower.includes('cruise')) return "cat-5";
+  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('inanç') || lower.includes('cultur') || lower.includes('heritage')) return "cat-6";
+  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('geleneksel') || lower.includes('bath')) return "cat-7";
+  if (lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('photo') || lower.includes('costume')) return "cat-8";
   if (lower.includes('transfer') || lower.includes('vip')) return "cat-9";
-  if (lower.includes('restoran')) return "cat-10";
-  if (lower.includes('estetik') || lower.includes('güzellik')) return "cat-11";
+  if (lower.includes('restoran') || lower.includes('restaurant')) return "cat-10";
+  if (lower.includes('estetik') || lower.includes('güzellik') || lower.includes('aesthetic') || lower.includes('beauty') || lower.includes('clinic')) return "cat-11";
   return "cat-5"; // fallback
 }
 

@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore';
 import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner } from './types';
 import { XeniosStore } from './store';
-import type { CategoryConfig } from './marketplace/categories';
+import { normalizeCategoryLabel, type CategoryConfig } from './marketplace/categories';
 import {
   experienceToMarketplaceListing,
   hotelToMarketplaceListing,
@@ -179,8 +179,11 @@ export const FirestoreService = {
   async upsertCategory(cfg: CategoryConfig): Promise<void> {
     if (!db || !isFirebaseConfigured) return;
     try {
+      const normalizedLabel = normalizeCategoryLabel(cfg.label, cfg.label);
       await setDoc(doc(db, COLLECTIONS.SITE_CATEGORIES, cfg.key), stripUndefined({
         ...cfg,
+        label: normalizedLabel,
+        labelEn: normalizeCategoryLabel(cfg.labelEn, normalizedLabel),
         updatedAt: cfg.updatedAt || new Date().toISOString()
       }));
     } catch (e) {

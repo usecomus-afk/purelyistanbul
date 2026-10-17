@@ -2,16 +2,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light;
   /* Xenios Guest Elegant Sand & Warm Gold Theme */
   --xenios-sand-bg: #f8f6f0;
-  --xenios-sand-card: rgba(255, 255, 255, 0.88);
-  --xenios-sand-border: #e8e2d4;
+  --xenios-sand-card: rgba(255, 255, 255, 0.94);
+  --xenios-sand-border: #e2dbcc;
   --xenios-terracotta: #c45b36;
   --xenios-gold: #c9a227;
   --xenios-gold-soft: #dfbe58;
-  --xenios-ink: #1e2129;
-  --xenios-ink-muted: #6e727e;
-  --xenios-tile-bg: rgba(255, 255, 255, 0.92);
+  --xenios-ink: #16181f;
+  --xenios-ink-muted: #4a4e5a;
+  --xenios-tile-bg: rgba(255, 255, 255, 0.94);
   --xenios-tile-border: rgba(201, 162, 39, 0.25);
   --xenios-tile-shadow: 0 4px 18px rgba(30, 33, 41, 0.04);
 
@@ -59,6 +60,7 @@ body {
   min-height: 100dvh;
   max-width: 100vw;
   overflow-x: hidden;
+  color-scheme: light;
   color: var(--xenios-ink);
   background-color: #F6F1E7;
   font-family: var(--font-luxury-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -116,8 +118,8 @@ body {
 }
 
 html.dark, html.dark body {
-  background-color: #12161A;
-  color: #f8fafc;
+  background-color: #F6F1E7;
+  color: var(--xenios-ink);
 }
 
 /* 3D Soft Claymorphism Buttons & Cards */
