@@ -85,7 +85,15 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
     e.preventDefault();
     if (!tourProperty) return;
     if (!tourName.trim() || !tourContact.trim()) {
-      toast.error('Lütfen bilgilerinizi giriniz.');
+      const errMap: Record<Language, string> = {
+        tr: 'Lütfen bilgilerinizi giriniz.',
+        en: 'Please enter your contact details.',
+        ar: 'يرجى إدخال بيانات الاتصال الخاصة بك.',
+        ru: 'Пожалуйста, введите ваши контактные данные.',
+        de: 'Bitte geben Sie Ihre Kontaktdaten ein.',
+        fr: 'Veuillez saisir vos coordonnées.'
+      };
+      toast.error(errMap[lang] || errMap.en);
       return;
     }
     setIsSubmitting(true);

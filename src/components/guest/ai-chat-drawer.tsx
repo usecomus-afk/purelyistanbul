@@ -108,12 +108,382 @@ const ACTION_METADATA: Record<
   },
 };
 
-export function parseMessageAndActions(rawText: string): {
+const COMUS_I18N: Record<Language, {
+  title: string;
+  statusBadge: string;
+  suiteLabel: string;
+  resetBtn: string;
+  historyCleared: string;
+  offlineMsg: string;
+  connInterrupted: string;
+  verifiedActionBadge: string;
+  typingText: string;
+  inputPlaceholder: string;
+  justNow: string;
+  chips: string[];
+  welcomeText: string;
+  actions: Record<string, { label: string; sublabel: string }>;
+}> = {
+  tr: {
+    title: 'ComusAI — İstanbul Rehberiniz',
+    statusBadge: 'Çevrimiçi • Yerel Rehber',
+    suiteLabel: 'Oda',
+    resetBtn: 'Sıfırla',
+    historyCleared: 'Sohbet geçmişi temizlendi.',
+    offlineMsg: 'ComusAI ile sohbet etmek için lütfen oda Wi-Fi ağına bağlanın.',
+    connInterrupted: 'Bağlantı kesildi. Lütfen oda Wi-Fi bağlantınızı kontrol edin.',
+    verifiedActionBadge: 'Doğrulanmış Hızlı İşlem',
+    typingText: 'ComusAI yerel rehberinizi hazırlıyor...',
+    inputPlaceholder: 'ComusAI\'ya dilediğiniz dilde sorun (taksi, yemek, tarih, oda desteği)...',
+    justNow: 'Az önce',
+    chips: [
+      '🚕 Sultanahmet\'e taksi ücreti ne kadar tutar?',
+      '🍳 Otelime yakın otantik kahvaltı mekanları',
+      '🕌 Sultanahmet Camii ziyaret saatleri ve kuralları',
+      '🚢 Kalabalıksız en iyi Boğaz gün batımı turu',
+      '🔧 Oda / Wi-Fi sorunu bildir'
+    ],
+    welcomeText: `İstanbul'a hoş geldiniz! Ben **ComusAI**, yerel İstanbul Rehberiniz ve Dijital Konsiyerjinizim — sizi burada *Tanrı Misafiri* olarak ağırlamak için yanınızdayım.
+
+• **Güvenli & Adil Rehberlik:** Fatih, Beyoğlu (Galata/Karaköy/Cihangir), Beşiktaş ve Kadıköy (Moda) genelinde adil taksi ücretleri, ulaşım ve turist tuzaklarından korunma hakkında bana her şeyi sorabilirsiniz.
+• **Doğrulanmış Deneyimler:** Özel Boğaz gün batımı turlarını, hızlı geçişli tarihi yürüyüşleri ve otantik 16. yüzyıl Türk hamamlarını keşfedin.
+• **Oda İçi Konfor:** Saniyeler içinde kapıya sıcak kahvaltı kutusu sipariş edin, ekspres çamaşırhane planlayın veya oda/Wi-Fi desteği talep edin.
+
+[action:explore_category, id:bosphorus]`,
+    actions: {
+      'service:breakfast': {
+        label: '🥐 Kapıya Kahvaltı Kutusu Sipariş Et',
+        sublabel: 'Odanızın kapısına taze geleneksel Türk kahvaltısı teslimatı'
+      },
+      'service:support': {
+        label: '🛎️ Acil Teknik Destek Kaydı Aç',
+        sublabel: 'Yönetime anında iletilen oda & Wi-Fi destek formu'
+      },
+      'service:laundry': {
+        label: '👔 Ekspres Çamaşır & Ütü Hizmeti İste',
+        sublabel: 'Kapıdan teslim alım ve 24 saatte ütülü teslimat'
+      },
+      'id:transfer': {
+        label: '🚐 Sabit Fiyatlı VIP Şoförlü Transfer',
+        sublabel: 'Lisanslı Mercedes-Benz Vito havalimanı ve şehir içi filosu'
+      },
+      'id:bosphorus': {
+        label: '⛵ Doğrulanmış Boğaz Turlarını Keşfet',
+        sublabel: 'Komisyonsuz özel yatlar ve butik gün batımı turları'
+      },
+      'id:history': {
+        label: '🏛️ Tarihi Rotalar & Hızlı Geçiş Turları',
+        sublabel: 'Ayasofya, Sultanahmet ve Sarnıçlar için lisanslı tarihçi rehberler'
+      },
+      'id:hammam': {
+        label: '🫧 Geleneksel Türk Hamamı & Kese Ritüeli',
+        sublabel: 'Seçkin 16. yüzyıl Osmanlı hamamları ve özel bakım paketleri'
+      },
+      'id:culinary': {
+        label: '🍢 Gastronomi & Sokak Lezzetleri Rotaları',
+        sublabel: 'Kadıköy, Karaköy ve Fatih\'in en sevilen yerel lezzet durakları'
+      },
+      'id:photography': {
+        label: '📸 Teras Fotoğraf Çekimi & Kostüm',
+        sublabel: 'Boğaz ve Galata teraslarında gün batımı özel fotoğraf çekimi'
+      }
+    }
+  },
+  en: {
+    title: 'ComusAI — Your Istanbul Guardian',
+    statusBadge: 'Online • Local Guide',
+    suiteLabel: 'Suite',
+    resetBtn: 'Reset',
+    historyCleared: 'Conversation history cleared.',
+    offlineMsg: 'Please connect to your suite Wi-Fi to chat with ComusAI.',
+    connInterrupted: 'Connection interrupted. Please check your suite Wi-Fi.',
+    verifiedActionBadge: 'Verified Instant Action',
+    typingText: 'ComusAI is crafting your local guide...',
+    inputPlaceholder: 'Ask ComusAI in any language (fares, food, history, room help)...',
+    justNow: 'Just now',
+    chips: [...QUICK_SUGGESTION_CHIPS],
+    welcomeText: INITIAL_WELCOME_MESSAGE.text,
+    actions: {
+      'service:breakfast': ACTION_METADATA['service:breakfast'],
+      'service:support': ACTION_METADATA['service:support'],
+      'service:laundry': ACTION_METADATA['service:laundry'],
+      'id:transfer': ACTION_METADATA['id:transfer'],
+      'id:bosphorus': ACTION_METADATA['id:bosphorus'],
+      'id:history': ACTION_METADATA['id:history'],
+      'id:hammam': ACTION_METADATA['id:hammam'],
+      'id:culinary': ACTION_METADATA['id:culinary'],
+      'id:photography': ACTION_METADATA['id:photography']
+    }
+  },
+  ar: {
+    title: 'ComusAI — دليلك الشخصي في إسطنبول',
+    statusBadge: 'متصل • مرشد محلي',
+    suiteLabel: 'غرفة',
+    resetBtn: 'إعادة تعيين',
+    historyCleared: 'تم مسح سجل المحادثة.',
+    offlineMsg: 'يرجى الاتصال بشبكة Wi-Fi الخاصة بالغرفة للدردشة مع ComusAI.',
+    connInterrupted: 'انقطع الاتصال. يرجى التحقق من شبكة Wi-Fi.',
+    verifiedActionBadge: 'إجراء فوري موثق',
+    typingText: 'يقوم ComusAI بإعداد دليلك المحلي...',
+    inputPlaceholder: 'اسأل ComusAI بأي لغة (أسعار التاكسي، المطاعم، التاريخ، خدمة الغرف)...',
+    justNow: 'الآن',
+    chips: [
+      '🚕 كم تبلغ تكلفة التاكسي إلى السلطان أحمد؟',
+      '🍳 إفطار تركي أصيل بالقرب من فندقي',
+      '🕌 أوقات الزيارة وقواعد اللباس في المسجد الأزرق',
+      '🚢 أفضل جولة بحرية عند الغروب بدون ازدحام',
+      '🔧 الإبلاغ عن مشكلة في الغرفة / Wi-Fi'
+    ],
+    welcomeText: `أهلاً بك في إسطنبول! أنا **ComusAI**، مرشدك المحلي والكونسيرج الشخصي في إسطنبول — هنا لخدمتك كضيف عزيز ومُكرّم (*Tanrı Misafiri*).
+
+• **إرشاد آمن وموثوق:** اسألني عن أسعار التاكسي العادلة، المواصلات العامة، أو كيفية تجنب فخاخ السياح في الفاتح، بيوغلو (غالاتا/كاراكوي/جيهانغير)، بشكطاش، وكاديكوي.
+• **تجارب معتمدة:** اكتشف جولات البوسفور الخاصة عند الغروب، الجولات التاريخية السريعة، والحمامات التركية العثمانية الأصيلة.
+• **عناية فورية بالغرفة:** اطلب صندوق إفطار إلى باب غرفتك، أو خدمة غسيل الملابس السريعة، أو أبلغ عن مشكلة في الغرفة/Wi-Fi خلال ثوانٍ.
+
+[action:explore_category, id:bosphorus]`,
+    actions: {
+      'service:breakfast': {
+        label: '🥐 اطلب صندوق الإفطار إلى باب الغرفة',
+        sublabel: 'تشكيلة إفطار تركي طازج توصل مباشرة إلى جناحك'
+      },
+      'service:support': {
+        label: '🛎️ فتح طلب صيانة عاجل',
+        sublabel: 'نموذج دعم فوري للغرفة والـ Wi-Fi يرسل للإدارة'
+      },
+      'service:laundry': {
+        label: '👔 طلب غسيل وكي الملابس السريع',
+        sublabel: 'استلام من باب الغرفة وتسليم خلال 24 ساعة'
+      },
+      'id:transfer': {
+        label: '🚐 حجز سيارة VIP مع سائق بسعر ثابت',
+        sublabel: 'أسطول مرسيدس فيتو مرخص للمطار والمدينة'
+      },
+      'id:bosphorus': {
+        label: '⛵ استكشف جولات البوسفور المعتمدة',
+        sublabel: 'يخوت خاصة وجولات غروب الشمس بدون عمولات إضافية'
+      },
+      'id:history': {
+        label: '🏛️ استكشف المسارات التاريخية والدخول السريع',
+        sublabel: 'مرشدون مؤرخون مرخصون لآيا صوفيا والمسجد الأزرق'
+      },
+      'id:hammam': {
+        label: '🫧 استكشف طقوس الحمام التركي التقليدي',
+        sublabel: 'حمامات عثمانية تاريخية معتمدة وجلسات تقشير خاصة'
+      },
+      'id:culinary': {
+        label: '🍢 استكشف جولات التذوق وطعام الشارع',
+        sublabel: 'أشهر النكهات المحلية في كاديكوي وكاراكوي والفاتح'
+      },
+      'id:photography': {
+        label: '📸 جلسات التصوير على الأسطح والأزياء',
+        sublabel: 'جلسات تصوير خاصة عند الغروب بإطلالة البوسفور وغالاتا'
+      }
+    }
+  },
+  ru: {
+    title: 'ComusAI — Ваш гид по Стамбулу',
+    statusBadge: 'Онлайн • Местный гид',
+    suiteLabel: 'Номер',
+    resetBtn: 'Сброс',
+    historyCleared: 'История чата очищена.',
+    offlineMsg: 'Пожалуйста, подключитесь к Wi-Fi в номере для общения с ComusAI.',
+    connInterrupted: 'Соединение прервано. Проверьте подключение к Wi-Fi.',
+    verifiedActionBadge: 'Проверенное быстрое действие',
+    typingText: 'ComusAI готовит ваш местный гид...',
+    inputPlaceholder: 'Спросите ComusAI на любом языке (такси, еда, история, помощь в номере)...',
+    justNow: 'Только что',
+    chips: [
+      '🚕 Сколько стоит такси до Султанахмета?',
+      '🍳 Аутентичный завтрак рядом с отелем',
+      '🕌 Дресс-код и часы посещения Голубой мечети',
+      '🚢 Лучший круиз на закате без толп',
+      '🔧 Сообщить о проблеме в номере / Wi-Fi'
+    ],
+    welcomeText: `Добро пожаловать в Стамбул! Я **ComusAI**, ваш локальный гид и консьерж в Стамбуле — здесь, чтобы окружить вас заботой как дорогого гостя (*Tanrı Misafiri*).
+
+• **Защита от переплат:** Спрашивайте меня о честных тарифах такси, транспорте и о том, как избежать туристических ловушек в Фатихе, Бейоглу (Галата/Каракёй/Джихангир), Бешикташе и Кадыкёе.
+• **Проверенные впечатления:** Приватные круизы по Босфору на закате, исторические маршруты без очередей и аутентичные хаммамы XVI века.
+• **Забота в номере:** Закажите завтрак к двери номера, экспресс-прачечную или сообщите о проблеме с Wi-Fi за пару секунд.
+
+[action:explore_category, id:bosphorus]`,
+    actions: {
+      'service:breakfast': {
+        label: '🥐 Заказать бокс с завтраком к двери',
+        sublabel: 'Свежий турецкий завтрак с доставкой прямо в ваш номер'
+      },
+      'service:support': {
+        label: '🛎️ Открыть срочную заявку на ремонт / Wi-Fi',
+        sublabel: 'Мгновенное уведомление управляющему отеля'
+      },
+      'service:laundry': {
+        label: '👔 Заказать экспресс-прачечную и глажку',
+        sublabel: 'Забор вещей у двери и доставка через 24 часа'
+      },
+      'id:transfer': {
+        label: '🚐 Заказать VIP-трансфер по фиксированной цене',
+        sublabel: 'Лицензированный флот Mercedes-Benz Vito в аэропорт и по городу'
+      },
+      'id:bosphorus': {
+        label: '⛵ Проверенные круизы по Босфору',
+        sublabel: 'Приватные яхты и вечерние прогулки без наценок'
+      },
+      'id:history': {
+        label: '🏛️ Исторические маршруты без очередей',
+        sublabel: 'Лицензированные гиды-историки в Айя-Софию и Голубую мечеть'
+      },
+      'id:hammam': {
+        label: '🫧 Традиционные турецкие хаммамы и СПА',
+        sublabel: 'Проверенные османские мраморные бани XVI века'
+      },
+      'id:culinary': {
+        label: '🍢 Гастрономические маршруты и стрит-фуд',
+        sublabel: 'Лучшие локальные места в Кадыкёе, Каракёе и Фатихе'
+      },
+      'id:photography': {
+        label: '📸 Фотосессии на крышах и в платьях',
+        sublabel: 'Приватные съемки на закате с видом на Босфор и Галату'
+      }
+    }
+  },
+  de: {
+    title: 'ComusAI — Ihr Istanbul-Concierge',
+    statusBadge: 'Online • Lokaler Guide',
+    suiteLabel: 'Zimmer',
+    resetBtn: 'Reset',
+    historyCleared: 'Gesprächsverlauf gelöscht.',
+    offlineMsg: 'Bitte verbinden Sie sich mit dem Zimmer-WLAN, um mit ComusAI zu chatten.',
+    connInterrupted: 'Verbindung unterbrochen. Bitte prüfen Sie Ihr WLAN.',
+    verifiedActionBadge: 'Verifizierte Sofortaktion',
+    typingText: 'ComusAI erstellt Ihren lokalen Guide...',
+    inputPlaceholder: 'Fragen Sie ComusAI in jeder Sprache (Taxis, Essen, Geschichte, Zimmerhilfe)...',
+    justNow: 'Gerade eben',
+    chips: [
+      '🚕 Was kostet ein Taxi nach Sultanahmet?',
+      '🍳 Authentisches Frühstück in der Nähe',
+      '🕌 Kleiderordnung & Zeiten für die Blaue Moschee',
+      '🚢 Beste Sonnenuntergangs-Bootstour ohne Massen',
+      '🔧 Zimmer- / WLAN-Problem melden'
+    ],
+    welcomeText: `Willkommen in Istanbul! Ich bin **ComusAI**, Ihr lokaler Istanbul-Begleiter & Concierge — hier, um Sie als unseren Ehrengast (*Tanrı Misafiri*) zu betreuen.
+
+• **Schutz vor Touristenfallen:** Fragen Sie mich nach fairen Taxipreisen, öffentlichen Verkehrsmitteln und Geheimtipps in Fatih, Beyoğlu (Galata/Karaköy/Cihangir), Beşiktaş und Kadıköy.
+• **Geprüfte Erlebnisse:** Entdecken Sie private Bosporus-Sonnenuntergangsfahrten, historische Führungen ohne Anstehen und authentische Hamams aus dem 16. Jahrhundert.
+• **Zimmer-Service:** Bestellen Sie eine Frühstücksbox an die Zimmertür, Express-Wäscheservice oder melden Sie ein WLAN-/Zimmerproblem in Sekunden.
+
+[action:explore_category, id:bosphorus]`,
+    actions: {
+      'service:breakfast': {
+        label: '🥐 Frühstücksbox an die Zimmertür bestellen',
+        sublabel: 'Frisches türkisches Frühstück direkt an Ihre Suitetür geliefert'
+      },
+      'service:support': {
+        label: '🛎️ Dringendes Wartungsticket eröffnen',
+        sublabel: 'Direkte Weiterleitung von Zimmer- & WLAN-Anfragen an das Management'
+      },
+      'service:laundry': {
+        label: '👔 Express-Wäsche & Bügelservice anfordern',
+        sublabel: 'Abholung an der Zimmertür & gebügelte Lieferung in 24 Stunden'
+      },
+      'id:transfer': {
+        label: '🚐 VIP-Chauffeur zum Festpreis buchen',
+        sublabel: 'Lizenzierte Mercedes-Benz Vito Flotte für Flughafen & Stadt'
+      },
+      'id:bosphorus': {
+        label: '⛵ Geprüfte Bosporus-Kreuzfahrten entdecken',
+        sublabel: 'Private Yachten & Sonnenuntergangstouren ohne Aufschläge'
+      },
+      'id:history': {
+        label: '🏛️ Historische Routen & Fast-Track-Touren',
+        sublabel: 'Lizenzierte Historiker-Guides für Hagia Sophia, Blaue Moschee & Zisternen'
+      },
+      'id:hammam': {
+        label: '🫧 Traditionelle Türkische Hamam-Rituale',
+        sublabel: 'Geprüfte osmanische Marmorbäder aus dem 16. Jahrhundert'
+      },
+      'id:culinary': {
+        label: '🍢 Kulinarik- & Street-Food-Touren',
+        sublabel: 'Beliebte lokale Klassiker in Kadıköy, Karaköy & Fatih'
+      },
+      'id:photography': {
+        label: '📸 Dachterrassen-Fotoshooting & Kostüme',
+        sublabel: 'Private Golden-Hour-Shootings über dem Bosporus & Galata'
+      }
+    }
+  },
+  fr: {
+    title: 'ComusAI — Votre Concierge d’Istanbul',
+    statusBadge: 'En ligne • Guide local',
+    suiteLabel: 'Chambre',
+    resetBtn: 'Réinitialiser',
+    historyCleared: 'Historique de conversation effacé.',
+    offlineMsg: 'Veuillez vous connecter au Wi-Fi de votre chambre pour discuter avec ComusAI.',
+    connInterrupted: 'Connexion interrompue. Veuillez vérifier votre Wi-Fi.',
+    verifiedActionBadge: 'Action instantanée vérifiée',
+    typingText: 'ComusAI prépare votre guide local...',
+    inputPlaceholder: 'Posez votre question à ComusAI (taxis, restaurants, histoire, service chambre)...',
+    justNow: 'À l’instant',
+    chips: [
+      '🚕 Combien coûte un taxi pour Sultanahmet ?',
+      '🍳 Petit-déjeuner authentique près de mon hôtel',
+      '🕌 Code vestimentaire & horaires de la Mosquée Bleue',
+      '🚢 Meilleure croisière au coucher du soleil sans foule',
+      '🔧 Signaler un problème de chambre / Wi-Fi'
+    ],
+    welcomeText: `Bienvenue à Istanbul ! Je suis **ComusAI**, votre guide local et concierge dédié — ici pour vous accueillir comme notre invité d'honneur (*Tanrı Misafiri*).
+
+• **Conseils Garantis Sans Arnaque :** Interrogez-moi sur les tarifs de taxi équitables, les transports ou les bonnes adresses à Fatih, Beyoğlu (Galata/Karaköy/Cihangir), Beşiktaş et Kadıköy.
+• **Expériences Vérifiées :** Découvrez des croisières privées sur le Bosphore au coucher du soleil, des visites historiques coupe-file et des hammams ottomans du XVIe siècle.
+• **Service en Chambre :** Commandez un coffret petit-déjeuner à votre porte, une blanchisserie express ou signalez un problème technique en quelques secondes.
+
+[action:explore_category, id:bosphorus]`,
+    actions: {
+      'service:breakfast': {
+        label: '🥐 Commander un Coffret Petit-Déjeuner',
+        sublabel: 'Assortiment turc artisanal livré directement devant votre porte'
+      },
+      'service:support': {
+        label: '🛎️ Ouvrir un Ticket de Maintenance Urgent',
+        sublabel: 'Assistance chambre & Wi-Fi transmise immédiatement à la direction'
+      },
+      'service:laundry': {
+        label: '👔 Blanchisserie Express & Repassage',
+        sublabel: 'Collecte à votre porte et livraison pressée sous 24h'
+      },
+      'id:transfer': {
+        label: '🚐 Réserver un Chauffeur VIP à Tarif Fixe',
+        sublabel: 'Flotte Mercedes-Benz Vito agréée pour aéroport et ville'
+      },
+      'id:bosphorus': {
+        label: '⛵ Explorer les Croisières Vérifiées sur le Bosphore',
+        sublabel: 'Yachts privés et croisières au coucher du soleil sans commission'
+      },
+      'id:history': {
+        label: '🏛️ Parcours Historiques & Visites Coupe-File',
+        sublabel: 'Guides conférenciers pour Sainte-Sophie, Mosquée Bleue et citernes'
+      },
+      'id:hammam': {
+        label: '🫧 Rituels de Hammam Turc Traditionnel',
+        sublabel: 'Bains ottomans historiques du XVIe siècle et soins privés'
+      },
+      'id:culinary': {
+        label: '🍢 Parcours Gastronomiques & Street Food',
+        sublabel: 'Les meilleures tables locales à Kadıköy, Karaköy et Fatih'
+      },
+      'id:photography': {
+        label: '📸 Séance Photo sur les Toits & Costumes',
+        sublabel: 'Séances privées à l’heure dorée face au Bosphore et Galata'
+      }
+    }
+  }
+};
+
+export function parseMessageAndActions(rawText: string, lang: Language = 'en'): {
   cleanText: string;
   parsedActions: ParsedComusAction[];
 } {
   const parsedActions: ParsedComusAction[] = [];
   const seen = new Set<string>();
+  const langDict = COMUS_I18N[lang] || COMUS_I18N.en;
 
   const regex = new RegExp(ACTION_TAG_REGEX.source, 'g');
   let match: RegExpExecArray | null;
@@ -122,7 +492,7 @@ export function parseMessageAndActions(rawText: string): {
     const lookupKey = `${targetKind}:${targetValue}`;
     if (!seen.has(lookupKey)) {
       seen.add(lookupKey);
-      const meta = ACTION_METADATA[lookupKey] || {
+      const meta = langDict.actions[lookupKey] || ACTION_METADATA[lookupKey] || {
         label:
           targetKind === 'service'
             ? `🛎️ Open ${targetValue.charAt(0).toUpperCase() + targetValue.slice(1)} Service`
@@ -223,12 +593,14 @@ export function ComusGlowingAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
 export function AiChatDrawer({
   hotel,
   roomNumber = '304',
+  lang = 'en',
   isOpen,
   onClose,
   onExploreCategory,
 }: AiChatDrawerProps) {
   const resolvedHotelName = hotel?.name || 'Purely Istanbul Partner Suite';
   const resolvedHotelId = hotel?.id || 'hotel-1';
+  const ui = COMUS_I18N[lang] || COMUS_I18N.en;
 
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -258,14 +630,36 @@ export function AiChatDrawer({
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = XeniosStore.getAiChatMessages();
     if (saved && saved.length > 0) {
-      // Ensure English welcome if first message is old Turkish default
-      if (saved[0]?.id?.startsWith('init') && saved[0]?.text?.includes('Merhaba')) {
-        return [INITIAL_WELCOME_MESSAGE];
+      if (saved.length === 1 && (saved[0]?.id?.startsWith('init') || saved[0]?.id?.startsWith('comus-welcome'))) {
+        return [{
+          id: 'comus-welcome-1',
+          sender: 'assistant',
+          text: ui.welcomeText,
+          time: ui.justNow
+        }];
       }
       return saved;
     }
-    return [INITIAL_WELCOME_MESSAGE];
+    return [{
+      id: 'comus-welcome-1',
+      sender: 'assistant',
+      text: ui.welcomeText,
+      time: ui.justNow
+    }];
   });
+
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && (prev[0]?.id?.startsWith('init') || prev[0]?.id?.startsWith('comus-welcome'))) {
+        return [{
+          ...prev[0],
+          text: ui.welcomeText,
+          time: ui.justNow
+        }];
+      }
+      return prev;
+    });
+  }, [lang, ui.welcomeText, ui.justNow]);
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -281,7 +675,7 @@ export function AiChatDrawer({
 
     const handleOffline = () => {
       setIsOffline(true);
-      toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
+      toast.error(ui.offlineMsg);
     };
     const handleOnline = () => {
       setIsOffline(false);
@@ -293,7 +687,7 @@ export function AiChatDrawer({
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('online', handleOnline);
     };
-  }, []);
+  }, [ui.offlineMsg]);
 
   useEffect(() => {
     if (isOpen && typeof window !== 'undefined') {
@@ -312,14 +706,15 @@ export function AiChatDrawer({
     setIsStreaming(false);
     setIsWaitingForFirstToken(false);
     const fresh: ChatMessage = {
-      ...INITIAL_WELCOME_MESSAGE,
       id: `comus-welcome-${Date.now()}`,
+      sender: 'assistant',
+      text: ui.welcomeText,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setMessages([fresh]);
     XeniosStore.saveAiChatMessages([fresh]);
-    toast.success('Conversation history cleared.');
-  }, []);
+    toast.success(ui.historyCleared);
+  }, [ui.welcomeText, ui.historyCleared]);
 
   const handleSend = async (customPrompt?: string) => {
     const queryText = (customPrompt ?? input).trim();
@@ -327,7 +722,7 @@ export function AiChatDrawer({
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setIsOffline(true);
-      toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
+      toast.error(ui.offlineMsg);
       return;
     }
 
@@ -453,9 +848,9 @@ export function AiChatDrawer({
 
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
         setIsOffline(true);
-        toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
+        toast.error(ui.offlineMsg);
       } else {
-        toast.error('Connection interrupted. Please check your suite Wi-Fi.');
+        toast.error(ui.connInterrupted);
       }
     }
   };
@@ -533,11 +928,11 @@ export function AiChatDrawer({
 
     const confirmText =
       serviceKey === 'breakfast'
-        ? `✅ **Doorstep Breakfast Box Confirmed:** Your *${breakfastBoxType}* is scheduled for **${breakfastTime}** to Suite **${roomNumber}**.${breakfastNotes ? ` Note: "${breakfastNotes}"` : ''}`
+        ? `✅ **Doorstep Breakfast Box Confirmed:** Your *${breakfastBoxType}* is scheduled for **${breakfastTime}** to ${ui.suiteLabel} **${roomNumber}**.${breakfastNotes ? ` Note: "${breakfastNotes}"` : ''}`
         : serviceKey === 'support'
-          ? `🛎️ **Urgent Maintenance Ticket Dispatched:** Our property team has been alerted for **${supportIssueType}** in Suite **${roomNumber}** (Priority: **URGENT**).`
+          ? `🛎️ **Urgent Maintenance Ticket Dispatched:** Our property team has been alerted for **${supportIssueType}** in ${ui.suiteLabel} **${roomNumber}** (Priority: **URGENT**).`
           : serviceKey === 'laundry'
-            ? `👔 **Express Garment Pickup Scheduled:** Valet pickup (**${laundryPickupTime}**) for *${laundryPackage}* from Suite **${roomNumber}** is confirmed.`
+            ? `👔 **Express Garment Pickup Scheduled:** Valet pickup (**${laundryPickupTime}**) for *${laundryPackage}* from ${ui.suiteLabel} **${roomNumber}** is confirmed.`
             : `🚐 **VIP Chauffeur Transfer Reserved:** Your licensed Mercedes-Benz Vito for **${transferAirport}** (${transferPickupTime}${transferFlightNo ? ` · Flight ${transferFlightNo}` : ''}) is confirmed.`;
 
     const confirmMsg: ChatMessage = {
@@ -554,7 +949,7 @@ export function AiChatDrawer({
     });
 
     setActiveActionModal(null);
-    toast.success(`${serviceTitle} confirmed for Suite ${roomNumber}!`);
+    toast.success(`${serviceTitle} (${ui.suiteLabel} ${roomNumber})`);
   };
 
   if (!isOpen) return null;
@@ -563,7 +958,7 @@ export function AiChatDrawer({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="ComusAI — Your Istanbul Guardian"
+      aria-label={ui.title}
       className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#0B192C]/65 backdrop-blur-sm overflow-hidden overscroll-contain animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -579,15 +974,15 @@ export function AiChatDrawer({
             <ComusGlowingAvatar size="md" />
             <div className="min-w-0 flex-1">
               <h2 className="font-luxury-serif text-[16px] sm:text-[17px] font-bold tracking-tight text-white truncate">
-                ComusAI — Your Istanbul Guardian
+                {ui.title}
               </h2>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-[10.5px] font-semibold text-emerald-300 tracking-wide">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  Online • Local Guide
+                  {ui.statusBadge}
                 </span>
                 <span className="text-[11px] text-slate-300 truncate hidden xs:inline">
-                  Suite {roomNumber}
+                  {ui.suiteLabel} {roomNumber}
                 </span>
               </div>
             </div>
@@ -597,12 +992,12 @@ export function AiChatDrawer({
             <button
               type="button"
               onClick={handleClearHistory}
-              title="Reset / Clear History"
-              aria-label="Reset / Clear History"
+              title={ui.resetBtn}
+              aria-label={ui.resetBtn}
               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Reset</span>
+              <span className="hidden sm:inline">{ui.resetBtn}</span>
             </button>
 
             <button
@@ -618,7 +1013,7 @@ export function AiChatDrawer({
 
         {/* 2. QUICK SUGGESTION CHIPS (Horizontal Scroll directly below header) */}
         <div className="px-3.5 py-2.5 bg-white border-b border-slate-200/80 overflow-x-auto flex items-center gap-2 no-scrollbar shrink-0">
-          {QUICK_SUGGESTION_CHIPS.map((chip) => (
+          {ui.chips.map((chip) => (
             <button
               key={chip}
               type="button"
@@ -635,7 +1030,7 @@ export function AiChatDrawer({
         {isOffline && (
           <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-2 shrink-0">
             <WifiOff className="w-4 h-4 text-[#D47A43] shrink-0" />
-            <span>Please connect to your suite Wi-Fi to chat with ComusAI.</span>
+            <span>{ui.offlineMsg}</span>
           </div>
         )}
 
@@ -645,7 +1040,7 @@ export function AiChatDrawer({
             const isUser = msg.sender === 'user';
             const { cleanText, parsedActions } = isUser
               ? { cleanText: msg.text, parsedActions: [] }
-              : parseMessageAndActions(msg.text);
+              : parseMessageAndActions(msg.text, lang);
 
             return (
               <div
@@ -699,7 +1094,7 @@ export function AiChatDrawer({
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[#D47A43]">
-                              Verified Instant Action
+                              {ui.verifiedActionBadge}
                             </span>
                             <ShieldCheck className="w-3.5 h-3.5 text-[#D47A43]" />
                           </div>
@@ -741,7 +1136,7 @@ export function AiChatDrawer({
                   />
                 </div>
                 <span className="text-xs font-medium text-[#64748B]">
-                  ComusAI is crafting your local guide...
+                  {ui.typingText}
                 </span>
               </div>
             </div>
@@ -757,13 +1152,13 @@ export function AiChatDrawer({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#D47A43]">
-                    Purely Istanbul · Suite {roomNumber}
+                    Purely Istanbul · {ui.suiteLabel} {roomNumber}
                   </span>
                   <h3 className="font-luxury-serif text-base font-bold text-[#0B192C] mt-0.5">
-                    {activeActionModal === 'breakfast' && '🥐 Order Doorstep Breakfast Box'}
-                    {activeActionModal === 'support' && '🛎️ Open Urgent Maintenance Ticket'}
-                    {activeActionModal === 'transfer' && '🚐 Book Scam-Free VIP Chauffeur'}
-                    {activeActionModal === 'laundry' && '👔 Express Laundry & Garment Care'}
+                    {activeActionModal === 'breakfast' && ui.actions['service:breakfast'].label}
+                    {activeActionModal === 'support' && ui.actions['service:support'].label}
+                    {activeActionModal === 'transfer' && ui.actions['id:transfer'].label}
+                    {activeActionModal === 'laundry' && ui.actions['service:laundry'].label}
                   </h3>
                 </div>
                 <button
@@ -1020,7 +1415,7 @@ export function AiChatDrawer({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask ComusAI in any language (fares, food, history, room help)..."
+            placeholder={ui.inputPlaceholder}
             className="flex-1 text-[13px] px-4 py-3 rounded-2xl border border-slate-200 bg-[#F8FAFC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D47A43]/50 focus:border-[#D47A43] text-[#0B192C] placeholder:text-[#64748B] transition"
           />
           <button

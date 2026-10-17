@@ -8,22 +8,245 @@ import {
   Mail, 
   Building2, 
   ArrowRight, 
-  Phone,
-  CheckCircle2,
-  Globe
+  Phone
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { XeniosStore } from '@/lib/store';
-import { XeniosUser } from '@/lib/types';
+import { XeniosUser, Language } from '@/lib/types';
+import { detectBrowserLanguage } from '@/lib/i18n';
 import Image from 'next/image';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultRole?: 'guest' | 'hotel';
+  lang?: Language;
 }
 
-export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalProps) {
+const AUTH_I18N: Record<Language, {
+  missingEmailPass: string;
+  hotelManagerDefault: string;
+  hotelLoginSuccess: string;
+  hotelLoginRedirect: string;
+  welcomeUser: (name: string) => string;
+  accountCreated: string;
+  loginHeading: string;
+  registerHeading: string;
+  loginSub: string;
+  registerSub: string;
+  loginTab: string;
+  registerTab: string;
+  guestLoginTitle: string;
+  guestLoginDesc: string;
+  hotelStaffTitle: string;
+  hotelStaffDesc: string;
+  fullNameLabel: string;
+  fullNamePlaceholder: string;
+  phoneLabel: string;
+  hotelCodeLabel: string;
+  hotelCodePlaceholder: string;
+  emailLabel: string;
+  guestEmailPlaceholder: string;
+  passwordLabel: string;
+  rememberMe: string;
+  hotelLoginBtn: string;
+  loginBtn: string;
+  createAccountBtn: string;
+  footerSsl: string;
+}> = {
+  tr: {
+    missingEmailPass: 'Lütfen e-posta ve şifrenizi giriniz.',
+    hotelManagerDefault: 'Otel Yöneticisi',
+    hotelLoginSuccess: 'Otel Yönetim Paneline Giriş Başarılı!',
+    hotelLoginRedirect: 'Otel Yönetim Paneline yönlendiriliyorsunuz...',
+    welcomeUser: (name) => `Hoş geldiniz ${name}!`,
+    accountCreated: 'Hesabınız başarıyla oluşturuldu! Hoş geldiniz.',
+    loginHeading: 'Hesabınıza Giriş Yapın',
+    registerHeading: 'Yeni Hesap Oluşturun',
+    loginSub: 'Oda hizmetleri, rezervasyonlarınız ve otel personeli için giriş yapın.',
+    registerSub: 'İstanbul misafir ayrıcalıklarından ve hızlı rezervasyondan yararlanın.',
+    loginTab: 'Giriş Yap',
+    registerTab: 'Kayıt Ol',
+    guestLoginTitle: 'Misafir Girişi',
+    guestLoginDesc: 'Otel & Şehir Hizmetleri',
+    hotelStaffTitle: 'Otel Personeli',
+    hotelStaffDesc: 'Oda & Talep Yönetimi',
+    fullNameLabel: 'Ad Soyad',
+    fullNamePlaceholder: 'Örn: Mehmet Özkan',
+    phoneLabel: 'Telefon Numarası',
+    hotelCodeLabel: 'Otel / Tesis Kodu',
+    hotelCodePlaceholder: 'Örn: FATIH-HERITAGE-01',
+    emailLabel: 'E-Posta Adresi',
+    guestEmailPlaceholder: 'misafir@gmail.com',
+    passwordLabel: 'Şifre',
+    rememberMe: 'Beni Hatırla',
+    hotelLoginBtn: 'Otel Paneline Giriş Yap',
+    loginBtn: 'Giriş Yap',
+    createAccountBtn: 'Hesabı Oluştur',
+    footerSsl: 'purelyİstanbul 256-Bit SSL şifreleme ve KVKK güvencesiyle korunmaktadır.'
+  },
+  en: {
+    missingEmailPass: 'Please enter your email and password.',
+    hotelManagerDefault: 'Hotel Manager',
+    hotelLoginSuccess: 'Hotel Management Portal Login Successful!',
+    hotelLoginRedirect: 'Redirecting to Hotel Management Portal...',
+    welcomeUser: (name) => `Welcome ${name}!`,
+    accountCreated: 'Your account has been created! Welcome.',
+    loginHeading: 'Sign In to Your Account',
+    registerHeading: 'Create a New Account',
+    loginSub: 'Sign in for in-room services, reservations, and hotel staff access.',
+    registerSub: 'Enjoy Istanbul guest privileges and instant booking.',
+    loginTab: 'Sign In',
+    registerTab: 'Register',
+    guestLoginTitle: 'Guest Sign In',
+    guestLoginDesc: 'Hotel & City Services',
+    hotelStaffTitle: 'Hotel Staff',
+    hotelStaffDesc: 'Room & Request Management',
+    fullNameLabel: 'Full Name',
+    fullNamePlaceholder: 'e.g., Alex Mercer',
+    phoneLabel: 'Phone Number',
+    hotelCodeLabel: 'Hotel / Property Code',
+    hotelCodePlaceholder: 'e.g., FATIH-HERITAGE-01',
+    emailLabel: 'E-Mail Address',
+    guestEmailPlaceholder: 'guest@gmail.com',
+    passwordLabel: 'Password',
+    rememberMe: 'Remember Me',
+    hotelLoginBtn: 'Sign In to Hotel Portal',
+    loginBtn: 'Sign In',
+    createAccountBtn: 'Create Account',
+    footerSsl: 'Protected by purelyIstanbul 256-Bit SSL encryption and data privacy compliance.'
+  },
+  ar: {
+    missingEmailPass: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
+    hotelManagerDefault: 'مدير الفندق',
+    hotelLoginSuccess: 'تم تسجيل الدخول إلى لوحة إدارة الفندق بنجاح!',
+    hotelLoginRedirect: 'جارٍ التوجيه إلى لوحة إدارة الفندق...',
+    welcomeUser: (name) => `أهلاً بك ${name}!`,
+    accountCreated: 'تم إنشاء حسابك بنجاح! أهلاً بك.',
+    loginHeading: 'تسجيل الدخول إلى حسابك',
+    registerHeading: 'إنشاء حساب جديد',
+    loginSub: 'سجّل الدخول لخدمات الغرف والحجوزات وموظفي الفندق.',
+    registerSub: 'استفد من مزايا ضيوف إسطنبول والحجز السريع.',
+    loginTab: 'تسجيل الدخول',
+    registerTab: 'إنشاء حساب',
+    guestLoginTitle: 'دخول الضيف',
+    guestLoginDesc: 'خدمات الفندق والمدينة',
+    hotelStaffTitle: 'موظفو الفندق',
+    hotelStaffDesc: 'إدارة الغرف والطلبات',
+    fullNameLabel: 'الاسم الكامل',
+    fullNamePlaceholder: 'مثال: Alex Mercer',
+    phoneLabel: 'رقم الهاتف',
+    hotelCodeLabel: 'رمز الفندق / المنشأة',
+    hotelCodePlaceholder: 'مثال: FATIH-HERITAGE-01',
+    emailLabel: 'البريد الإلكتروني',
+    guestEmailPlaceholder: 'guest@gmail.com',
+    passwordLabel: 'كلمة المرور',
+    rememberMe: 'تذكرني',
+    hotelLoginBtn: 'الدخول إلى لوحة الفندق',
+    loginBtn: 'تسجيل الدخول',
+    createAccountBtn: 'إنشاء الحساب',
+    footerSsl: 'محمي بتشفير SSL 256-Bit ومعايير حماية البيانات من purelyİstanbul.'
+  },
+  ru: {
+    missingEmailPass: 'Пожалуйста, введите ваш e-mail и пароль.',
+    hotelManagerDefault: 'Менеджер отеля',
+    hotelLoginSuccess: 'Вход в панель управления отелем выполнен!',
+    hotelLoginRedirect: 'Перенаправление в панель управления отелем...',
+    welcomeUser: (name) => `Добро пожаловать, ${name}!`,
+    accountCreated: 'Ваш аккаунт успешно создан! Добро пожаловать.',
+    loginHeading: 'Войдите в свой аккаунт',
+    registerHeading: 'Создать новый аккаунт',
+    loginSub: 'Войдите для доступа к услугам в номере, бронированиям и панели персонала.',
+    registerSub: 'Пользуйтесь привилегиями гостей Стамбула и быстрым бронированием.',
+    loginTab: 'Войти',
+    registerTab: 'Регистрация',
+    guestLoginTitle: 'Вход для гостей',
+    guestLoginDesc: 'Услуги отеля и города',
+    hotelStaffTitle: 'Персонал отеля',
+    hotelStaffDesc: 'Управление номерами и заявками',
+    fullNameLabel: 'Имя и фамилия',
+    fullNamePlaceholder: 'Напр.: Alex Mercer',
+    phoneLabel: 'Номер телефона',
+    hotelCodeLabel: 'Код отеля / объекта',
+    hotelCodePlaceholder: 'Напр.: FATIH-HERITAGE-01',
+    emailLabel: 'Адрес эл. почты',
+    guestEmailPlaceholder: 'guest@gmail.com',
+    passwordLabel: 'Пароль',
+    rememberMe: 'Запомнить меня',
+    hotelLoginBtn: 'Войти в панель отеля',
+    loginBtn: 'Войти',
+    createAccountBtn: 'Создать аккаунт',
+    footerSsl: 'Защищено 256-битным SSL-шифрованием и политикой конфиденциальности purelyİstanbul.'
+  },
+  de: {
+    missingEmailPass: 'Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein.',
+    hotelManagerDefault: 'Hotelmanager',
+    hotelLoginSuccess: 'Anmeldung im Hotel-Management-Portal erfolgreich!',
+    hotelLoginRedirect: 'Weiterleitung zum Hotel-Management-Portal...',
+    welcomeUser: (name) => `Willkommen ${name}!`,
+    accountCreated: 'Ihr Konto wurde erfolgreich erstellt! Willkommen.',
+    loginHeading: 'Melden Sie sich an',
+    registerHeading: 'Neues Konto erstellen',
+    loginSub: 'Melden Sie sich für Zimmerservice, Reservierungen und Hotelpersonal an.',
+    registerSub: 'Genießen Sie Istanbul-Gästeprivilegien und schnelle Buchungen.',
+    loginTab: 'Anmelden',
+    registerTab: 'Registrieren',
+    guestLoginTitle: 'Gäste-Login',
+    guestLoginDesc: 'Hotel- & Stadtservices',
+    hotelStaffTitle: 'Hotelpersonal',
+    hotelStaffDesc: 'Zimmer- & Anfragenverwaltung',
+    fullNameLabel: 'Vollständiger Name',
+    fullNamePlaceholder: 'z. B. Alex Mercer',
+    phoneLabel: 'Telefonnummer',
+    hotelCodeLabel: 'Hotel- / Objektcode',
+    hotelCodePlaceholder: 'z. B. FATIH-HERITAGE-01',
+    emailLabel: 'E-Mail-Adresse',
+    guestEmailPlaceholder: 'guest@gmail.com',
+    passwordLabel: 'Passwort',
+    rememberMe: 'Angemeldet bleiben',
+    hotelLoginBtn: 'Im Hotelportal anmelden',
+    loginBtn: 'Anmelden',
+    createAccountBtn: 'Konto erstellen',
+    footerSsl: 'Geschützt durch 256-Bit-SSL-Verschlüsselung und Datenschutzrichtlinien von purelyİstanbul.'
+  },
+  fr: {
+    missingEmailPass: 'Veuillez saisir votre adresse e-mail et votre mot de passe.',
+    hotelManagerDefault: 'Directeur d’hôtel',
+    hotelLoginSuccess: 'Connexion au portail hôtelier réussie !',
+    hotelLoginRedirect: 'Redirection vers le portail de gestion hôtelière...',
+    welcomeUser: (name) => `Bienvenue ${name} !`,
+    accountCreated: 'Votre compte a été créé avec succès ! Bienvenue.',
+    loginHeading: 'Connectez-vous à votre compte',
+    registerHeading: 'Créer un nouveau compte',
+    loginSub: 'Connectez-vous pour les services en chambre, vos réservations et l’accès personnel.',
+    registerSub: 'Profitez des privilèges clients à Istanbul et de la réservation rapide.',
+    loginTab: 'Connexion',
+    registerTab: 'S’inscrire',
+    guestLoginTitle: 'Accès Client',
+    guestLoginDesc: 'Services Hôtel & Ville',
+    hotelStaffTitle: 'Personnel Hôtelier',
+    hotelStaffDesc: 'Gestion Chambres & Demandes',
+    fullNameLabel: 'Nom complet',
+    fullNamePlaceholder: 'Ex. : Alex Mercer',
+    phoneLabel: 'Numéro de téléphone',
+    hotelCodeLabel: 'Code Hôtel / Établissement',
+    hotelCodePlaceholder: 'Ex. : FATIH-HERITAGE-01',
+    emailLabel: 'Adresse e-mail',
+    guestEmailPlaceholder: 'guest@gmail.com',
+    passwordLabel: 'Mot de passe',
+    rememberMe: 'Se souvenir de moi',
+    hotelLoginBtn: 'Accéder au portail hôtelier',
+    loginBtn: 'Se connecter',
+    createAccountBtn: 'Créer le compte',
+    footerSsl: 'Protégé par le chiffrement SSL 256 bits et la confidentialité des données purelyİstanbul.'
+  }
+};
+
+export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLang }: AuthModalProps) {
+  const [detectedLang, setDetectedLang] = useState<Language>(() => propLang || detectBrowserLanguage());
+  const activeLang = propLang || detectedLang;
+  const a = AUTH_I18N[activeLang] || AUTH_I18N.en;
+
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [role, setRole] = useState<'guest' | 'hotel'>(defaultRole);
 
@@ -34,6 +257,12 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
   const [phone, setPhone] = useState('');
   const [hotelCode, setHotelCode] = useState('FATIH-HERITAGE-01');
   const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    if (!propLang) {
+      setDetectedLang(detectBrowserLanguage());
+    }
+  }, [propLang, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -62,12 +291,12 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Lütfen e-posta ve şifrenizi giriniz.");
+      toast.error(a.missingEmailPass);
       return;
     }
 
     const inputEmail = email.trim().toLowerCase();
-    const userName = name.trim() || (role === 'hotel' ? 'Otel Yöneticisi' : email.split('@')[0]);
+    const userName = name.trim() || (role === 'hotel' ? a.hotelManagerDefault : email.split('@')[0]);
     
     const user: XeniosUser = {
       id: 'usr_' + Date.now(),
@@ -110,19 +339,19 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
     if (mode === 'login') {
       if (role === 'hotel') {
         XeniosStore.setHotelPortalLoggedIn(true);
-        toast.success("Otel Yönetim Paneline Giriş Başarılı!", {
-          description: "Otel Yönetim Paneline yönlendiriliyorsunuz..."
+        toast.success(a.hotelLoginSuccess, {
+          description: a.hotelLoginRedirect
         });
         setTimeout(() => {
           onClose();
           window.location.href = '/hotel-portal';
         }, 350);
       } else {
-        toast.success(`Hoş geldiniz ${user.name}!`);
+        toast.success(a.welcomeUser(user.name));
         setTimeout(() => onClose(), 350);
       }
     } else {
-      toast.success("Hesabınız başarıyla oluşturuldu! Hoş geldiniz.");
+      toast.success(a.accountCreated);
       if (role === 'hotel') {
         XeniosStore.setHotelPortalLoggedIn(true);
       }
@@ -162,12 +391,10 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             purelyİstanbul
           </span>
           <h2 className="text-xl font-bold font-serif text-slate-900 ">
-            {mode === 'login' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}
+            {mode === 'login' ? a.loginHeading : a.registerHeading}
           </h2>
           <p className="text-xs text-slate-500 ">
-            {mode === 'login' 
-              ? 'Oda hizmetleri, rezervasyonlarınız ve otel personeli için giriş yapın.' 
-              : 'İstanbul misafir ayrıcalıklarından ve hızlı rezervasyondan yararlanın.'}
+            {mode === 'login' ? a.loginSub : a.registerSub}
           </p>
         </div>
 
@@ -182,7 +409,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 : 'text-slate-500  hover:text-slate-800 '
             }`}
           >
-            Giriş Yap
+            {a.loginTab}
           </button>
           <button
             type="button"
@@ -193,7 +420,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 : 'text-slate-500  hover:text-slate-800 '
             }`}
           >
-            Kayıt Ol
+            {a.registerTab}
           </button>
         </div>
 
@@ -211,8 +438,8 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             >
               <User className={`w-4 h-4 mb-1 ${role === 'guest' ? 'text-amber-700' : 'text-zinc-400'}`} />
               <div>
-                <strong className="text-xs block font-bold">Misafir Girişi</strong>
-                <span className="text-[10px] text-slate-500  block">Otel & Şehir Hizmetleri</span>
+                <strong className="text-xs block font-bold">{a.guestLoginTitle}</strong>
+                <span className="text-[10px] text-slate-500  block">{a.guestLoginDesc}</span>
               </div>
             </button>
 
@@ -227,8 +454,8 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             >
               <Building2 className={`w-4 h-4 mb-1 ${role === 'hotel' ? 'text-amber-700' : 'text-zinc-400'}`} />
               <div>
-                <strong className="text-xs block font-bold">Otel Personeli</strong>
-                <span className="text-[10px] text-slate-500  block">Oda & Talep Yönetimi</span>
+                <strong className="text-xs block font-bold">{a.hotelStaffTitle}</strong>
+                <span className="text-[10px] text-slate-500  block">{a.hotelStaffDesc}</span>
               </div>
             </button>
           </div>
@@ -239,7 +466,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           {mode === 'register' && (
             <>
               <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Ad Soyad</label>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">{a.fullNameLabel}</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                   <input
@@ -247,14 +474,14 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Örn: Mehmet Özkan"
+                    placeholder={a.fullNamePlaceholder}
                     className="w-full pl-9 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Telefon Numarası</label>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">{a.phoneLabel}</label>
                 <div className="relative">
                   <Phone className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                   <input
@@ -271,7 +498,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
 
           {mode === 'login' && role === 'hotel' && (
             <div>
-              <label className="text-[11px] font-bold text-slate-700 block mb-1">Otel / Tesis Kodu</label>
+              <label className="text-[11px] font-bold text-slate-700 block mb-1">{a.hotelCodeLabel}</label>
               <div className="relative">
                 <Building2 className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                 <input
@@ -279,7 +506,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                   required
                   value={hotelCode}
                   onChange={(e) => setHotelCode(e.target.value)}
-                  placeholder="Örn: FATIH-HERITAGE-01"
+                  placeholder={a.hotelCodePlaceholder}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 font-mono font-bold"
                 />
               </div>
@@ -287,7 +514,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
           )}
 
           <div>
-            <label className="text-[11px] font-bold text-slate-700 block mb-1">E-Posta Adresi</label>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">{a.emailLabel}</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
               <input
@@ -295,14 +522,14 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={role === 'hotel' ? "hotel@xenios.istanbul" : "misafir@gmail.com"}
+                placeholder={role === 'hotel' ? "hotel@xenios.istanbul" : a.guestEmailPlaceholder}
                 className="w-full pl-9 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-slate-700 block mb-1">Şifre</label>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">{a.passwordLabel}</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
               <input
@@ -324,7 +551,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 accent-amber-500 cursor-pointer"
               />
-              <span className="text-xs font-semibold text-slate-700">Beni Hatırla</span>
+              <span className="text-xs font-semibold text-slate-700">{a.rememberMe}</span>
             </label>
           </div>
 
@@ -332,7 +559,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
             type="submit"
             className="w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer mt-2 bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30"
           >
-            <span>{mode === 'login' ? (role === 'hotel' ? 'Otel Paneline Giriş Yap' : 'Giriş Yap') : 'Hesabı Oluştur'}</span>
+            <span>{mode === 'login' ? (role === 'hotel' ? a.hotelLoginBtn : a.loginBtn) : a.createAccountBtn}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
@@ -340,10 +567,11 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest' }: AuthModalP
         {/* Footer info */}
         <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
           <p className="text-[10px] text-zinc-400">
-            purelyİstanbul 256-Bit SSL şifreleme ve KVKK güvencesiyle korunmaktadır.
+            {a.footerSsl}
           </p>
         </div>
       </div>
     </div>
   );
 }
+
