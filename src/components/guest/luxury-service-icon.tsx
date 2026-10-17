@@ -767,6 +767,10 @@ export function LuxuryServiceIcon({ serviceKey, className = "w-16 h-16 sm:w-20 s
     }
   };
 
+  const plinthFillId = `lux-plinth-${uid}`;
+  const plinthRimId = `lux-plinth-rim-${uid}`;
+  const plinthShadowId = `lux-plinth-shadow-${uid}`;
+
   return (
     <div className={`relative flex items-center justify-center select-none ${className}`}>
       <svg
@@ -776,40 +780,89 @@ export function LuxuryServiceIcon({ serviceKey, className = "w-16 h-16 sm:w-20 s
         className="w-full h-full relative z-10 overflow-visible"
       >
         <defs>
-          {/* Left-Charcoal to Right-Warm-Bronze Stroke Gradient */}
-          <linearGradient id={strokeGradId} x1="12" y1="24" x2="52" y2="38" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#1D2025" />
-            <stop offset="48%" stopColor="#3B352F" />
-            <stop offset="100%" stopColor="#8E7252" />
+          {/* 24K Gilded Gold & Burnished Bronze Relief Contour Stroke */}
+          <linearGradient id={strokeGradId} x1="10" y1="12" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#6B4812" />
+            <stop offset="28%" stopColor="#C4922A" />
+            <stop offset="52%" stopColor="#EAC864" />
+            <stop offset="76%" stopColor="#9C6E1B" />
+            <stop offset="100%" stopColor="#583A0D" />
           </linearGradient>
 
-          {/* Warm Brushed Bronze / Gold Metallic Gradient */}
-          <linearGradient id={bronzeGradId} x1="20" y1="12" x2="54" y2="52" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#9C7F5E" />
-            <stop offset="50%" stopColor="#7E6345" />
-            <stop offset="100%" stopColor="#5E4730" />
+          {/* Luminous Gilded Gold Leaf Accent & Filigree Gradient */}
+          <linearGradient id={bronzeGradId} x1="18" y1="10" x2="56" y2="54" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#DEB54A" />
+            <stop offset="42%" stopColor="#F7DF8A" />
+            <stop offset="72%" stopColor="#B88624" />
+            <stop offset="100%" stopColor="#724E12" />
           </linearGradient>
 
-          {/* 3D Cylindrical Bronze Handle Fill (for DND Lever) */}
+          {/* 3D Cylindrical 24K Gold Handle Fill (for DND Lever) */}
           <linearGradient id={handleFillId} x1="40" y1="20" x2="40" y2="26.4" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#F5EBDD" />
-            <stop offset="45%" stopColor="#C4A684" />
-            <stop offset="100%" stopColor="#6D5135" />
+            <stop offset="0%" stopColor="#FFFCEE" />
+            <stop offset="45%" stopColor="#E6BD56" />
+            <stop offset="100%" stopColor="#8A5E14" />
           </linearGradient>
 
-          {/* Soft 3D Warm Ivory / Champagne Inner Fill */}
+          {/* Soft 3D Gilded Pearl & Champagne Gold Inner Fill */}
           <linearGradient id={champagneFillId} x1="14" y1="14" x2="50" y2="54" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FCFBF8" stopOpacity="0.95" />
-            <stop offset="60%" stopColor="#F1EAE0" stopOpacity="0.88" />
-            <stop offset="100%" stopColor="#E2D5C3" stopOpacity="0.82" />
+            <stop offset="0%" stopColor="#FFFDF6" stopOpacity="0.98" />
+            <stop offset="48%" stopColor="#F9EAC1" stopOpacity="0.95" />
+            <stop offset="82%" stopColor="#E5C578" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#C6993E" stopOpacity="0.9" />
           </linearGradient>
 
-          {/* Soft 3D Embossed Drop Shadow Filter */}
+          {/* Raised 3D Medallion Plinth Dome Fill */}
+          <radialGradient id={plinthFillId} cx="36%" cy="26%" r="74%">
+            <stop offset="0%" stopColor="#FFFDF8" />
+            <stop offset="48%" stopColor="#FAF0D7" />
+            <stop offset="82%" stopColor="#ECD8AE" />
+            <stop offset="100%" stopColor="#DAB97B" />
+          </radialGradient>
+
+          {/* Raised 3D Medallion Bevel Rim */}
+          <linearGradient id={plinthRimId} x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFF7DC" />
+            <stop offset="35%" stopColor="#DFB755" />
+            <stop offset="70%" stopColor="#B58626" />
+            <stop offset="100%" stopColor="#7D5814" />
+          </linearGradient>
+
+          {/* Plinth Elevation Shadow */}
+          <filter id={plinthShadowId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
+            <feDropShadow dx="0" dy="2" stdDeviation="0.4" floodColor="#B89452" floodOpacity="0.7" />
+            <feDropShadow dx="0" dy="4.5" stdDeviation="2.4" floodColor="#3A260A" floodOpacity="0.22" />
+          </filter>
+
+          {/* 3D Bas-Relief Embossed Gold ("Yaldızlı Kabartılı") Filter */}
           <filter id={shadowFilterId} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="3" stdDeviation="2.2" floodColor="#3A2D1E" floodOpacity="0.16" />
-            <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" floodColor="#FFFFFF" floodOpacity="0.9" />
+            <feDropShadow dx="-0.85" dy="-1.05" stdDeviation="0.38" floodColor="#FFFDF5" floodOpacity="0.96" />
+            <feDropShadow dx="0.85" dy="1.35" stdDeviation="0.35" floodColor="#6E4B12" floodOpacity="0.62" />
+            <feDropShadow dx="0" dy="3.2" stdDeviation="1.8" floodColor="#3A2608" floodOpacity="0.28" />
           </filter>
         </defs>
+
+        {/* 3D Embossed Gilded Medallion Plinth Base */}
+        <g filter={`url(#${plinthShadowId})`}>
+          <circle
+            cx="32"
+            cy="32.5"
+            r="27.2"
+            fill={`url(#${plinthFillId})`}
+            stroke={`url(#${plinthRimId})`}
+            strokeWidth="1.45"
+          />
+          <circle
+            cx="32"
+            cy="32.5"
+            r="24.6"
+            fill="none"
+            stroke={`url(#${bronzeGradId})`}
+            strokeWidth="0.75"
+            strokeDasharray="2.2 2.2"
+            opacity="0.72"
+          />
+        </g>
 
         {renderPaths()}
       </svg>

@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import { MARKETPLACE_CATEGORIES, type MarketplaceCategory } from "@/lib/marketplace/categories";
+import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
 
 interface CategoryFilterBarProps {
   value: string;
   onChange: (key: string) => void;
   categories?: MarketplaceCategory[];
+}
+
+function isCustomUploadedIcon(icon?: string): boolean {
+  if (!icon) return false;
+  return !icon.startsWith("/icons/categories/") && !icon.startsWith("/icons/menu/");
 }
 
 export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CATEGORIES }: CategoryFilterBarProps) {
@@ -17,51 +23,47 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
   }
 
   return (
-    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/90 backdrop-blur-md border-b border-sand-border/60 py-3">
+    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/92 backdrop-blur-md border-b border-sand-border/60 py-3.5">
       <div className="w-full max-w-6xl mx-auto px-3 sm:px-6">
         <div
-          className="flex items-start gap-3 sm:gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:justify-between"
+          className="flex items-stretch gap-2.5 sm:gap-2.5 overflow-x-auto pt-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:justify-between"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {categories.map((c) => {
             const isSelected = value === c.key;
+            const hasCustomIcon = isCustomUploadedIcon(c.icon);
             return (
               <button
                 key={c.key}
                 onClick={() => handleSelect(c.key)}
                 aria-pressed={isSelected}
-                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[64px] sm:w-auto"
+                className={`flex flex-col items-center justify-between gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[86px] sm:w-auto sm:min-w-[92px] rounded-[20px] px-2 py-2.5 ${
+                  isSelected ? "category-3d-module category-3d-module-active" : "category-3d-module"
+                }`}
               >
-                <span
-                  className={`w-[52px] h-[52px] sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center border p-2 transition-all duration-200 ${
-                    isSelected
-                      ? "bg-white border-terracotta/70 shadow-[0_6px_16px_-6px_rgba(196,91,54,0.45)]"
-                      : "bg-white/70 border-sand-border group-hover:bg-white group-hover:border-terracotta/40"
-                  }`}
-                >
-                  <span className="relative w-full h-full flex items-center justify-center">
-                    {c.icon ? (
+                <span className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-200">
+                  {hasCustomIcon && c.icon ? (
+                    <span className="relative w-11 h-11 rounded-full gilded-icon-plinth flex items-center justify-center p-1.5">
                       <Image
                         src={c.icon}
                         alt=""
                         fill
                         unoptimized={!c.icon.startsWith("/")}
-                        className={`object-contain ${
-                          c.icon.includes("kulturel-miras") ? "scale-[1.25]" : ""
-                        }`}
+                        className="object-contain p-1.5 drop-shadow-[0_2px_3px_rgba(92,64,18,0.35)]"
                       />
-                    ) : (
-                      <span className="text-lg font-semibold text-terracotta">
-                        {c.label.trim().charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </span>
+                    </span>
+                  ) : (
+                    <LuxuryCategoryIcon
+                      categoryKey={c.key || c.label}
+                      className="w-12 h-12 sm:w-14 sm:h-14"
+                    />
+                  )}
                 </span>
                 <span
-                  className={`text-[10.5px] sm:text-[11.5px] tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
+                  className={`text-[10.5px] sm:text-[11px] tracking-tight text-center leading-[1.18] w-full line-clamp-2 transition-colors ${
                     isSelected
-                      ? "text-terracotta font-semibold"
-                      : "text-ink-muted font-medium group-hover:text-ink"
+                      ? "text-[#5C3D0E] font-bold"
+                      : "text-[#2A2116] font-semibold group-hover:text-[#6E4912]"
                   }`}
                 >
                   {c.label}
@@ -74,3 +76,4 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
     </div>
   );
 }
+

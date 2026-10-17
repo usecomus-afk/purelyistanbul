@@ -132,7 +132,10 @@ export function mergeCategoryConfigs(overrides: Partial<CategoryConfig>[]): Cate
     if (!o) return { ...base };
     const useBaseLabel = !o.label || STALE_DEFAULT_LABELS.has(o.label);
     const resolvedLabel = useBaseLabel ? base.label : o.label!;
-    const useBaseIcon = !o.icon || o.icon.startsWith("/icons/categories/");
+    const useBaseIcon =
+      !o.icon ||
+      o.icon.startsWith("/icons/categories/") ||
+      o.icon.startsWith("/icons/menu/");
     return {
       ...base,
       ...o,

@@ -36,6 +36,7 @@ import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-li
 import { FirestoreService } from "@/lib/firestore-service";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
 import { AiChatDrawer } from "@/components/guest/ai-chat-drawer";
+import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
 import { toast } from "sonner";
 
 type DurationBucket = "" | "short" | "half" | "full";
@@ -351,19 +352,11 @@ export function MarketplaceHome() {
                         }}
                         className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-sand-bg transition group"
                       >
-                        <div className="w-6 flex justify-center shrink-0">
+                        <div className="w-7 h-7 flex items-center justify-center shrink-0">
                           {filterCategory === c.key ? (
                             <Check className="w-5 h-5 text-terracotta" strokeWidth={2.5} />
                           ) : (
-                            c.icon && (
-                              <Image
-                                src={c.icon}
-                                alt=""
-                                width={24}
-                                height={24}
-                                className="object-contain opacity-50 group-hover:opacity-100 transition"
-                              />
-                            )
+                            <LuxuryCategoryIcon categoryKey={c.key || c.label} className="w-7 h-7" />
                           )}
                         </div>
                         <span

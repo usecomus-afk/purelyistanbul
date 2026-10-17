@@ -308,7 +308,7 @@ export function LuxuryCategoryIcon({
           />
           <path
             d="M39.8 41.5L42 43.8L46.5 39"
-            stroke="#1D2025"
+            stroke="#5C3F10"
             strokeWidth="1.7"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -356,7 +356,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 1. Historic Routes & Fast-Track Walks — Historic Mosque Dome & Flanking Minarets
-    if (key.includes('tarih') || key.includes('history') || key.includes('historic') || key.includes('müze')) {
+    if (key === 'cat-2' || key.includes('tarih') || key.includes('history') || key.includes('historic') || key.includes('müze')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Left & Right Minarets */}
@@ -419,7 +419,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 2. Culinary & Street Food Trails — Domed Cloche Platter & Crystal Wine Goblet
-    if (key.includes('gastro') || key.includes('gurme') || key.includes('culinary') || key.includes('street food')) {
+    if (key === 'cat-3' || key.includes('gastro') || key.includes('gurme') || key.includes('culinary') || key.includes('street food')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Wine Bottle / Carafe Neck behind */}
@@ -482,7 +482,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 3. Arts & Whirling Dervishes — Graceful Semazen Silhouette & Sparkles
-    if (key.includes('sanat') || key.includes('semazen') || key.includes('dervish') || key.includes('arts &')) {
+    if (key === 'cat-5' || key.includes('sanat') || key.includes('semazen') || key.includes('dervish') || key.includes('arts &')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Tall Sikke Hat */}
@@ -531,7 +531,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 4. Curated Artisan & Bazaar Shopping — Luxury Boutique Bag & Grand Bazaar Lantern
-    if (key.includes('alışveriş') || key.includes('çarşı') || key.includes('shopping') || key.includes('bazaar') || key.includes('artisan')) {
+    if (key === 'cat-8' || key.includes('alışveriş') || key.includes('çarşı') || key.includes('shopping') || key.includes('bazaar') || key.includes('artisan')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Rear Boutique Gift Bag */}
@@ -576,7 +576,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 5. Bosphorus & Boat Cruises — Sleek Luxury Motor Yacht & Waves
-    if (key.includes('boğaz') || key.includes('yat') || key.includes('bosphorus') || key.includes('boat') || key.includes('cruise')) {
+    if (key === 'cat-1' || key.includes('boğaz') || key.includes('yat') || key.includes('bosphorus') || key.includes('boat') || key.includes('cruise')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Upper Cabin & Flybridge */}
@@ -628,7 +628,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 6. Traditional Turkish Bath & Hammam Rituals — Fluted Marble Basin, Lotus & Folded Towels
-    if (key.includes('hamam') || key.includes('hammam') || key.includes('spa') || key.includes('bath')) {
+    if (key === 'cat-4' || key.includes('hamam') || key.includes('hammam') || key.includes('spa') || key.includes('bath')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Lotus / Spa Blossom Above */}
@@ -684,7 +684,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 7. Rooftop Photography & Costumes — Luxury Camera with 3D Metallic Lens & Sparkles
-    if (key.includes('fotoğraf') || key.includes('kostüm') || key.includes('photo') || key.includes('rooftop')) {
+    if (key === 'cat-6' || key.includes('fotoğraf') || key.includes('kostüm') || key.includes('photo') || key.includes('rooftop')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Camera Body */}
@@ -720,12 +720,12 @@ export function LuxuryCategoryIcon({
             cx="32"
             cy="36.5"
             r="5.2"
-            fill="#FAF7F1"
+            fill="#FFFDF5"
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.5"
           />
           {/* Flash & Sparkle Star */}
-          <circle cx="45.5" cy="28.5" r="1.4" fill="#8E7252" />
+          <circle cx="45.5" cy="28.5" r="1.4" fill="#B6862C" />
           <path
             d="M49 12C49 14.5 49.8 15.3 52.3 15.3C49.8 15.3 49 16.1 49 18.6C49 16.1 48.2 15.3 45.7 15.3C48.2 15.3 49 14.5 49 12Z"
             fill={`url(#${goldFillId})`}
@@ -738,7 +738,7 @@ export function LuxuryCategoryIcon({
     }
 
     // 8. Private VIP Airport Transfers (Licensed Fleets) — Executive Luxury Sedan & VIP Crown Shield
-    if (key.includes('transfer') || key.includes('vip') || key.includes('airport')) {
+    if (key === 'cat-7' || key.includes('transfer') || key.includes('vip') || key.includes('airport')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* VIP Crown / Shield Above */}
@@ -767,15 +767,15 @@ export function LuxuryCategoryIcon({
           />
           {/* Front & Rear 3D Wheels */}
           <circle cx="19.5" cy="46.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.65" />
-          <circle cx="19.5" cy="46.5" r="1.6" fill="#22252A" />
+          <circle cx="19.5" cy="46.5" r="1.6" fill="#7A5618" />
           <circle cx="44.5" cy="46.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.65" />
-          <circle cx="44.5" cy="46.5" r="1.6" fill="#22252A" />
+          <circle cx="44.5" cy="46.5" r="1.6" fill="#7A5618" />
         </g>
       );
     }
 
     // 9. In-Stay Breakfast & Gourmet Catering — Fine Porcelain Plate, Fork & Knife
-    if (key.includes('breakfast') || key.includes('catering') || key.includes('restoran') || key.includes('restaurant')) {
+    if (key === 'cat-9' || key.includes('breakfast') || key.includes('catering') || key.includes('restoran') || key.includes('restaurant')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Left Fork */}
@@ -866,51 +866,106 @@ export function LuxuryCategoryIcon({
     );
   };
 
+  const plinthFillId = `cat-plinth-${uid}`;
+  const plinthRimId = `cat-plinth-rim-${uid}`;
+  const plinthShadowId = `cat-plinth-shadow-${uid}`;
+
   return (
     <svg
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`${className} overflow-visible`}
       aria-hidden="true"
     >
       <defs>
-        {/* Left-Charcoal (#1D2025) to Right-Bronze (#8E7252) Dual-Tone Metallic Stroke */}
-        <linearGradient id={strokeGradId} x1="10" y1="14" x2="54" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1D2025" />
-          <stop offset="48%" stopColor="#3B352F" />
-          <stop offset="100%" stopColor="#8E7252" />
+        {/* 24K Gilded Gold & Burnished Bronze Relief Contour Stroke */}
+        <linearGradient id={strokeGradId} x1="10" y1="12" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#6B4812" />
+          <stop offset="28%" stopColor="#C4922A" />
+          <stop offset="52%" stopColor="#EAC864" />
+          <stop offset="76%" stopColor="#9C6E1B" />
+          <stop offset="100%" stopColor="#583A0D" />
         </linearGradient>
 
-        {/* Warm Metallic Bronze Stroke */}
-        <linearGradient id={bronzeGradId} x1="26" y1="12" x2="56" y2="54" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#A68763" />
-          <stop offset="50%" stopColor="#826544" />
-          <stop offset="100%" stopColor="#5E472E" />
+        {/* Luminous Gilded Gold Leaf Accent & Filigree Stroke */}
+        <linearGradient id={bronzeGradId} x1="18" y1="10" x2="56" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#DEB54A" />
+          <stop offset="42%" stopColor="#F7DF8A" />
+          <stop offset="72%" stopColor="#B88624" />
+          <stop offset="100%" stopColor="#724E12" />
         </linearGradient>
 
-        {/* 3D Embossed Champagne Gold Fill */}
-        <linearGradient id={goldFillId} x1="16" y1="14" x2="50" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FBF6EC" />
-          <stop offset="52%" stopColor="#E6D5B8" />
-          <stop offset="100%" stopColor="#C8AE86" />
+        {/* 3D Embossed 24K Gold Leaf Fill */}
+        <linearGradient id={goldFillId} x1="14" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFCEE" />
+          <stop offset="28%" stopColor="#F9E292" />
+          <stop offset="65%" stopColor="#D8A83B" />
+          <stop offset="100%" stopColor="#9B6D1A" />
         </linearGradient>
 
-        {/* Soft 3D Warm Ivory / Champagne Fill */}
-        <linearGradient id={champagneFillId} x1="14" y1="16" x2="50" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFDF9" stopOpacity="0.95" />
-          <stop offset="55%" stopColor="#F4EDE1" stopOpacity="0.88" />
-          <stop offset="100%" stopColor="#E5D8C3" stopOpacity="0.85" />
+        {/* Soft 3D Gilded Pearl & Champagne Gold Relief Fill */}
+        <linearGradient id={champagneFillId} x1="12" y1="14" x2="50" y2="52" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFDF6" stopOpacity="0.98" />
+          <stop offset="45%" stopColor="#F9EAC1" stopOpacity="0.95" />
+          <stop offset="82%" stopColor="#E5C578" stopOpacity="0.92" />
+          <stop offset="100%" stopColor="#C6993E" stopOpacity="0.9" />
         </linearGradient>
 
-        {/* Soft 3D Embossed Drop Shadow */}
-        <filter id={shadowFilterId} x="-12%" y="-10%" width="124%" height="128%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="0" dy="2" stdDeviation="1.6" floodColor="#2A2118" floodOpacity="0.18" />
-          <feDropShadow dx="0" dy="0.5" stdDeviation="0.4" floodColor="#FFFFFF" floodOpacity="0.85" />
+        {/* Raised 3D Medallion Plinth Dome Fill */}
+        <radialGradient id={plinthFillId} cx="36%" cy="26%" r="74%">
+          <stop offset="0%" stopColor="#FFFDF8" />
+          <stop offset="48%" stopColor="#FAF0D7" />
+          <stop offset="82%" stopColor="#ECD8AE" />
+          <stop offset="100%" stopColor="#DAB97B" />
+        </radialGradient>
+
+        {/* Raised 3D Medallion Bevel Rim */}
+        <linearGradient id={plinthRimId} x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFF7DC" />
+          <stop offset="35%" stopColor="#DFB755" />
+          <stop offset="70%" stopColor="#B58626" />
+          <stop offset="100%" stopColor="#7D5814" />
+        </linearGradient>
+
+        {/* Plinth Elevation Shadow */}
+        <filter id={plinthShadowId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="2" stdDeviation="0.4" floodColor="#B89452" floodOpacity="0.7" />
+          <feDropShadow dx="0" dy="4.5" stdDeviation="2.4" floodColor="#3A260A" floodOpacity="0.22" />
+        </filter>
+
+        {/* 3D Bas-Relief Embossed Gold ("Yaldızlı Kabartılı") Filter */}
+        <filter id={shadowFilterId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="-0.85" dy="-1.05" stdDeviation="0.38" floodColor="#FFFDF5" floodOpacity="0.96" />
+          <feDropShadow dx="0.85" dy="1.35" stdDeviation="0.35" floodColor="#6E4B12" floodOpacity="0.62" />
+          <feDropShadow dx="0" dy="3.2" stdDeviation="1.8" floodColor="#3A2608" floodOpacity="0.28" />
         </filter>
       </defs>
+
+      {/* 3D Embossed Gilded Medallion Plinth Base */}
+      <g filter={`url(#${plinthShadowId})`}>
+        <circle
+          cx="32"
+          cy="32.5"
+          r="27.2"
+          fill={`url(#${plinthFillId})`}
+          stroke={`url(#${plinthRimId})`}
+          strokeWidth="1.45"
+        />
+        <circle
+          cx="32"
+          cy="32.5"
+          r="24.6"
+          fill="none"
+          stroke={`url(#${bronzeGradId})`}
+          strokeWidth="0.75"
+          strokeDasharray="2.2 2.2"
+          opacity="0.72"
+        />
+      </g>
 
       {renderPaths()}
     </svg>
   );
 }
+

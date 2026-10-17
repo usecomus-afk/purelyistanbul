@@ -263,7 +263,13 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     const catKey = item.catKey;
     const cfg = cfgByKey.get(catKey);
     const def = MARKETPLACE_CATEGORIES[i];
-    const iconEdited = !!cfg && !!def && cfg.icon !== def.icon && !!cfg.icon;
+    const iconEdited =
+      !!cfg &&
+      !!def &&
+      cfg.icon !== def.icon &&
+      !!cfg.icon &&
+      !cfg.icon.startsWith('/icons/categories/') &&
+      !cfg.icon.startsWith('/icons/menu/');
     return {
       key: item.key,
       rawKey: item.rawKey,
@@ -479,25 +485,27 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
                 }}
-                className="luxury-service-card px-3 py-3 flex flex-col items-center text-center justify-center gap-1.5 min-h-[126px] sm:min-h-[144px] group relative cursor-pointer"
+                className="luxury-service-card px-3 py-3.5 flex flex-col items-center text-center justify-center gap-2 min-h-[132px] sm:min-h-[150px] group relative cursor-pointer"
               >
-                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon (özel ikon yüklendiyse o gösterilir) */}
-                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
+                {/* 3D Gilded Embossed Icon (özel ikon yüklendiyse o gösterilir) */}
+                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
                   {cat.customIcon ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={cat.customIcon}
-                      alt={cat.key}
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm"
-                    />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full gilded-icon-plinth flex items-center justify-center p-2.5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={cat.customIcon}
+                        alt={cat.key}
+                        className="w-full h-full object-contain drop-shadow-[0_2px_3px_rgba(92,64,18,0.35)]"
+                      />
+                    </div>
                   ) : (
-                    <LuxuryCategoryIcon categoryKey={cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
+                    <LuxuryCategoryIcon categoryKey={cat.catKey || cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
                   )}
                 </div>
 
                 {/* Clean Bold Modern Sans-Serif Card Label */}
                 <div className="w-full px-1">
-                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block">
+                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#221A0F] group-hover:text-[#5C3D0E] leading-[1.18] block transition-colors">
                     {cat.key}
                   </span>
                 </div>
