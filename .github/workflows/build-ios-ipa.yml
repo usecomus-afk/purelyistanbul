@@ -45,8 +45,8 @@ jobs:
             echo "Custom Server URL specified: ${{ inputs.server_url }}"
             TARGET_URL="${{ inputs.server_url }}"
           else
-            echo "Setting default live server URL: https://purelyistanbul.com"
-            TARGET_URL="https://purelyistanbul.com"
+            echo "Setting default live server URL: https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app"
+            TARGET_URL="https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app"
           fi
           echo "CAPACITOR_SERVER_URL=$TARGET_URL" >> $GITHUB_ENV
           node -e "
@@ -54,6 +54,7 @@ jobs:
             const c = JSON.parse(fs.readFileSync('capacitor.config.json', 'utf8'));
             c.server = c.server || {};
             c.server.url = '$TARGET_URL';
+            c.ios = { contentInset: 'never', backgroundColor: '#F6F1E7', preferredContentMode: 'mobile' };
             fs.writeFileSync('capacitor.config.json', JSON.stringify(c, null, 2));
             console.log('Updated capacitor.config.json server.url to:', c.server.url);
           "
