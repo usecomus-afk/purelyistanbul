@@ -20,7 +20,7 @@ import {
   withdrawListingToDraft
 } from "@/lib/marketplace/listings";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
-import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
+import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 
 const CURRENCIES = ["TRY", "USD", "EUR"];
 
@@ -42,6 +42,7 @@ function EditListingInner() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const categoryConfigs = useCategoryConfigs();
 
   useEffect(() => {
     const unsub = watchListing(id, (data) => {
@@ -251,11 +252,13 @@ function EditListingInner() {
                 className="w-full rounded-xl border border-sand-border bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               >
                 <option value="">Kategori seçin</option>
-                {MARKETPLACE_CATEGORIES.filter((c) => c.type === "experience").map((c) => (
-                  <option key={c.key} value={c.key}>
-                    {c.label}
-                  </option>
-                ))}
+                {categoryConfigs
+                  .filter((c) => c.type === "experience" && (!c.hidden || c.key === category))
+                  .map((c) => (
+                    <option key={c.key} value={c.key}>
+                      {c.label}
+                    </option>
+                  ))}
               </select>
             )}
           </div>

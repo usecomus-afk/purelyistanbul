@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Check, ImageOff, MapPin, Users } from "lucide-react";
 import { watchListing, bumpListingStat } from "@/lib/marketplace/listings";
-import { getCategoryByKey } from "@/lib/marketplace/categories";
+import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
 export default function ListingDetailPage() {
@@ -15,6 +15,7 @@ export default function ListingDetailPage() {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
+  const categoryConfigs = useCategoryConfigs();
 
   useEffect(() => {
     const unsub = watchListing(
@@ -96,7 +97,7 @@ export default function ListingDetailPage() {
           <div className="flex items-center gap-2 text-[13.5px] text-ink-muted border-b border-sand-border/70 pb-7">
             <Users className="w-4 h-4" strokeWidth={1.75} />
             {listing.capacity} misafire kadar · {listing.type === "stay" ? "Konaklama" : "Deneyim"}
-            {listing.category ? ` · ${getCategoryByKey(listing.category)?.label ?? listing.category}` : ""}
+            {listing.category ? ` · ${categoryConfigs.find((c) => c.key === listing.category)?.label ?? listing.category}` : ""}
           </div>
 
           <div>

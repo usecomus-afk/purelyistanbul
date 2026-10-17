@@ -6,7 +6,9 @@ import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
-import { getCategoryCode } from '@/lib/marketplace/seed-listings';
+import { getExperienceCategoryKey } from '@/lib/marketplace/seed-listings';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace/categories';
+import { useCategoryConfigs } from '@/lib/marketplace/use-category-configs';
 import { HotelHeader } from '@/components/guest/hotel-header';
 import { InRoomServices } from '@/components/guest/in-room-services';
 import { LuxuryCategoryIcon } from '@/components/guest/luxury-category-icon';
@@ -35,6 +37,19 @@ import {
   ShieldCheck, 
   Clock, Camera 
 } from 'lucide-react';
+
+interface ShowcaseEntry {
+  /** Misafirin dilinde gösterilecek kategori adı */
+  key: string;
+  rawKey: string;
+  /** Panel kategori anahtarı (cat-1 … cat-12 veya özel cat-c-xxxx) */
+  catKey: string;
+  desc: string;
+  /** Panelden yüklenen özel ikon (yoksa hazır 3D ikon kullanılır) */
+  customIcon?: string;
+  order: number;
+  tab?: 'invest';
+}
 
 interface GuestConciergeViewProps {
   initialHotelId?: string;
@@ -209,10 +224,15 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
   const t = getT(lang);
 
-  // Extract unique categories
-  const categories = ['all', ...Array.from(new Set(allExperiences.map(e => e.category)))];
+  // Panelden düzenlenen kategoriler (ad, ikon, sıra, gizli/açık) — web ile ortak
+  const categoryConfigs = useCategoryConfigs();
+  const hiddenCategoryKeys = new Set(categoryConfigs.filter((c) => c.hidden).map((c) => c.key));
+  // Gizlenen kategorilerin ilanları uygulamada hiç görünmez
+  const visibleExperiences = allExperiences.filter(
+    (e) => !hiddenCategoryKeys.has(getExperienceCategoryKey(e))
+  );
 
-  const categoryShowcase = [
+  const builtinShowcase = [
     { key: t.categoriesList.history.title, rawKey: "Tarih & Müzeler", targetCategory: "Tarih & Müzeler", iconPath: '/icons/categories/tarih-muzeler.png', count: 8, desc: t.categoriesList.history.desc },
     { key: t.categoriesList.gastronomy.title, rawKey: "Gastronomi & Gurme", targetCategory: "Gastronomi & Gurme", iconPath: '/icons/categories/gastronomi-gurme.png', count: 6, desc: t.categoriesList.gastronomy.desc },
     { key: t.categoriesList.art.title, rawKey: "Sanat & Semazen", targetCategory: "Sanat & Semazen", iconPath: '/icons/categories/sanat-semazen.png', count: 4, desc: t.categoriesList.art.desc },
@@ -225,21 +245,65 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
     { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "Medikal Estetik & Güzellik", targetCategory: "Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" },
     { key: t.categoriesList.invest.title, rawKey: "İstanbul'da Yatırım", targetCategory: "İstanbul'da Yatırım", iconPath: '/icons/categories/invest.png', count: 20, desc: t.categoriesList.invest.desc, tab: 'invest' }
-  ].filter((cat) => {
-    const code = getCategoryCode(cat.rawKey);
-    const expCount = allExperiences.filter(
-      (e) => e.category === cat.rawKey || getCategoryCode(e.category) === code
-    ).length;
-    if ((cat as any).tab === 'invest') {
-      return activePropertiesCount > 0 || expCount > 0;
-    }
-    return expCount > 0;
+  ];
+
+  const cfgByKey = new Map(categoryConfigs.map((c) => [c.key, c]));
+  const localizedAdminLabel = (cfg: { label: string; labelEn?: string }) =>
+    lang === 'tr' ? cfg.label : (cfg.labelEn || cfg.label);
+
+  const builtinEntries: ShowcaseEntry[] = builtinShowcase.map((item, i) => {
+    const catKey = `cat-${i + 1}`;
+    const cfg = cfgByKey.get(catKey);
+    const def = MARKETPLACE_CATEGORIES[i];
+    const labelEdited = !!cfg && !!def && cfg.label !== def.label;
+    const iconEdited = !!cfg && !!def && cfg.icon !== def.icon && !!cfg.icon;
+    return {
+      key: labelEdited && cfg ? localizedAdminLabel(cfg) : item.key,
+      rawKey: item.rawKey,
+      catKey,
+      desc: cfg?.description || item.desc,
+      customIcon: iconEdited && cfg ? cfg.icon : undefined,
+      order: cfg?.order ?? i,
+      tab: (item as { tab?: 'invest' }).tab,
+    };
   });
 
+  const customEntries: ShowcaseEntry[] = categoryConfigs
+    .filter((c) => c.custom)
+    .map((c) => ({
+      key: localizedAdminLabel(c),
+      rawKey: c.label,
+      catKey: c.key,
+      desc: c.description || '',
+      customIcon: c.icon || undefined,
+      order: c.order,
+    }));
+
+  const categoryShowcase: ShowcaseEntry[] = [...builtinEntries, ...customEntries]
+    .filter((cat) => {
+      if (cfgByKey.get(cat.catKey)?.hidden) return false;
+      const expCount = visibleExperiences.filter(
+        (e) => getExperienceCategoryKey(e) === cat.catKey
+      ).length;
+      if (cat.tab === 'invest') {
+        return activePropertiesCount > 0 || expCount > 0;
+      }
+      return expCount > 0;
+    })
+    .sort((a, b) => a.order - b.order);
+
+  // Deneyimler sekmesindeki kategori çipleri (yatırım kartı ayrı sekmeye gider)
+  const categories = ['all', ...categoryShowcase.filter((c) => c.tab !== 'invest').map((c) => c.catKey)];
+
   // Filter experiences (admin-suspended listings never reach the guest catalog)
-  const filteredExperiences = allExperiences.filter(e => {
+  const filteredExperiences = visibleExperiences.filter(e => {
     if (e.status === 'suspended') return false;
-    const matchesCat = selectedCategory === 'all' || e.category === selectedCategory;
+    const expCatKey = getExperienceCategoryKey(e);
+    const matchesCat =
+      selectedCategory === 'all' ||
+      expCatKey === selectedCategory ||
+      e.category === selectedCategory ||
+      expCatKey === getExperienceCategoryKey({ category: selectedCategory });
     const matchesSearch = !searchQuery || 
       e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -260,6 +324,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const getCategoryLabel = (categoryRaw: string) => {
     if (categoryRaw === 'all') return t.allCategories;
+    const dynamicEntry = categoryShowcase.find((c) => c.catKey === categoryRaw);
+    if (dynamicEntry) return dynamicEntry.key;
     const cleaned = categoryRaw.replace(/^[0-9]+\.\s*/, '');
     const lower = cleaned.toLowerCase();
     if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
@@ -384,7 +450,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
             {/* Experiences Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
-              {filteredExperiences.map((exp) => (
+              {(filteredExperiences.length > 0 || searchQuery.trim().length > 0
+                ? filteredExperiences
+                : visibleExperiences
+              ).map((exp) => (
                 <ExperienceCard
                   key={exp.id}
                   experience={exp}
@@ -399,25 +468,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 />
               ))}
             </div>
-
-            {filteredExperiences.length === 0 && (
-              <div className="luxury-service-card text-center py-10 p-6 space-y-2.5">
-                <Compass className="w-10 h-10 text-[#8E7252] mx-auto stroke-[1.6]" />
-                <h3 className="font-luxury-serif text-base font-bold text-[#141414]">{t.noRequests}</h3>
-                <p className="font-luxury-sans text-xs text-[#5C4938] max-w-xs mx-auto">
-                  Arama kriterlerinize uygun ilan bulunamadı. Lütfen filtreyi temizleyiniz.
-                </p>
-                <button
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    setSearchQuery('');
-                  }}
-                  className="mt-2 font-luxury-sans text-xs font-bold text-white bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] px-4 py-2 rounded-xl shadow-sm cursor-pointer"
-                >
-                  {t.allCategories}
-                </button>
-              </div>
-            )}
           </div>
         )}
 
@@ -436,9 +486,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     }
                     return;
                   }
-                  const target = (cat as any).targetCategory || cat.rawKey;
-                  const matched = categories.find(c => c === target || c.toLowerCase().includes(target.toLowerCase())) || target;
-                  setSelectedCategory(matched);
+                  setSearchQuery('');
+                  setSelectedCategory(cat.catKey);
                   setActiveTab('experiences');
                   if (typeof window !== 'undefined') {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -446,9 +495,18 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 }}
                 className="luxury-service-card px-3 py-3 flex flex-col items-center text-center justify-center gap-1.5 min-h-[126px] sm:min-h-[144px] group relative cursor-pointer"
               >
-                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
+                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon (özel ikon yüklendiyse o gösterilir) */}
                 <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
-                  <LuxuryCategoryIcon categoryKey={cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
+                  {cat.customIcon ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={cat.customIcon}
+                      alt={cat.key}
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm"
+                    />
+                  ) : (
+                    <LuxuryCategoryIcon categoryKey={cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
+                  )}
                 </div>
 
                 {/* Clean Bold Modern Sans-Serif Card Label */}

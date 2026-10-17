@@ -211,6 +211,30 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // 19b. Site Kategorileri (Site Categories) — herkes okuyabilir (halka açık site ve misafir uygulaması),
+    // sadece admin yazabilir. Belge ID = kategori anahtarı (örn. cat-1, cat-c-1699999999).
+    match /site_categories/{categoryKey} {
+      function isValidSiteCategory(d) {
+        return d.keys().hasOnly(['label', 'labelEn', 'order', 'hidden', 'description', 'icon', 'deleted', 'custom', 'key', 'type', 'updatedAt']) &&
+          d.keys().hasAll(['label', 'order', 'hidden']) &&
+          d.label is string && d.label.size() >= 1 && d.label.size() <= 80 &&
+          (d.order is int || d.order is float) &&
+          d.hidden is bool &&
+          (!('labelEn' in d) || (d.labelEn is string && d.labelEn.size() <= 80)) &&
+          (!('description' in d) || (d.description is string && d.description.size() <= 300)) &&
+          (!('icon' in d) || (d.icon is string && d.icon.size() <= 200000)) &&
+          (!('deleted' in d) || d.deleted is bool) &&
+          (!('custom' in d) || d.custom is bool) &&
+          (!('key' in d) || (d.key is string && d.key.size() <= 100)) &&
+          (!('type' in d) || (d.type is string && d.type in ['experience', 'stay'])) &&
+          (!('updatedAt' in d) || (d.updatedAt is string && d.updatedAt.size() <= 40));
+      }
+
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidSiteCategory(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
     // 20. Oda ve Konsiyerj Talepleri (Service Requests) — misafir oluşturabilir ve takip edebilir,
     // durum güncelleme ve silme işlemleri admin veya otel/pilot masası tarafından yapılır.
     match /service_requests/{requestId} {

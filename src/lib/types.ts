@@ -83,6 +83,8 @@ export type ExperienceStatus = 'active' | 'suspended';
 export interface Experience {
   id: string;
   category: string;
+  /** Panel kategorisine açık bağ (örn. "cat-5" veya "cat-c-xxxx"). Yoksa `category` metninden tahmin edilir. */
+  categoryKey?: string;
   provider: string;
   title: string;
   desc?: string;

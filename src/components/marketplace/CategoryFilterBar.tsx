@@ -39,14 +39,21 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
                   }`}
                 >
                   <span className="relative w-full h-full flex items-center justify-center">
-                    <Image
-                      src={c.icon}
-                      alt={c.label}
-                      fill
-                      className={`object-contain drop-shadow-xs ${
-                        c.icon.includes('kulturel-miras') ? 'scale-[1.25]' : ''
-                      }`}
-                    />
+                    {c.icon ? (
+                      <Image
+                        src={c.icon}
+                        alt={c.label}
+                        fill
+                        unoptimized={!c.icon.startsWith("/")}
+                        className={`object-contain drop-shadow-xs ${
+                          c.icon.includes('kulturel-miras') ? 'scale-[1.25]' : ''
+                        }`}
+                      />
+                    ) : (
+                      <span className="text-lg font-bold text-amber-700">
+                        {c.label.trim().charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </span>
                 </span>
                 <span

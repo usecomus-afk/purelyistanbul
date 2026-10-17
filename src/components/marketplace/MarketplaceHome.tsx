@@ -11,6 +11,7 @@ import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { CategoryShelf } from "@/components/marketplace/CategoryShelf";
 import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
+import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
@@ -126,10 +127,18 @@ export function MarketplaceHome() {
     });
     return Array.from(map.values());
   }, [listings, catalogListings]);
-  const withCover = useMemo(() => source.filter((l) => !!l.coverImageUrl), [source]);
+  const categoryConfigs = useCategoryConfigs();
+  const hiddenCategoryKeys = useMemo(
+    () => new Set(categoryConfigs.filter((c) => c.hidden).map((c) => c.key)),
+    [categoryConfigs]
+  );
+  const withCover = useMemo(
+    () => source.filter((l) => !!l.coverImageUrl && !hiddenCategoryKeys.has(l.category)),
+    [source, hiddenCategoryKeys]
+  );
   const visibleCategories = useMemo(
-    () => MARKETPLACE_CATEGORIES.filter((c) => withCover.some((l) => l.category === c.key)),
-    [withCover]
+    () => categoryConfigs.filter((c) => !c.hidden && withCover.some((l) => l.category === c.key)),
+    [categoryConfigs, withCover]
   );
 
   const searchResults = useMemo(() => {
@@ -439,7 +448,7 @@ export function MarketplaceHome() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl sm:text-2xl font-semibold text-ink">
-                  {MARKETPLACE_CATEGORIES.find(c => c.key === filterCategory)?.label}
+                  {categoryConfigs.find(c => c.key === filterCategory)?.label}
                 </h2>
               </div>
               <button
@@ -470,7 +479,7 @@ export function MarketplaceHome() {
       ) : (
         // Varsayılan görünüm: her kategori kendi yatay kayan rafında.
         <div className="pb-6">
-          {MARKETPLACE_CATEGORIES.map((c) => (
+          {categoryConfigs.filter((c) => !c.hidden).map((c) => (
             <CategoryShelf
               key={c.key}
               id={`shelf-${c.key}`}

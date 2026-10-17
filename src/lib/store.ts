@@ -1,5 +1,6 @@
 import { Hotel, Room, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
 import { UserPreferences } from '@/types/comusAi';
+import { CategoryConfig, mergeCategoryConfigs } from '@/lib/marketplace/categories';
 import rawHotels from '@/data/hotels.json';
 import rawExperiences from '@/data/experiences.json';
 import rawProperties from '@/data/properties.json';
@@ -294,19 +295,74 @@ export const XeniosStore = {
     }
   },
 
+  normalizeExperiences(list: Experience[]): Experience[] {
+    const removedLegacyIds = new Set([
+      'exp-19', 'exp-20', 'exp-21', 'exp-22', 'exp-23',
+      'exp-30', 'exp-31', 'exp-32',
+      'exp-36', 'exp-37', 'exp-38', 'exp-39', 'exp-40',
+      'exp-49', 'exp-50', 'exp-51', 'exp-52'
+    ]);
+    let deletedIds = new Set<string>();
+    try {
+      const rawDel = safeGet('xenios_deleted_experience_ids');
+      if (rawDel) {
+        const parsedDel = JSON.parse(rawDel);
+        if (Array.isArray(parsedDel)) deletedIds = new Set(parsedDel);
+      }
+    } catch {}
+
+    const seedList = rawExperiences as Experience[];
+    const seedMap = new Map<string, Experience>(seedList.map((e) => [e.id, e]));
+    const itemMap = new Map<string, Experience>();
+    const customItems: Experience[] = [];
+
+    for (const item of list) {
+      if (!item || !item.id || removedLegacyIds.has(item.id) || deletedIds.has(item.id)) continue;
+      if (itemMap.has(item.id)) continue;
+      itemMap.set(item.id, item);
+      if (!seedMap.has(item.id)) {
+        customItems.push(item);
+      }
+    }
+
+    const mergedSeedItems: Experience[] = [];
+    for (const seed of seedList) {
+      if (deletedIds.has(seed.id)) continue;
+      const existing = itemMap.get(seed.id);
+      if (existing) {
+        const isLegacyNumbered = !existing.category || /^[0-9]+\./.test(existing.category.trim());
+        mergedSeedItems.push({
+          ...seed,
+          ...existing,
+          category: isLegacyNumbered ? seed.category : existing.category,
+          categoryTag: existing.categoryTag || seed.categoryTag,
+          iconName: existing.iconName || seed.iconName,
+          image: existing.image || seed.image,
+        });
+      } else {
+        mergedSeedItems.push(seed);
+      }
+    }
+
+    return [...customItems, ...mergedSeedItems];
+  },
+
   getExperiences(): Experience[] {
     try {
       const stored = safeGet('xenios_custom_experiences');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return this.normalizeExperiences(parsed);
+        }
       }
     } catch (e) {}
-    return rawExperiences as Experience[];
+    return this.normalizeExperiences(rawExperiences as Experience[]);
   },
 
   saveExperiences(exps: Experience[]) {
-    safeSet('xenios_custom_experiences', JSON.stringify(exps));
+    const normalized = this.normalizeExperiences(exps);
+    safeSet('xenios_custom_experiences', JSON.stringify(normalized));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_experiences_updated'));
     }
@@ -362,6 +418,14 @@ export const XeniosStore = {
   },
 
   deleteExperience(id: string) {
+    try {
+      const rawDel = safeGet('xenios_deleted_experience_ids');
+      const arr: string[] = rawDel ? JSON.parse(rawDel) : [];
+      if (!arr.includes(id)) {
+        arr.push(id);
+        safeSet('xenios_deleted_experience_ids', JSON.stringify(arr));
+      }
+    } catch {}
     const list = this.getExperiences().filter(e => e.id !== id);
     this.saveExperiences(list);
     import('./firestore-service').then(({ FirestoreService }) => {
@@ -425,6 +489,74 @@ export const XeniosStore = {
     import('./firestore-service').then(({ FirestoreService }) => {
       FirestoreService.deleteSupplierRemote(id).catch(() => {});
     }).catch(() => {});
+  },
+
+  // Site Kategorileri — panelden düzenlenebilir (web + mobil uygulama ortak okur)
+  getCategoryOverrides(): Partial<CategoryConfig>[] {
+    try {
+      const stored = safeGet('xenios_site_categories');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  },
+
+  saveCategoryOverrides(list: Partial<CategoryConfig>[]) {
+    safeSet('xenios_site_categories', JSON.stringify(list));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_categories_updated'));
+    }
+  },
+
+  /** Varsayılan + panel düzenlemeleri birleşik, sıralı kategori listesi (gizliler dahil). */
+  getCategoryConfigs(): CategoryConfig[] {
+    return mergeCategoryConfigs(this.getCategoryOverrides());
+  },
+
+  /** Kategori kaydını (tam alanlarıyla) yerel olarak kaydeder ve Firestore'a yansıtır. */
+  upsertCategoryConfig(cfg: CategoryConfig) {
+    const stamped: CategoryConfig = { ...cfg, updatedAt: new Date().toISOString() };
+    const list = this.getCategoryOverrides().filter((o) => o.key !== stamped.key);
+    list.push(stamped);
+    this.saveCategoryOverrides(list);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      FirestoreService.upsertCategory(stamped).catch(() => {});
+    }).catch(() => {});
+  },
+
+  /** Birden fazla kategoriyi tek seferde (örn. sıralama) kaydeder. */
+  upsertCategoryConfigs(cfgs: CategoryConfig[]) {
+    const stampedAt = new Date().toISOString();
+    const stamped = cfgs.map((c) => ({ ...c, updatedAt: stampedAt }));
+    const keys = new Set(stamped.map((c) => c.key));
+    const list = this.getCategoryOverrides().filter((o) => !o.key || !keys.has(o.key));
+    this.saveCategoryOverrides([...list, ...stamped]);
+    import('./firestore-service').then(({ FirestoreService }) => {
+      stamped.forEach((c) => FirestoreService.upsertCategory(c).catch(() => {}));
+    }).catch(() => {});
+  },
+
+  /** Özel kategoriyi siler (mezar taşı bırakır; böylece diğer cihazlardan da kalkar). */
+  deleteCustomCategory(key: string) {
+    const existing = this.getCategoryConfigs().find((c) => c.key === key);
+    if (!existing || !existing.custom) return;
+    this.upsertCategoryConfig({ ...existing, deleted: true, hidden: true });
+  },
+
+  /** Hazır kategoriyi varsayılan ayarlara döndürür (override'ı kaldırır). */
+  resetCategoryConfig(key: string) {
+    const list = this.getCategoryOverrides().filter((o) => o.key !== key);
+    const base = this.getCategoryConfigs().find((c) => c.key === key);
+    this.saveCategoryOverrides(list);
+    if (base && !base.custom) {
+      // Uzak kayıt da varsayılana çekilir (updatedAt güncel, alanlar varsayılan).
+      import('./firestore-service').then(({ FirestoreService }) => {
+        const def = mergeCategoryConfigs([]).find((c) => c.key === key);
+        if (def) FirestoreService.upsertCategory({ ...def, updatedAt: new Date().toISOString() }).catch(() => {});
+      }).catch(() => {});
+    }
   },
 
   // Invest & Live in Istanbul — Emlak & Mülk Yönetimi Vitrini

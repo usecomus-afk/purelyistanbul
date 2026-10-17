@@ -22,8 +22,11 @@ import { MARKETPLACE_COLLECTIONS } from "@/lib/marketplace/collections";
 import type { HostApplication, MarketplaceListing } from "@/lib/marketplace/types";
 import { approveHostApplication, rejectHostApplication } from "@/lib/marketplace/firestore";
 import { watchPendingListings, approveListing, rejectListing } from "@/lib/marketplace/listings";
-import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
-import { getCategoryCode } from "@/lib/marketplace/seed-listings";
+import { DEFAULT_CATEGORY_CONFIGS, type CategoryConfig } from "@/lib/marketplace/categories";
+import { getExperienceCategoryKey } from "@/lib/marketplace/seed-listings";
+import rawExperiences from "@/data/experiences.json";
+import { CategoryManager } from "@/components/dashboard/category-manager";
+import { ListingEditorModal } from "@/components/dashboard/listing-editor-modal";
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
@@ -60,12 +63,14 @@ import {
   Layers,
   Bell,
   CreditCard,
+  Copy,
 } from "lucide-react";
 
 type DashboardTab =
   | "overview"
   | "channels"
   | "listings"
+  | "categories"
   | "suppliers"
   | "properties"
   | "hotels";
@@ -120,20 +125,8 @@ const EMPTY_DRAFT: NewExpDraft = {
   scoreStr: "5.0",
 };
 
-const CATEGORIES = [
-  { label: "Tarih & Müzeler", tag: "Tarih & Kültür" },
-  { label: "Gastronomi & Gurme", tag: "Gastronomi" },
-  { label: "Sanat & Semazen", tag: "Sanat & Tasarım" },
-  { label: "Alışveriş & Çarşılar", tag: "Alışveriş" },
-  { label: "Boğaz Turları & Yat", tag: "Boğaz & Deniz" },
-  { label: "Kültürel Miras", tag: "Kültür & İnanç" },
-  { label: "Türk Hamamı & Spa", tag: "Wellness & Spa" },
-  { label: "Fotoğraf & Kostüm", tag: "Fotoğraf & Anı" },
-  { label: "Özel VIP Transfer", tag: "VIP Ulaşım" },
-  { label: "Önerdiğimiz Restoranlar", tag: "Seçkin Restoranlar" },
-  { label: "Medikal Estetik & Güzellik", tag: "Medikal Estetik" },
-  { label: "İstanbul'da Yatırım", tag: "Gayrimenkul & Yatırım" },
-];
+/** Uygulama sürümüne gömülü hazır katalog ilanlarının kimlikleri (bunlar gerçekten silinemez, yalnızca gizlenir). */
+const SEED_EXPERIENCE_IDS = new Set((rawExperiences as { id: string }[]).map((e) => e.id));
 
 const APP_MODULES_CONFIG = [
   {
@@ -179,32 +172,6 @@ const APP_MODULES_CONFIG = [
     badge: "Aktif",
   },
 ];
-
-function experienceToDraft(exp: Experience): NewExpDraft {
-  return {
-    title: exp.title,
-    category: exp.category,
-    categoryTag: exp.categoryTag || exp.category,
-    provider: exp.provider,
-    supplierId: exp.supplierId || "",
-    commissionRate: exp.commissionRate ?? 15,
-    listingType: exp.listingType || "experience",
-    availableSlots: exp.availableSlots ?? 15,
-    publishToWeb: exp.publishToWeb !== false,
-    publishToMobile: exp.publishToMobile !== false,
-    location: exp.location,
-    phone: exp.phone,
-    website: exp.website,
-    agentNote: exp.agentNote || exp.desc || "",
-    price: exp.price,
-    currency: exp.currency,
-    duration: exp.duration,
-    image: exp.image,
-    lat: exp.coords?.lat ?? 41.0082,
-    lng: exp.coords?.lng ?? 28.9784,
-    scoreStr: exp.scoreStr || "5.0",
-  };
-}
 
 function draftToExperiencePatch(draft: NewExpDraft): Partial<Experience> {
   const ratingNum = parseFloat(draft.scoreStr) || 5;
@@ -268,10 +235,20 @@ export default function UsePurelyDashboardPage() {
   const [showAddListingModal, setShowAddListingModal] = useState(false);
   const [newDraft, setNewDraft] = useState<NewExpDraft>(EMPTY_DRAFT);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState<NewExpDraft>(EMPTY_DRAFT);
   const [listingSearch, setListingSearch] = useState("");
   const [listingFilterChannel, setListingFilterChannel] = useState<"all" | "web" | "mobile">("all");
   const [listingFilterCategory, setListingFilterCategory] = useState<string>("all");
+  const [selectedListingIds, setSelectedListingIds] = useState<Set<string>>(new Set());
+  const [bulkMoveCategory, setBulkMoveCategory] = useState("");
+
+  // Panelden düzenlenen kategoriler (ad, ikon, sıra, gizli/açık)
+  const [categoryConfigs, setCategoryConfigs] = useState<CategoryConfig[]>(DEFAULT_CATEGORY_CONFIGS);
+  useEffect(() => {
+    const refresh = () => setCategoryConfigs(XeniosStore.getCategoryConfigs());
+    refresh();
+    window.addEventListener("xenios_categories_updated", refresh);
+    return () => window.removeEventListener("xenios_categories_updated", refresh);
+  }, []);
 
   // Module toggles (persisted in localStorage for instant UI feedback)
   const [disabledModules, setDisabledModules] = useState<string[]>([]);
@@ -454,116 +431,134 @@ export default function UsePurelyDashboardPage() {
   };
 
   // Listing Handlers
-  const handleSelectSupplierOnDraft = (
-    supplierId: string,
-    isEdit: boolean
-  ) => {
-    const found = suppliers.find((s) => s.id === supplierId);
-    if (isEdit) {
-      setEditDraft((prev) => ({
-        ...prev,
-        supplierId,
-        provider: found ? found.name : prev.provider,
-        phone: found?.phone || prev.phone,
-        website: found?.website || prev.website,
-        commissionRate: found ? found.commissionRate : prev.commissionRate,
-        location: found?.district
-          ? `${found.district}, İstanbul`
-          : prev.location,
-      }));
-    } else {
-      setNewDraft((prev) => ({
-        ...prev,
-        supplierId,
-        provider: found ? found.name : prev.provider,
-        phone: found?.phone || prev.phone,
-        website: found?.website || prev.website,
-        commissionRate: found ? found.commissionRate : prev.commissionRate,
-        location: found?.district
-          ? `${found.district}, İstanbul`
-          : prev.location,
-      }));
-    }
-  };
-
-  const handleImageFileSelect = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    isEdit: boolean
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      if (isEdit) {
-        setEditDraft((prev) => ({ ...prev, image: dataUrl }));
-      } else {
-        setNewDraft((prev) => ({ ...prev, image: dataUrl }));
-      }
-      toast.success("Görsel yüklendi.");
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleCreateListing = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newDraft.title.trim() || !newDraft.provider.trim()) {
-      toast.error("Lütfen ilan başlığı ve işletme/sağlayıcı adını girin.");
-      return;
-    }
-    const patch = draftToExperiencePatch(newDraft);
-    const created: Experience = {
-      id: "exp-" + Date.now(),
-      title: patch.title || "Yeni Deneyim",
-      category: patch.category || "Boğaz Turları & Yat",
-      categoryTag: patch.categoryTag || "Boğaz & Deniz",
-      iconName: "Compass",
-      provider: patch.provider || "Purelyİstanbul Partner",
-      supplierId: patch.supplierId,
-      commissionRate: patch.commissionRate ?? 15,
-      listingType: patch.listingType || "experience",
-      availableSlots: patch.availableSlots ?? 15,
-      publishToWeb: patch.publishToWeb !== false,
-      publishToMobile: patch.publishToMobile !== false,
-      location: patch.location || "İstanbul",
-      phone: patch.phone || "+90 532 000 00 00",
-      website: patch.website || "https://purelyistanbul.com",
-      agentNote: patch.agentNote || "",
-      desc: patch.desc || "",
-      price: patch.price ?? 1500,
-      currency: patch.currency || "₺",
-      duration: patch.duration || "2 Saat",
-      image:
-        patch.image || "/images/istanbul/il_1588xN.6201904451_eqr3.webp",
-      coords: patch.coords || { lat: 41.0082, lng: 28.9784 },
-      scoreStr: patch.scoreStr || "5.0",
-      rating: patch.rating ?? 5.0,
-      reviewsCount: "12",
-      status: "active",
-    };
-
-    XeniosStore.addExperience(created);
-    refreshAllData();
-    setNewDraft(EMPTY_DRAFT);
-    setShowAddListingModal(false);
-    toast.success(`"${created.title}" ilanı Web ve Mobil App'te yayına alındı!`);
-  };
-
   const handleStartEditListing = (exp: Experience) => {
     setEditingListingId(exp.id);
-    setEditDraft(experienceToDraft(exp));
   };
 
-  const handleSaveEditListing = (id: string) => {
-    if (!editDraft.title.trim()) {
-      toast.error("İlan başlığı boş bırakılamaz.");
-      return;
+  const editingListing = editingListingId
+    ? experiences.find((e) => e.id === editingListingId) ?? null
+    : null;
+
+  /** Ekleme / düzenleme penceresinden gelen tam ilan kaydı */
+  const handleSaveListingFromEditor = (listing: Experience) => {
+    const exists = XeniosStore.getExperiences().some((e) => e.id === listing.id);
+    if (exists) {
+      XeniosStore.updateExperience(listing.id, listing);
+      toast.success("İlan güncellendi ve tüm kanallara yansıtıldı.");
+      setEditingListingId(null);
+    } else {
+      XeniosStore.addExperience(listing);
+      toast.success(`"${listing.title}" ilanı kaydedildi.`);
+      setShowAddListingModal(false);
+      setNewDraft(EMPTY_DRAFT);
     }
-    XeniosStore.updateExperience(id, draftToExperiencePatch(editDraft));
-    setEditingListingId(null);
     refreshAllData();
-    toast.success("İlan güncellendi ve tüm kanallara yansıtıldı.");
   };
+
+  const handleDuplicateListing = (exp: Experience) => {
+    const copy: Experience = {
+      ...exp,
+      id: "exp-" + Date.now(),
+      title: `${exp.title} (Kopya)`,
+      status: "suspended",
+    };
+    XeniosStore.addExperience(copy);
+    refreshAllData();
+    setEditingListingId(copy.id);
+    toast.success(
+      "İlan çoğaltıldı. Kopya askıda oluşturuldu; düzenleyip yayına alabilirsiniz."
+    );
+  };
+
+  // Toplu seçim & işlemler
+  const toggleListingSelected = (id: string) => {
+    setSelectedListingIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAllVisible = () => {
+    setSelectedListingIds((prev) => {
+      const allSelected =
+        filteredListings.length > 0 &&
+        filteredListings.every((l) => prev.has(l.id));
+      const next = new Set(prev);
+      filteredListings.forEach((l) => {
+        if (allSelected) next.delete(l.id);
+        else next.add(l.id);
+      });
+      return next;
+    });
+  };
+
+  const bulkUpdateSelected = (patch: Partial<Experience>, doneText: string) => {
+    if (selectedListingIds.size === 0) return;
+    const changed: Experience[] = [];
+    const next = XeniosStore.getExperiences().map((e) => {
+      if (!selectedListingIds.has(e.id)) return e;
+      const patched = { ...e, ...patch } as Experience;
+      changed.push(patched);
+      return patched;
+    });
+    XeniosStore.saveExperiences(next);
+    changed.forEach((c) => FirestoreService.upsertExperience(c).catch(() => {}));
+    refreshAllData();
+    toast.success(`${changed.length} ilan ${doneText}.`);
+  };
+
+  const bulkMoveSelected = () => {
+    const target = categoryConfigs.find((c) => c.key === bulkMoveCategory);
+    if (!target || selectedListingIds.size === 0) return;
+    bulkUpdateSelected(
+      { categoryKey: target.key, category: target.label, categoryTag: target.label },
+      `"${target.label}" kategorisine taşındı`
+    );
+    setBulkMoveCategory("");
+  };
+
+  /**
+   * Hazır (uygulama sürümüne gömülü) katalog ilanları gerçekten silinemez; her cihazda
+   * yeniden görünürlerdi. Bu yüzden onlar askıya alınıp tüm kanallardan gizlenir.
+   */
+  const deleteOrArchiveListing = (exp: Experience): "deleted" | "suspended" => {
+    if (SEED_EXPERIENCE_IDS.has(exp.id)) {
+      XeniosStore.updateExperience(exp.id, {
+        status: "suspended",
+        publishToWeb: false,
+        publishToMobile: false,
+      });
+      return "suspended";
+    }
+    XeniosStore.deleteExperience(exp.id);
+    return "deleted";
+  };
+
+  const bulkDeleteSelected = () => {
+    if (selectedListingIds.size === 0) return;
+    if (
+      !window.confirm(
+        `${selectedListingIds.size} ilan silinsin mi? Hazır katalog ilanları silinmez, askıya alınıp gizlenir.`
+      )
+    )
+      return;
+    let deleted = 0;
+    let archived = 0;
+    experiences
+      .filter((e) => selectedListingIds.has(e.id))
+      .forEach((e) => {
+        if (deleteOrArchiveListing(e) === "deleted") deleted += 1;
+        else archived += 1;
+      });
+    setSelectedListingIds(new Set());
+    refreshAllData();
+    toast.success(
+      `${deleted} ilan silindi${archived ? `, ${archived} hazır katalog ilanı askıya alınıp gizlendi` : ""}.`
+    );
+  };
+
 
   const handleToggleListingChannel = (
     exp: Experience,
@@ -598,76 +593,29 @@ export default function UsePurelyDashboardPage() {
     );
   };
 
-  // 1-Click Category Passivation / Activation (Hides/shows category & all its listings on both Web and Mobile App)
-  const handleToggleCategoryActive = async (catValue: string, catLabel: string) => {
-    const allExps = XeniosStore.getExperiences();
-    const matchingExps = allExps.filter((e) => getCategoryCode(e.category) === catValue);
-    const allProps = XeniosStore.getPropertyListings();
-
-    const activeExpCount = matchingExps.filter(
-      (e) => e.status !== "suspended" && (e.publishToWeb !== false || e.publishToMobile !== false)
-    ).length;
-    const activePropCount =
-      catValue === "cat-12"
-        ? allProps.filter((p) => p.status !== "suspended").length
-        : 0;
-
-    const isCurrentlyActive = activeExpCount + activePropCount > 0;
-    const nextStatus = isCurrentlyActive ? "suspended" : "active";
-
-    const updatedExps: Experience[] = [];
-    const nextExpsList = allExps.map((e) => {
-      if (getCategoryCode(e.category) === catValue) {
-        const patched: Experience =
-          nextStatus === "suspended"
-            ? { ...e, status: "suspended" }
-            : { ...e, status: "active", publishToWeb: true, publishToMobile: true };
-        updatedExps.push(patched);
-        return patched;
-      }
-      return e;
-    });
-    XeniosStore.saveExperiences(nextExpsList);
-
-    const updatedProps: PropertyListing[] = [];
-    if (catValue === "cat-12") {
-      const nextPropsList = allProps.map((p) => {
-        const patched: PropertyListing =
-          nextStatus === "suspended"
-            ? { ...p, status: "suspended", publishToWeb: false }
-            : { ...p, status: "active", publishToWeb: true };
-        updatedProps.push(patched);
-        return patched;
-      });
-      XeniosStore.savePropertyListings(nextPropsList);
-    }
-
+  // Kategori görünürlüğü: gizlenen kategori ve içindeki tüm ilanlar web + uygulamadan kalkar
+  const handleToggleCategoryHidden = (cfg: CategoryConfig) => {
+    const nextHidden = !cfg.hidden;
+    XeniosStore.upsertCategoryConfig({ ...cfg, hidden: nextHidden });
     refreshAllData();
-
     toast.success(
-      nextStatus === "suspended"
-        ? `"${catLabel}" kategorisi ve ait olan tüm ilanlar Web sitesinden ve Mobil Uygulamadan gizlendi (pasife alındı).`
-        : `"${catLabel}" kategorisi ve ait olan tüm ilanlar tekrar yayına alındı!`
+      nextHidden
+        ? `"${cfg.label}" kategorisi ve ilanları Web sitesi ile Mobil Uygulamadan gizlendi.`
+        : `"${cfg.label}" kategorisi ve ilanları tekrar yayına alındı.`
     );
-
-    try {
-      await Promise.all([
-        ...updatedExps.map((item) => FirestoreService.upsertExperience(item)),
-        ...updatedProps.map((item) => FirestoreService.upsertProperty(item)),
-      ]);
-    } catch {}
   };
 
   const handleDeleteListing = (exp: Experience) => {
-    if (
-      !window.confirm(
-        `"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz?`
-      )
-    )
-      return;
-    XeniosStore.deleteExperience(exp.id);
+    const isSeed = SEED_EXPERIENCE_IDS.has(exp.id);
+    const message = isSeed
+      ? `"${exp.title}" hazır katalog ilanıdır ve tamamen silinemez. Askıya alınıp tüm kanallardan gizlensin mi?`
+      : `"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz?`;
+    if (!window.confirm(message)) return;
+    const result = deleteOrArchiveListing(exp);
     refreshAllData();
-    toast.success("İlan silindi.");
+    toast.success(
+      result === "deleted" ? "İlan silindi." : "İlan askıya alındı ve tüm kanallardan gizlendi."
+    );
   };
 
   const toggleAppModule = (modId: string) => {
@@ -694,7 +642,7 @@ export default function UsePurelyDashboardPage() {
         return false;
       if (
         listingFilterCategory !== "all" &&
-        getCategoryCode(exp.category) !== listingFilterCategory
+        getExperienceCategoryKey(exp) !== listingFilterCategory
       )
         return false;
       if (!listingSearch.trim()) return true;
@@ -716,36 +664,40 @@ export default function UsePurelyDashboardPage() {
             Hızlı Kategori Kontrolü (Web + iOS App + PWA)
           </div>
           <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
-            Kategorileri ve Ait İlanları Tek Tıkla Gizle / Pasife Al
+            Kategorileri ve Ait İlanları Tek Tıkla Gizle / Yayına Al
           </h3>
           <p className="text-xs text-[#6B6B55]">
-            Pasife aldığınız kategori ve içindeki tüm ilanlar hem{" "}
+            Gizlediğiniz kategori ve içindeki tüm ilanlar hem{" "}
             <strong>purelyistanbul.com</strong> web sitesinden hem de{" "}
             <strong>iOS Mobil Uygulama / Otel PWA</strong> ekranlarından anında
-            gizlenir. İstediğiniz zaman tek tıkla tekrar yayına alabilirsiniz.
+            kalkar; ilanların kendi durumu değişmez. Ad, ikon ve sıra düzenlemek için{" "}
+            <button
+              type="button"
+              onClick={() => switchTab("categories")}
+              className="font-medium text-[#3B6D11] underline cursor-pointer"
+            >
+              Kategori Yönetimi
+            </button>
+            .
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {MARKETPLACE_CATEGORIES.map((cat) => {
+        {categoryConfigs.map((cat) => {
           const matchingExps = experiences.filter(
-            (e) => getCategoryCode(e.category) === cat.key
+            (e) => getExperienceCategoryKey(e) === cat.key
           );
-          const activeExps = matchingExps.filter(
-            (e) =>
-              e.status !== "suspended" &&
-              (e.publishToWeb !== false || e.publishToMobile !== false)
-          );
+          const liveExps = matchingExps.filter((e) => e.status !== "suspended");
           const totalProps = cat.key === "cat-12" ? properties.length : 0;
-          const activeProps =
+          const liveProps =
             cat.key === "cat-12"
               ? properties.filter((p) => p.status !== "suspended").length
               : 0;
 
           const totalCount = matchingExps.length + totalProps;
-          const activeCount = activeExps.length + activeProps;
-          const isCategoryActive = activeCount > 0;
+          const liveCount = liveExps.length + liveProps;
+          const isCategoryActive = !cat.hidden;
 
           return (
             <div
@@ -768,19 +720,19 @@ export default function UsePurelyDashboardPage() {
                         : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
                     }`}
                   >
-                    {isCategoryActive ? "Yayında (Aktif)" : "Pasif (Gizli)"}
+                    {isCategoryActive ? "Yayında" : "Gizli"}
                   </span>
                 </div>
                 <p className="text-[11px] text-[#6B6B55]">
                   Toplam <strong>{totalCount}</strong> ilan •{" "}
-                  <strong>{activeCount}</strong> aktif
+                  <strong>{liveCount}</strong> aktif
                 </p>
               </div>
 
               <div className="flex items-center gap-2 pt-2 border-t border-[#C8C4B0]/50">
                 <button
                   type="button"
-                  onClick={() => handleToggleCategoryActive(cat.key, cat.label)}
+                  onClick={() => handleToggleCategoryHidden(cat)}
                   className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer transition ${
                     isCategoryActive
                       ? "bg-[#F3E3D8] text-[#9C4E24] hover:bg-[#E5C4B0] border border-[#E5C4B0]"
@@ -957,6 +909,13 @@ export default function UsePurelyDashboardPage() {
       sublabel: "Deneyim, Tur, Restoran & Konaklama",
       icon: Compass,
       count: experiences.length,
+    },
+    {
+      id: "categories",
+      label: "Kategori Yönetimi",
+      sublabel: "Ad, İkon, Sıra & Gizle/Göster",
+      icon: Layers,
+      count: categoryConfigs.filter((c) => !c.hidden).length,
     },
     {
       id: "suppliers",
@@ -2261,313 +2220,13 @@ export default function UsePurelyDashboardPage() {
                 </div>
 
                 <button
-                  onClick={() => setShowAddListingModal(!showAddListingModal)}
+                  onClick={() => setShowAddListingModal(true)}
                   className="comus-btn-primary"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>
-                    {showAddListingModal
-                      ? "Formu Kapat"
-                      : "+ Yeni İlan Girişi Yap"}
-                  </span>
+                  <span>+ Yeni İlan Girişi Yap</span>
                 </button>
               </div>
-
-              {/* ADD NEW LISTING FORM (CLEAN COMUS CARD) */}
-              {showAddListingModal && (
-                <form
-                  onSubmit={handleCreateListing}
-                  className="comus-card space-y-5 border-2 border-[#3B6D11]"
-                >
-                  <div className="flex items-center justify-between border-b border-[#C8C4B0]/60 pb-3">
-                    <div>
-                      <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
-                        Yeni İlan Girişi (Web + iOS App + PWA)
-                      </h3>
-                      <p className="text-xs text-[#6B6B55]">
-                        Anlaşmalı tedarikçiyi seçtiğinizde işletme bilgileri ve
-                        komisyon oranı otomatik doldurulur.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowAddListingModal(false)}
-                      className="p-1.5 rounded-full hover:bg-[#EDE8DE] text-[#6B6B55]"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="comus-label">
-                        İlan Başlığı (Türkçe / İngilizce) *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newDraft.title}
-                        onChange={(e) =>
-                          setNewDraft({ ...newDraft, title: e.target.value })
-                        }
-                        placeholder="Örn: Özel Boğaz Yatı ile Gün Batımı Turu"
-                        className="comus-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="comus-label">
-                        Anlaşmalı İşletme / Tedarikçi Seçin
-                      </label>
-                      <select
-                        value={newDraft.supplierId}
-                        onChange={(e) =>
-                          handleSelectSupplierOnDraft(e.target.value, false)
-                        }
-                        className="comus-input"
-                      >
-                        <option value="">
-                          — Manuel İşletme Girişi veya Seçin —
-                        </option>
-                        {suppliers.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name} (Komisyon: %{s.commissionRate})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="comus-label">
-                        İşletme / Sağlayıcı Adı *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newDraft.provider}
-                        onChange={(e) =>
-                          setNewDraft({ ...newDraft, provider: e.target.value })
-                        }
-                        placeholder="Örn: Bosphorus Luxury Yachts"
-                        className="comus-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="comus-label">Kategori</label>
-                      <select
-                        value={newDraft.category}
-                        onChange={(e) => {
-                          const found = CATEGORIES.find(
-                            (c) => c.label === e.target.value
-                          );
-                          setNewDraft({
-                            ...newDraft,
-                            category: e.target.value,
-                            categoryTag: found?.tag || e.target.value,
-                          });
-                        }}
-                        className="comus-input"
-                      >
-                        {CATEGORIES.map((c) => (
-                          <option key={c.label} value={c.label}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="comus-label">Vitrin İlan Tipi</label>
-                      <select
-                        value={newDraft.listingType}
-                        onChange={(e) =>
-                          setNewDraft({
-                            ...newDraft,
-                            listingType: e.target.value as "experience" | "stay",
-                          })
-                        }
-                        className="comus-input"
-                      >
-                        <option value="experience">
-                          Deneyim / Tur / Restoran / Hizmet
-                        </option>
-                        <option value="stay">
-                          Konaklama / Butik Otel / Yalı Dairesi
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <label className="comus-label">Fiyat *</label>
-                        <input
-                          type="number"
-                          required
-                          value={newDraft.price}
-                          onChange={(e) =>
-                            setNewDraft({
-                              ...newDraft,
-                              price: Number(e.target.value),
-                            })
-                          }
-                          className="comus-input"
-                        />
-                      </div>
-                      <div>
-                        <label className="comus-label">Birim</label>
-                        <select
-                          value={newDraft.currency}
-                          onChange={(e) =>
-                            setNewDraft({
-                              ...newDraft,
-                              currency: e.target.value,
-                            })
-                          }
-                          className="comus-input"
-                        >
-                          <option value="₺">₺ TRY</option>
-                          <option value="€">€ EUR</option>
-                          <option value="$">$ USD</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="comus-label">Komisyon %</label>
-                        <input
-                          type="number"
-                          value={newDraft.commissionRate}
-                          onChange={(e) =>
-                            setNewDraft({
-                              ...newDraft,
-                              commissionRate: Number(e.target.value),
-                            })
-                          }
-                          className="comus-input"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="comus-label">Konum / Semt</label>
-                      <input
-                        type="text"
-                        value={newDraft.location}
-                        onChange={(e) =>
-                          setNewDraft({ ...newDraft, location: e.target.value })
-                        }
-                        placeholder="Bebek, Beşiktaş"
-                        className="comus-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="comus-label">Süre / Periyot</label>
-                      <input
-                        type="text"
-                        value={newDraft.duration}
-                        onChange={(e) =>
-                          setNewDraft({ ...newDraft, duration: e.target.value })
-                        }
-                        placeholder="Örn: 3 Saat veya 1 Gece"
-                        className="comus-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="comus-label">
-                        Görsel URL veya Bilgisayardan Yükle
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newDraft.image || ""}
-                          onChange={(e) =>
-                            setNewDraft({ ...newDraft, image: e.target.value })
-                          }
-                          placeholder="/images/istanbul/..."
-                          className="comus-input flex-1"
-                        />
-                        <label className="comus-btn-ghost text-xs px-3 py-1.5 shrink-0 cursor-pointer">
-                          Dosya Seç
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageFileSelect(e, false)}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="comus-label">
-                      İlan Açıklaması &amp; Misafir Notu
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={newDraft.agentNote}
-                      onChange={(e) =>
-                        setNewDraft({ ...newDraft, agentNote: e.target.value })
-                      }
-                      placeholder="Misafirlere sunulacak hizmetin detayları, dahil olanlar..."
-                      className="comus-input"
-                    />
-                  </div>
-
-                  {/* Channel Selection Checkboxes */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[#C8C4B0]/60">
-                    <div className="flex flex-wrap items-center gap-4">
-                      <label className="flex items-center gap-2 text-xs font-medium text-[#2C2C1A] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={newDraft.publishToWeb}
-                          onChange={(e) =>
-                            setNewDraft({
-                              ...newDraft,
-                              publishToWeb: e.target.checked,
-                            })
-                          }
-                          className="accent-[#3B6D11] w-4 h-4"
-                        />
-                        <span>purelyistanbul.com Web Sitesinde Yayınla</span>
-                      </label>
-
-                      <label className="flex items-center gap-2 text-xs font-medium text-[#2C2C1A] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={newDraft.publishToMobile}
-                          onChange={(e) =>
-                            setNewDraft({
-                              ...newDraft,
-                              publishToMobile: e.target.checked,
-                            })
-                          }
-                          className="accent-[#3B6D11] w-4 h-4"
-                        />
-                        <span>iOS App &amp; Otel İçi PWA&apos;da Yayınla</span>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowAddListingModal(false)}
-                        className="comus-btn-ghost"
-                      >
-                        Vazgeç
-                      </button>
-                      <button type="submit" className="comus-btn-primary">
-                        <Save className="w-4 h-4" />
-                        <span>İlanı Kaydet ve Yayına Al</span>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              )}
-
-              {/* 1-Click Category Passivation / Activation */}
-              {renderCategoryPassivationSection()}
 
               {/* Search & Filter Bar */}
               <div className="comus-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-4">
@@ -2587,9 +2246,10 @@ export default function UsePurelyDashboardPage() {
                   className="comus-input w-auto text-xs py-2 px-3"
                 >
                   <option value="all">Tüm Kategoriler</option>
-                  {MARKETPLACE_CATEGORIES.map((cat) => (
+                  {categoryConfigs.map((cat) => (
                     <option key={cat.key} value={cat.key}>
                       {cat.label}
+                      {cat.hidden ? " (gizli)" : ""}
                     </option>
                   ))}
                 </select>
@@ -2619,189 +2279,97 @@ export default function UsePurelyDashboardPage() {
                 </div>
               </div>
 
+              {/* Bulk Actions */}
+              <div className="comus-card py-3.5 flex flex-wrap items-center gap-2.5">
+                <label className="flex items-center gap-2 text-xs font-medium text-[#2C2C1A] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={
+                      filteredListings.length > 0 &&
+                      filteredListings.every((l) => selectedListingIds.has(l.id))
+                    }
+                    onChange={toggleSelectAllVisible}
+                    className="accent-[#3B6D11] w-4 h-4"
+                  />
+                  <span>
+                    Görünenlerin tümünü seç ({filteredListings.length})
+                  </span>
+                </label>
+                <span className="text-xs text-[#6B6B55]">
+                  {selectedListingIds.size > 0
+                    ? `${selectedListingIds.size} ilan seçili`
+                    : "Toplu işlem için ilanları seçin"}
+                </span>
+
+                {selectedListingIds.size > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 w-full pt-2.5 border-t border-[#C8C4B0]/60">
+                    <button onClick={() => bulkUpdateSelected({ status: "active" }, "yayına alındı")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Yayına Al
+                    </button>
+                    <button onClick={() => bulkUpdateSelected({ status: "suspended" }, "askıya alındı")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Askıya Al
+                    </button>
+                    <button onClick={() => bulkUpdateSelected({ publishToWeb: true }, "web'de açıldı")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Web Aç
+                    </button>
+                    <button onClick={() => bulkUpdateSelected({ publishToWeb: false }, "web'den gizlendi")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Web Gizle
+                    </button>
+                    <button onClick={() => bulkUpdateSelected({ publishToMobile: true }, "uygulamada açıldı")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Uygulama Aç
+                    </button>
+                    <button onClick={() => bulkUpdateSelected({ publishToMobile: false }, "uygulamadan gizlendi")} className="comus-btn-ghost text-xs py-1.5 px-3">
+                      Uygulama Gizle
+                    </button>
+                    <select
+                      value={bulkMoveCategory}
+                      onChange={(e) => setBulkMoveCategory(e.target.value)}
+                      className="comus-input w-auto text-xs py-1.5 px-2.5"
+                    >
+                      <option value="">Kategoriye taşı…</option>
+                      {categoryConfigs.map((c) => (
+                        <option key={c.key} value={c.key}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button onClick={bulkMoveSelected} disabled={!bulkMoveCategory} className="comus-btn-ghost text-xs py-1.5 px-3 disabled:opacity-40">
+                      Taşı
+                    </button>
+                    <button
+                      onClick={bulkDeleteSelected}
+                      className="text-xs py-1.5 px-3 rounded-full border border-red-300 text-red-700 hover:bg-red-50 cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Sil
+                    </button>
+                    <button onClick={() => setSelectedListingIds(new Set())} className="text-xs text-[#6B6B55] hover:text-[#2C2C1A] underline cursor-pointer">
+                      Seçimi temizle
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Listings List */}
               <div className="space-y-3">
                 {filteredListings.map((exp) => {
-                  const isEditing = editingListingId === exp.id;
+                  const isSelected = selectedListingIds.has(exp.id);
+                  const rowCategory = categoryConfigs.find(
+                    (c) => c.key === getExperienceCategoryKey(exp)
+                  );
                   return (
-                    <div key={exp.id} className="comus-card">
-                      {isEditing ? (
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between border-b border-[#C8C4B0]/60 pb-2.5">
-                            <span className="comus-serif text-xl font-medium text-[#3B6D11]">
-                              İlanı Düzenle: {exp.title}
-                            </span>
-                            <button
-                              onClick={() => setEditingListingId(null)}
-                              className="text-xs text-[#6B6B55] hover:text-[#2C2C1A]"
-                            >
-                              Kapat ✕
-                            </button>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div>
-                              <label className="comus-label">İlan Başlığı</label>
-                              <input
-                                type="text"
-                                value={editDraft.title}
-                                onChange={(e) =>
-                                  setEditDraft({
-                                    ...editDraft,
-                                    title: e.target.value,
-                                  })
-                                }
-                                className="comus-input"
-                              />
-                            </div>
-                            <div>
-                              <label className="comus-label">
-                                Anlaşmalı Tedarikçi
-                              </label>
-                              <select
-                                value={editDraft.supplierId}
-                                onChange={(e) =>
-                                  handleSelectSupplierOnDraft(
-                                    e.target.value,
-                                    true
-                                  )
-                                }
-                                className="comus-input"
-                              >
-                                <option value="">— Seçin veya Manuel —</option>
-                                {suppliers.map((s) => (
-                                  <option key={s.id} value={s.id}>
-                                    {s.name} (%{s.commissionRate})
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="comus-label">İşletme Adı</label>
-                              <input
-                                type="text"
-                                value={editDraft.provider}
-                                onChange={(e) =>
-                                  setEditDraft({
-                                    ...editDraft,
-                                    provider: e.target.value,
-                                  })
-                                }
-                                className="comus-input"
-                              />
-                            </div>
-                            <div>
-                              <label className="comus-label">Fiyat</label>
-                              <input
-                                type="number"
-                                value={editDraft.price}
-                                onChange={(e) =>
-                                  setEditDraft({
-                                    ...editDraft,
-                                    price: Number(e.target.value),
-                                  })
-                                }
-                                className="comus-input"
-                              />
-                            </div>
-                            <div>
-                              <label className="comus-label">
-                                Komisyon Oranı (%)
-                              </label>
-                              <input
-                                type="number"
-                                value={editDraft.commissionRate}
-                                onChange={(e) =>
-                                  setEditDraft({
-                                    ...editDraft,
-                                    commissionRate: Number(e.target.value),
-                                  })
-                                }
-                                className="comus-input"
-                              />
-                            </div>
-                            <div>
-                              <label className="comus-label">Konum / Semt</label>
-                              <input
-                                type="text"
-                                value={editDraft.location}
-                                onChange={(e) =>
-                                  setEditDraft({
-                                    ...editDraft,
-                                    location: e.target.value,
-                                  })
-                                }
-                                className="comus-input"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="comus-label">Açıklama</label>
-                            <textarea
-                              rows={2}
-                              value={editDraft.agentNote}
-                              onChange={(e) =>
-                                setEditDraft({
-                                  ...editDraft,
-                                  agentNote: e.target.value,
-                                })
-                              }
-                              className="comus-input"
-                            />
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#C8C4B0]/60">
-                            <div className="flex items-center gap-4">
-                              <label className="flex items-center gap-2 text-xs cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={editDraft.publishToWeb}
-                                  onChange={(e) =>
-                                    setEditDraft({
-                                      ...editDraft,
-                                      publishToWeb: e.target.checked,
-                                    })
-                                  }
-                                  className="accent-[#3B6D11]"
-                                />
-                                <span>purelyistanbul.com Web</span>
-                              </label>
-                              <label className="flex items-center gap-2 text-xs cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={editDraft.publishToMobile}
-                                  onChange={(e) =>
-                                    setEditDraft({
-                                      ...editDraft,
-                                      publishToMobile: e.target.checked,
-                                    })
-                                  }
-                                  className="accent-[#3B6D11]"
-                                />
-                                <span>iOS App &amp; PWA</span>
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => setEditingListingId(null)}
-                                className="comus-btn-ghost text-xs py-1.5"
-                              >
-                                İptal
-                              </button>
-                              <button
-                                onClick={() => handleSaveEditListing(exp.id)}
-                                className="comus-btn-primary text-xs py-1.5"
-                              >
-                                <Save className="w-3.5 h-3.5" /> Değişiklikleri
-                                Kaydet
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
+                    <div
+                      key={exp.id}
+                      className={`comus-card ${isSelected ? "ring-2 ring-[#3B6D11]/60" : ""}`}
+                    >
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div className="flex items-start gap-4 min-w-0">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleListingSelected(exp.id)}
+                              className="accent-[#3B6D11] w-4 h-4 mt-1 shrink-0 cursor-pointer"
+                              aria-label={`${exp.title} seç`}
+                            />
                             {exp.image && (
                               <img
                                 src={exp.image}
@@ -2815,7 +2383,7 @@ export default function UsePurelyDashboardPage() {
                                   {exp.title}
                                 </h3>
                                 <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#F6F1E8] border border-[#C8C4B0] text-[#6B6B55]">
-                                  {exp.category}
+                                  {rowCategory?.label ?? exp.category}
                                 </span>
                                 {exp.status === "suspended" && (
                                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700">
@@ -2882,6 +2450,14 @@ export default function UsePurelyDashboardPage() {
                             </button>
 
                             <button
+                              onClick={() => handleDuplicateListing(exp)}
+                              className="comus-btn-ghost text-xs py-1.5 px-3"
+                              title="İlanı Çoğalt (askıda kopya oluşturur)"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+
+                            <button
                               onClick={() => handleToggleListingActive(exp)}
                               className="comus-btn-ghost text-xs py-1.5 px-3"
                               title="Yayına Al / Askıya Al"
@@ -2898,12 +2474,31 @@ export default function UsePurelyDashboardPage() {
                             </button>
                           </div>
                         </div>
-                      )}
                     </div>
                   );
                 })}
+                {filteredListings.length === 0 && (
+                  <div className="comus-card text-center py-10 text-sm text-[#6B6B55]">
+                    Bu filtrelere uyan ilan bulunamadı.
+                  </div>
+                )}
               </div>
             </div>
+          )}
+
+          {/* =========================================================
+              KATEGORİ YÖNETİMİ (ad, ikon, sıra, gizle/göster, yeni kategori)
+          ========================================================= */}
+          {activeTab === "categories" && (
+            <CategoryManager
+              experiences={experiences}
+              properties={properties}
+              onDataChanged={refreshAllData}
+              onOpenListings={(categoryKey) => {
+                setListingFilterCategory(categoryKey);
+                switchTab("listings");
+              }}
+            />
           )}
 
           {/* =========================================================
@@ -3005,6 +2600,33 @@ export default function UsePurelyDashboardPage() {
             </div>
           )}
         </main>
+
+        {/* İlan Ekle / Düzenle penceresi (tüm alanlar) */}
+        {showAddListingModal && (
+          <ListingEditorModal
+            key="create-listing"
+            mode="create"
+            prefill={draftToExperiencePatch(newDraft)}
+            suppliers={suppliers}
+            categories={categoryConfigs}
+            onSave={handleSaveListingFromEditor}
+            onClose={() => {
+              setShowAddListingModal(false);
+              setNewDraft(EMPTY_DRAFT);
+            }}
+          />
+        )}
+        {editingListing && (
+          <ListingEditorModal
+            key={`edit-${editingListing.id}`}
+            mode="edit"
+            initial={editingListing}
+            suppliers={suppliers}
+            categories={categoryConfigs}
+            onSave={handleSaveListingFromEditor}
+            onClose={() => setEditingListingId(null)}
+          />
+        )}
 
         {/* Minimalist Comus Footer */}
         <footer className="mt-16 border-t border-[#C8C4B0] px-6 md:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B6B55]">

@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner } from './types';
 import { XeniosStore } from './store';
+import type { CategoryConfig } from './marketplace/categories';
 import {
   experienceToMarketplaceListing,
   hotelToMarketplaceListing,
@@ -29,6 +30,7 @@ export const COLLECTIONS = {
   EXPERIENCES: 'experiences',
   PROPERTIES: 'properties',
   SUPPLIERS: 'suppliers',
+  SITE_CATEGORIES: 'site_categories',
   MARKETPLACE_LISTINGS: 'marketplace_listings',
   BOOKINGS: 'bookings',
   COMPLAINTS: 'complaints',
@@ -163,6 +165,54 @@ export const FirestoreService = {
     }
   },
 
+  /** Panelden düzenlenen kategori kaydını (ad, ikon, sıra, gizli/açık) tüm cihazlara yansıtır. */
+  async upsertCategory(cfg: CategoryConfig): Promise<void> {
+    if (!db || !isFirebaseConfigured) return;
+    try {
+      await setDoc(doc(db, COLLECTIONS.SITE_CATEGORIES, cfg.key), stripUndefined({
+        ...cfg,
+        updatedAt: cfg.updatedAt || new Date().toISOString()
+      }));
+    } catch (e) {
+      console.warn('Firestore upsertCategory error:', e);
+    }
+  },
+
+  /**
+   * Yalnızca kategori yapılandırmasına (ad, ikon, sıra, gizli/açık) abone olur.
+   * Uzak kayıt, yerelden daha yeni (updatedAt) ise yerelin yerine geçer.
+   */
+  subscribeToCategoryConfigs(): Unsubscribe {
+    if (!db || !isFirebaseConfigured || typeof window === 'undefined') {
+      return () => {};
+    }
+    try {
+      return onSnapshot(
+        query(collection(db, COLLECTIONS.SITE_CATEGORIES), limit(100)),
+        (snap) => {
+          if (snap.empty) return;
+          const localMap = new Map(
+            XeniosStore.getCategoryOverrides().map((o) => [o.key as string, o])
+          );
+          let changed = false;
+          snap.forEach((d) => {
+            const remote = { ...(d.data() as Partial<CategoryConfig>), key: d.id };
+            const mine = localMap.get(d.id);
+            if (!mine || (remote.updatedAt || '') > (mine.updatedAt || '')) {
+              localMap.set(d.id, remote);
+              changed = true;
+            }
+          });
+          if (changed) XeniosStore.saveCategoryOverrides(Array.from(localMap.values()));
+        },
+        () => {}
+      );
+    } catch (e) {
+      console.warn('Category realtime subscription error:', e);
+      return () => {};
+    }
+  },
+
   /**
    * Subscribes to remote Firestore catalog collections (experiences, hotels, properties, suppliers)
    * and merges remote docs into XeniosStore so both Web and Mobile App stay in real-time sync.
@@ -254,6 +304,9 @@ export const FirestoreService = {
           () => {}
         )
       );
+
+      // 5. Site categories listener (panelden düzenlenen kategori adı/ikon/sıra/gizlilik)
+      unsubs.push(FirestoreService.subscribeToCategoryConfigs());
     } catch (e) {
       console.warn('Catalog realtime subscription error:', e);
     }

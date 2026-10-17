@@ -6,9 +6,11 @@ import type { Experience, Hotel, PropertyListing } from '@/lib/types';
 const now = new Date().toISOString();
 
 export function getCategoryCode(categoryStr: string): string {
-  const lower = (categoryStr || '').toLowerCase();
+  const lower = (categoryStr || '').replace(/İ/g, 'i').replace(/I/g, 'ı').toLowerCase();
   if (lower.includes('cat-')) return categoryStr;
   if (lower.includes('konaklama') || lower.includes('otel') || lower.includes('stay')) return "konaklama";
+  // "yatırım" içinde "yat" geçtiği için yatırım kontrolü Boğaz/Yat kontrolünden ÖNCE yapılmalı
+  if (lower.includes('yatırım') || lower.includes('invest') || lower.includes('mülk') || lower.includes('gayrimenkul')) return "cat-12";
   if (lower.includes('tarih') || lower.includes('müze')) return "cat-1";
   if (lower.includes('gastro') || lower.includes('gurme')) return "cat-2";
   if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım')) return "cat-3";
@@ -20,8 +22,15 @@ export function getCategoryCode(categoryStr: string): string {
   if (lower.includes('transfer') || lower.includes('vip')) return "cat-9";
   if (lower.includes('restoran')) return "cat-10";
   if (lower.includes('estetik') || lower.includes('güzellik')) return "cat-11";
-  if (lower.includes('yatırım') || lower.includes('invest') || lower.includes('mülk') || lower.includes('gayrimenkul')) return "cat-12";
   return "cat-5"; // fallback
+}
+
+/**
+ * Bir deneyimin kategori anahtarı: panelde açıkça atanmış `categoryKey` varsa o,
+ * yoksa eski kayıtlar için `category` metninden tahmin edilen anahtar.
+ */
+export function getExperienceCategoryKey(exp: Pick<Experience, 'category' | 'categoryKey'>): string {
+  return exp.categoryKey || getCategoryCode(exp.category);
 }
 
 export function experienceToMarketplaceListing(exp: Experience, index = 0): MarketplaceListing {
@@ -42,7 +51,7 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
     type: exp.listingType === 'stay' ? 'stay' : 'experience',
     title: exp.title,
     description: exp.desc || exp.agentNote || exp.title,
-    category: getCategoryCode(exp.category),
+    category: getExperienceCategoryKey(exp),
     district: exp.location || 'İstanbul',
     pricing: {
       basePrice: Number(exp.price) || 0,
@@ -113,14 +122,24 @@ export const SEED_LISTINGS: MarketplaceListing[] = (rawExperiences as any[]).map
 export function getLiveCatalogListings(): MarketplaceListing[] {
   if (typeof window === 'undefined') return SEED_LISTINGS;
   try {
+    // Panelden "gizli" işaretlenen kategorilerin ilanları web vitrininde görünmez.
+    const hiddenKeys = new Set(
+      XeniosStore.getCategoryConfigs().filter((c) => c.hidden).map((c) => c.key)
+    );
+
     const exps = XeniosStore.getExperiences().filter(
-      (e) => e.status !== 'suspended' && e.publishToWeb !== false
+      (e) =>
+        e.status !== 'suspended' &&
+        e.publishToWeb !== false &&
+        !hiddenKeys.has(getExperienceCategoryKey(e))
     );
     const expListings = exps.map((e, i) => experienceToMarketplaceListing(e, i));
 
-    const props = XeniosStore.getPropertyListings().filter(
-      (p) => p.status !== 'suspended' && p.publishToWeb === true
-    );
+    const props = hiddenKeys.has('cat-12')
+      ? []
+      : XeniosStore.getPropertyListings().filter(
+          (p) => p.status !== 'suspended' && p.publishToWeb === true
+        );
     const propListings = props.map((p) => propertyToMarketplaceListing(p));
 
     return [...expListings, ...propListings];
