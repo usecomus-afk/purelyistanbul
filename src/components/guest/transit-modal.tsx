@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Experience, Hotel, Language } from '@/lib/types';
 import { calculateTransitOptions } from '@/lib/transit';
 import { getT } from '@/lib/i18n';
+import { getLocalizedExperience } from '@/lib/experience-i18n';
 import { LuxuryCategoryIcon } from './luxury-category-icon';
 import { ExternalLink, X, Compass } from 'lucide-react';
 
@@ -14,8 +15,89 @@ interface TransitModalProps {
   onClose: () => void;
 }
 
+const TRANSIT_MODAL_I18N: Record<Language, {
+  routeDistance: string;
+  openInGoogleMaps: string;
+  minutes: string;
+  taximeterEstimate: string;
+  privateChauffeur: string;
+  fixedPrice: string;
+  istanbulkart: string;
+  stepByStepRoute: string;
+  close: string;
+}> = {
+  tr: {
+    routeDistance: 'Kuşuçuşu / Rota Mesafesi',
+    openInGoogleMaps: 'Google Haritalarda Aç',
+    minutes: 'dakika',
+    taximeterEstimate: 'Taksimetre tahmini',
+    privateChauffeur: 'Özel Şoförlü',
+    fixedPrice: 'Sabit fiyat',
+    istanbulkart: 'İstanbulkart',
+    stepByStepRoute: 'Adım Adım Güzergah:',
+    close: 'Kapat'
+  },
+  en: {
+    routeDistance: 'Direct / Route Distance',
+    openInGoogleMaps: 'Open in Google Maps',
+    minutes: 'min',
+    taximeterEstimate: 'Taximeter estimate',
+    privateChauffeur: 'Private Chauffeur',
+    fixedPrice: 'Fixed rate',
+    istanbulkart: 'Istanbulkart',
+    stepByStepRoute: 'Step-by-Step Route:',
+    close: 'Close'
+  },
+  ar: {
+    routeDistance: 'المسافة المباشرة / مسافة المسار',
+    openInGoogleMaps: 'فتح في خرائط Google',
+    minutes: 'دقيقة',
+    taximeterEstimate: 'تقدير عداد التاكسي',
+    privateChauffeur: 'سائق خاص',
+    fixedPrice: 'سعر ثابت',
+    istanbulkart: 'إسطنبول كارت',
+    stepByStepRoute: 'المسار خطوة بخطوة:',
+    close: 'إغلاق'
+  },
+  ru: {
+    routeDistance: 'Прямое / Маршрутное расстояние',
+    openInGoogleMaps: 'Открыть в Google Картах',
+    minutes: 'мин',
+    taximeterEstimate: 'По таксометру',
+    privateChauffeur: 'Личный водитель',
+    fixedPrice: 'Фиксированная цена',
+    istanbulkart: 'Istanbulkart',
+    stepByStepRoute: 'Пошаговый маршрут:',
+    close: 'Закрыть'
+  },
+  de: {
+    routeDistance: 'Luftlinie / Routenentfernung',
+    openInGoogleMaps: 'In Google Maps öffnen',
+    minutes: 'Min.',
+    taximeterEstimate: 'Taxameter-Schätzung',
+    privateChauffeur: 'Privater Chauffeur',
+    fixedPrice: 'Festpreis',
+    istanbulkart: 'Istanbulkart',
+    stepByStepRoute: 'Schritt-für-Schritt-Route:',
+    close: 'Schließen'
+  },
+  fr: {
+    routeDistance: 'Distance directe / Itinéraire',
+    openInGoogleMaps: 'Ouvrir dans Google Maps',
+    minutes: 'min',
+    taximeterEstimate: 'Estimation taximètre',
+    privateChauffeur: 'Chauffeur privé',
+    fixedPrice: 'Tarif fixe',
+    istanbulkart: 'Istanbulkart',
+    stepByStepRoute: 'Itinéraire étape par étape :',
+    close: 'Fermer'
+  }
+};
+
 export function TransitModal({ experience, hotel, lang, onClose }: TransitModalProps) {
   const t = getT(lang);
+  const tm = TRANSIT_MODAL_I18N[lang] || TRANSIT_MODAL_I18N.en;
+  const locExp = getLocalizedExperience(experience, lang);
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
     return () => {
@@ -23,7 +105,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
     };
   }, []);
 
-  const transit = calculateTransitOptions(hotel.coords, experience.coords, hotel.district, experience.location);
+  const transit = calculateTransitOptions(hotel.coords, experience.coords, hotel.district, experience.location, lang);
 
   const googleMapsRouteUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(hotel.name + ', ' + hotel.address)}&destination=${encodeURIComponent(experience.location + ', Istanbul')}&travelmode=transit`;
 
@@ -45,7 +127,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
             <div>
               <h3 className="font-luxury-serif text-lg font-bold uppercase tracking-[0.04em] text-[#141414]">{t.transitTitle}</h3>
               <p className="font-luxury-sans text-xs text-[#5C4938]">
-                <span className="font-semibold text-[#141414]">{hotel.name}</span> → <span className="text-[#7D5E2A] font-bold">{experience.title}</span>
+                <span className="font-semibold text-[#141414]">{hotel.name}</span> → <span className="text-[#7D5E2A] font-bold">{locExp.title}</span>
               </p>
             </div>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] font-bold cursor-pointer">
@@ -58,7 +140,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
             <div className="flex items-center gap-2.5">
               <Compass className="w-5 h-5 text-[#8E7252]" />
               <div>
-                <span className="font-luxury-sans text-[11px] text-[#5C4938] block">Kuşuçuşu / Rota Mesafesi</span>
+                <span className="font-luxury-sans text-[11px] text-[#5C4938] block">{tm.routeDistance}</span>
                 <strong className="font-luxury-serif text-base text-[#141414] font-bold">~{transit.distanceKm} km</strong>
               </div>
             </div>
@@ -69,7 +151,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
               rel="noopener noreferrer"
               className="font-luxury-sans flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-xl text-xs font-bold shadow-sm transition"
             >
-              <span>Google Haritalarda Aç</span>
+              <span>{tm.openInGoogleMaps}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -85,12 +167,12 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
                   </div>
                   <div>
                     <h4 className="font-luxury-serif text-[15px] font-bold text-[#141414]">{t.taxiOption}</h4>
-                    <span className="text-[11px] text-[#5C4938]">~{transit.taxi.durationMin} dakika</span>
+                    <span className="text-[11px] text-[#5C4938]">~{transit.taxi.durationMin} {tm.minutes}</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="font-luxury-serif text-sm font-bold text-[#141414]">~{transit.taxi.costTl} TL</span>
-                  <span className="text-[10px] text-[#6B5A48] block">Taksimetre tahmini</span>
+                  <span className="text-[10px] text-[#6B5A48] block">{tm.taximeterEstimate}</span>
                 </div>
               </div>
               <p className="text-[11px] text-[#3D352E] leading-relaxed">{transit.taxi.desc}</p>
@@ -105,12 +187,12 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
                   </div>
                   <div>
                     <h4 className="font-luxury-serif text-[15px] font-bold text-[#E5C896]">{t.vipOption}</h4>
-                    <span className="text-[11px] text-[#D8CBB8]">~{transit.vipTransfer.durationMin} dakika (Özel Şoförlü)</span>
+                    <span className="text-[11px] text-[#D8CBB8]">~{transit.vipTransfer.durationMin} {tm.minutes} ({tm.privateChauffeur})</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="font-luxury-serif text-sm font-bold text-[#E5C896]">€{transit.vipTransfer.costEur}</span>
-                  <span className="text-[10px] text-[#D8CBB8] block">Sabit fiyat</span>
+                  <span className="text-[10px] text-[#D8CBB8] block">{tm.fixedPrice}</span>
                 </div>
               </div>
               <p className="text-[11px] text-[#EDE5D6] leading-relaxed">{transit.vipTransfer.desc}</p>
@@ -125,17 +207,17 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
                   </div>
                   <div>
                     <h4 className="font-luxury-serif text-[15px] font-bold text-[#141414]">{t.transitOption}</h4>
-                    <span className="text-[11px] text-[#5C4938]">~{transit.publicTransit.durationMin} dakika ({transit.publicTransit.lineName})</span>
+                    <span className="text-[11px] text-[#5C4938]">~{transit.publicTransit.durationMin} {tm.minutes} ({transit.publicTransit.lineName})</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="font-luxury-serif text-sm font-bold text-[#7D5E2A]">~{transit.publicTransit.costTl} TL</span>
-                  <span className="text-[10px] text-[#6B5A48] block">İstanbulkart</span>
+                  <span className="text-[10px] text-[#6B5A48] block">{tm.istanbulkart}</span>
                 </div>
               </div>
 
               <div className="bg-white/90 p-3 rounded-xl text-[11px] text-[#221F1C] space-y-1 border border-[#D8CBB8]">
-                <strong className="text-[#7D5E2A] block text-[10px] uppercase tracking-wider">Adım Adım Güzergah:</strong>
+                <strong className="text-[#7D5E2A] block text-[10px] uppercase tracking-wider">{tm.stepByStepRoute}</strong>
                 {transit.publicTransit.routeSteps.map((step, sIdx) => (
                   <div key={sIdx} className="flex items-start gap-1.5">
                     <span className="text-[#8E7252] font-bold">•</span>
@@ -151,7 +233,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
               onClick={onClose}
               className="font-luxury-sans w-full py-2.5 bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-xl text-xs font-bold text-[#141414] transition cursor-pointer"
             >
-              Kapat
+              {tm.close}
             </button>
           </div>
         </div>
@@ -159,3 +241,4 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
     </div>
   );
 }
+

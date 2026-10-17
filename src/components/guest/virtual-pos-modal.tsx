@@ -5,6 +5,7 @@ import { FirestoreService } from "@/lib/firestore-service";
 
 import { Experience, Hotel, Language, Booking } from '@/lib/types';
 import { getT } from '@/lib/i18n';
+import { getLocalizedExperience } from '@/lib/experience-i18n';
 import { formatPrice, generateCalendarUrl } from '@/lib/utils';
 import { XeniosStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
@@ -20,8 +21,61 @@ interface VirtualPosModalProps {
   onClose: () => void;
 }
 
+const POS_I18N: Record<Language, {
+  code: string;
+  close: string;
+  guestInfo: string;
+  fullName: string;
+  phoneSms: string;
+}> = {
+  tr: {
+    code: 'Kod',
+    close: 'Kapat',
+    guestInfo: 'Misafir Bilgileri',
+    fullName: 'Ad Soyad',
+    phoneSms: 'Telefon / SMS'
+  },
+  en: {
+    code: 'Code',
+    close: 'Close',
+    guestInfo: 'Guest Details',
+    fullName: 'Full Name',
+    phoneSms: 'Phone / SMS'
+  },
+  ar: {
+    code: 'الرمز',
+    close: 'إغلاق',
+    guestInfo: 'بيانات الضيف',
+    fullName: 'الاسم الكامل',
+    phoneSms: 'الهاتف / SMS'
+  },
+  ru: {
+    code: 'Код',
+    close: 'Закрыть',
+    guestInfo: 'Данные гостя',
+    fullName: 'Имя и фамилия',
+    phoneSms: 'Телефон / SMS'
+  },
+  de: {
+    code: 'Code',
+    close: 'Schließen',
+    guestInfo: 'Gästedaten',
+    fullName: 'Vollständiger Name',
+    phoneSms: 'Telefon / SMS'
+  },
+  fr: {
+    code: 'Code',
+    close: 'Fermer',
+    guestInfo: 'Informations client',
+    fullName: 'Nom complet',
+    phoneSms: 'Téléphone / SMS'
+  }
+};
+
 export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }: VirtualPosModalProps) {
   const t = getT(lang);
+  const posUi = POS_I18N[lang] || POS_I18N.en;
+  const locExp = getLocalizedExperience(experience, lang);
   const [guestName, setGuestName] = useState('Alex Mercer');
   const [guestPhone, setGuestPhone] = useState('+90 532 555 44 33');
   const [guestEmail] = useState('alex.mercer@gmail.com');
@@ -54,7 +108,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
         hotelName: hotel.name,
         roomNumber: roomNumber,
         experienceId: experience.id,
-        experienceTitle: experience.title,
+        experienceTitle: locExp.title,
         providerName: experience.provider,
         providerPhone: experience.phone,
         guestName,
@@ -67,8 +121,8 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
         currency: experience.currency,
         status: 'payment_success',
         calendarLink: generateCalendarUrl(
-          experience.title,
-          `${experience.provider} - ${experience.agentNote}\nOtel: ${hotel.name} (Oda ${roomNumber})`,
+          locExp.title,
+          `${experience.provider} - ${locExp.agentNote}\n${hotel.name} (${t.room} ${roomNumber})`,
           experience.location,
           bookingDate,
           bookingTime
@@ -107,7 +161,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
 
             <div>
               <span className="text-xs font-mono font-bold text-[#7D5E2A] bg-[#FAF8F4] border border-[#C4B8A4] px-3 py-1 rounded-full">
-                Kod: {createdBooking.confirmationCode}
+                {posUi.code}: {createdBooking.confirmationCode}
               </span>
               <h3 className="font-luxury-serif text-xl font-bold text-[#141414] mt-2.5">{t.posSuccess}</h3>
               <p className="text-xs text-[#5C4938] mt-1 max-w-xs mx-auto">
@@ -138,7 +192,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
                 onClick={onClose}
                 className="w-full py-2.5 bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] border border-[#C4B8A4] rounded-xl text-xs font-bold transition cursor-pointer"
               >
-                Kapat
+                {posUi.close}
               </button>
             </div>
           </div>
@@ -163,7 +217,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
             {/* Order Summary */}
             <div className="bg-[#FAF8F4]/90 p-3.5 rounded-2xl border border-[#C4B8A4] flex items-center justify-between text-xs">
               <div>
-                <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">{experience.title}</strong>
+                <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">{locExp.title}</strong>
                 <span className="text-[#5C4938]">{experience.provider} • {t.room} {roomNumber}</span>
               </div>
               <div className="text-right">
@@ -174,10 +228,10 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
 
             {/* Guest Details */}
             <div className="space-y-2">
-              <h4 className="font-luxury-serif text-sm font-bold uppercase tracking-[0.04em] text-[#141414]">Misafir Bilgileri</h4>
+              <h4 className="font-luxury-serif text-sm font-bold uppercase tracking-[0.04em] text-[#141414]">{posUi.guestInfo}</h4>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-[#5C4938]">Ad Soyad</label>
+                  <label className="text-[10px] font-semibold text-[#5C4938]">{posUi.fullName}</label>
                   <input
                     type="text"
                     value={guestName}
@@ -186,7 +240,7 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-[#5C4938]">Telefon / SMS</label>
+                  <label className="text-[10px] font-semibold text-[#5C4938]">{posUi.phoneSms}</label>
                   <input
                     type="text"
                     value={guestPhone}

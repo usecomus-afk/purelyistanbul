@@ -246,7 +246,7 @@ export function ExperienceDetailModal({
           <div className="space-y-3">
             <div className="relative h-64 w-full rounded-2xl overflow-hidden border-[1.5px] border-[#C4B8A4] shadow-sm bg-[#EFE8DA]">
               <iframe
-                title={t.meetingPoint}
+                title={(t as any).meetingPoint || 'Meeting Point'}
                 width="100%"
                 height="100%"
                 style={{ border: 0, pointerEvents: 'none' }}
