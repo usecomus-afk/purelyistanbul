@@ -1,8 +1,15 @@
 import UIKit
 import Capacitor
+import AVFoundation
+import WebKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    private var splashContainer: UIView?
+    private var splashPlayer: AVPlayer?
+    private var splashPlayerLayer: AVPlayerLayer?
+    private var splashEndObserver: NSObjectProtocol?
+    private var isSplashDismissed = false
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
@@ -31,26 +38,97 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.webView?.scrollView.contentInset = .zero
         bridgeVC.webView?.scrollView.scrollIndicatorInsets = .zero
 
-        if let win = self.window {
-            let splashView = UIImageView(frame: win.bounds)
-            splashView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            splashView.contentMode = .scaleToFill
-            splashView.clipsToBounds = true
-            let hour = Calendar.current.component(.hour, from: Date())
-            splashView.overrideUserInterfaceStyle = (hour >= 18 || hour < 6) ? .dark : .light
-            splashView.image = UIImage(named: "Splash")
-            win.addSubview(splashView)
+        let videoURL = Bundle.main.url(forResource: "splash-intro", withExtension: "mp4", subdirectory: "public/videos")
+            ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                UIView.animate(withDuration: 0.35, animations: {
-                    splashView.alpha = 0
-                }, completion: { _ in
-                    splashView.removeFromSuperview()
-                })
+        if let win = self.window, let videoURL = videoURL {
+            let scriptSource = "try { sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
+            let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+            bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
+
+            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
+
+            let container = UIView(frame: win.bounds)
+            container.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            container.backgroundColor = UIColor(red: 0.059, green: 0.090, blue: 0.118, alpha: 1.0)
+            container.clipsToBounds = true
+
+            let player = AVPlayer(url: videoURL)
+            player.isMuted = true
+            player.automaticallyWaitsToMinimizeStalling = false
+
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.frame = container.bounds
+            playerLayer.videoGravity = .resize
+            container.layer.addSublayer(playerLayer)
+
+            let progressTrack = UIView(frame: CGRect(x: 0, y: container.bounds.height - 4, width: container.bounds.width, height: 4))
+            progressTrack.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+            progressTrack.backgroundColor = UIColor(red: 0.706, green: 0.667, blue: 0.588, alpha: 0.4)
+
+            let progressFill = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 4))
+            progressFill.backgroundColor = UIColor(red: 0.788, green: 0.682, blue: 0.510, alpha: 1.0)
+            progressTrack.addSubview(progressFill)
+            container.addSubview(progressTrack)
+
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSplashTap))
+            container.addGestureRecognizer(tapGesture)
+
+            win.addSubview(container)
+
+            self.splashContainer = container
+            self.splashPlayer = player
+            self.splashPlayerLayer = playerLayer
+
+            self.splashEndObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: player.currentItem,
+                queue: .main
+            ) { [weak self] _ in
+                self?.dismissSplash()
+            }
+
+            player.playImmediately(atRate: 1.0)
+
+            UIView.animate(withDuration: 5.0, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
+                progressFill.frame.size.width = container.bounds.width
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.2) { [weak self] in
+                self?.dismissSplash()
             }
         }
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
+    }
+
+    @objc private func handleSplashTap() {
+        dismissSplash()
+    }
+
+    private func dismissSplash() {
+        guard !isSplashDismissed else { return }
+        isSplashDismissed = true
+
+        if let observer = splashEndObserver {
+            NotificationCenter.default.removeObserver(observer)
+            splashEndObserver = nil
+        }
+
+        guard let container = splashContainer else { return }
+        container.isUserInteractionEnabled = false
+
+        UIView.animate(withDuration: 0.45, delay: 0, options: [.curveEaseOut]) {
+            container.alpha = 0
+            container.transform = CGAffineTransform(scaleX: 1.02, y: 1.02)
+        } completion: { [weak self] _ in
+            self?.splashPlayer?.pause()
+            self?.splashPlayerLayer?.removeFromSuperlayer()
+            self?.splashPlayer = nil
+            self?.splashPlayerLayer = nil
+            container.removeFromSuperview()
+            self?.splashContainer = nil
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

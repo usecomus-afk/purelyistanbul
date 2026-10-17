@@ -16,6 +16,7 @@ import { XeniosStore } from "@/lib/store";
 
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
   if (typeof window === "undefined") return false;
+  if ((window as any).__PURELY_NATIVE_VIDEO_SPLASH__) return true;
   const alreadyPlayed =
     sessionStorage.getItem("purely_splash_played") ||
     sessionStorage.getItem("xenios_splash_played");
@@ -38,9 +39,13 @@ export function AppIntroSplash() {
   const pathname = usePathname();
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !shouldSkipSplash(window.location.pathname);
+    }
+    return true;
+  });
   const [fadingOut, setFadingOut] = useState(false);
-  const [ready, setReady] = useState(false);
 
   const dismiss = useCallback(() => {
     setFadingOut(true);
@@ -53,7 +58,6 @@ export function AppIntroSplash() {
   useEffect(() => {
     if (shouldSkipSplash(pathname)) {
       setVisible(false);
-      setReady(true);
       return;
     }
 
@@ -65,46 +69,21 @@ export function AppIntroSplash() {
 
     setVisible(true);
     setFadingOut(false);
-    setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
+
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
 
     const timer = setTimeout(dismiss, 5200);
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
-  useEffect(() => {
-    if (ready && visible && videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
-  }, [ready, visible]);
-
-  // Henüz hydrasyon tamamlanmadıysa tam ekran sabit arka plan katmanı döndür.
-  if (!ready) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: "100vw",
-          height: "100dvh",
-          zIndex: 999999,
-          backgroundColor: "#2B6A6C",
-          backgroundImage: "url('/images/splash-poster.jpg')",
-          backgroundSize: "100% 100%",
-          backgroundPosition: "center center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-    );
-  }
-
   if (!visible) return null;
 
   return (
     <div
+      id="purely-intro-splash"
       onClick={dismiss}
       onTouchStart={dismiss}
       style={{
@@ -119,35 +98,17 @@ export function AppIntroSplash() {
         overflow: "hidden",
         cursor: "pointer",
         userSelect: "none",
-        backgroundColor: "#2B6A6C",
-        transition: "opacity 500ms ease-out, transform 500ms ease-out",
+        backgroundColor: "#0F171E",
+        transition: "opacity 450ms ease-out, transform 450ms ease-out",
         opacity: fadingOut ? 0 : 1,
         transform: fadingOut ? "scale(1.02)" : "scale(1)",
         pointerEvents: fadingOut ? "none" : "auto",
       }}
     >
-      {/* İlk kare poster katmanı (video yüklenirken sıfır gecikme sağlar) */}
-      <img
-        src="/images/splash-poster.jpg"
-        alt="purelyİstanbul"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "fill",
-          objectPosition: "center center",
-          display: "block",
-          pointerEvents: "none",
-        }}
-      />
-
       {/* Tam ekran açılış videosu */}
       <video
         ref={videoRef}
         src="/videos/splash-intro.mp4"
-        poster="/images/splash-poster.jpg"
         autoPlay
         muted
         playsInline

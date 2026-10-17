@@ -1,7 +1,7 @@
 {
   "appId": "com.usecomus.olympus",
   "appName": "purelyİstanbul",
-  "webDir": "out",
+  "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
     "url": "https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app",
@@ -19,9 +19,9 @@
       "enableHighAccuracy": true
     },
     "SplashScreen": {
-      "launchShowDuration": 500,
+      "launchShowDuration": 0,
       "launchAutoHide": true,
-      "backgroundColor": "#F6F1E7",
+      "backgroundColor": "#2B6A6C",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false
