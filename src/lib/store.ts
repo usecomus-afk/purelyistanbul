@@ -300,7 +300,10 @@ export const XeniosStore = {
       'exp-19', 'exp-20', 'exp-21', 'exp-22', 'exp-23',
       'exp-30', 'exp-31', 'exp-32',
       'exp-36', 'exp-37', 'exp-38', 'exp-39', 'exp-40',
-      'exp-49', 'exp-50', 'exp-51', 'exp-52'
+      'exp-49', 'exp-50', 'exp-51', 'exp-52',
+      'exp-aesthetic-1', 'exp-aesthetic-2', 'exp-aesthetic-3', 'exp-aesthetic-4',
+      'exp-aesthetic-5', 'exp-aesthetic-6', 'exp-aesthetic-7', 'exp-aesthetic-8',
+      'exp-aesthetic-9', 'exp-aesthetic-10', 'exp-aesthetic-11', 'exp-aesthetic-12'
     ]);
     let deletedIds = new Set<string>();
     try {
@@ -311,13 +314,30 @@ export const XeniosStore = {
       }
     } catch {}
 
+    const isRemovedExp = (item: Experience) => {
+      if (!item || !item.id) return true;
+      if (removedLegacyIds.has(item.id) || item.id.startsWith('exp-aesthetic-')) return true;
+      const cat = `${item.category || ''} ${item.categoryTag || ''}`.toLowerCase();
+      if (
+        cat.includes('medikal') ||
+        cat.includes('estetik') ||
+        cat.includes('aesthetic') ||
+        cat.includes('medical') ||
+        cat.includes('yatırım') ||
+        cat.includes('real estate')
+      ) {
+        return true;
+      }
+      return false;
+    };
+
     const seedList = rawExperiences as Experience[];
     const seedMap = new Map<string, Experience>(seedList.map((e) => [e.id, e]));
     const itemMap = new Map<string, Experience>();
     const customItems: Experience[] = [];
 
     for (const item of list) {
-      if (!item || !item.id || removedLegacyIds.has(item.id) || deletedIds.has(item.id)) continue;
+      if (isRemovedExp(item) || deletedIds.has(item.id)) continue;
       if (itemMap.has(item.id)) continue;
       itemMap.set(item.id, item);
       if (!seedMap.has(item.id)) {
@@ -325,24 +345,22 @@ export const XeniosStore = {
       }
     }
 
-    const cat11Hidden = this.getCategoryConfigs().find((c) => c.key === 'cat-11')?.hidden !== false;
     const mergedSeedItems: Experience[] = [];
     for (const seed of seedList) {
-      if (deletedIds.has(seed.id)) continue;
+      if (deletedIds.has(seed.id) || isRemovedExp(seed)) continue;
       const existing = itemMap.get(seed.id);
       if (existing) {
-        const isLegacyNumbered = !existing.category || /^[0-9]+\./.test(existing.category.trim());
-        const isAestheticSeed = seed.id.startsWith('exp-aesthetic-') || seed.category === 'Medikal Estetik & Güzellik';
         mergedSeedItems.push({
-          ...seed,
           ...existing,
-          category: isLegacyNumbered ? seed.category : existing.category,
-          categoryTag: existing.categoryTag || seed.categoryTag,
-          iconName: existing.iconName || seed.iconName,
+          ...seed,
+          price: existing.price ?? seed.price,
+          currency: existing.currency ?? seed.currency,
+          availableSlots: existing.availableSlots ?? seed.availableSlots,
+          capacity: existing.capacity ?? seed.capacity,
+          status: existing.status ?? seed.status,
+          publishToWeb: existing.publishToWeb ?? seed.publishToWeb,
+          publishToMobile: existing.publishToMobile ?? seed.publishToMobile,
           image: existing.image || seed.image,
-          ...(isAestheticSeed && cat11Hidden
-            ? { status: 'suspended', publishToWeb: false, publishToMobile: false }
-            : {}),
         });
       } else {
         mergedSeedItems.push(seed);

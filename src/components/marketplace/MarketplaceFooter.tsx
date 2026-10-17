@@ -3,28 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { X } from "lucide-react";
+import { ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitContactMessage } from "@/lib/marketplace/firestore";
 
 const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "Şartlar ve Ayarlar",
+    title: "Legal & Governance",
     links: [
-      { label: "Gizlilik Bildirimi", href: "/marketplace/legal/gizlilik-bildirimi" },
-      { label: "Hizmet Koşulları", href: "/marketplace/legal/hizmet-kosullari" },
-      { label: "Erişilebilirlik Bildirisi", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
-      { label: "Çalışma Şeklimiz", href: "/marketplace/legal/calisma-seklimiz" },
+      { label: "Privacy Notice (UK GDPR)", href: "/marketplace/legal/gizlilik-bildirimi" },
+      { label: "Terms of Service", href: "/marketplace/legal/hizmet-kosullari" },
+      { label: "Accessibility Statement", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
+      { label: "How We Work", href: "/marketplace/legal/calisma-seklimiz" },
     ],
   },
   {
-    title: "Ortaklar İçin",
+    title: "For Boutique Hotels & Property Managers",
     links: [
-      { label: "Extranet Girişi", href: "/marketplace/partner/extranet" },
-      { label: "Ortaklar İçin Yardım Sayfası", href: "/marketplace/partner/yardim" },
-      { label: "Hizmetinizi / Deneyiminizi Kaydedin", href: "/marketplace/partner/kayit" },
-      { label: "İştirak Olun", href: "/marketplace/partner/istirak" },
+      { label: "For Boutique Hotels & Property Managers", href: "/marketplace/partner/extranet" },
+      { label: "Partner Support & Onboarding", href: "/marketplace/partner/yardim" },
+      { label: "Register Certified Experience / Service", href: "/marketplace/partner/kayit" },
+      { label: "Hospitality SaaS Partnership", href: "/marketplace/partner/istirak" },
     ],
   },
 ];
@@ -42,30 +42,40 @@ export function MarketplaceFooter() {
     setSubmitting(true);
     try {
       await submitContactMessage({ name, email, message, uid: user?.uid });
-      toast.success("Mesajınız alındı, en kısa sürede dönüş yapacağız.");
+      toast.success("Your message has been received. Our Guest Care team will reply shortly.");
       setName("");
       setEmail("");
       setMessage("");
       setShowContact(false);
     } catch (err: any) {
-      toast.error(err?.message || "Mesaj gönderilemedi, lütfen tekrar deneyin.");
+      toast.error(err?.message || "Could not send message. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <footer className="border-t border-sand-border mt-16">
-      <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-14 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10">
+    <footer className="border-t border-sand-border mt-16 bg-sand-bg">
+      <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-14 grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-10">
         <div>
-          <h3 className="text-[13px] font-semibold text-ink mb-4">Destek</h3>
+          <h3 className="text-[13px] font-semibold text-ink mb-4 uppercase tracking-wider">
+            Guest Commitment & Support
+          </h3>
           <ul className="space-y-2.5">
             <li>
               <Link
-                href="/marketplace/legal/misafir-kalkani"
+                href="/our-philosophy"
                 className="text-[13px] font-semibold text-terracotta hover:text-amber-700 hover:underline underline-offset-2 transition"
               >
-                Misafir Kalkanı & Adil Alışveriş Politikası
+                Our Ethical Charter & Guest Commitment
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/guest-commitment"
+                className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
+              >
+                Tanrı Misafiri Guest Standards
               </Link>
             </li>
             <li>
@@ -73,7 +83,7 @@ export function MarketplaceFooter() {
                 href="/marketplace/iletisim"
                 className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
               >
-                Müşteri Hizmetleriyle İletişime Geçin
+                Contact Guest Care & Support
               </Link>
             </li>
             <li>
@@ -82,7 +92,7 @@ export function MarketplaceFooter() {
                 onClick={() => setShowContact(true)}
                 className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition text-left"
               >
-                Bizimle İletişime Geçin
+                Send a Direct Message
               </button>
             </li>
           </ul>
@@ -90,7 +100,7 @@ export function MarketplaceFooter() {
 
         {FOOTER_COLUMNS.map((col) => (
           <div key={col.title}>
-            <h3 className="text-[13px] font-semibold text-ink mb-4">{col.title}</h3>
+            <h3 className="text-[13px] font-semibold text-ink mb-4 uppercase tracking-wider">{col.title}</h3>
             <ul className="space-y-2.5">
               {col.links.map((link) => (
                 <li key={link.href}>
@@ -107,6 +117,21 @@ export function MarketplaceFooter() {
         ))}
       </div>
 
+      {/* Mandatory Regulatory Compliance Footer & Legal Disclaimer */}
+      <div className="max-w-6xl mx-auto px-5 md:px-8 pb-8">
+        <div className="rounded-2xl border border-sand-border bg-white/80 p-5 sm:p-6 shadow-[0_2px_12px_rgba(11,25,44,0.03)]">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-terracotta shrink-0 mt-0.5" strokeWidth={1.75} />
+            <div className="text-[12px] sm:text-[12.5px] text-ink-muted leading-relaxed">
+              <p className="font-semibold text-ink mb-1">Legal &amp; Regulatory Disclaimer:</p>
+              <p>
+                Purely Istanbul Ltd is an independent hospitality technology and software company registered in the United Kingdom (Company Registration No: [Insert UK Number]). Purely Istanbul is a technology provider, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey). Purely Istanbul acts solely as a digital concierge software and marketplace interface.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="border-t border-sand-border">
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
           <span className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 shrink-0">
@@ -114,8 +139,8 @@ export function MarketplaceFooter() {
           </span>
 
           <div className="flex flex-col items-center md:items-start gap-1.5">
-            <p className="text-[12px] text-ink-muted/70 tracking-wide text-center md:text-left">
-              © {new Date().getFullYear()} Purely Istanbul — nothing but İstanbul.
+            <p className="text-[12px] text-ink-muted/80 tracking-wide text-center md:text-left">
+              © {new Date().getFullYear()} Purely Istanbul Ltd (London, UK) — Nothing but Istanbul.
             </p>
             <span className="relative h-4 sm:h-5 w-16 sm:w-20 opacity-70">
               <Image src="/comus-logo.png" alt="Powered by Comus" fill className="object-contain" />
@@ -135,15 +160,17 @@ export function MarketplaceFooter() {
           >
             <button
               onClick={() => setShowContact(false)}
-              aria-label="Kapat"
+              aria-label="Close"
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-sand-bg hover:bg-sand-border/60 flex items-center justify-center text-ink-muted transition"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <h2 className="text-lg font-semibold tracking-tight text-ink mb-1">Bize Ulaşın</h2>
+            <h2 className="font-luxury-serif text-xl font-semibold tracking-tight text-ink mb-1">
+              Contact Purely Istanbul
+            </h2>
             <p className="text-sm text-ink-muted mb-5">
-              Sorularınız, önerileriniz veya iş birliği talepleriniz için bize yazın.
+              Write to our Guest Care or Boutique Hotel Partnership team in London &amp; Istanbul.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -152,7 +179,7 @@ export function MarketplaceFooter() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Adınız Soyadınız"
+                placeholder="Full Name"
                 className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               />
               <input
@@ -160,14 +187,14 @@ export function MarketplaceFooter() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="E-posta Adresiniz"
+                placeholder="Email Address"
                 className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
               />
               <textarea
                 required
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Mesajınız"
+                placeholder="How can we assist you?"
                 rows={4}
                 className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none"
               />
@@ -176,7 +203,7 @@ export function MarketplaceFooter() {
                 disabled={submitting}
                 className="w-full rounded-full bg-ink text-white font-semibold py-2.5 text-sm hover:bg-terracotta transition disabled:opacity-60"
               >
-                {submitting ? "Gönderiliyor..." : "Gönder"}
+                {submitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>

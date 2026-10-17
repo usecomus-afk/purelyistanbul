@@ -12,7 +12,7 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCardProps) {
-  const priceUnit = listing.type === "stay" ? "gece" : "kişi";
+  const priceUnit = listing.type === "stay" ? "night" : "guest";
   const rating = listing.rating?.score ?? 4.9;
   const reviewCount = listing.rating?.reviewCount ?? 0;
   const currencySymbol =
@@ -21,8 +21,7 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
   return (
     <div className="group">
       <Link href={`/marketplace/listing/${listing.id}`} className="block">
-        {/* Yatay dikdörtgen (4:3) görsel */}
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.05] shadow-[0_1px_2px_rgba(30,33,41,0.04)] transition-shadow duration-300 group-hover:shadow-[0_10px_28px_-10px_rgba(30,33,41,0.28)]">
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.05] shadow-[0_1px_2px_rgba(11,25,44,0.04)] transition-shadow duration-300 group-hover:shadow-[0_10px_28px_-10px_rgba(11,25,44,0.28)]">
           {listing.coverImageUrl ? (
             <Image
               src={listing.coverImageUrl}
@@ -43,7 +42,7 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
                 e.preventDefault();
                 onToggleFavorite(listing);
               }}
-              aria-label="Favorilere ekle"
+              aria-label="Save experience"
               className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-105 transition shadow-sm"
             >
               <Heart
@@ -54,17 +53,16 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
           )}
         </div>
 
-        {/* Bilgi alanı */}
         <div className="mt-3 flex flex-col gap-1">
           <p className="text-[14.5px] font-semibold text-ink leading-[1.3] line-clamp-2">
-            {listing.title || "İsimsiz ilan"}
+            {listing.title || "Curated Istanbul Experience"}
           </p>
 
           <div className="flex items-center justify-between gap-2">
             <p className="text-[13.5px] text-ink-muted">
               <span className="font-semibold text-ink">
                 {currencySymbol}
-                {listing.pricing.basePrice.toLocaleString("tr-TR")}
+                {listing.pricing.basePrice.toLocaleString("en-GB")}
               </span>{" "}
               / {priceUnit}
             </p>

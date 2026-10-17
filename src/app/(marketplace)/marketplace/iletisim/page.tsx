@@ -1,20 +1,20 @@
 import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
-import { Phone, Mail, Clock, MapPin, ShieldAlert } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, HeartHandshake } from "lucide-react";
 
 const CHANNELS = [
-  { icon: Phone, label: "Canlı Destek & WhatsApp", value: "+90 (212) [İletişim Numarası] / WhatsApp Destek Hattı" },
-  { icon: Mail, label: "E-posta", value: "destek@purelyistanbul.com" },
-  { icon: Clock, label: "Çalışma Saatleri", value: "Haftanın 7 günü, 08:30 – 23:00 (GMT+3)" },
-  { icon: MapPin, label: "Yerel İrtibat", value: "Beyoğlu, İstanbul" },
-  { icon: ShieldAlert, label: "Mağduriyet Bildirim Masası", value: "Fahiş fiyat veya esnaf şikayetleri için: kalkan@purelyistanbul.com" },
+  { icon: Phone, label: "Live Guest Care & WhatsApp Concierge", value: "Available 7 days via In-Room PWA & Partner Desk" },
+  { icon: Mail, label: "Guest Care & Support Email", value: "support@purelyistanbul.com" },
+  { icon: Clock, label: "Concierge Operating Hours", value: "7 days a week, 08:30 – 23:00 (Istanbul GMT+3)" },
+  { icon: MapPin, label: "Headquarters & Local Operations", value: "London, United Kingdom & Beyoğlu, Istanbul" },
+  { icon: HeartHandshake, label: "Tanrı Misafiri Quality Assurance", value: "Direct accountability and empathetic resolution: care@purelyistanbul.com" },
 ];
 
 export default function IletisimPage() {
   return (
     <LegalPageShell
-      eyebrow="Destek"
-      title="Müşteri Hizmetleriyle İletişime Geçin"
-      intro="İstanbul'daki seyahatinizin her adımında yanınızdayız. comus AI yapay zeka rehberinizin yanı sıra kenti sokak sokak bilen yerel operasyon ekibimize anında ulaşabilirsiniz."
+      eyebrow="Guest Care & Support"
+      title="Contact Our Guest Care Team"
+      intro="Alongside your 24/7 ComusAI digital concierge, our dedicated hospitality specialists in London and Istanbul are here to ensure every moment of your stay meets our verified standards."
     >
       <ul className="!mt-0 space-y-5">
         {CHANNELS.map(({ icon: Icon, label, value }) => (

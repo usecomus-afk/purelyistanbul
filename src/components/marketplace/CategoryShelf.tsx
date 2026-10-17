@@ -71,20 +71,20 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
             )}
             {onTitleClick && (
               <button onClick={onTitleClick} className="text-[12px] text-ink-muted hover:text-terracotta font-medium transition-colors">
-                Tümünü gör →
+                View all →
               </button>
             )}
           </div>
         </div>
 
-        {/* Ok butonları — sadece overflow varsa göster */}
+        {/* Arrow buttons — shown only when overflow exists */}
         {hasOverflow && (
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => scrollBy("left")}
               disabled={!canScrollLeft}
               className="w-8 h-8 rounded-full border border-ink/20 bg-white flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="Önceki"
+              aria-label="Previous"
             >
               <ChevronLeft className="w-4 h-4 text-ink" />
             </button>
@@ -92,7 +92,7 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
               onClick={() => scrollBy("right")}
               disabled={!canScrollRight}
               className="w-8 h-8 rounded-full border border-ink/20 bg-white flex items-center justify-center shadow-sm hover:shadow-md transition disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="Sonraki"
+              aria-label="Next"
             >
               <ChevronRight className="w-4 h-4 text-ink" />
             </button>

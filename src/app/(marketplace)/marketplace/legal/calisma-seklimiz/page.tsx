@@ -2,38 +2,29 @@ import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
 
 export default function CalismaSeklimizPage() {
   return (
-    <LegalPageShell eyebrow="Şartlar ve Ayarlar" title="Çalışma Şeklimiz">
+    <LegalPageShell eyebrow="Legal & Governance" title="How We Work">
       <p className="text-ink-muted">
-        purelyistanbul.com, global seyahat portallarının algoritmaya dayalı, komisyonu en yüksek
-        vereni öne çıkaran yapısını reddeder; tamamen İstanbul'a adanmış, küratörlü bir seçki
-        sunar.
+        Purely Istanbul Ltd is a London-registered hospitality technology SaaS and curated city companion created to end predatory tourist traps and bridge discerning travelers directly to Istanbul&apos;s authentic heart.
       </p>
 
       <section>
-        <h2>10 Kategoride Doğrulanmış Seçki</h2>
+        <h2>Curated Excellence Across 10 Active Categories</h2>
         <p>
-          Platformda yer alan hamamlardan restoranlara, fotoğraf atölyelerinden VIP transfer
-          sağlayıcılarına kadar her işletme yerinde denetlenir, fiyat/hizmet dengesi ve esnaf
-          etiği onaylandıktan sonra listelenir.
+          Every experience on purelyistanbul.com — from Bosphorus yacht cruises and traditional hammams to licensed VIP airport transfers and in-stay gourmet catering — is vetted in person for licensing, transparent local pricing, and genuine hospitality.
         </p>
       </section>
 
       <section>
-        <h2>comus AI Akıllı Asistanı</h2>
+        <h2>In-Room Smart QR Stand &amp; ComusAI Concierge</h2>
         <p>
-          purelyistanbul.com ile çalışan host'ların evlerinde ve anlaşmalı butik otellerde
-          konaklayan misafirlerimiz, sadece İstanbul için eğitilmiş comus AI ile kendi ana
-          dillerinde 7/24 konuşabilir. Misafirler, dilerlerse "Beni Tanı" butonundaki seyahat
-          tarzı, bütçe, özel ilgi alanları ve sağlık/alerji notlarını doldurarak tamamen
-          kendilerine özel rota, güvenli restoran ve nokta atışı mekan tavsiyeleri alırlar.
+          Travelers staying with our partner Boutique Hotels &amp; Professional Property Managers enjoy instant Wi-Fi onboarding, seamless PWA guest services (housekeeping, maintenance, breakfast catering, express laundry), and 24/7 native-language guidance from ComusAI — our Gemini-powered hyper-local AI concierge.
         </p>
       </section>
 
       <section>
-        <h2>Objektif Sıralama</h2>
+        <h2>Fairness &amp; Merit-Based Curation</h2>
         <p>
-          purelyistanbul.com üzerindeki öneri ve listelemeler reklam bütçelerine göre değil,
-          gerçek misafir deneyimlerine, puanlamalara ve güvenlik karnelerine göre şekillenir.
+          While global platforms extract 25–30% commissions from local boat captains and artisans, Purely Istanbul charges a modest 10–12% technology fee. Rankings are determined strictly by verified guest satisfaction and adherence to our Ethical Charter — never paid advertising.
         </p>
       </section>
     </LegalPageShell>

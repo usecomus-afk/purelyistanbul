@@ -57,17 +57,16 @@ export function CookieConsentBanner() {
   return (
     <aside
       role="region"
-      aria-label="Çerez İzinleri"
+      aria-label="Cookie Preferences"
       className={`fixed inset-x-0 bottom-0 z-[9999999] px-3 pt-3 sm:px-5 pointer-events-none ${bottomPad}`}
     >
-      <div className="sm:max-w-[400px] sm:mr-auto rounded-2xl border border-sand-border bg-white/95 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(30,33,41,0.28)] p-4 pointer-events-auto text-ink animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="sm:max-w-[400px] sm:mr-auto rounded-2xl border border-sand-border bg-white/95 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(11,25,44,0.28)] p-4 pointer-events-auto text-ink animate-in fade-in slide-in-from-bottom-4 duration-300">
         {!managing ? (
           <div className="space-y-3">
             <div className="space-y-1">
-              <h4 className="text-[13px] font-semibold text-ink">Çerez tercihleri</h4>
+              <h4 className="text-[13px] font-semibold text-ink">Cookie Preferences</h4>
               <p className="text-[12px] text-ink-muted leading-relaxed">
-                Deneyiminizi iyileştirmek için çerez kullanıyoruz. Zorunlu çerezler site için
-                gereklidir; analitik ve pazarlama çerezleri size kalmıştır.
+                We use cookies to deliver a seamless concierge and marketplace experience. Essential cookies are required for security; analytics and personalization cookies are optional.
               </p>
             </div>
 
@@ -77,14 +76,14 @@ export function CookieConsentBanner() {
                 onClick={acceptAll}
                 className="flex-1 rounded-full bg-ink hover:bg-terracotta text-white px-4 py-2 text-[12px] font-semibold transition cursor-pointer"
               >
-                Kabul Et
+                Accept All
               </button>
               <button
                 type="button"
                 onClick={rejectNonEssential}
                 className="flex-1 rounded-full border border-sand-border hover:bg-sand-card text-ink px-4 py-2 text-[12px] font-semibold transition cursor-pointer"
               >
-                Reddet
+                Essential Only
               </button>
             </div>
             <button
@@ -92,48 +91,48 @@ export function CookieConsentBanner() {
               onClick={() => setManaging(true)}
               className="w-full text-center text-[11.5px] text-ink-muted hover:text-ink underline underline-offset-2 transition cursor-pointer"
             >
-              Tercihleri özelleştir
+              Customize preferences
             </button>
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-sand-border pb-2">
-              <p className="text-[13px] font-semibold text-ink">Çerez tercihleri</p>
-              <span className="text-[11px] text-ink-muted">Özelleştirilebilir</span>
+              <p className="text-[13px] font-semibold text-ink">Cookie Preferences</p>
+              <span className="text-[11px] text-ink-muted">Customizable</span>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center justify-between gap-4 bg-sand-bg/60 p-2.5 rounded-xl">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Zorunlu çerezler</p>
-                  <p className="text-[11px] text-ink-muted">Oturum ve güvenlik için gereklidir.</p>
+                  <p className="text-xs font-semibold text-ink">Essential Cookies</p>
+                  <p className="text-[11px] text-ink-muted">Required for session state and security.</p>
                 </div>
-                <input type="checkbox" checked disabled className="w-4 h-4 accent-[#c45b36] cursor-not-allowed" />
+                <input type="checkbox" checked disabled className="w-4 h-4 accent-[#D47A43] cursor-not-allowed" />
               </div>
 
               <label className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/50 transition cursor-pointer">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Analitik çerezler</p>
-                  <p className="text-[11px] text-ink-muted">Kullanım istatistikleri, site iyileştirme.</p>
+                  <p className="text-xs font-semibold text-ink">Analytics Cookies</p>
+                  <p className="text-[11px] text-ink-muted">Anonymous usage insights to improve our platform.</p>
                 </div>
                 <input
                   type="checkbox"
                   checked={analytics}
                   onChange={(e) => setAnalytics(e.target.checked)}
-                  className="w-4 h-4 accent-[#c45b36] cursor-pointer"
+                  className="w-4 h-4 accent-[#D47A43] cursor-pointer"
                 />
               </label>
 
               <label className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/50 transition cursor-pointer">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Pazarlama çerezleri</p>
-                  <p className="text-[11px] text-ink-muted">Kişiselleştirilmiş öneri ve kampanyalar.</p>
+                  <p className="text-xs font-semibold text-ink">Personalization Cookies</p>
+                  <p className="text-[11px] text-ink-muted">Tailored local recommendations for your stay.</p>
                 </div>
                 <input
                   type="checkbox"
                   checked={marketing}
                   onChange={(e) => setMarketing(e.target.checked)}
-                  className="w-4 h-4 accent-[#c45b36] cursor-pointer"
+                  className="w-4 h-4 accent-[#D47A43] cursor-pointer"
                 />
               </label>
             </div>
@@ -144,14 +143,14 @@ export function CookieConsentBanner() {
                 onClick={() => setManaging(false)}
                 className="rounded-full border border-sand-border px-4 py-2 text-xs font-semibold text-ink hover:bg-sand-card transition cursor-pointer"
               >
-                Geri
+                Back
               </button>
               <button
                 type="button"
                 onClick={savePreferences}
                 className="rounded-full bg-ink hover:bg-terracotta text-white px-5 py-2 text-xs font-semibold transition cursor-pointer"
               >
-                Kaydet
+                Save Preferences
               </button>
             </div>
           </div>

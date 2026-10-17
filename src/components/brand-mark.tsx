@@ -60,8 +60,16 @@ export function BrandMark({
     );
   }
 
+  if (href.startsWith('/')) {
+    return (
+      <Link href={href} className={`inline-flex items-center gap-2 group ${className}`}>
+        {content}
+      </Link>
+    );
+  }
+
   return (
-    <a href="https://www.purelyistanbul.com" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 group ${className}`}>
+    <a href={href || "https://www.purelyistanbul.com"} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 group ${className}`}>
       {content}
     </a>
   );

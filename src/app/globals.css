@@ -3,18 +3,18 @@
 
 :root {
   color-scheme: light;
-  /* Xenios Guest Elegant Sand & Warm Gold Theme */
-  --xenios-sand-bg: #f8f6f0;
-  --xenios-sand-card: rgba(255, 255, 255, 0.94);
-  --xenios-sand-border: #e2dbcc;
-  --xenios-terracotta: #c45b36;
-  --xenios-gold: #c9a227;
-  --xenios-gold-soft: #dfbe58;
-  --xenios-ink: #16181f;
-  --xenios-ink-muted: #4a4e5a;
+  /* Purely Istanbul Bosphorus Indigo, Warm Copper & Cream Palette */
+  --xenios-sand-bg: #FBFBF9;
+  --xenios-sand-card: #FFFFFF;
+  --xenios-sand-border: #E2E8F0;
+  --xenios-terracotta: #D47A43;
+  --xenios-gold: #C9A227;
+  --xenios-gold-soft: #DFBE58;
+  --xenios-ink: #0B192C;
+  --xenios-ink-muted: #64748B;
   --xenios-tile-bg: rgba(255, 255, 255, 0.94);
-  --xenios-tile-border: rgba(201, 162, 39, 0.25);
-  --xenios-tile-shadow: 0 4px 18px rgba(30, 33, 41, 0.04);
+  --xenios-tile-border: rgba(212, 122, 67, 0.25);
+  --xenios-tile-shadow: 0 4px 18px rgba(11, 25, 44, 0.05);
 
   /* Cockpit Olympus Dark Theme */
   --cockpit-bg: #0b0c0f;
@@ -62,17 +62,27 @@ body {
   overflow-x: hidden;
   color-scheme: light;
   color: var(--xenios-ink);
-  background-color: #F6F1E7;
-  font-family: var(--font-luxury-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #FBFBF9;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  font-family: var(--font-luxury-sans), "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
 .font-luxury-serif {
-  font-family: var(--font-luxury-serif), "Cormorant Garamond", "Playfair Display", "Didot", "Bodoni MT", Georgia, serif;
+  font-family: var(--font-luxury-serif), "Playfair Display", "Merriweather", Georgia, serif;
 }
 
 .font-luxury-sans {
-  font-family: var(--font-luxury-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-luxury-sans), "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* European Luxury Neomorphic + Glassmorphism Service Card */
@@ -118,7 +128,7 @@ body {
 }
 
 html.dark, html.dark body {
-  background-color: #F6F1E7;
+  background-color: #FBFBF9;
   color: var(--xenios-ink);
 }
 

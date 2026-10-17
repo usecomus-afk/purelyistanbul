@@ -1,36 +1,47 @@
-import type { GroupType, MarketplaceListing } from './types';
+import type { MarketplaceListing } from './types';
 import rawExperiences from '@/data/experiences.json';
 import { XeniosStore } from '@/lib/store';
-import type { Experience, Hotel, PropertyListing } from '@/lib/types';
+import { isRemovedCategory } from './categories';
+import type { Experience, Hotel } from '@/lib/types';
 
 const now = new Date().toISOString();
 
 export function getCategoryCode(categoryStr: string): string {
   const lower = (categoryStr || '').replace(/İ/g, 'i').replace(/I/g, 'ı').toLowerCase();
+  if (lower.includes('cat-11') || lower.includes('cat-12')) return 'removed';
   if (lower.includes('cat-')) return categoryStr;
-  if (lower.includes('konaklama') || lower.includes('otel') || lower.includes('stay')) return "konaklama";
-  // "yatırım" içinde "yat" geçtiği için yatırım kontrolü Boğaz/Yat kontrolünden ÖNCE yapılmalı
-  if (lower.includes('yatırım') || lower.includes('invest') || lower.includes('mülk') || lower.includes('gayrimenkul')) return "cat-12";
-  if (lower.includes('tarih') || lower.includes('müze') || lower.includes('history') || lower.includes('museum')) return "cat-1";
-  if (lower.includes('gastro') || lower.includes('gurme') || lower.includes('food')) return "cat-2";
-  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım') || lower.includes('art') || lower.includes('dervish')) return "cat-3";
-  if (lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('shopping') || lower.includes('bazaar')) return "cat-4";
-  if (lower.includes('boğaz') || lower.includes('yat') || lower.includes('bosphorus') || lower.includes('yacht') || lower.includes('cruise')) return "cat-5";
-  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('inanç') || lower.includes('cultur') || lower.includes('heritage')) return "cat-6";
-  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('geleneksel') || lower.includes('bath')) return "cat-7";
-  if (lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('photo') || lower.includes('costume')) return "cat-8";
-  if (lower.includes('transfer') || lower.includes('vip')) return "cat-9";
-  if (lower.includes('restoran') || lower.includes('restaurant')) return "cat-10";
-  if (lower.includes('estetik') || lower.includes('güzellik') || lower.includes('aesthetic') || lower.includes('beauty') || lower.includes('clinic')) return "cat-11";
-  return "cat-5"; // fallback
+  if (lower.includes('konaklama') || lower.includes('otel') || lower.includes('stay')) return 'konaklama';
+  if (
+    lower.includes('yatırım') ||
+    lower.includes('invest') ||
+    lower.includes('mülk') ||
+    lower.includes('gayrimenkul') ||
+    lower.includes('estetik') ||
+    lower.includes('güzellik') ||
+    lower.includes('aesthetic') ||
+    lower.includes('beauty') ||
+    lower.includes('clinic')
+  ) {
+    return 'removed';
+  }
+  if (lower.includes('laundry') || lower.includes('garment') || lower.includes('dry clean') || lower.includes('çamaşır') || lower.includes('ütü')) return 'cat-10';
+  if (lower.includes('breakfast') || lower.includes('catering') || lower.includes('kahvaltı') || lower.includes('in-stay')) return 'cat-9';
+  if (lower.includes('boğaz') || lower.includes('yat') || lower.includes('bosphorus') || lower.includes('yacht') || lower.includes('cruise') || lower.includes('boat')) return 'cat-1';
+  if (lower.includes('tarih') || lower.includes('müze') || lower.includes('history') || lower.includes('historic') || lower.includes('museum') || lower.includes('kültür') || lower.includes('miras') || lower.includes('cultur') || lower.includes('heritage') || lower.includes('fast-track')) return 'cat-2';
+  if (lower.includes('gastro') || lower.includes('gurme') || lower.includes('food') || lower.includes('culinary') || lower.includes('restoran') || lower.includes('restaurant')) return 'cat-3';
+  if (lower.includes('hamam') || lower.includes('hammam') || lower.includes('spa') || lower.includes('geleneksel') || lower.includes('bath')) return 'cat-4';
+  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('tasarım') || lower.includes('art') || lower.includes('dervish')) return 'cat-5';
+  if (lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('photo') || lower.includes('costume') || lower.includes('rooftop')) return 'cat-6';
+  if (lower.includes('transfer') || lower.includes('vip') || lower.includes('airport') || lower.includes('fleet')) return 'cat-7';
+  if (lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('shopping') || lower.includes('bazaar') || lower.includes('artisan')) return 'cat-8';
+  return 'cat-1';
 }
 
-/**
- * Bir deneyimin kategori anahtarı: panelde açıkça atanmış `categoryKey` varsa o,
- * yoksa eski kayıtlar için `category` metninden tahmin edilen anahtar.
- */
 export function getExperienceCategoryKey(exp: Pick<Experience, 'category' | 'categoryKey'>): string {
-  return exp.categoryKey || getCategoryCode(exp.category);
+  if (exp.categoryKey && !isRemovedCategory(exp.categoryKey)) {
+    return exp.categoryKey;
+  }
+  return getCategoryCode(exp.category);
 }
 
 export function experienceToMarketplaceListing(exp: Experience, index = 0): MarketplaceListing {
@@ -47,12 +58,12 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
 
   return {
     id: exp.id,
-    hostId: exp.supplierId || 'purely-host',
+    hostId: exp.supplierId || 'purely-partner',
     type: exp.listingType === 'stay' ? 'stay' : 'experience',
     title: exp.title,
     description: exp.desc || exp.agentNote || exp.title,
     category: getExperienceCategoryKey(exp),
-    district: exp.location || 'İstanbul',
+    district: exp.location || 'Istanbul',
     pricing: {
       basePrice: Number(exp.price) || 0,
       currency: (exp.currency === '₺' ? 'TRY' : exp.currency === '€' ? 'EUR' : exp.currency === '$' ? 'USD' : exp.currency || 'EUR') as any
@@ -68,19 +79,19 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
   };
 }
 
-export function hotelToMarketplaceListing(hotel: Hotel, index = 0): MarketplaceListing {
+export function hotelToMarketplaceListing(hotel: Hotel, _index: number = 0): MarketplaceListing {
   const coverImageUrl = '/images/istanbul/il_1588xN.6201904451_eqr3.webp';
   return {
     id: hotel.id,
-    hostId: hotel.supplierId || 'purely-host',
+    hostId: hotel.supplierId || 'purely-partner',
     type: 'stay',
     title: hotel.name,
     description: `${hotel.type} • ${hotel.address}. ${hotel.targetReason || ''}`,
     category: 'konaklama',
-    district: hotel.district || 'İstanbul',
+    district: hotel.district || 'Istanbul',
     pricing: { basePrice: 180, currency: 'EUR' },
     capacity: Math.max(2, (hotel.rooms?.length || 1) * 2),
-    amenities: ['Wi-Fi', `Kahvaltı (${hotel.breakfastHours})`, '7/24 Concierge'],
+    amenities: ['Wi-Fi', `Breakfast (${hotel.breakfastHours})`, '24/7 Digital Concierge'],
     images: [{ url: coverImageUrl, path: coverImageUrl }],
     coverImageUrl,
     status: hotel.status === 'suspended' ? 'suspended' : 'approved',
@@ -90,59 +101,36 @@ export function hotelToMarketplaceListing(hotel: Hotel, index = 0): MarketplaceL
   };
 }
 
-export function propertyToMarketplaceListing(prop: PropertyListing): MarketplaceListing {
-  const coverImageUrl = prop.image || '/images/istanbul/il_1588xN.6201904451_eqr3.webp';
-  return {
-    id: prop.id,
-    hostId: prop.supplierId || 'purely-host',
-    type: 'stay',
-    title: prop.title,
-    description: prop.description || `${prop.propertyType} • ${prop.district}`,
-    category: 'cat-12',
-    district: prop.district || 'İstanbul',
-    pricing: { basePrice: Number(prop.priceUSD) || 0, currency: 'USD' },
-    capacity: Math.max(2, (prop.bedrooms || 1) * 2),
-    amenities: prop.highlights || [],
-    images: [{ url: coverImageUrl, path: coverImageUrl }],
-    coverImageUrl,
-    status: prop.status === 'suspended' ? 'suspended' : 'approved',
-    stats: { viewCount: 0, clickCount: 0, favoriteCount: 0, bookingCount: 0 },
-    createdAt: now,
-    updatedAt: now,
-  };
-}
-
 export const SEED_LISTINGS: MarketplaceListing[] = (rawExperiences as any[])
-  .filter((exp) => exp.status !== 'suspended' && exp.publishToWeb !== false)
+  .filter(
+    (exp) =>
+      exp.status !== 'suspended' &&
+      exp.publishToWeb !== false &&
+      !isRemovedCategory(exp.category) &&
+      !isRemovedCategory(exp.categoryKey) &&
+      getExperienceCategoryKey(exp as Experience) !== 'removed'
+  )
   .map((exp, index) => experienceToMarketplaceListing(exp as Experience, index));
 
-/**
- * Returns live catalog listings from XeniosStore (reflecting Admin additions, edits, and suspensions).
- */
 export function getLiveCatalogListings(): MarketplaceListing[] {
   if (typeof window === 'undefined') return SEED_LISTINGS;
   try {
-    // Panelden "gizli" işaretlenen kategorilerin ilanları web vitrininde görünmez.
     const hiddenKeys = new Set(
       XeniosStore.getCategoryConfigs().filter((c) => c.hidden).map((c) => c.key)
     );
 
-    const exps = XeniosStore.getExperiences().filter(
-      (e) =>
+    const exps = XeniosStore.getExperiences().filter((e) => {
+      const catKey = getExperienceCategoryKey(e);
+      return (
         e.status !== 'suspended' &&
         e.publishToWeb !== false &&
-        !hiddenKeys.has(getExperienceCategoryKey(e))
-    );
-    const expListings = exps.map((e, i) => experienceToMarketplaceListing(e, i));
-
-    const props = hiddenKeys.has('cat-12')
-      ? []
-      : XeniosStore.getPropertyListings().filter(
-          (p) => p.status !== 'suspended' && p.publishToWeb === true
-        );
-    const propListings = props.map((p) => propertyToMarketplaceListing(p));
-
-    return [...expListings, ...propListings];
+        catKey !== 'removed' &&
+        !isRemovedCategory(e.category) &&
+        !isRemovedCategory(e.categoryKey) &&
+        !hiddenKeys.has(catKey)
+      );
+    });
+    return exps.map((e, i) => experienceToMarketplaceListing(e, i));
   } catch {
     return SEED_LISTINGS;
   }
@@ -151,11 +139,11 @@ export function getLiveCatalogListings(): MarketplaceListing[] {
 export function getSeedListing(id: string): MarketplaceListing | undefined {
   if (typeof window !== 'undefined') {
     const exp = XeniosStore.getExperiences().find((e) => e.id === id);
-    if (exp) return experienceToMarketplaceListing(exp, 0);
-    const prop = XeniosStore.getPropertyListings().find((p) => p.id === id);
-    if (prop) return propertyToMarketplaceListing(prop);
+    if (exp && getExperienceCategoryKey(exp) !== 'removed') {
+      return experienceToMarketplaceListing(exp, 0);
+    }
     const hotel = XeniosStore.getHotels().find((h) => h.id === id);
-    if (hotel) return hotelToMarketplaceListing(hotel, 0);
+    if (hotel) return hotelToMarketplaceListing(hotel);
   }
   return SEED_LISTINGS.find((l) => l.id === id);
 }
@@ -166,9 +154,6 @@ export function isSeedListingId(id: string) {
     id.startsWith('exp_') ||
     id.startsWith('hotel-') ||
     id.startsWith('hotel_') ||
-    id.startsWith('rest-') ||
-    id.startsWith('prop-') ||
-    id.startsWith('invest-')
+    id.startsWith('rest-')
   );
 }
-

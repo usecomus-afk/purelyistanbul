@@ -355,8 +355,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 1. History & Museums (Tarih & Müzeler) — Historic Mosque Dome & Flanking Minarets
-    if (key.includes('tarih') || key.includes('history') || key.includes('müze')) {
+    // 1. Historic Routes & Fast-Track Walks — Historic Mosque Dome & Flanking Minarets
+    if (key.includes('tarih') || key.includes('history') || key.includes('historic') || key.includes('müze')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Left & Right Minarets */}
@@ -418,8 +418,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 2. Gastronomy & Fine Dining (Gastronomi & Gurme) — Domed Cloche Platter & Crystal Wine Goblet
-    if (key.includes('gastro') || key.includes('gurme')) {
+    // 2. Culinary & Street Food Trails — Domed Cloche Platter & Crystal Wine Goblet
+    if (key.includes('gastro') || key.includes('gurme') || key.includes('culinary') || key.includes('street food')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Wine Bottle / Carafe Neck behind */}
@@ -481,8 +481,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 3. Art & Whirling Dervish (Sanat & Semazen) — Graceful Semazen Silhouette & Sparkles
-    if (key.includes('sanat') || key.includes('semazen') || key.includes('art')) {
+    // 3. Arts & Whirling Dervishes — Graceful Semazen Silhouette & Sparkles
+    if (key.includes('sanat') || key.includes('semazen') || key.includes('dervish') || key.includes('arts &')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Tall Sikke Hat */}
@@ -530,8 +530,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 4. Shopping & Grand Bazaars (Alışveriş & Çarşılar) — Luxury Boutique Bag & Grand Bazaar Lantern
-    if (key.includes('alışveriş') || key.includes('çarşı') || key.includes('shopping')) {
+    // 4. Curated Artisan & Bazaar Shopping — Luxury Boutique Bag & Grand Bazaar Lantern
+    if (key.includes('alışveriş') || key.includes('çarşı') || key.includes('shopping') || key.includes('bazaar') || key.includes('artisan')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Rear Boutique Gift Bag */}
@@ -575,8 +575,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 5. Bosphorus & Yacht Cruises (Boğaz Turları & Yat) — Sleek Luxury Motor Yacht & Waves
-    if (key.includes('boğaz') || key.includes('yat') || key.includes('bosphorus')) {
+    // 5. Bosphorus & Boat Cruises — Sleek Luxury Motor Yacht & Waves
+    if (key.includes('boğaz') || key.includes('yat') || key.includes('bosphorus') || key.includes('boat') || key.includes('cruise')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Upper Cabin & Flybridge */}
@@ -627,66 +627,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 6. Cultural Heritage (Kültürel Miras) — Ornate Ottoman Ewer (İbrik) & Turkish Tulip Motif
-    if (key.includes('kültür') || key.includes('miras') || key.includes('culture')) {
-      return (
-        <g filter={`url(#${shadowFilterId})`}>
-          {/* Ewer (İbrik) Body */}
-          <path
-            d="M24 27C24 27 18.5 31 18.5 38C18.5 43.5 22.8 47.5 28 47.5C33.2 47.5 37.5 43.5 37.5 38C37.5 31 32 27 32 27H24Z"
-            fill={`url(#${champagneFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.7"
-            strokeLinejoin="round"
-          />
-          {/* Ewer Tall Neck & Lid Dome */}
-          <path
-            d="M25.5 27V18.5H30.5V27"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.55"
-          />
-          <path
-            d="M25 18.5C25 15.5 26.3 13.5 28 13.5C29.7 13.5 31 15.5 31 18.5H25Z"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.55"
-          />
-          {/* Ornate S-Curved Spout on Left */}
-          <path
-            d="M20.5 34.5C15.5 32.5 14.5 26.5 12.5 23.5"
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.65"
-            strokeLinecap="round"
-          />
-          {/* Ornate Curved Handle on Right */}
-          <path
-            d="M30.5 20.5C38.5 20.5 41.5 26.5 41.5 32.5C41.5 37.5 37.5 41 35.5 41.5"
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.65"
-            strokeLinecap="round"
-          />
-          {/* Ewer Footed Base */}
-          <path
-            d="M23.5 47.5L21.5 51H34.5L32.5 47.5"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.55"
-            strokeLinejoin="round"
-          />
-          {/* Ottoman Tulip Motif Inside Body */}
-          <path
-            d="M28 33.5C26 35.5 25 38 26.2 40.5C27 42 29 42 29.8 40.5C31 38 30 35.5 28 33.5Z"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.35"
-          />
-        </g>
-      );
-    }
-
-    // 7. Turkish Hammam & Spa (Türk Hamamı & Spa) — Fluted Marble Basin, Lotus & Folded Towels
-    if (key.includes('hamam') || key.includes('spa')) {
+    // 6. Traditional Turkish Bath & Hammam Rituals — Fluted Marble Basin, Lotus & Folded Towels
+    if (key.includes('hamam') || key.includes('hammam') || key.includes('spa') || key.includes('bath')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Lotus / Spa Blossom Above */}
@@ -741,8 +683,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 8. Rooftop Photo & Costume (Fotoğraf & Kostüm) — Luxury Camera with 3D Metallic Lens & Sparkles
-    if (key.includes('fotoğraf') || key.includes('kostüm') || key.includes('photo')) {
+    // 7. Rooftop Photography & Costumes — Luxury Camera with 3D Metallic Lens & Sparkles
+    if (key.includes('fotoğraf') || key.includes('kostüm') || key.includes('photo') || key.includes('rooftop')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Camera Body */}
@@ -795,8 +737,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 9. Private VIP Transfer (Özel VIP Transfer) — Executive Luxury Sedan & VIP Crown Shield
-    if (key.includes('transfer') || key.includes('vip')) {
+    // 8. Private VIP Airport Transfers (Licensed Fleets) — Executive Luxury Sedan & VIP Crown Shield
+    if (key.includes('transfer') || key.includes('vip') || key.includes('airport')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* VIP Crown / Shield Above */}
@@ -832,8 +774,8 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 10. Recommended Restaurants (Önerdiğimiz Restoranlar) — Fine Porcelain Plate, Fork & Knife
-    if (key.includes('restoran') || key.includes('restaurant')) {
+    // 9. In-Stay Breakfast & Gourmet Catering — Fine Porcelain Plate, Fork & Knife
+    if (key.includes('breakfast') || key.includes('catering') || key.includes('restoran') || key.includes('restaurant')) {
       return (
         <g filter={`url(#${shadowFilterId})`}>
           {/* Left Fork */}
@@ -882,122 +824,44 @@ export function LuxuryCategoryIcon({
       );
     }
 
-    // 11. Medical Aesthetics & Beauty (Medikal Estetik & Güzellik) — Elixir Dropper Bottle & Diamond Mirror
-    if (key.includes('estetik') || key.includes('aesthetic') || key.includes('güzellik')) {
-      return (
-        <g filter={`url(#${shadowFilterId})`}>
-          {/* Ornate Oval Beauty Mirror on Right */}
-          <ellipse
-            cx="39.5"
-            cy="29.5"
-            rx="9.5"
-            ry="12.5"
-            fill={`url(#${champagneFillId})`}
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.65"
-          />
-          <ellipse
-            cx="39.5"
-            cy="29.5"
-            rx="6.8"
-            ry="9.5"
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.25"
-          />
-          <path
-            d="M39.5 42V50M34.5 50H44.5"
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.65"
-            strokeLinecap="round"
-          />
-          {/* Luxury Serum Dropper Bottle on Left */}
-          <path
-            d="M19.5 16.5C19.5 14.8 20.8 13.5 22.5 13.5C24.2 13.5 25.5 14.8 25.5 16.5V21.5H19.5V16.5Z"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.55"
-          />
-          <rect
-            x="17.5"
-            y="21.5"
-            width="10"
-            height="3"
-            rx="1"
-            fill="#FAF7F1"
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.5"
-          />
-          <path
-            d="M18.5 24.5L15.5 29V47.5C15.5 49.2 16.8 50.5 18.5 50.5H26.5C28.2 50.5 29.5 49.2 29.5 47.5V29L26.5 24.5H18.5Z"
-            fill={`url(#${champagneFillId})`}
-            stroke={`url(#${strokeGradId})`}
-            strokeWidth="1.65"
-            strokeLinejoin="round"
-          />
-          <rect
-            x="18.8"
-            y="33.5"
-            width="7.4"
-            height="10.5"
-            rx="1.2"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${bronzeGradId})`}
-            strokeWidth="1.3"
-          />
-        </g>
-      );
-    }
-
-    // 12. Invest in Istanbul (İstanbul'da Yatırım) — Luxury Residence Towers & Rising Growth Arrow
+    // 10. In-Stay Express Laundry & Garment Care — Luxury Valet Hanger, Folded Linens & Sparkle
     return (
       <g filter={`url(#${shadowFilterId})`}>
-        {/* Left Tower */}
+        {/* Hook */}
         <path
-          d="M14.5 49.5V25.5C14.5 24.4 15.4 23.5 16.5 23.5H25.5V49.5"
-          fill={`url(#${champagneFillId})`}
-          stroke={`url(#${strokeGradId})`}
-          strokeWidth="1.65"
-          strokeLinejoin="round"
+          d="M29.5 16.5C29.5 14.3 31.2 12.5 33.5 12.5C35.8 12.5 37.5 14.3 37.5 16.5C37.5 18.5 35.5 19.5 32 21V23.5"
+          stroke={`url(#${bronzeGradId})`}
+          strokeWidth="1.7"
+          strokeLinecap="round"
         />
-        {/* Central Taller Prestige Tower */}
+        {/* Wooden / Brass Valet Hanger Shoulders */}
         <path
-          d="M25.5 49.5V16.5C25.5 15.4 26.4 14.5 27.5 14.5H38.5C39.6 14.5 40.5 15.4 40.5 16.5V49.5"
+          d="M12.5 35.5L32 23.5L51.5 35.5C52.6 36.2 52.1 38 50.8 38H13.2C11.9 38 11.4 36.2 12.5 35.5Z"
           fill={`url(#${goldFillId})`}
           stroke={`url(#${strokeGradId})`}
           strokeWidth="1.7"
           strokeLinejoin="round"
         />
-        {/* Tower Window Lines */}
-        <path
-          d="M29.5 20.5H36.5M29.5 25.5H36.5M29.5 30.5H36.5M18.5 29.5H22M18.5 34.5H22"
-          stroke={`url(#${strokeGradId})`}
-          strokeWidth="1.4"
-          strokeLinecap="round"
-        />
-        {/* Rising Investment Shield / Coin & Upward Trend Arrow */}
-        <circle
-          cx="44.5"
-          cy="38.5"
-          r="7.5"
+        {/* Pressed Garment Fold Draped Over Bar */}
+        <rect
+          x="19.5"
+          y="38"
+          width="25"
+          height="12.5"
+          rx="2.5"
           fill={`url(#${champagneFillId})`}
-          stroke={`url(#${bronzeGradId})`}
+          stroke={`url(#${strokeGradId})`}
           strokeWidth="1.65"
         />
+        <line x1="24" y1="43.5" x2="40" y2="43.5" stroke={`url(#${bronzeGradId})`} strokeWidth="1.35" strokeLinecap="round" />
+        {/* Sparkle Star */}
         <path
-          d="M41.5 41L44.5 36L47.5 38.5L51.5 21.5"
+          d="M48 15C48 17.5 48.8 18.3 51.3 18.3C48.8 18.3 48 19.1 48 21.6C48 19.1 47.2 18.3 44.7 18.3C47.2 18.3 48 17.5 48 15Z"
+          fill={`url(#${goldFillId})`}
           stroke={`url(#${bronzeGradId})`}
-          strokeWidth="1.7"
-          strokeLinecap="round"
+          strokeWidth="1.2"
           strokeLinejoin="round"
         />
-        <path
-          d="M47 21.5H51.8V26.2"
-          stroke={`url(#${bronzeGradId})`}
-          strokeWidth="1.7"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <line x1="10.5" y1="49.5" x2="53.5" y2="49.5" stroke={`url(#${strokeGradId})`} strokeWidth="1.7" strokeLinecap="round" />
       </g>
     );
   };

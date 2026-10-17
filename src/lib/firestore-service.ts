@@ -21,7 +21,6 @@ import { normalizeCategoryLabel, type CategoryConfig } from './marketplace/categ
 import {
   experienceToMarketplaceListing,
   hotelToMarketplaceListing,
-  propertyToMarketplaceListing
 } from './marketplace/seed-listings';
 
 // Collection Names
@@ -130,15 +129,6 @@ export const FirestoreService = {
         ...prop,
         updatedAt: new Date().toISOString()
       }));
-
-      if (prop.publishToWeb) {
-        const mpListing = propertyToMarketplaceListing(prop);
-        await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, prop.id), stripUndefined({
-          ...mpListing,
-          status: prop.status === 'suspended' ? 'suspended' : 'approved',
-          updatedAt: new Date().toISOString()
-        }));
-      }
     } catch (e) {
       reportSyncError('upsertProperty', e);
     }

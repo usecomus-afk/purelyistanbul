@@ -2,47 +2,29 @@ import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
 
 export default function GizlilikBildirimiPage() {
   return (
-    <LegalPageShell eyebrow="Şartlar ve Ayarlar" title="Gizlilik Bildirimi">
+    <LegalPageShell eyebrow="Legal & Governance" title="Privacy Notice (UK GDPR & KVKK)">
       <p className="text-ink-muted">
-        purelyistanbul.com, misafirlerinin, anlaşmalı ev sahiplerinin (host) ve yerel deneyim
-        ortaklarının kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve
-        uluslararası veri koruma ilkeleri çerçevesinde korur.
+        Purely Istanbul Ltd (registered in the United Kingdom) protects the personal data of guests, partner Boutique Hotels &amp; Professional Property Managers, and certified local operators in strict accordance with the UK General Data Protection Regulation (UK GDPR), the Data Protection Act 2018, and Turkish Law No. 6698 (KVKK).
       </p>
 
       <section>
-        <h2>Toplanan Bilgiler</h2>
+        <h2>Information We Collect</h2>
         <p>
-          Rezervasyon ve transfer operasyonlarının yürütülmesi amacıyla kimlik ve iletişim
-          bilgileri (ad, soyad, e-posta, telefon numarası) toplanır.
+          To facilitate reservation requests, in-room guest services, and licensed airport transfers, we collect essential contact and booking details (full name, email address, phone number, and stay dates). Payment processing is handled directly via encrypted Stripe infrastructure.
         </p>
       </section>
 
       <section>
-        <h2>comus AI ve "Beni Tanı" Veri İşleme Rızası</h2>
+        <h2>ComusAI Personalization &amp; Consent</h2>
         <p>
-          purelyistanbul.com ile çalışan host'ların mülklerinde veya anlaşmalı butik otellerde
-          konaklayan misafirlerimizin, comus AI üzerinden kendi dillerinde kişiselleştirilmiş
-          rehberlik alabilmesi için sunduğu isteğe bağlı veriler (seyahat tarzı, bütçe aralığı,
-          ilgi alanları ile gıda/sağlık alerjileri: kuruyemiş, laktoz, gluten, deniz ürünleri vb.)
-          yalnızca misafirin açık onayıyla, anlık güvenli öneriler sunmak üzere işlenir. Bu veriler
-          üçüncü şahıslara veya reklam ağlarına kesinlikle aktarılmaz.
+          Guests staying at partner Boutique Hotels &amp; Professional Property Managers may optionally share travel preferences, dietary requirements, or food allergies with ComusAI to receive tailored, native-language daily itineraries and culinary recommendations. This data is processed solely with explicit guest consent and is never sold or shared with advertising networks.
         </p>
       </section>
 
       <section>
-        <h2>Şikayet ve Tüketici Hakları Verileri</h2>
+        <h2>Data Security &amp; Third-Party Fulfillment</h2>
         <p>
-          Haksız kazanç ve dolandırıcılık bildirimlerinde sisteme yüklenen fiş, fatura, taksi
-          plakası veya görsel kanıtlar, yalnızca inceleme süreci ve gerekirse resmi makamlara
-          (CİMER, TUDES) bildirim amacıyla muhafaza edilir.
-        </p>
-      </section>
-
-      <section>
-        <h2>Veri Güvenliği</h2>
-        <p>
-          purelyistanbul.com, rezervasyon süreçlerinin ifası haricinde hiçbir kişisel veriyi
-          ticari amaçla satmaz veya üçüncü taraflarla paylaşmaz.
+          Booking details are shared strictly with the specific certified local operator or Boutique Hotel fulfilling your requested service. Purely Istanbul Ltd never sells personal data to third parties.
         </p>
       </section>
     </LegalPageShell>

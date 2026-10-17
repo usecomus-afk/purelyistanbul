@@ -1,60 +1,48 @@
 import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
 
-const CATEGORIES = [
-  "Kültürel Miras",
-  "Tarih & Müzeler",
-  "Türk Hamamı & Spa",
-  "Macera & Doğa",
-  "VIP Transfer",
-  "Alışveriş & Çarşılar",
-  "Sanat & Semazen",
-  "Estetik & Güzellik",
-  "Önerilen Restoranlar",
-  "Fotoğraf & Kostüm",
+const ACTIVE_CATEGORIES = [
+  "Bosphorus & Boat Cruises",
+  "Historic Routes & Fast-Track Walks",
+  "Culinary & Street Food Trails",
+  "Traditional Turkish Bath & Hammam Rituals",
+  "Arts & Whirling Dervishes",
+  "Rooftop Photography & Costumes",
+  "Private VIP Airport Transfers (Licensed Fleets)",
+  "Curated Artisan & Bazaar Shopping",
+  "In-Stay Breakfast & Gourmet Catering",
+  "In-Stay Express Laundry & Garment Care",
 ];
 
 export default function HizmetKosullariPage() {
   return (
-    <LegalPageShell eyebrow="Şartlar ve Ayarlar" title="Hizmet Koşulları">
+    <LegalPageShell eyebrow="Legal & Governance" title="Terms of Service">
       <p className="text-ink-muted">
-        purelyistanbul.com, İstanbul genelinde doğrulanmış yerel deneyimleri, rehberli turları ve
-        nitelikli şehir içi servisleri misafirlerle buluşturan bağımsız bir aracı platformdur.
+        Purely Istanbul Ltd is an independent hospitality technology and software company registered in the United Kingdom (Company Registration No: [Insert UK Number]). Purely Istanbul is a technology provider, not a travel agency, tour operator, or transportation carrier.
       </p>
 
       <section>
-        <h2>Hizmet Kapsamı ve Yol Haritası</h2>
+        <h2>Platform Scope &amp; 10 Curated Categories</h2>
         <p>
-          purelyistanbul.com, ilk aşamada platform trafiğini ve yerel hizmet standartlarını en üst
-          seviyeye ulaştırmak amacıyla doğrudan oda/konaklama satışı yapmamaktadır. İlk etapta
-          platform üzerinde yalnızca doğrulanmış şu 10 ana kategoride hizmet ve deneyim
-          rezervasyonu sağlanır:
+          Purely Istanbul provides an in-room hospitality operating system for Boutique Hotels &amp; Professional Property Managers alongside a curated marketplace interface across 10 active categories:
         </p>
         <ul>
-          {CATEGORIES.map((c) => (
+          {ACTIVE_CATEGORIES.map((c) => (
             <li key={c}>{c}</li>
           ))}
         </ul>
-        <p className="italic">
-          Butik konaklama tesisleri ve host portföyü için ön kayıtlar toplanmakta olup, oda
-          rezervasyonları ilerleyen fazda devreye alınacaktır.
+      </section>
+
+      <section>
+        <h2>Independent Third-Party Fulfillment</h2>
+        <p>
+          All excursions, historical walking tours, boat cruises, wellness treatments, in-stay catering/laundry services, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey). Purely Istanbul acts solely as a digital concierge software and marketplace interface.
         </p>
       </section>
 
       <section>
-        <h2>Rezervasyon ve İptal Şartları</h2>
+        <h2>Transparent Pricing &amp; Cancellations</h2>
         <p>
-          Deneyim ve servis sağlayıcılarının belirlediği katılım ve iptal kuralları rezervasyon
-          ekranında açıkça belirtilir. Hizmet başlangıç saatine kadar geçerli olan iptal hakları
-          şeffaf bir şekilde işletilir.
-        </p>
-      </section>
-
-      <section>
-        <h2>Tarafların Sorumluluğu</h2>
-        <p>
-          purelyistanbul.com, sağlayıcıların hizmet kalitesini denetlemekle birlikte, etkinlik
-          sırasında katılımcıların yerel kanunlara, tarihi eser kurallarına ve güvenlik
-          talimatlarına uymasını şart koşar.
+          All prices are displayed transparently with zero hidden tourist markups. Cancellation windows and participation terms set by the certified operator are clearly stated prior to checkout.
         </p>
       </section>
     </LegalPageShell>
