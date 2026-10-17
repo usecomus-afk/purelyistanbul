@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { Capacitor } from '@capacitor/core';
 import { XeniosStore } from '@/lib/store';
 import { MobileFooterNav } from '@/components/navigation/MobileFooterNav';
 
@@ -34,7 +35,15 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
   const [hasHotelSession, setHasHotelSession] = useState(false);
 
   useEffect(() => {
-    const native = !!(window as any).Capacitor?.isNativePlatform?.();
+    const w = window as any;
+    const native =
+      Capacitor.isNativePlatform() ||
+      !!w.Capacitor?.isNativePlatform?.() ||
+      !!w.webkit?.messageHandlers?.bridge ||
+      !!w.__PURELY_NATIVE_VIDEO_SPLASH__ ||
+      !!w.__PURELY_NATIVE_VIDEO_SPLASH_V2__ ||
+      w.navigator?.standalone === true ||
+      !!window.matchMedia?.('(display-mode: standalone)')?.matches;
     setIsNative(native);
     setHasHotelSession(native || XeniosStore.hasActiveHotelSession());
   }, [pathname]);

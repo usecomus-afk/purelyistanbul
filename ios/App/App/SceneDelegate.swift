@@ -42,9 +42,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
         if let win = self.window, let videoURL = videoURL {
-            let scriptSource = "try { sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
+            let scriptSource = "try { sessionStorage.setItem('purely_splash_v2_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V2__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
             let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
+            bridgeVC.webView?.evaluateJavaScript(scriptSource, completionHandler: nil)
 
             try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
 
@@ -113,6 +114,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let observer = splashEndObserver {
             NotificationCenter.default.removeObserver(observer)
             splashEndObserver = nil
+        }
+
+        if let bridgeVC = self.window?.rootViewController as? CAPBridgeViewController {
+            let hideWebSplash = "try { document.querySelectorAll('#purely-intro-splash').forEach(function(el){ el.style.display = 'none'; }); } catch(e) {}"
+            bridgeVC.webView?.evaluateJavaScript(hideWebSplash, completionHandler: nil)
         }
 
         guard let container = splashContainer else { return }
