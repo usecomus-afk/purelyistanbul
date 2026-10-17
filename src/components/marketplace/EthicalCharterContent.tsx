@@ -97,33 +97,32 @@ export function EthicalCharterContent() {
           Purely Istanbul — Nothing but Istanbul.
         </h2>
         <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
-          The in-room hospitality operating system and curated city companion for travelers staying in Istanbul&apos;s
-          finest boutique hotels and designer suites.
+          Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local
+          services across Istanbul&apos;s finest neighborhoods.
         </p>
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
             <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">The Genesis</h3>
             <p className="text-sm text-slate-200 leading-relaxed">
-              Founded in London by proud locals, Purely Istanbul was created to end predatory tourist traps and bridge
-              discerning world travelers directly to the city&apos;s heart.
+              Created by proud Istanbul locals, Purely Istanbul was born to end predatory tourist traps and bridge
+              discerning world travelers directly to the city&apos;s authentic heart.
             </p>
           </div>
 
           <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
-            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">The Trojan Horse Innovation</h3>
+            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">Seamless Guest Access</h3>
             <p className="text-sm text-slate-200 leading-relaxed">
-              An in-room smart QR stand offering instant Wi-Fi access, seamless PWA guest services (maintenance,
-              catering, laundry), and vetted city excursions without downloading an app.
+              Whether discovering experiences online or connecting from a partner boutique hotel, guests enjoy direct
+              access to vetted local artisans, captains, and culinary masters without hidden markups.
             </p>
           </div>
 
           <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
-            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">ComusAI Spotlight</h3>
+            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">Vetted Local Perfection</h3>
             <p className="text-sm text-slate-200 leading-relaxed">
-              Meet &ldquo;ComusAI&rdquo; — our proprietary Gemini-powered hyper-local AI concierge. It automatically
-              speaks the guest&apos;s native browser language, offers scam-free live navigation, and crafts tailored
-              daily walks like a trusted local friend.
+              Every experience is hand-selected and operated by licensed TÜRSAB Group A agencies, certified D2 luxury
+              fleets, and time-honored Istanbul establishments.
             </p>
           </div>
         </div>

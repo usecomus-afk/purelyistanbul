@@ -2,6 +2,7 @@ import type { MarketplaceListing } from './types';
 import rawExperiences from '@/data/experiences.json';
 import { XeniosStore } from '@/lib/store';
 import { isRemovedCategory } from './categories';
+import { getLocalizedExperience } from '@/lib/experience-i18n';
 import type { Experience, Hotel } from '@/lib/types';
 
 const now = new Date().toISOString();
@@ -45,6 +46,7 @@ export function getExperienceCategoryKey(exp: Pick<Experience, 'category' | 'cat
 }
 
 export function experienceToMarketplaceListing(exp: Experience, index = 0): MarketplaceListing {
+  const loc = getLocalizedExperience(exp, 'en');
   const isDefaultSeed = rawExperiences.some((r: any) => r.id === exp.id);
   const coverImageUrl =
     exp.image && exp.image.trim().length > 0
@@ -60,16 +62,16 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
     id: exp.id,
     hostId: exp.supplierId || 'purely-partner',
     type: exp.listingType === 'stay' ? 'stay' : 'experience',
-    title: exp.title,
-    description: exp.desc || exp.agentNote || exp.title,
+    title: loc.title,
+    description: loc.agentNote || loc.desc || loc.title,
     category: getExperienceCategoryKey(exp),
-    district: exp.location || 'Istanbul',
+    district: (loc.location || 'Istanbul').replace(/İstanbul Genel/gi, 'Istanbul-Wide'),
     pricing: {
       basePrice: Number(exp.price) || 0,
       currency: (exp.currency === '₺' ? 'TRY' : exp.currency === '€' ? 'EUR' : exp.currency === '$' ? 'USD' : exp.currency || 'EUR') as any
     },
     capacity: exp.capacity || exp.availableSlots || 10,
-    amenities: exp.features || exp.specialties || [],
+    amenities: loc.specialties || exp.features || [],
     images: [{ url: coverImageUrl, path: coverImageUrl }],
     coverImageUrl,
     status: exp.status === 'suspended' ? 'suspended' : 'approved',

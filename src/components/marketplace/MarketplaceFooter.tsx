@@ -12,7 +12,7 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
   {
     title: "Legal & Governance",
     links: [
-      { label: "Privacy Notice (UK GDPR)", href: "/marketplace/legal/gizlilik-bildirimi" },
+      { label: "Privacy Notice", href: "/marketplace/legal/gizlilik-bildirimi" },
       { label: "Terms of Service", href: "/marketplace/legal/hizmet-kosullari" },
       { label: "Accessibility Statement", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
       { label: "How We Work", href: "/marketplace/legal/calisma-seklimiz" },
@@ -24,7 +24,7 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
       { label: "For Boutique Hotels & Property Managers", href: "/marketplace/partner/extranet" },
       { label: "Partner Support & Onboarding", href: "/marketplace/partner/yardim" },
       { label: "Register Certified Experience / Service", href: "/marketplace/partner/kayit" },
-      { label: "Hospitality SaaS Partnership", href: "/marketplace/partner/istirak" },
+      { label: "Boutique Hotel Partnership", href: "/marketplace/partner/istirak" },
     ],
   },
 ];
@@ -123,9 +123,9 @@ export function MarketplaceFooter() {
           <div className="flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-terracotta shrink-0 mt-0.5" strokeWidth={1.75} />
             <div className="text-[12px] sm:text-[12.5px] text-ink-muted leading-relaxed">
-              <p className="font-semibold text-ink mb-1">Legal &amp; Regulatory Disclaimer:</p>
+              <p className="font-semibold text-ink mb-1">Marketplace &amp; Fulfillment Notice:</p>
               <p>
-                Purely Istanbul Ltd is an independent hospitality technology and software company registered in the United Kingdom (Company Registration No: [Insert UK Number]). Purely Istanbul is a technology provider, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey). Purely Istanbul acts solely as a digital concierge software and marketplace interface.
+                Purely Istanbul is a curated marketplace and digital concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey).
               </p>
             </div>
           </div>
@@ -140,7 +140,7 @@ export function MarketplaceFooter() {
 
           <div className="flex flex-col items-center md:items-start gap-1.5">
             <p className="text-[12px] text-ink-muted/80 tracking-wide text-center md:text-left">
-              © {new Date().getFullYear()} Purely Istanbul Ltd (London, UK) — Nothing but Istanbul.
+              © {new Date().getFullYear()} Purely Istanbul — Nothing but Istanbul.
             </p>
             <span className="relative h-4 sm:h-5 w-16 sm:w-20 opacity-70">
               <Image src="/comus-logo.png" alt="Powered by Comus" fill className="object-contain" />
@@ -170,7 +170,7 @@ export function MarketplaceFooter() {
               Contact Purely Istanbul
             </h2>
             <p className="text-sm text-ink-muted mb-5">
-              Write to our Guest Care or Boutique Hotel Partnership team in London &amp; Istanbul.
+              Write to our Guest Care or Boutique Hotel Partnership team in Istanbul.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-3">

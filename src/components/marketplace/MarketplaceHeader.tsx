@@ -133,7 +133,7 @@ export function MarketplaceHeader() {
                         <span>Register Certified Experience</span>
                       </Link>
                       <Link href="/marketplace/partner/istirak" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
-                        <span>Hospitality SaaS Partnership</span>
+                        <span>Hotel &amp; Partner Network</span>
                       </Link>
                     </div>
 

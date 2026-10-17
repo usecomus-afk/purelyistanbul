@@ -21,9 +21,9 @@ const luxurySans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Purely Istanbul — Nothing but Istanbul | Hospitality SaaS & Curated Marketplace",
+  title: "Purely Istanbul — Nothing but Istanbul | Curated Experiences & Local Marketplace",
   description:
-    "The in-room hospitality operating system and curated city companion for travelers staying in Istanbul's finest boutique hotels and designer suites.",
+    "Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.png",

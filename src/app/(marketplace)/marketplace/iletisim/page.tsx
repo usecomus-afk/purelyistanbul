@@ -5,7 +5,7 @@ const CHANNELS = [
   { icon: Phone, label: "Live Guest Care & WhatsApp Concierge", value: "Available 7 days via In-Room PWA & Partner Desk" },
   { icon: Mail, label: "Guest Care & Support Email", value: "support@purelyistanbul.com" },
   { icon: Clock, label: "Concierge Operating Hours", value: "7 days a week, 08:30 – 23:00 (Istanbul GMT+3)" },
-  { icon: MapPin, label: "Headquarters & Local Operations", value: "London, United Kingdom & Beyoğlu, Istanbul" },
+  { icon: MapPin, label: "Local Operations", value: "Beyoğlu, Istanbul" },
   { icon: HeartHandshake, label: "Tanrı Misafiri Quality Assurance", value: "Direct accountability and empathetic resolution: care@purelyistanbul.com" },
 ];
 
@@ -14,7 +14,7 @@ export default function IletisimPage() {
     <LegalPageShell
       eyebrow="Guest Care & Support"
       title="Contact Our Guest Care Team"
-      intro="Alongside your 24/7 ComusAI digital concierge, our dedicated hospitality specialists in London and Istanbul are here to ensure every moment of your stay meets our verified standards."
+      intro="Our dedicated hospitality specialists in Istanbul are here to ensure every moment of your stay meets our verified standards."
     >
       <ul className="!mt-0 space-y-5">
         {CHANNELS.map(({ icon: Icon, label, value }) => (

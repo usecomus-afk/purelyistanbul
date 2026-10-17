@@ -801,6 +801,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Deraliye Rooftop Restaurant',
       agentNote: 'Ayasofya yakınında, 15. ve 17. yüzyıl Osmanlı saray reçetelerini sunan ödüllü teras fine dining restoranı.',
+      provider: 'Fine Dining & Teras Restoran',
+      cuisine: 'Osmanlı Saray Mutfağı & Fine Dining',
+      priceLevel: '$$$$ (Lüks / Fine Dining)',
+      specialties: ['Vişneli Yaprak Sarma', 'Kaz Kebabı', 'Mahmudiye (1539)'],
     },
     en: {
       title: 'Deraliye Rooftop Restaurant',
@@ -847,6 +851,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Hidden Garden Restaurant',
       agentNote: 'Sultanahmet’te testi kebabı ve taze Ege deniz ürünleriyle ünlü, yeşillikler içindeki gizli avlu restoranı.',
+      provider: 'Otantik Restoran & Bahçe',
+      cuisine: 'Geleneksel Türk, Akdeniz & Taze Deniz Ürünleri',
+      priceLevel: '$$-$$$',
+      specialties: ['Çömlek Kebabı (Testi Kebab)', 'Izgara Levrek', 'Karışık Meze Tabağı'],
     },
     en: {
       title: 'Hidden Garden Restaurant',
@@ -893,6 +901,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Loti Restaurant & Rooftop',
       agentNote: 'Marmara Denizi ve Tarihi Yarımada manzaralı terasta seçkin Anadolu mutfağı ve sommelier eşleşmeleri.',
+      provider: 'Fine Dining & Teras Restoran',
+      cuisine: 'Modern Dünya Mutfağı & Çağdaş Türk Füzyon',
+      priceLevel: '$$$-$$$$',
+      specialties: ['Kuzu İncik Konfi', 'Deniz Mahsullü Risotto', 'Baklava Çıtırı'],
     },
     en: {
       title: 'Loti Restaurant & Rooftop',
@@ -939,6 +951,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'AŞEKA Karaköy',
       agentNote: 'Karaköy’de 100 yıllık tarihi taş binada avangart şef tadım tabakları ve botanik kokteyller.',
+      provider: 'Modern Gastronomi & Lounge',
+      cuisine: "Avangart Fine Dining & Chef's Table",
+      priceLevel: '$$$$',
+      specialties: ['Trüflü Ev Yapımı Makarna', 'Ördek Confit', 'İmza Botanik Kokteyller'],
     },
     en: {
       title: 'AŞEKA Karaköy',
@@ -985,6 +1001,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Mikla Restaurant (1 Michelin Yıldızlı)',
       agentNote: 'Şef Mehmet Gürs imzalı, Haliç ve Boğaz manzaralı Michelin yıldızlı Yeni Anadolu Mutfağı.',
+      provider: 'Michelin Star & Rooftop Fine Dining',
+      cuisine: 'Yeni Anadolu Mutfağı (New Anatolian Cuisine)',
+      priceLevel: '$$$$ (Tadım Menüsü)',
+      specialties: ['Mantı & Yoğurt Dondurması', 'İskenderun Karidesi', 'Trakya Kıvırcık Kuzusu'],
     },
     en: {
       title: 'Mikla Restaurant (1 Michelin Star)',
@@ -1031,6 +1051,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Pandeli Restaurant',
       agentNote: 'Mısır Çarşısı girişinin üst katında, turkuaz İznik çinileriyle bezeli 120 yıllık efsanevi lezzet durağı.',
+      provider: 'Tarihi Mutfak Mirası',
+      cuisine: 'Klasik Osmanlı & İstanbul Mutfağı',
+      priceLevel: '$$$',
+      specialties: ['Patlıcanlı Börek', 'Hünkar Beğendi', 'Kağıtta Levrek'],
     },
     en: {
       title: 'Pandeli Restaurant',
@@ -1077,6 +1101,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Neolokal (1 Michelin & Yeşil Yıldız)',
       agentNote: 'SALT Galata’nın terasında Şef Maksut Aşkar yönetiminde sürdürülebilir Anadolu mutfak mirası.',
+      provider: 'Sürdürülebilir Fine Dining & Sanat',
+      cuisine: 'Modernize Edilmiş Anadolu Mirası',
+      priceLevel: '$$$$',
+      specialties: ['Ördek Katmer', 'Anne Mantısı', 'Topik & Tahinli Füzyon'],
     },
     en: {
       title: 'Neolokal (1 Michelin Star & Green Star)',
@@ -1123,9 +1151,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Fine Dine İstanbul Rooftop',
       agentNote: 'Ayasofya, Sultanahmet Camii ve Boğaz’ı 360 derece gören terasta çağdaş Türk ve Osmanlı mutfağı.',
+      provider: 'Fine Dining & Teras Restoran',
+      cuisine: 'Boğaz Manzaralı Çağdaş Türk & Osmanlı',
+      priceLevel: '$$$$',
+      specialties: ['Sultan Kebabı', 'Fırınlanmış Kuzu Gerdan', 'Safranlı Deniz Mahsulleri Çorbası'],
     },
     en: {
-      title: 'Fine Dine İstanbul Rooftop',
+      title: 'Fine Dine Istanbul Rooftop',
       agentNote: '360-degree rooftop dining overlooking Hagia Sophia, the Blue Mosque, and the Bosphorus strait.',
       provider: 'Fine Dining & Panoramic Rooftop',
       cuisine: 'Bosphorus-View Contemporary Turkish & Ottoman',
@@ -1141,7 +1173,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['كباب السلطان', 'رقبة ضأن مخبوزة', 'شوربة مأكولات بحرية بالزعفران'],
     },
     ru: {
-      title: 'Fine Dine İstanbul Rooftop',
+      title: 'Fine Dine Istanbul Rooftop',
       agentNote: 'Панорамный ресторан с обзором 360° на Айя-Софию, Голубую мечеть и пролив Босфор.',
       provider: 'Панорамный ресторан на крыше',
       cuisine: 'Современная турецкая и османская кухня с видом на Босфор',
@@ -1149,7 +1181,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Султан-кебаб', 'Томленая шея ягненка', 'Суп из морепродуктов с шафраном'],
     },
     de: {
-      title: 'Fine Dine İstanbul Rooftop',
+      title: 'Fine Dine Istanbul Rooftop',
       agentNote: '360-Grad-Dachterrassenrestaurant mit direktem Blick auf die Hagia Sophia, die Blaue Moschee und den Bosporus.',
       provider: 'Fine Dining & Panoramaterrasse',
       cuisine: 'Zeitgenössisch Türkisch & Osmanisch mit Bosporusblick',
@@ -1157,7 +1189,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Sultan-Kebab', 'Geschmorter Lammhals', 'Safran-Meeresfrüchtesuppe'],
     },
     fr: {
-      title: 'Fine Dine İstanbul Rooftop',
+      title: 'Fine Dine Istanbul Rooftop',
       agentNote: 'Terrasse panoramique à 360 degrés surplombant Sainte-Sophie, la Mosquée Bleue et le Bosphore.',
       provider: 'Fine Dining & Terrasse Panoramique',
       cuisine: 'Cuisine Turque & Ottomane Contemporaine face au Bosphore',
@@ -1169,9 +1201,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Çiya Sofrası',
       agentNote: 'Şef Musa Dağdeviren’in unutulmaya yüz tutmuş Anadolu ve Mezopotamya reçetelerini yaşatan dünyaca ünlü Kadıköy sofrası.',
+      provider: 'Geleneksel Gastronomi Mirası',
+      cuisine: 'Otantik Mezopotamya, Kafkas & Güneydoğu Anadolu',
+      priceLevel: '$$-$$$',
+      specialties: ['Şiveydiz', 'Mumbar Dolması', 'Zahter Salatası', 'Kerebiç'],
     },
     en: {
-      title: 'Çiya Sofrası',
+      title: 'Çiya Sofrası — Anatolian Heritage Table',
       agentNote: 'Chef Musa Dağdeviren’s world-renowned Kadıköy culinary table preserving rare Anatolian and Mesopotamian recipes.',
       provider: "Traditional Gastronomy Heritage (Chef's Table)",
       cuisine: 'Authentic Mesopotamian, Caucasian & Anatolian',
@@ -1215,6 +1251,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Matbah Osmanlı Saray Mutfağı',
       agentNote: 'Topkapı Sarayı’nın yanı başında, arşiv belgelerine dayalı hakiki Osmanlı saray yemekleri.',
+      provider: 'Fine Dining Saray Mutfağı',
+      cuisine: '15-19. Yüzyıl Osmanlı Saray Reçeteleri',
+      priceLevel: '$$$$',
+      specialties: ['Kavun Dolması (1539)', 'Kuzu Gerdan Kebabı', 'Nirbaç'],
     },
     en: {
       title: 'Matbah Ottoman Palace Cuisine',
@@ -1261,6 +1301,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Sunset Grill & Bar',
       agentNote: 'Ulus Parkı’nda Boğaz Köprüsü manzarasına hakim, uluslararası ödüllü kavı ve sushi barıyla ikonik fine dining.',
+      provider: 'Lüks Fine Dining & Sushi',
+      cuisine: 'Akdeniz, Çağdaş Türk & Yeni Nesil Japon (Sushi)',
+      priceLevel: '$$$$',
+      specialties: ['Black Cod Miso', 'Trüflü Ton Balığı Tartar', 'Izgara Kuzu Sırtı'],
     },
     en: {
       title: 'Sunset Grill & Bar',
@@ -1307,6 +1351,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Mürver Restaurant',
       agentNote: 'Tarihi Yarımada manzaralı terasta, açık odun ateşinde pişirilen deniz ürünleri ve et spesiyalleriyle Michelin tavsiyeli şef restoranı.',
+      provider: 'Modern Izgara & Şef Restoranı',
+      cuisine: 'Açık Ateşte Pişirme & Çağdaş Yerel Lezzetler',
+      priceLevel: '$$$$',
+      specialties: ['Küllü Ahtapot', 'Fırınlanmış Dana İlik', 'Ağır Ateşte Kuzu Kol'],
     },
     en: {
       title: 'Mürver Restaurant',
@@ -1353,9 +1401,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Feriye Lokantası',
       agentNote: 'Boğaz kıyısında restore edilmiş 19. yüzyıl Osmanlı saray karakol binasında seçkin Boğaziçi gastronomisi.',
+      provider: 'Boğaz Kıyısı Fine Dining',
+      cuisine: 'Modernize Edilmiş İstanbul & Boğaziçi Mutfağı',
+      priceLevel: '$$$$',
+      specialties: ['İsli Patlıcanlı Levrek', 'Kuzu Karsambaç', 'Deniz Mahsullü Güveç'],
     },
     en: {
-      title: 'Feriye Lokantası',
+      title: 'Feriye — Bosphorus Palace Waterfront Dining',
       agentNote: 'Waterfront gastronomy housed in a restored 19th-century Ottoman palace building on the Bosphorus shore.',
       provider: 'Bosphorus Waterfront Fine Dining',
       cuisine: 'Modernized Istanbul & Bosphorus Cuisine',
@@ -1399,6 +1451,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Nicole Restaurant (1 Michelin Yıldızlı)',
       agentNote: 'Beyoğlu’nda tarihi Fransisken manastırı terasında sunulan Michelin yıldızlı mevsimsel tadım menüsü.',
+      provider: 'Michelin Star Boutique Fine Dining',
+      cuisine: 'Fransız Teknikli Çağdaş Akdeniz',
+      priceLevel: '$$$$',
+      specialties: ['Bıldırcın Dolması', 'Karadeniz Kalkanı', 'Mevsimsel Şef Tadım Menüsü'],
     },
     en: {
       title: 'Nicole Restaurant (1 Michelin Star)',
@@ -1445,6 +1501,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Nuz Restaurant Garden',
       agentNote: 'Kadim Mezopotamya baharatlarını ve ağır ateşte pişen taş fırın lezzetlerini sunan samimi bahçe restoranı.',
+      provider: 'Otantik Restoran & Bahçe',
+      cuisine: 'Anadolu & Mezopotamya Mutfak Mirası',
+      priceLevel: '$$-$$$',
+      specialties: ['Güveçte Kuzu Tandır', 'Baharatlı Mardin Kebabı', 'Fıstıklı İrmik Helvası'],
     },
     en: {
       title: 'Nuz Restaurant Garden',
@@ -1491,9 +1551,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Beyoğlu Ocakbaşı',
       agentNote: 'Beyoğlu’nun tarihi ara sokaklarında saklı, gerçek meşe kömüründe zırh kebabı ve ocakbaşı deneyimi.',
+      provider: 'Geleneksel Ocakbaşı & Kebap',
+      cuisine: 'Geleneksel Türk Zırh Kebabı & Sıcak Mezeler',
+      priceLevel: '$$-$$$',
+      specialties: ['Zırh Adana Kebap', 'Kuzu Pirzola', 'Közde Sarımsaklı Patlıcan Salatası'],
     },
     en: {
-      title: 'Beyoğlu Ocakbaşı',
+      title: 'Beyoğlu Ocakbaşı — Traditional Charcoal Grill',
       agentNote: 'Authentic charcoal ocakbaşı grill experience tucked in the historic lanes of Beyoğlu.',
       provider: 'Traditional Ocakbaşı & Charcoal Grill',
       cuisine: 'Hand-Minced Turkish Kebab & Warm Mezes',
@@ -1537,9 +1601,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Galata Meyhanesi',
       agentNote: 'Akustik geleneksel fasıl müziği ve günlük hazırlanan Ege mezeleriyle klasik İstanbul meyhane akşamı.',
+      provider: 'Geleneksel Meyhane & Fasıl',
+      cuisine: 'Canlı Akustik Fasıl & İstanbul Meze Kültürü',
+      priceLevel: '$$$',
+      specialties: ['Sıcak Ot Kavurma', 'Levrek Simit', 'Lakerda', 'Tereyağlı Karides'],
     },
     en: {
-      title: 'Galata Meyhanesi',
+      title: 'Galata Meyhanesi — Historic Tavern & Live Fasıl',
       agentNote: 'Classic Istanbul meyhane evening with acoustic traditional music and freshly prepared Aegean meze.',
       provider: 'Traditional Meyhane & Acoustic Music',
       cuisine: 'Live Acoustic Fasıl & Istanbul Meze Culture',
@@ -1583,9 +1651,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Hane Kadıköy',
       agentNote: 'Kadıköy’ün kalbinde çağdaş Ege otları ve deniz mahsullü mezeler sunan yeni nesil lezzet sofrası.',
+      provider: 'Yeni Nesil Meyhane & Teras',
+      cuisine: 'Yenilikçi Ege & Akdeniz Mezeleri',
+      priceLevel: '$$$',
+      specialties: ['Avokadolu Karides', 'Fesleğenli Levrek Marin', 'Vişneli Yaprak Sarma'],
     },
     en: {
-      title: 'Hane Kadıköy',
+      title: 'Hane Kadıköy — Modern Aegean Meze Table',
       agentNote: 'Contemporary Aegean herbs and seafood meze table in the vibrant heart of Kadıköy.',
       provider: 'Modern Aegean Gastronomy & Terrace',
       cuisine: 'Innovative Aegean & Mediterranean Mezes',
@@ -1629,9 +1701,13 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Ala Kadıköy Meyhane',
       agentNote: 'Kadıköy çarşısının canlı atmosferinde Girit ve Ege zeytinyağlı meze geleneğini yaşatan otantik meyhane.',
+      provider: 'Geleneksel Rum Meyhanesi',
+      cuisine: 'Girit, Rum & Ada Mutfağı',
+      priceLevel: '$$-$$$',
+      specialties: ['Girit Ezmesi', 'Ahtapot Izgara', 'Güveçte Kaşarlı Karides'],
     },
     en: {
-      title: 'Ala Kadıköy Meyhane',
+      title: 'Ala Kadıköy — Cretan & Aegean Tavern',
       agentNote: 'Heritage Cretan and Aegean olive-oil meze tavern in Kadıköy’s lively market quarter.',
       provider: 'Traditional Aegean & Cretan Tavern',
       cuisine: 'Cretan, Aegean & Island Cuisine',
@@ -1675,6 +1751,10 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
     tr: {
       title: 'Tarihi Sultanahmet Köftecisi (1920)',
       agentNote: '1920’den bu yana değişmeyen reçetesiyle efsanevi ızgara köfte ve piyaz sunan tarihi Sultanahmet klasiği.',
+      provider: 'İkonik Tarihi Esnaf Lezzeti',
+      cuisine: 'Asırlık Türk Köftesi & Piyaz',
+      priceLevel: '$-$$ (Hızlı & Bütçe Dostu)',
+      specialties: ['Izgara Sultanahmet Köftesi', 'İspir Fasulyeli Piyaz', 'İrmik Helvası'],
     },
     en: {
       title: 'Historic Sultanahmet Köftecisi (Est. 1920)',

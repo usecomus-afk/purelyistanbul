@@ -353,6 +353,8 @@ export const XeniosStore = {
         mergedSeedItems.push({
           ...existing,
           ...seed,
+          desc: seed.desc ?? seed.agentNote,
+          features: seed.features ?? seed.specialties,
           price: existing.price ?? seed.price,
           currency: existing.currency ?? seed.currency,
           availableSlots: existing.availableSlots ?? seed.availableSlots,
