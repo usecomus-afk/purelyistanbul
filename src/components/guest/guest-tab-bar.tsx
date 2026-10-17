@@ -203,7 +203,7 @@ export function GuestTabBar({
   const tabs: { id: TabId; label: string; iconType: 'hotel' | 'grid' | 'spiral' | 'guide' }[] = [
     { id: 'services', label: t.tabs.services || 'Stay Essentials', iconType: 'hotel' },
     { id: 'categories', label: t.tabs.categories || 'Categories', iconType: 'grid' },
-    { id: 'ai', label: t.tabs.aiGuide || 'comusAI', iconType: 'spiral' },
+    { id: 'ai', label: t.tabs.aiGuide || 'Comus', iconType: 'spiral' },
     { id: 'practical', label: t.tabs.practical || 'Guide', iconType: 'guide' }
   ];
 
