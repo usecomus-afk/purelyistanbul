@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { LayoutGrid } from "lucide-react";
 import { MARKETPLACE_CATEGORIES, type MarketplaceCategory } from "@/lib/marketplace/categories";
 
 interface CategoryFilterBarProps {
@@ -18,47 +17,51 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
   }
 
   return (
-    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/95 backdrop-blur-md border-b border-sand-border/70 py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
-      <div className="w-full max-w-6xl mx-auto px-1.5 sm:px-6">
-        <div className="flex items-start gap-4 sm:gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2 sm:px-0 sm:justify-between" style={{ WebkitOverflowScrolling: 'touch' }}>
-
-          {/* Dinamik Kategoriler */}
+    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/90 backdrop-blur-md border-b border-sand-border/60 py-3">
+      <div className="w-full max-w-6xl mx-auto px-3 sm:px-6">
+        <div
+          className="flex items-start gap-3 sm:gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:justify-between"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
           {categories.map((c) => {
             const isSelected = value === c.key;
             return (
               <button
                 key={c.key}
                 onClick={() => handleSelect(c.key)}
-                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[56px] sm:w-auto"
+                aria-pressed={isSelected}
+                className="flex flex-col items-center gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[64px] sm:w-auto"
               >
                 <span
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[14px] sm:rounded-2xl flex items-center justify-center border-2 p-1.5 transition-all duration-200 ${
+                  className={`w-[52px] h-[52px] sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center border p-2 transition-all duration-200 ${
                     isSelected
-                      ? "bg-gradient-to-b from-amber-50 to-orange-50/70 border-amber-600 shadow-md scale-105"
-                      : "bg-white/95 border-amber-400/70 shadow-xs hover:border-amber-500"
+                      ? "bg-white border-terracotta/70 shadow-[0_6px_16px_-6px_rgba(196,91,54,0.45)]"
+                      : "bg-white/70 border-sand-border group-hover:bg-white group-hover:border-terracotta/40"
                   }`}
                 >
                   <span className="relative w-full h-full flex items-center justify-center">
                     {c.icon ? (
                       <Image
                         src={c.icon}
-                        alt={c.label}
+                        alt=""
                         fill
                         unoptimized={!c.icon.startsWith("/")}
-                        className={`object-contain drop-shadow-xs ${
-                          c.icon.includes('kulturel-miras') ? 'scale-[1.25]' : ''
+                        className={`object-contain ${
+                          c.icon.includes("kulturel-miras") ? "scale-[1.25]" : ""
                         }`}
                       />
                     ) : (
-                      <span className="text-lg font-bold text-amber-700">
+                      <span className="text-lg font-semibold text-terracotta">
                         {c.label.trim().charAt(0).toUpperCase()}
                       </span>
                     )}
                   </span>
                 </span>
                 <span
-                  className={`text-[10px] sm:text-[11px] font-semibold tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
-                    isSelected ? "text-amber-900 font-bold" : "text-zinc-600 dark:text-slate-400 group-hover:text-zinc-900 dark:text-slate-100"
+                  className={`text-[10.5px] sm:text-[11.5px] tracking-tight text-center leading-tight w-full line-clamp-2 transition-colors ${
+                    isSelected
+                      ? "text-terracotta font-semibold"
+                      : "text-ink-muted font-medium group-hover:text-ink"
                   }`}
                 >
                   {c.label}

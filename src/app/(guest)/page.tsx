@@ -25,7 +25,7 @@ export default function RootPage() {
   // 2. Web sitesine (purelyistanbul.com) giren tüm genel kullanıcılar için herkese açık pazar yeri
   return (
     <AuthProvider>
-      <div className={`min-h-screen bg-sand-bg text-ink -mb-28 ${marketplaceFont.className}`}>
+      <div className={`min-h-screen bg-sand-bg text-ink ${marketplaceFont.className}`}>
         <MarketplaceHeader />
         <MarketplaceHome />
       </div>

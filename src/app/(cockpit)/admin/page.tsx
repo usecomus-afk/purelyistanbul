@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
-import { adminLogin } from '@/lib/admin-auth';
+import { adminLogin, establishAdminFirebaseSession } from '@/lib/admin-auth';
 import { PropertyAdminPanel } from '@/components/cockpit/property-admin-panel';
 import { SupplierAdminPanel } from '@/components/cockpit/supplier-admin-panel';
 import { HotelAdminPanel } from '@/components/cockpit/hotel-admin-panel';
@@ -149,6 +149,11 @@ function AdminLoginGate({ onLogin }: { onLogin: (user: XeniosUser) => void }) {
       provider: 'email',
       createdAt: new Date().toISOString()
     };
+    await establishAdminFirebaseSession({
+      email: result.email || email,
+      password,
+      customToken: result.customToken,
+    });
     XeniosStore.setMasterAdminLoggedIn(true);
     XeniosStore.setUser(user);
     toast.success('Admin girişi başarılı.');

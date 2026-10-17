@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Filter, Search, Baby, PawPrint, Clock, Users, X, ChevronDown, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { watchApprovedListings } from "@/lib/marketplace/listings";
-import { toggleFavorite } from "@/lib/marketplace/favorites";
+import { toggleFavorite, watchUserFavoriteIds } from "@/lib/marketplace/favorites";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { CategoryShelf } from "@/components/marketplace/CategoryShelf";
@@ -80,6 +80,15 @@ export function MarketplaceHome() {
     setPetFriendly(false);
     setDurationBucket("");
   }
+
+  useEffect(() => {
+    if (!user) {
+      setFavoriteIds(new Set());
+      return;
+    }
+    const unsub = watchUserFavoriteIds(user.uid, setFavoriteIds);
+    return () => unsub();
+  }, [user]);
 
   useEffect(() => {
     const refreshCatalog = () => {
@@ -163,7 +172,8 @@ export function MarketplaceHome() {
       toast.error("Favorilere eklemek için giriş yapmalısınız.");
       return;
     }
-    const nowFavorite = await toggleFavorite(user.uid, listing.id);
+    const wasFav = favoriteIds.has(listing.id);
+    const nowFavorite = await toggleFavorite(user.uid, listing.id, wasFav);
     setFavoriteIds((prev) => {
       const next = new Set(prev);
       if (nowFavorite) next.add(listing.id);
@@ -301,9 +311,13 @@ export function MarketplaceHome() {
             </button>
 
             {/* Keşfet Butonu */}
-            <span className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[13px] font-medium px-6 py-2.5 cursor-pointer hover:bg-terracotta transition">
+            <button
+              type="button"
+              onClick={() => document.getElementById("marketplace-listings")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="hidden sm:inline-flex items-center justify-center rounded-full bg-ink text-white text-[13px] font-medium px-6 py-2.5 cursor-pointer hover:bg-terracotta transition"
+            >
               Keşfet
-            </span>
+            </button>
           </div>
         </div>
       </div>
@@ -440,10 +454,10 @@ export function MarketplaceHome() {
       )}
 
       {loading ? (
-        <p className="text-sm text-ink-muted text-center py-16">Yükleniyor...</p>
+        <p id="marketplace-listings" className="text-sm text-ink-muted text-center py-16">Yükleniyor...</p>
       ) : searchResults ? (
         // Arama aktifken tek bir grid olarak sonuçlar gösterilir.
-        <div className="max-w-6xl mx-auto px-5 md:px-8 py-6">
+        <div id="marketplace-listings" className="max-w-6xl mx-auto px-5 md:px-8 py-6">
           {filterCategory && !search.trim() && (
             <div className="flex items-center justify-between mb-6">
               <div>

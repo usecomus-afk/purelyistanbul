@@ -1,23 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { getStoredConsent, saveConsent } from "@/lib/cookie-consent";
 
 /**
- * KVKK/GDPR uyumlu çerez izni banner'ı. Sadece "Kabul Et" değil, kategori
- * bazlı ("Zorunlu", "Analitik", "Pazarlama") bir "Tercihleri Yönet" paneli de
- * sunar. Karar localStorage'da saklanır (bkz. src/lib/cookie-consent.ts).
+ * KVKK/GDPR uyumlu çerez izni bildirimi. Sade, küçük bir kart olarak gösterilir;
+ * "Tercihleri Yönet" ile kategori bazlı (Zorunlu / Analitik / Pazarlama) seçim sunar.
+ * Karar localStorage'da saklanır (bkz. src/lib/cookie-consent.ts).
+ *
+ * Misafir uygulamasında (alt sekme menüsü varken) menünün üstünde durur; web
+ * sitesinde ise köşede, içeriği örtmeyecek kompakt bir kart olarak görünür.
  */
 export function CookieConsentBanner() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [managing, setManaging] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  const [hasTabBar, setHasTabBar] = useState(false);
 
   useEffect(() => {
     if (!getStoredConsent()) setVisible(true);
   }, []);
+
+  // Alt sekme menüsü yalnızca uygulama bağlamında vardır; varsa kartı onun üstüne al.
+  useEffect(() => {
+    const check = () => setHasTabBar(!!document.querySelector(".mobile-bottom-nav"));
+    check();
+    const t = setTimeout(check, 600);
+    return () => clearTimeout(t);
+  }, [pathname]);
 
   function acceptAll() {
     saveConsent({ analytics: true, marketing: true });
@@ -37,99 +50,92 @@ export function CookieConsentBanner() {
 
   if (!visible) return null;
 
+  const bottomPad = hasTabBar
+    ? "pb-[calc(5.2rem+env(safe-area-inset-bottom))] sm:pb-[calc(5.2rem+env(safe-area-inset-bottom))]"
+    : "pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-5";
+
   return (
-    <aside 
-      role="region" 
-      aria-label="Çerez İzinleri" 
-      className="fixed inset-x-0 bottom-0 z-[9999999] p-3 sm:p-5 pointer-events-none pb-[calc(5.2rem+env(safe-area-inset-bottom))] sm:pb-5"
+    <aside
+      role="region"
+      aria-label="Çerez İzinleri"
+      className={`fixed inset-x-0 bottom-0 z-[9999999] px-3 pt-3 sm:px-5 pointer-events-none ${bottomPad}`}
     >
-      <div className="max-w-2xl mx-auto rounded-3xl border-2 border-amber-300/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.18)] p-4 sm:p-5 pointer-events-auto text-slate-900  animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="sm:max-w-[400px] sm:mr-auto rounded-2xl border border-sand-border bg-white/95 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(30,33,41,0.28)] p-4 pointer-events-auto text-ink animate-in fade-in slide-in-from-bottom-4 duration-300">
         {!managing ? (
           <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div className="flex-1 space-y-1">
-                <h4 className="text-xs sm:text-sm font-bold text-slate-900  font-serif">Çerez Tercihleri ve Gizlilik</h4>
-                <p className="text-[11.5px] sm:text-xs text-slate-600  leading-relaxed">
-                  Deneyiminizi iyileştirmek için çerezler kullanıyoruz. Zorunlu çerezler sitenin
-                  çalışması için gereklidir; analitik ve pazarlama çerezlerini onaylamak size kalmıştır.
-                </p>
-              </div>
+            <div className="space-y-1">
+              <h4 className="text-[13px] font-semibold text-ink">Çerez tercihleri</h4>
+              <p className="text-[12px] text-ink-muted leading-relaxed">
+                Deneyiminizi iyileştirmek için çerez kullanıyoruz. Zorunlu çerezler site için
+                gereklidir; analitik ve pazarlama çerezleri size kalmıştır.
+              </p>
             </div>
 
-            {/* Butonlar: Mobil ve Masaüstünde %100 Görünür ve Erişilebilir */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2 border-t border-amber-100/80">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setManaging(true)}
-                className="text-[11px] font-semibold text-slate-500  hover:text-slate-800  underline text-center sm:text-left py-1 cursor-pointer transition"
+                onClick={acceptAll}
+                className="flex-1 rounded-full bg-ink hover:bg-terracotta text-white px-4 py-2 text-[12px] font-semibold transition cursor-pointer"
               >
-                Tercihleri Özelleştir
+                Kabul Et
               </button>
-              
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={rejectNonEssential}
-                  className="flex-1 sm:flex-none text-center rounded-full border border-zinc-300 hover:bg-zinc-100 active:bg-zinc-200 text-slate-800  px-4 py-2 text-xs font-bold transition cursor-pointer"
-                >
-                  Reddet
-                </button>
-                <button
-                  type="button"
-                  onClick={acceptAll}
-                  className="flex-1 sm:flex-none text-center rounded-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white px-5 py-2 text-xs font-bold shadow-sm transition cursor-pointer"
-                >
-                  Kabul Et
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={rejectNonEssential}
+                className="flex-1 rounded-full border border-sand-border hover:bg-sand-card text-ink px-4 py-2 text-[12px] font-semibold transition cursor-pointer"
+              >
+                Reddet
+              </button>
             </div>
+            <button
+              type="button"
+              onClick={() => setManaging(true)}
+              className="w-full text-center text-[11.5px] text-ink-muted hover:text-ink underline underline-offset-2 transition cursor-pointer"
+            >
+              Tercihleri özelleştir
+            </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-sand-border pb-2">
-              <p className="text-sm font-bold text-ink font-serif">Çerez Tercihleri</p>
+              <p className="text-[13px] font-semibold text-ink">Çerez tercihleri</p>
               <span className="text-[11px] text-ink-muted">Özelleştirilebilir</span>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4 bg-sand-bg/50 p-2.5 rounded-xl">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-4 bg-sand-bg/60 p-2.5 rounded-xl">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Zorunlu Çerezler</p>
-                  <p className="text-[11px] text-ink-muted">
-                    Oturum ve güvenlik için gereklidir, devre dışı bırakılamaz.
-                  </p>
+                  <p className="text-xs font-semibold text-ink">Zorunlu çerezler</p>
+                  <p className="text-[11px] text-ink-muted">Oturum ve güvenlik için gereklidir.</p>
                 </div>
-                <input type="checkbox" checked disabled className="w-4 h-4 accent-red-600 cursor-not-allowed" />
+                <input type="checkbox" checked disabled className="w-4 h-4 accent-[#c45b36] cursor-not-allowed" />
               </div>
 
-              <div className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/40 transition">
+              <label className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/50 transition cursor-pointer">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Analitik Çerezler</p>
+                  <p className="text-xs font-semibold text-ink">Analitik çerezler</p>
                   <p className="text-[11px] text-ink-muted">Kullanım istatistikleri, site iyileştirme.</p>
                 </div>
                 <input
                   type="checkbox"
                   checked={analytics}
                   onChange={(e) => setAnalytics(e.target.checked)}
-                  className="w-4 h-4 accent-red-600 cursor-pointer"
+                  className="w-4 h-4 accent-[#c45b36] cursor-pointer"
                 />
-              </div>
+              </label>
 
-              <div className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/40 transition">
+              <label className="flex items-center justify-between gap-4 p-2.5 rounded-xl hover:bg-sand-bg/50 transition cursor-pointer">
                 <div>
-                  <p className="text-xs font-semibold text-ink">Pazarlama Çerezleri</p>
+                  <p className="text-xs font-semibold text-ink">Pazarlama çerezleri</p>
                   <p className="text-[11px] text-ink-muted">Kişiselleştirilmiş öneri ve kampanyalar.</p>
                 </div>
                 <input
                   type="checkbox"
                   checked={marketing}
                   onChange={(e) => setMarketing(e.target.checked)}
-                  className="w-4 h-4 accent-red-600 cursor-pointer"
+                  className="w-4 h-4 accent-[#c45b36] cursor-pointer"
                 />
-              </div>
+              </label>
             </div>
 
             <div className="flex items-center gap-2 justify-end pt-2 border-t border-sand-border">
@@ -143,9 +149,9 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={savePreferences}
-                className="rounded-full bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-xs font-bold transition shadow-sm cursor-pointer"
+                className="rounded-full bg-ink hover:bg-terracotta text-white px-5 py-2 text-xs font-semibold transition cursor-pointer"
               >
-                Tercihleri Kaydet
+                Kaydet
               </button>
             </div>
           </div>

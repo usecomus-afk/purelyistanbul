@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${luxurySerif.variable} ${luxurySans.variable}`}>
+    <html lang="tr" className={`${luxurySerif.variable} ${luxurySans.variable}`}>
       <head>
         {/* Blocking script: hides body instantly on first paint to prevent
             the marketplace page flashing before the splash GIF mounts.

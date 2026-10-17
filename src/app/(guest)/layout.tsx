@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MobileFooterNav } from '@/components/navigation/MobileFooterNav';
+import { GuestShell } from '@/components/guest/guest-shell';
 
 export const metadata: Metadata = {
   title: 'purelyİstanbul - Premium Experiences & Digital Concierge',
@@ -55,12 +55,7 @@ export default function GuestLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden text-slate-900 w-full antialiased relative overscroll-none">
-        <div id="guest-scroll-container" className="w-full h-full overflow-y-auto overscroll-none pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
-          {children}
-        </div>
-        <MobileFooterNav />
-      </div>
+      <GuestShell>{children}</GuestShell>
     </>
   );
 }

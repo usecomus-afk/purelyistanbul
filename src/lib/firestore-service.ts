@@ -41,6 +41,16 @@ export const COLLECTIONS = {
   ADMINS: 'admins'
 };
 
+/** Yazma hatasını konsola yazar ve arayüzün kullanıcıya gösterebilmesi için olay yayınlar. */
+function reportSyncError(scope: string, e: unknown) {
+  console.warn(`Firestore ${scope} error:`, e);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('xenios_sync_error', { detail: { scope, code: (e as { code?: string })?.code || '' } })
+    );
+  }
+}
+
 function stripUndefined<T extends Record<string, any>>(obj: T): T {
   const clean: Record<string, any> = {};
   Object.entries(obj).forEach(([k, v]) => {
@@ -68,7 +78,7 @@ export const FirestoreService = {
         updatedAt: new Date().toISOString()
       }));
     } catch (e) {
-      console.warn('Firestore upsertExperience error:', e);
+      reportSyncError('upsertExperience', e);
     }
   },
 
@@ -78,7 +88,7 @@ export const FirestoreService = {
       await deleteDoc(doc(db, COLLECTIONS.EXPERIENCES, id));
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id));
     } catch (e) {
-      console.warn('Firestore deleteExperienceRemote error:', e);
+      reportSyncError('deleteExperienceRemote', e);
     }
   },
 
@@ -99,7 +109,7 @@ export const FirestoreService = {
         }));
       }
     } catch (e) {
-      console.warn('Firestore upsertHotel error:', e);
+      reportSyncError('upsertHotel', e);
     }
   },
 
@@ -109,7 +119,7 @@ export const FirestoreService = {
       await deleteDoc(doc(db, COLLECTIONS.HOTELS, id));
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
-      console.warn('Firestore deleteHotelRemote error:', e);
+      reportSyncError('deleteHotelRemote', e);
     }
   },
 
@@ -130,7 +140,7 @@ export const FirestoreService = {
         }));
       }
     } catch (e) {
-      console.warn('Firestore upsertProperty error:', e);
+      reportSyncError('upsertProperty', e);
     }
   },
 
@@ -140,7 +150,7 @@ export const FirestoreService = {
       await deleteDoc(doc(db, COLLECTIONS.PROPERTIES, id));
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
-      console.warn('Firestore deletePropertyRemote error:', e);
+      reportSyncError('deletePropertyRemote', e);
     }
   },
 
@@ -152,7 +162,7 @@ export const FirestoreService = {
         updatedAt: new Date().toISOString()
       }));
     } catch (e) {
-      console.warn('Firestore upsertSupplier error:', e);
+      reportSyncError('upsertSupplier', e);
     }
   },
 
@@ -161,7 +171,7 @@ export const FirestoreService = {
     try {
       await deleteDoc(doc(db, COLLECTIONS.SUPPLIERS, id));
     } catch (e) {
-      console.warn('Firestore deleteSupplierRemote error:', e);
+      reportSyncError('deleteSupplierRemote', e);
     }
   },
 
@@ -174,8 +184,20 @@ export const FirestoreService = {
         updatedAt: cfg.updatedAt || new Date().toISOString()
       }));
     } catch (e) {
-      console.warn('Firestore upsertCategory error:', e);
+      reportSyncError('upsertCategory', e);
     }
+  },
+
+  /** Yerelde kalmış (henüz buluta gitmemiş) kategori düzenlemelerini Firestore'a gönderir. */
+  async pushLocalCategoryConfigs(): Promise<void> {
+    const list = XeniosStore.getCategoryOverrides().filter(
+      (o) =>
+        !!o.key &&
+        !!o.label &&
+        typeof o.order === 'number' &&
+        typeof o.hidden === 'boolean'
+    );
+    await Promise.all(list.map((o) => FirestoreService.upsertCategory(o as CategoryConfig)));
   },
 
   /**

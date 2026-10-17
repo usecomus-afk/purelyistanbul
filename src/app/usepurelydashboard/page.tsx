@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { signInWithCustomToken } from "firebase/auth";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { adminLogin } from "@/lib/admin-auth";
+import {
+  adminLogin,
+  establishAdminFirebaseSession,
+  hasAdminFirebaseSession,
+} from "@/lib/admin-auth";
 import { XeniosStore } from "@/lib/store";
 import { FirestoreService } from "@/lib/firestore-service";
 import {
@@ -297,6 +300,36 @@ export default function UsePurelyDashboardPage() {
     };
     checkAuth();
 
+    // Yerel "yönetici" bayrağı kalmış ama Firebase oturumu sona ermişse değişiklikler
+    // buluta gitmez (web sitesi/uygulamada görünmez). Sessizce devam etmek yerine yeniden giriş istenir.
+    if (XeniosStore.isMasterAdminLoggedIn()) {
+      hasAdminFirebaseSession().then((ok) => {
+        if (ok) return;
+        if (XeniosStore.getUser()?.role === "pilot") XeniosStore.setUser(null);
+        XeniosStore.setMasterAdminLoggedIn(false);
+        setIsAuth(false);
+        setAuthError(
+          "Bulut oturumunuz sona erdi. Değişikliklerin web sitesi ve uygulamaya yansıması için lütfen yeniden giriş yapın."
+        );
+      });
+    }
+
+    // Firestore yazması reddedilirse kullanıcıya açıkça bildir (en fazla 15 sn'de bir)
+    let lastSyncToast = 0;
+    const handleSyncError = (e: Event) => {
+      const now = Date.now();
+      if (now - lastSyncToast < 15000) return;
+      lastSyncToast = now;
+      const code = (e as CustomEvent).detail?.code || "";
+      toast.error(
+        code === "permission-denied"
+          ? "Değişiklik buluta kaydedilemedi: yetki yok. Çıkış yapıp yeniden giriş yapın."
+          : "Değişiklik buluta kaydedilemedi. İnternet bağlantınızı kontrol edin.",
+        { duration: 8000 }
+      );
+    };
+    window.addEventListener("xenios_sync_error", handleSyncError);
+
     const unsubCatalog = FirestoreService.subscribeToCatalogSync();
 
     window.addEventListener("xenios_master_admin_auth", checkAuth);
@@ -309,6 +342,7 @@ export default function UsePurelyDashboardPage() {
 
     return () => {
       unsubCatalog();
+      window.removeEventListener("xenios_sync_error", handleSyncError);
       window.removeEventListener("xenios_master_admin_auth", checkAuth);
       window.removeEventListener("xenios_experiences_updated", refreshAllData);
       window.removeEventListener("xenios_suppliers_updated", refreshAllData);
@@ -377,10 +411,18 @@ export default function UsePurelyDashboardPage() {
       createdAt: new Date().toISOString(),
     });
 
-    if (result.customToken && auth) {
-      try {
-        await signInWithCustomToken(auth, result.customToken);
-      } catch {}
+    const cloudOk = await establishAdminFirebaseSession({
+      email: result.email || email,
+      password,
+      customToken: result.customToken,
+    });
+    if (!cloudOk) {
+      toast.warning(
+        "Giriş yapıldı ancak bulut oturumu açılamadı. Değişiklikler yalnızca bu tarayıcıda kalır; web sitesi ve uygulamaya yansımaz."
+      );
+    } else {
+      // Bu tarayıcıda önceden yapılmış (buluta gitmemiş) kategori düzenlemelerini yayına gönder
+      FirestoreService.pushLocalCategoryConfigs().catch(() => {});
     }
 
     setIsAuth(true);
@@ -409,6 +451,7 @@ export default function UsePurelyDashboardPage() {
         ...props.map((item) => FirestoreService.upsertProperty(item)),
         ...htls.map((item) => FirestoreService.upsertHotel(item)),
         ...sups.map((item) => FirestoreService.upsertSupplier(item)),
+        FirestoreService.pushLocalCategoryConfigs(),
       ]);
       toast.success(
         "Tüm katalog purelyistanbul.com Web, iOS App ve PWA ile senkronize edildi!"

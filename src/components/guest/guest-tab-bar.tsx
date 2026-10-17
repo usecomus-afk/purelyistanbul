@@ -213,8 +213,12 @@ export function GuestTabBar({
         window.dispatchEvent(new CustomEvent('xenios_open_ai'));
       }
 
-      if (window.location.pathname !== '/' && !window.location.pathname.startsWith('/stay')) {
-        router.push(`/?tab=${tabId}`);
+      if (
+        window.location.pathname !== '/' &&
+        !window.location.pathname.startsWith('/stay') &&
+        !window.location.pathname.startsWith('/guest')
+      ) {
+        router.push(`/guest?tab=${tabId}`);
       }
     }
   };

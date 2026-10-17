@@ -58,23 +58,23 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
       {/* Başlık */}
       <div className="flex items-center justify-between mb-4 px-5 md:px-8 max-w-6xl mx-auto">
         <div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-baseline gap-3">
             {onTitleClick ? (
               <button
                 onClick={onTitleClick}
-                className="text-lg sm:text-xl font-semibold tracking-tight text-ink hover:underline text-left"
+                className="font-luxury-serif text-[24px] sm:text-[28px] font-medium tracking-tight text-ink hover:text-terracotta transition-colors text-left leading-tight"
               >
-                {title} →
+                {title}
               </button>
             ) : (
-              <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-ink">{title}</h2>
+              <h2 className="font-luxury-serif text-[24px] sm:text-[28px] font-medium tracking-tight text-ink leading-tight">{title}</h2>
+            )}
+            {onTitleClick && (
+              <button onClick={onTitleClick} className="text-[12px] text-ink-muted hover:text-terracotta font-medium transition-colors">
+                Tümünü gör →
+              </button>
             )}
           </div>
-          {onTitleClick && (
-            <button onClick={onTitleClick} className="text-xs text-terracotta font-semibold hover:underline mt-0.5">
-              Tümünü gör
-            </button>
-          )}
         </div>
 
         {/* Ok butonları — sadece overflow varsa göster */}

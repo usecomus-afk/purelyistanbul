@@ -205,5 +205,9 @@ export async function bumpListingStat(
   delta = 1
 ): Promise<void> {
   if (isSeedListingId(id)) return; // örnek ilanlar Firestore'da yok, sayaç tutulmaz
-  await updateDoc(doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id), { [`stats.${stat}`]: increment(delta) });
+  try {
+    await updateDoc(doc(requireDb(), MARKETPLACE_COLLECTIONS.LISTINGS, id), { [`stats.${stat}`]: increment(delta) });
+  } catch {
+    // Misafir oturumlarında istatistik yazma izni yoksa sessizce geçilir
+  }
 }

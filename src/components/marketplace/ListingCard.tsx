@@ -15,12 +15,14 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
   const priceUnit = listing.type === "stay" ? "gece" : "kişi";
   const rating = listing.rating?.score ?? 4.9;
   const reviewCount = listing.rating?.reviewCount ?? 0;
+  const currencySymbol =
+    listing.pricing.currency === "EUR" ? "€" : listing.pricing.currency === "USD" ? "$" : "₺";
 
   return (
     <div className="group">
       <Link href={`/marketplace/listing/${listing.id}`} className="block">
-        {/* Yatay dikdörtgen (4:3) görsel — Airbnb Deneyimler stili */}
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.04]">
+        {/* Yatay dikdörtgen (4:3) görsel */}
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-sand-card ring-1 ring-inset ring-black/[0.05] shadow-[0_1px_2px_rgba(30,33,41,0.04)] transition-shadow duration-300 group-hover:shadow-[0_10px_28px_-10px_rgba(30,33,41,0.28)]">
           {listing.coverImageUrl ? (
             <Image
               src={listing.coverImageUrl}
@@ -35,11 +37,6 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
             </div>
           )}
 
-          {/* Popüler Badge (Airbnb tarzı) */}
-          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[13px] font-semibold text-ink shadow-[0_2px_4px_rgba(0,0,0,0.18)]">
-            Popüler
-          </div>
-
           {onToggleFavorite && (
             <button
               onClick={(e) => {
@@ -47,35 +44,38 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
                 onToggleFavorite(listing);
               }}
               aria-label="Favorilere ekle"
-              className="absolute top-3 right-3 p-1.5 rounded-full hover:scale-110 transition"
+              className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-105 transition shadow-sm"
             >
               <Heart
-                className={`w-[24px] h-[24px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] ${isFavorite ? "fill-terracotta text-terracotta" : "fill-black/30 text-white"}`}
-                strokeWidth={1.5}
+                className={`w-[17px] h-[17px] ${isFavorite ? "fill-terracotta text-terracotta" : "text-ink"}`}
+                strokeWidth={1.75}
               />
             </button>
           )}
         </div>
 
-        {/* Bilgi alanı (Airbnb Birebir Tasarım) */}
-        <div className="mt-3.5 flex flex-col gap-0.5">
-          {/* Başlık */}
-          <p className="text-[15px] font-semibold text-[#222222] leading-[1.3] line-clamp-2">
+        {/* Bilgi alanı */}
+        <div className="mt-3 flex flex-col gap-1">
+          <p className="text-[14.5px] font-semibold text-ink leading-[1.3] line-clamp-2">
             {listing.title || "İsimsiz ilan"}
           </p>
-          
-          {/* Fiyat */}
-          <p className="text-[15px] text-[#717171] mt-0.5">
-            Başlangıç fiyatı {listing.pricing.currency === 'EUR' ? '€' : listing.pricing.currency === 'USD' ? '$' : '₺'}{listing.pricing.basePrice.toLocaleString("tr-TR")} <span className="font-normal">/{priceUnit}</span>
-          </p>
-          
-          {/* Puan ve Değerlendirme (Airbnb stilinde hemen altta) */}
-          {reviewCount > 0 && (
-            <div className="flex items-center gap-1 mt-0.5 text-[#222222]">
-              <Star className="w-3.5 h-3.5 fill-current" />
-              <span className="text-[14px] font-medium">{rating.toFixed(2)}</span>
-            </div>
-          )}
+
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[13.5px] text-ink-muted">
+              <span className="font-semibold text-ink">
+                {currencySymbol}
+                {listing.pricing.basePrice.toLocaleString("tr-TR")}
+              </span>{" "}
+              / {priceUnit}
+            </p>
+
+            {reviewCount > 0 && (
+              <div className="flex items-center gap-1 text-ink">
+                <Star className="w-3.5 h-3.5 fill-current" />
+                <span className="text-[13px] font-medium">{rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
         </div>
       </Link>
     </div>

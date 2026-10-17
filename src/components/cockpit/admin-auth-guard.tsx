@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { signInWithCustomToken } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { adminLogin } from '@/lib/admin-auth';
+import { adminLogin, establishAdminFirebaseSession } from '@/lib/admin-auth';
 import { XeniosStore } from '@/lib/store';
 import { BrandMark } from '@/components/brand-mark';
 import { Lock, KeyRound, ShieldCheck, ArrowRight, Sparkles, Smartphone, Download, CheckCircle2 } from 'lucide-react';
@@ -58,14 +56,15 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
     });
 
     // Marketplace modülünün Firestore/Storage kurallarındaki isAdmin() koluna
-    // (host başvuru onayı, ilan onayı) ekstra bir giriş yapmadan erişebilmek için
-    // aynı oturumda Firebase Authentication'a da 'role: admin' claim'iyle giriş yapılır.
-    if (result.customToken && auth) {
-      try {
-        await signInWithCustomToken(auth, result.customToken);
-      } catch (err) {
-        console.warn('Firebase admin oturumu açılamadı (cockpit erişimi etkilenmez):', err);
-      }
+    // (host başvuru onayı, ilan onayı, katalog yazmaları) erişebilmek için aynı
+    // oturumda Firebase Authentication'a da giriş yapılır.
+    const cloudOk = await establishAdminFirebaseSession({
+      email: result.email || username,
+      password,
+      customToken: result.customToken,
+    });
+    if (!cloudOk) {
+      console.warn('Firebase admin oturumu açılamadı (cockpit erişimi etkilenmez).');
     }
 
     toast.success('Pilot Proje Yöneticisi girişi başarılı!', {

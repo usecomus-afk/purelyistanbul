@@ -73,22 +73,33 @@ export default function ListingDetailPage() {
 
       {/* Fotoğraf galerisi */}
       <div className="grid grid-cols-4 grid-rows-2 gap-1.5 rounded-3xl overflow-hidden mb-12 h-[340px] md:h-[440px] ring-1 ring-inset ring-black/[0.04]">
-        <div className="relative col-span-4 row-span-2 md:col-span-2 md:row-span-2 bg-sand-card">
+        <div
+          className={`relative col-span-4 row-span-2 ${
+            gallery.length > 1 ? "md:col-span-2 md:row-span-2" : "md:col-span-4 md:row-span-2"
+          } bg-sand-card`}
+        >
           {gallery[0] ? (
-            <Image src={gallery[0].url} alt={listing.title} fill className="object-cover" sizes="50vw" />
+            <Image
+              src={gallery[0].url}
+              alt={listing.title}
+              fill
+              className="object-cover"
+              sizes={gallery.length > 1 ? "50vw" : "100vw"}
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-ink-muted/50">
               <ImageOff className="w-7 h-7" strokeWidth={1.5} />
             </div>
           )}
         </div>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="relative hidden md:block bg-sand-card">
-            {gallery[i] ? (
-              <Image src={gallery[i].url} alt={`${listing.title} ${i}`} fill className="object-cover" sizes="25vw" />
-            ) : null}
-          </div>
-        ))}
+        {gallery.length > 1 &&
+          [1, 2, 3, 4].map((i) => (
+            <div key={i} className="relative hidden md:block bg-sand-card">
+              {gallery[i] ? (
+                <Image src={gallery[i].url} alt={`${listing.title} ${i}`} fill className="object-cover" sizes="25vw" />
+              ) : null}
+            </div>
+          ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
