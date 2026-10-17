@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
-import { getT, detectBrowserLanguage } from '@/lib/i18n';
+import { getT, detectBrowserLanguage, getLocalizedCategoryTitle } from '@/lib/i18n';
 import { getExperienceCategoryKey } from '@/lib/marketplace/seed-listings';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace/categories';
 import { useCategoryConfigs } from '@/lib/marketplace/use-category-configs';
@@ -136,9 +136,15 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     const handleSessionUpdate = () => {
       setActiveHotelId(XeniosStore.getActiveHotelId());
       setActiveRoomNumber(XeniosStore.getActiveRoomId());
+      const currentStoredLang = XeniosStore.getLanguage();
+      if (currentStoredLang) setLang(currentStoredLang);
+    };
+    const handleExternalLangChange = (e: any) => {
+      if (e.detail?.lang) setLang(e.detail.lang);
     };
     window.addEventListener('xenios_session_updated', handleSessionUpdate);
     window.addEventListener('storage', handleSessionUpdate);
+    window.addEventListener('xenios_lang_changed', handleExternalLangChange);
 
     const closeAllModals = () => {
       setSelectedDetailExp(null);
@@ -193,6 +199,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       window.removeEventListener('xenios_requests_updated', handleReqUpdate);
       window.removeEventListener('xenios_session_updated', handleSessionUpdate);
       window.removeEventListener('storage', handleSessionUpdate);
+      window.removeEventListener('xenios_lang_changed', handleExternalLangChange);
       window.removeEventListener('xenios_tab_changed', handleTab);
       window.removeEventListener('xenios_open_ai', handleOpenAi);
     };
@@ -234,7 +241,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const builtinShowcase = MARKETPLACE_CATEGORIES.map((def) => ({
     catKey: def.key,
-    key: def.label,
+    key: getLocalizedCategoryTitle(def.key, lang),
     rawKey: def.label,
     targetCategory: def.label,
     iconPath: def.icon,
@@ -242,17 +249,23 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   }));
 
   const cfgByKey = new Map(categoryConfigs.map((c) => [c.key, c]));
-  const localizedAdminLabel = (cfg: { label: string; labelEn?: string }) =>
-    cfg.labelEn || cfg.label;
+  const localizedAdminLabel = (cfg: { key?: string; label: string; labelEn?: string }) => {
+    if (cfg.key) {
+      const byKey = getLocalizedCategoryTitle(cfg.key, lang);
+      if (byKey && byKey !== cfg.key) return byKey;
+    }
+    const byLabel = getLocalizedCategoryTitle(cfg.label, lang);
+    if (byLabel && byLabel !== cfg.label) return byLabel;
+    return lang === 'en' ? (cfg.labelEn || cfg.label) : cfg.label;
+  };
 
   const builtinEntries: ShowcaseEntry[] = builtinShowcase.map((item, i) => {
     const catKey = item.catKey;
     const cfg = cfgByKey.get(catKey);
     const def = MARKETPLACE_CATEGORIES[i];
-    const labelEdited = !!cfg && !!def && cfg.label !== def.label;
     const iconEdited = !!cfg && !!def && cfg.icon !== def.icon && !!cfg.icon;
     return {
-      key: labelEdited && cfg ? localizedAdminLabel(cfg) : item.key,
+      key: item.key,
       rawKey: item.rawKey,
       catKey,
       desc: cfg?.description || item.desc,
@@ -294,10 +307,11 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       expCatKey === selectedCategory ||
       e.category === selectedCategory ||
       expCatKey === getExperienceCategoryKey({ category: selectedCategory });
+    const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery || 
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchQuery.toLowerCase());
+      e.title.toLowerCase().includes(q) ||
+      e.provider.toLowerCase().includes(q) ||
+      e.location.toLowerCase().includes(q);
     return matchesCat && matchesSearch;
   });
 
@@ -316,25 +330,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     if (categoryRaw === 'all') return t.allCategories;
     const dynamicEntry = categoryShowcase.find((c) => c.catKey === categoryRaw);
     if (dynamicEntry) return dynamicEntry.key;
-    const cleaned = categoryRaw.replace(/^[0-9]+\.\s*/, '');
-    const lower = cleaned.toLowerCase();
-    if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
-    if (lower.includes('restoran')) return t.categoriesList.restaurants.title;
-    if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
-    if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
-    if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
-    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || cleaned;
-    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
-    if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
-    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || cleaned;
-    if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
-    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || cleaned;
-    if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
-    if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
-    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
-    if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
-    return cleaned;
+    return getLocalizedCategoryTitle(categoryRaw, lang);
   };
 
   return (

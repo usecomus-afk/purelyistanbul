@@ -121,7 +121,14 @@ export function HotelHeader({
             type="button"
             onClick={() => setShowPwaModal(true)}
             className="w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/60 text-[#8C6D46]"
-            title="PWA Bildirim Ayarları"
+            title={
+              lang === 'tr' ? "PWA Bildirim Ayarları" :
+              lang === 'ar' ? "إعدادات الإشعارات" :
+              lang === 'ru' ? "Настройки уведомлений" :
+              lang === 'de' ? "Benachrichtigungseinstellungen" :
+              lang === 'fr' ? "Paramètres de notification" :
+              "Notification Settings"
+            }
           >
             <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[#8C6D46]" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -159,7 +166,7 @@ export function HotelHeader({
           >
             <Wifi className="w-3.5 h-3.5 text-[#8C6D46] stroke-[1.6]" />
             <ChevronDown className="w-3 h-3 text-[#8C6D46] stroke-[1.6]" />
-            <span>Oda {roomNumber}</span>
+            <span>{t.room} {roomNumber}</span>
           </button>
 
           {/* 5. Panel Button (No vertical divider before Panel, matching reference image) */}
@@ -168,7 +175,7 @@ export function HotelHeader({
               href="/hotel-portal"
               className="px-3.5 py-1 rounded-full bg-white hover:bg-[#FAF7F2] text-[#5C3D1E] font-bold flex items-center text-[11px] cursor-pointer shadow-[0_2px_6px_rgba(32,24,16,0.06)] transition"
             >
-              Panel
+              {lang === 'tr' ? 'Panel' : lang === 'ar' ? 'لوحة التحكم' : lang === 'ru' ? 'Панель' : lang === 'fr' ? 'Panneau' : 'Panel'}
             </a>
           )}
         </div>
@@ -197,7 +204,14 @@ export function HotelHeader({
             <div className="space-y-1.5 pr-8">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-[#FAF8F4] border border-[#C4B8A4] text-[#7D5E2A] font-bold uppercase tracking-wider">
-                  {hotel.type}
+                  {hotel.type === 'Butik Otel & Konak'
+                    ? (lang === 'tr' ? 'Butik Otel & Konak' :
+                       lang === 'ar' ? 'فندق بوتيك وقصر تاريخي' :
+                       lang === 'ru' ? 'Бутик-отель и особняк' :
+                       lang === 'de' ? 'Boutique-Hotel & Herrenhaus' :
+                       lang === 'fr' ? 'Hôtel Boutique & Manoir' :
+                       'Boutique Hotel & Mansion')
+                    : hotel.type}
                 </span>
                 <span className="px-2.5 py-0.5 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white rounded-full text-xs font-bold">
                   {t.room} {roomNumber}
@@ -246,13 +260,27 @@ export function HotelHeader({
               <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-1">
                 <span className="text-[10px] uppercase font-bold text-[#7D5E2A] block">{t.breakfast}</span>
                 <strong className="font-luxury-serif text-[#141414] block text-sm font-bold">{hotel.breakfastHours}</strong>
-                <span className="text-[10px] text-[#5C4938]">Ana Restoran / Teras</span>
+                <span className="text-[10px] text-[#5C4938]">
+                  {lang === 'tr' ? 'Ana Restoran / Teras' :
+                   lang === 'ar' ? 'المطعم الرئيسي / التراس' :
+                   lang === 'ru' ? 'Главный ресторан / Терраса' :
+                   lang === 'de' ? 'Hauptrestaurant / Terrasse' :
+                   lang === 'fr' ? 'Restaurant Principal / Terrasse' :
+                   'Main Restaurant / Terrace'}
+                </span>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-1">
                 <span className="text-[10px] uppercase font-bold text-[#7D5E2A] block">{t.checkout}</span>
                 <strong className="font-luxury-serif text-[#141414] block text-sm font-bold">{hotel.checkoutTime}</strong>
-                <span className="text-[10px] text-[#5C4938]">Geç çıkış için resepsiyon</span>
+                <span className="text-[10px] text-[#5C4938]">
+                  {lang === 'tr' ? 'Geç çıkış için resepsiyon' :
+                   lang === 'ar' ? 'الاستقبال للخروج المتأخر' :
+                   lang === 'ru' ? 'Ресепшн для позднего выезда' :
+                   lang === 'de' ? 'Rezeption für späten Check-out' :
+                   lang === 'fr' ? 'Réception pour départ tardif' :
+                   'Reception for late check-out'}
+                </span>
               </div>
             </div>
 
@@ -265,7 +293,14 @@ export function HotelHeader({
                     <Phone className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
                     <div className="truncate">
                       <strong className="text-[#141414] block text-[11px] truncate">{t.receptionExt}</strong>
-                      <span className="text-[9px] text-[#5C4938] block truncate">Dahili Hat</span>
+                      <span className="text-[9px] text-[#5C4938] block truncate">
+                        {lang === 'tr' ? 'Dahili Hat' :
+                         lang === 'ar' ? 'الخط الداخلي' :
+                         lang === 'ru' ? 'Внутренняя линия' :
+                         lang === 'de' ? 'Interne Durchwahl' :
+                         lang === 'fr' ? 'Ligne Interne' :
+                         'Internal Line'}
+                      </span>
                     </div>
                   </div>
                   <strong className="text-xs font-mono text-[#7D5E2A] bg-white px-2 py-0.5 rounded-lg border border-[#C4B8A4] font-bold shrink-0 ml-1">
@@ -288,10 +323,15 @@ export function HotelHeader({
                     </div>
                     <div className="min-w-0">
                       <strong className="text-[11px] font-bold text-[#141414] block truncate">
-                        Online Check-in
+                        {lang === 'ar' ? 'تسجيل الدخول' : lang === 'ru' ? 'Онлайн Чекин' : lang === 'fr' ? 'Enregistrement' : 'Online Check-in'}
                       </strong>
                       <span className="text-[9px] text-[#7D5E2A] font-semibold block truncate">
-                        Kimlik & KBS
+                        {lang === 'tr' ? 'Kimlik & KBS' :
+                         lang === 'ar' ? 'الهوية والجواز' :
+                         lang === 'ru' ? 'Паспорт и ID' :
+                         lang === 'de' ? 'Ausweis & KBS' :
+                         lang === 'fr' ? 'Identité & KBS' :
+                         'ID & KBS'}
                       </span>
                     </div>
                   </button>
@@ -319,6 +359,7 @@ export function HotelHeader({
       {/* PWA NOTIFICATION SETTINGS MODAL */}
       <PwaNotificationModal 
         isOpen={showPwaModal} 
+        lang={lang}
         onClose={() => { 
           setShowPwaModal(false); 
           setPwaPerm(PwaNotificationManager.getPermission()); 

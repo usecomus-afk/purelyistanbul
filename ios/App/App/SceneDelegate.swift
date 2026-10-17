@@ -90,11 +90,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             player.playImmediately(atRate: 1.0)
 
-            UIView.animate(withDuration: 5.0, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
+            UIView.animate(withDuration: 10.2, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
                 progressFill.frame.size.width = container.bounds.width
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.2) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10.5) { [weak self] in
                 self?.dismissSplash()
             }
         }

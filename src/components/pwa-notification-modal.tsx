@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { PwaNotificationManager, PwaNotificationPrefs } from '@/lib/pwa-notifications';
+import { XeniosStore } from '@/lib/store';
+import { Language } from '@/lib/types';
 import { 
   BellRing, 
   Volume2, 
@@ -13,10 +15,162 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+const PWA_I18N: Record<Language, {
+  title: string;
+  subtitle: string;
+  devicePermission: string;
+  granted: string;
+  denied: string;
+  requestBtn: string;
+  grantedDesc: string;
+  defaultDesc: string;
+  channelsTitle: string;
+  roomRequestsTitle: string;
+  roomRequestsDesc: string;
+  tourBookingsTitle: string;
+  tourBookingsDesc: string;
+  soundTitle: string;
+  soundDesc: string;
+  doneBtn: string;
+  permSuccessToast: string;
+  prefUpdatedToast: string;
+}> = {
+  tr: {
+    title: "Bildirim Ayarları",
+    subtitle: "Oda talepleri, bilet onayları & VIP duyurular",
+    devicePermission: "Tarayıcı & Cihaz İzni:",
+    granted: "İzin Verildi",
+    denied: "Engellendi",
+    requestBtn: "İzin İste",
+    grantedDesc: "purelyİstanbul bildirimleri aktif. Oda içi hizmet taleplerinizde ve rezervasyonlarınızda anında bildirim alacaksınız.",
+    defaultDesc: "Mobil veya masaüstü ekranınız kilitliyken bile anlık durum güncellemelerini almak için bildirimlere izin verin.",
+    channelsTitle: "Bildirim Kanalları",
+    roomRequestsTitle: "Oda İçi Hizmet Güncellemeleri",
+    roomRequestsDesc: "Temizlik, havlu, oda servisi durumu",
+    tourBookingsTitle: "Tur & Bilet Onayları",
+    tourBookingsDesc: "Yat turu, restoran ve transfer saatleri",
+    soundTitle: "Ses & Titreşim Uyarısı",
+    soundDesc: "Bildirim geldiğinde hafif ses ve titreşim",
+    doneBtn: "Tamam",
+    permSuccessToast: "Bildirim izinleri başarıyla verildi!",
+    prefUpdatedToast: "Bildirim tercihleriniz güncellendi."
+  },
+  en: {
+    title: "Notification Settings",
+    subtitle: "In-room requests, ticket confirmations & VIP updates",
+    devicePermission: "Browser & Device Permission:",
+    granted: "Allowed",
+    denied: "Blocked",
+    requestBtn: "Allow Notifications",
+    grantedDesc: "purelyİstanbul notifications are active. You will receive instant updates on your room requests and bookings.",
+    defaultDesc: "Allow notifications to receive real-time status updates even when your screen is locked.",
+    channelsTitle: "Notification Channels",
+    roomRequestsTitle: "In-Room Service Updates",
+    roomRequestsDesc: "Housekeeping, towels, and room service status",
+    tourBookingsTitle: "Tour & Ticket Confirmations",
+    tourBookingsDesc: "Yacht cruise, restaurant, and transfer schedules",
+    soundTitle: "Sound & Vibration Alert",
+    soundDesc: "Gentle chime and vibration when an update arrives",
+    doneBtn: "Done",
+    permSuccessToast: "Notification permissions granted!",
+    prefUpdatedToast: "Notification preferences updated."
+  },
+  ar: {
+    title: "إعدادات الإشعارات",
+    subtitle: "طلبات الغرفة، تأكيدات التذاكر وإشعارات VIP",
+    devicePermission: "إذن المتصفح والجهاز:",
+    granted: "مفعل",
+    denied: "محظور",
+    requestBtn: "تفعيل الإشعارات",
+    grantedDesc: "إشعارات purelyİstanbul مفعلة. ستتلقى تحديثات فورية لطلبات الغرفة والحجوزات الخاصة بك.",
+    defaultDesc: "اسمح بالإشعارات لتلقي تحديثات فورية حتى عندما تكون شاشة هاتفك مغلقة.",
+    channelsTitle: "قنوات الإشعارات",
+    roomRequestsTitle: "تحديثات خدمات الغرف",
+    roomRequestsDesc: "حالة التنظيف، المناشف وخدمة الغرف",
+    tourBookingsTitle: "تأكيدات الجولات والتذاكر",
+    tourBookingsDesc: "مواعيد جولات اليخوت والمطاعم والتوصيل",
+    soundTitle: "تنبيه الصوت والاهتزاز",
+    soundDesc: "صوت خفيف واهتزاز عند وصول إشعار",
+    doneBtn: "تم",
+    permSuccessToast: "تم منح إذن الإشعارات بنجاح!",
+    prefUpdatedToast: "تم تحديث تفضيلات الإشعارات."
+  },
+  ru: {
+    title: "Настройки уведомлений",
+    subtitle: "Запросы в номер, подтверждения билетов и VIP-уведомления",
+    devicePermission: "Разрешение браузера и устройства:",
+    granted: "Разрешено",
+    denied: "Заблокировано",
+    requestBtn: "Разрешить",
+    grantedDesc: "Уведомления purelyİstanbul активны. Вы будете получать мгновенные обновления по вашим запросам и бронированиям.",
+    defaultDesc: "Разрешите уведомления, чтобы получать обновления статуса даже при заблокированном экране.",
+    channelsTitle: "Каналы уведомлений",
+    roomRequestsTitle: "Обновления рум-сервиса",
+    roomRequestsDesc: "Статус уборки, полотенец и обслуживания в номере",
+    tourBookingsTitle: "Подтверждения экскурсий и билетов",
+    tourBookingsDesc: "Время прогулок на яхте, ресторанов и трансфера",
+    soundTitle: "Звук и вибрация",
+    soundDesc: "Мягкий звуковой сигнал и вибрация при уведомлении",
+    doneBtn: "Готово",
+    permSuccessToast: "Разрешение на уведомления получено!",
+    prefUpdatedToast: "Настройки уведомлений обновлены."
+  },
+  de: {
+    title: "Benachrichtigungseinstellungen",
+    subtitle: "Zimmeranfragen, Ticketbestätigungen & VIP-Updates",
+    devicePermission: "Browser- & Geräteberechtigung:",
+    granted: "Erlaubt",
+    denied: "Blockiert",
+    requestBtn: "Erlauben",
+    grantedDesc: "purelyİstanbul-Benachrichtigungen sind aktiv. Sie erhalten sofortige Updates zu Ihren Zimmeranfragen und Buchungen.",
+    defaultDesc: "Erlauben Sie Benachrichtigungen, um Status-Updates auch bei gesperrtem Bildschirm zu erhalten.",
+    channelsTitle: "Benachrichtigungskanäle",
+    roomRequestsTitle: "Zimmerservice-Updates",
+    roomRequestsDesc: "Status für Reinigung, Handtücher und Zimmerservice",
+    tourBookingsTitle: "Tour- & Ticketbestätigungen",
+    tourBookingsDesc: "Zeiten für Yachttouren, Restaurants und Transfers",
+    soundTitle: "Ton- & Vibrationsalarm",
+    soundDesc: "Sanfter Ton und Vibration bei neuen Benachrichtigungen",
+    doneBtn: "Fertig",
+    permSuccessToast: "Benachrichtigungen erfolgreich aktiviert!",
+    prefUpdatedToast: "Benachrichtigungseinstellungen aktualisiert."
+  },
+  fr: {
+    title: "Paramètres de Notification",
+    subtitle: "Demandes en chambre, confirmations de billets & alertes VIP",
+    devicePermission: "Autorisation navigateur & appareil :",
+    granted: "Autorisé",
+    denied: "Bloqué",
+    requestBtn: "Autoriser",
+    grantedDesc: "Les notifications purelyİstanbul sont actives. Vous recevrez des mises à jour instantanées pour vos demandes et réservations.",
+    defaultDesc: "Autorisez les notifications pour recevoir des mises à jour en temps réel même lorsque votre écran est verrouillé.",
+    channelsTitle: "Canaux de Notification",
+    roomRequestsTitle: "Mises à jour Services en Chambre",
+    roomRequestsDesc: "Statut ménage, serviettes et service d'étage",
+    tourBookingsTitle: "Confirmations Visites & Billets",
+    tourBookingsDesc: "Horaires croisières, restaurants et transferts",
+    soundTitle: "Alerte Sonore & Vibration",
+    soundDesc: "Son doux et vibration à la réception d'une alerte",
+    doneBtn: "Terminé",
+    permSuccessToast: "Autorisation de notification accordée !",
+    prefUpdatedToast: "Préférences de notification mises à jour."
+  }
+};
+
+export function PwaNotificationModal({
+  isOpen,
+  onClose,
+  lang
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  lang?: Language;
+}) {
   const [prefs, setPrefs] = useState<PwaNotificationPrefs>(PwaNotificationManager.getPreferences());
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [, setIsSupported] = useState(true);
+  const activeLang: Language = lang || XeniosStore.getLanguage() || 'en';
+  const ui = PWA_I18N[activeLang] || PWA_I18N.en;
 
   useEffect(() => {
     setIsSupported(PwaNotificationManager.isSupported());
@@ -28,7 +182,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
     const result = await PwaNotificationManager.requestPermission();
     setPermission(result);
     if (result === 'granted') {
-      toast.success("Bildirim izinleri başarıyla verildi!");
+      toast.success(ui.permSuccessToast);
       PwaNotificationManager.testNotification();
     }
   };
@@ -37,7 +191,7 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
     const updated = { ...prefs, [key]: !prefs[key] };
     setPrefs(updated);
     PwaNotificationManager.savePreferences(updated);
-    toast.success("Bildirim tercihleriniz güncellendi.");
+    toast.success(ui.prefUpdatedToast);
   };
 
   if (!isOpen) return null;
@@ -60,8 +214,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
               <BellRing className="w-4 h-4 stroke-[1.75]" />
             </div>
             <div>
-              <h3 className="font-luxury-serif text-base font-bold uppercase tracking-[0.04em] text-[#141414]">Bildirim Ayarları</h3>
-              <p className="text-[11px] text-[#5C4938]">Oda talepleri, bilet onayları & VIP duyurular</p>
+              <h3 className="font-luxury-serif text-base font-bold uppercase tracking-[0.04em] text-[#141414]">{ui.title}</h3>
+              <p className="text-[11px] text-[#5C4938]">{ui.subtitle}</p>
             </div>
           </div>
           <button
@@ -75,35 +229,33 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
         {/* Permission Status Box */}
         <div className="p-4 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#141414]">Tarayıcı & Cihaz İzni:</span>
+            <span className="text-xs font-bold text-[#141414]">{ui.devicePermission}</span>
             {permission === 'granted' ? (
               <span className="px-2.5 py-0.5 rounded-full bg-white text-[#7D5E2A] font-bold text-[10px] flex items-center gap-1 border border-[#C4B8A4]">
-                <CheckCircle2 className="w-3 h-3 text-[#8E7252]" /> İzin Verildi
+                <CheckCircle2 className="w-3 h-3 text-[#8E7252]" /> {ui.granted}
               </span>
             ) : permission === 'denied' ? (
               <span className="px-2.5 py-0.5 rounded-full bg-[#FAF8F4] text-[#141414] font-bold text-[10px] border border-[#C4B8A4]">
-                Engellendi
+                {ui.denied}
               </span>
             ) : (
               <button
                 onClick={handleRequestPermission}
                 className="px-3 py-1 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold text-[11px] rounded-xl shadow-xs cursor-pointer transition"
               >
-                İzin İste
+                {ui.requestBtn}
               </button>
             )}
           </div>
           <p className="text-[11px] text-[#3D352E] leading-relaxed">
-            {permission === 'granted'
-              ? 'purelyİstanbul bildirimleri aktif. Oda içi hizmet taleplerinizde ve rezervasyonlarınızda anında bildirim alacaksınız.'
-              : 'Mobil veya masaüstü ekranınız kilitliyken bile anlık durum güncellemelerini almak için bildirimlere izin verin.'}
+            {permission === 'granted' ? ui.grantedDesc : ui.defaultDesc}
           </p>
         </div>
 
         {/* Channel Preferences Toggles */}
         <div className="space-y-2.5 text-xs">
           <div className="font-bold text-[#7D5E2A] text-[10px] uppercase tracking-wider">
-            Bildirim Kanalları
+            {ui.channelsTitle}
           </div>
 
           {/* 1. Oda İçi Talepler */}
@@ -111,8 +263,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div className="flex items-center gap-2.5">
               <Hotel className="w-4 h-4 text-[#8E7252]" />
               <div>
-                <strong className="text-[#141414] block font-bold text-[11px]">Oda İçi Hizmet Güncellemeleri</strong>
-                <span className="text-[10px] text-[#5C4938]">Temizlik, havlu, oda servisi durumu</span>
+                <strong className="text-[#141414] block font-bold text-[11px]">{ui.roomRequestsTitle}</strong>
+                <span className="text-[10px] text-[#5C4938]">{ui.roomRequestsDesc}</span>
               </div>
             </div>
             <button
@@ -132,8 +284,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div className="flex items-center gap-2.5">
               <Compass className="w-4 h-4 text-[#8E7252]" />
               <div>
-                <strong className="text-[#141414] block font-bold text-[11px]">Tur & Bilet Onayları</strong>
-                <span className="text-[10px] text-[#5C4938]">Yat turu, restoran ve transfer saatleri</span>
+                <strong className="text-[#141414] block font-bold text-[11px]">{ui.tourBookingsTitle}</strong>
+                <span className="text-[10px] text-[#5C4938]">{ui.tourBookingsDesc}</span>
               </div>
             </div>
             <button
@@ -153,8 +305,8 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div className="flex items-center gap-2.5">
               {prefs.sound ? <Volume2 className="w-4 h-4 text-[#8E7252]" /> : <VolumeX className="w-4 h-4 text-[#9E9589]" />}
               <div>
-                <strong className="text-[#141414] block font-bold text-[11px]">Ses & Titreşim Uyarısı</strong>
-                <span className="text-[10px] text-[#5C4938]">Bildirim geldiğinde hafif ses ve titreşim</span>
+                <strong className="text-[#141414] block font-bold text-[11px]">{ui.soundTitle}</strong>
+                <span className="text-[10px] text-[#5C4938]">{ui.soundDesc}</span>
               </div>
             </div>
             <button
@@ -176,10 +328,11 @@ export function PwaNotificationModal({ isOpen, onClose }: { isOpen: boolean; onC
             onClick={onClose}
             className="w-full py-2.5 px-6 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-xl font-bold text-xs shadow-sm transition cursor-pointer"
           >
-            Tamam
+            {ui.doneBtn}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

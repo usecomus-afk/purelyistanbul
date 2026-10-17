@@ -906,11 +906,11 @@ export const translations = {
     "guestSession": "Сессия гостя",
     "hotelManager": "Управляющий отелем",
     "logout": "Выйти",
-    "hotelCardDetails": "Hotel Details & Contact",
-    "address": "Address",
-    "phone": "Phone",
-    "website": "Website",
-    "receptionExt": "Reception Ext.",
+    "hotelCardDetails": "Информация об отеле и контакты",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "website": "Веб-сайт",
+    "receptionExt": "Внутр. номер ресепшн",
     "tabs": {
       "services": "Отель",
       "experiences": "Впечатления",
@@ -1011,11 +1011,12 @@ export const translations = {
       "requestSent": "Запрос успешно принят!",
       "cancel": "Отмена"
     },
-    "categoriesTitle": "Experience & Service Categories",
-    "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
-    "listingsCount": "Listings",
-    "inspectListings": "Browse Listings",
-    "categoriesList": {      "invest": {
+    "categoriesTitle": "Категории впечатлений и услуг",
+    "categoriesSubtitle": "Экскурсии с лицензией TÜRSAB, билеты, гастрономия и избранные сервисы.",
+    "listingsCount": "Предложений",
+    "inspectListings": "Смотреть предложения",
+    "categoriesList": {
+      "invest": {
         "title": "Инвестиции в Стамбул",
         "desc": "Роскошные резиденции для гражданства, особняки на набережной и недвижимость Airbnb"
       },
@@ -1031,7 +1032,6 @@ export const translations = {
         "title": "Семья, Дети и Тематические Парки",
         "desc": "Аквариум, Виаленд и музей Рахми Коча"
       },
-
       "restaurants": {
         "title": "Рекомендованные рестораны",
         "desc": "Шефы Мишлен, историческая кухня и террасы с видом на Босфор"
@@ -1079,10 +1079,10 @@ export const translations = {
       "aesthetic": {
         "title": "Эстетическая медицина и клиники",
         "desc": "Косметология, пересадка волос и уход за кожей в элитных клиниках Нишанташи и Шишли"
-      },
+      }
     },
-    "experiencesTitle": "Istanbul Curated Experiences & Tours",
-    "experiencesSubtitle": "13 categories of TÜRSAB-certified premier tours, tickets, and activities.",
+    "experiencesTitle": "Каталог впечатлений и экскурсий Стамбула",
+    "experiencesSubtitle": "Лучшие туры, билеты и активности в Стамбуле с сертификацией TÜRSAB.",
     "allCategories": "Все категории",
     "searchPlaceholder": "Поиск экскурсий и билетов...",
     "bookNow": "Забронировать",
@@ -1095,65 +1095,65 @@ export const translations = {
     "duration": "Длительность",
     "location": "Локация",
     "rating": "Рейтинг",
-    "tursabCertified": "TÜRSAB Licensed Listing",
-    "freeCancellation": "Free Cancellation Guarantee",
-    "instantConfirmation": "Instant Confirmation",
+    "tursabCertified": "Лицензия TÜRSAB",
+    "freeCancellation": "Бесплатная отмена",
+    "instantConfirmation": "Мгновенное подтверждение",
     "whatsIncluded": "Что включено в стоимость",
     "programSteps": "Программа впечатления",
     "timeSlots": {
-      "today": "Today",
-      "tomorrow": "Tomorrow",
-      "available": "Available",
-      "popular": "Popular Time"
+      "today": "Сегодня",
+      "tomorrow": "Завтра",
+      "available": "Доступно",
+      "popular": "Популярное время"
     },
-    "transitTitle": "Transit Options from Hotel",
-    "transitSubtitle": "Fastest and most convenient ways to reach your experience destination.",
-    "taxiOption": "Yellow Taxi (Est. Fare & Duration)",
-    "vipOption": "VIP Mercedes Vito Transfer",
-    "transitOption": "Public Transit (Tram / Metro / Ferry)",
-    "openInGoogleMaps": "Open in Google Maps",
-    "posTitle": "Secure Virtual POS Payment",
-    "posSubtitle": "Instant booking purchase with 256-Bit SSL and 3D Secure guarantee.",
-    "posCardHolder": "Cardholder Name",
-    "posCardNumber": "Card Number",
-    "posExpiry": "Expires (MM/YY)",
+    "transitTitle": "Варианты маршрута от отеля",
+    "transitSubtitle": "Самые быстрые и удобные способы добраться от отеля до места проведения.",
+    "taxiOption": "Желтое такси (прим. стоимость и время)",
+    "vipOption": "VIP-трансфер на Mercedes Vito",
+    "transitOption": "Общественный транспорт (Трамвай / Метро / Паром)",
+    "openInGoogleMaps": "Открыть в Google Картах",
+    "posTitle": "Безопасная онлайн-оплата",
+    "posSubtitle": "Мгновенная оплата бронирования с защитой 256-Bit SSL и 3D Secure.",
+    "posCardHolder": "Имя владельца карты",
+    "posCardNumber": "Номер карты",
+    "posExpiry": "Срок действия (ММ/ГГ)",
     "posCvv": "CVV",
-    "posPayButton": "Pay Securely",
-    "posSuccess": "Payment Successful!",
-    "posSmsNotice": "SMS and Email approval request sent to provider. Once approved, your 1-click Google Calendar sync will be ready.",
-    "addToCalendar": "Add to Google Calendar",
-    "pendingApproval": "Waiting for Provider Approval...",
-    "approved": "Booking Confirmed!",
-    "restaurantModalTitle": "Table Reservation",
-    "restaurantModalSubtitle": "Reserve your table in advance and enjoy priority seating with chef's compliments.",
-    "guestCount": "Guests",
-    "date": "Date",
-    "time": "Time",
-    "specialRequests": "Special Requests / Notes (e.g. Bosphorus view table, birthday)",
-    "confirmReservation": "Confirm Table Reservation",
-    "aiTitle": "comusAI - Personal Istanbul Concierge",
-    "aiSubtitle": "24/7 Google Gemini-powered guide tailored to your tastes, budget, and route.",
-    "aiPlaceholder": "Ask anything about Istanbul... (e.g. Best sunset rooftop near Galata?)",
-    "aiSend": "Send",
-    "knowMeBtn": "Get to Know Me",
-    "myPreferencesBtn": "My Preferences",
-    "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Здравствуйте! Я comus, ваш персональный гид по Стамбулу. Спрашивайте меня о прогулках на катере на закате, скрытых гастрономических жемчужинах Исторического полуострова, инвестициях в Стамбуле или индивидуальных маршрутах.\n\n✨ Нажмите кнопку «Познакомьтесь со мной» (Beni Tanı), чтобы персонализировать мои рекомендации.",
+    "posPayButton": "Безопасная оплата",
+    "posSuccess": "Оплата прошла успешно!",
+    "posSmsNotice": "Запрос на подтверждение отправлен организатору по SMS и Email. После подтверждения откроется синхронизация с Google Календарем.",
+    "addToCalendar": "Добавить в Google Календарь",
+    "pendingApproval": "Ожидание подтверждения организатора...",
+    "approved": "Бронирование подтверждено!",
+    "restaurantModalTitle": "Бронирование столика",
+    "restaurantModalSubtitle": "Забронируйте столик заранее и получите приоритетное размещение и комплимент от шефа.",
+    "guestCount": "Количество гостей",
+    "date": "Дата",
+    "time": "Время",
+    "specialRequests": "Особые пожелания (например: столик с видом на Босфор, день рождения)",
+    "confirmReservation": "Подтвердить бронирование стола",
+    "aiTitle": "comusAI - Ваш персональный гид по Стамбулу",
+    "aiSubtitle": "Круглосуточный ассистент на базе Google Gemini с учетом ваших вкусов и маршрута.",
+    "aiPlaceholder": "Спросите что угодно о Стамбуле... (напр., лучший закат у Галаты?)",
+    "aiSend": "Отправить",
+    "knowMeBtn": "Обо мне",
+    "myPreferencesBtn": "Мои предпочтения",
+    "knowMeChip": "✨ Обо мне (Персональные советы)",
+    "aiGreeting": "Здравствуйте! Я comus, ваш персональный гид по Стамбулу. Спрашивайте меня о прогулках на катере на закате, скрытых гастрономических жемчужинах Исторического полуострова, инвестициях в Стамбуле или индивидуальных маршрутах.\n\n✨ Нажмите кнопку «Обо мне», чтобы персонализировать мои рекомендации.",
     "quickChips": [
-      "I have 3 hours in Sultanahmet, what should I do?",
-      "Where is the best sunset dinner with Bosphorus view?",
-      "Where can I buy an Istanbulkart?",
-      "What time is breakfast served at the hotel?"
+      "У меня есть 3 часа в Султанахмете, что посмотреть?",
+      "Где лучший ужин на закате с видом на Босфор?",
+      "Где купить транспортную карту Istanbulkart?",
+      "Во сколько подают завтрак в отеле?"
     ],
-    "practicalTitle": "Istanbul Practical Guides & Guest Shield",
-    "practicalSubtitle": "Essential transit cards, museum passes, tourist rights ombudsman, and emergency contacts.",
-    "istanbulkartTitle": "Istanbulkart (Public Transit Card)",
-    "istanbulkartDesc": "Valid across all metro, tram, Marmaray, and ferries. Top up online and get digital QR card.",
-    "istanbulkartLink": "Official Istanbulkart Online Portal",
-    "muzekartTitle": "Museum Pass & Official Tickets",
-    "muzekartDesc": "Skip ticket queues at top historic museums, palaces, and heritage sites with official pass.",
-    "muzekartLink": "muze.gov.tr Official Museum Tickets",
-    "emergencyTitle": "Essential Contacts & Emergency",
+    "practicalTitle": "Практический гид по Стамбулу и Защита Гостя",
+    "practicalSubtitle": "Транспортные карты, музейные абонементы, хартия честного шопинга и экстренные номера.",
+    "istanbulkartTitle": "Istanbulkart (Единая транспортная карта)",
+    "istanbulkartDesc": "Действует в метро, трамваях, Мармарае и на паромах. Пополняйте баланс онлайн и используйте цифровой QR-код.",
+    "istanbulkartLink": "Официальный портал Istanbulkart",
+    "muzekartTitle": "Museum Pass и официальные билеты",
+    "muzekartDesc": "Проходите без очереди в главные исторические музеи, дворцы и достопримечательности с официальным абонементом.",
+    "muzekartLink": "Официальные билеты в музеи на muze.gov.tr",
+    "emergencyTitle": "Важные контакты и экстренные службы",
     "investTitle": "Инвестиции и жизнь в Стамбуле",
     "investSubtitle": "Элитная недвижимость под гражданство Турции и высокий доход от аренды.",
     "allPersonas": "Все объекты",
@@ -1170,13 +1170,13 @@ export const translations = {
     "bathrooms": "Ванные",
     "grossArea": "Общая площадь",
     "district": "Район",
-    "liveRequests": "Live In-Room Requests",
-    "noRequests": "No pending requests at the moment.",
+    "liveRequests": "Активные запросы в номер",
+    "noRequests": "На данный момент нет активных запросов.",
     "requestStatus": {
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
+      "pending": "Ожидает",
+      "in_progress": "В процессе",
+      "completed": "Выполнено",
+      "cancelled": "Отменено"
     }
   },
   "de": {
@@ -1200,11 +1200,11 @@ export const translations = {
     "guestSession": "Gästesitzung",
     "hotelManager": "Hotelmanager",
     "logout": "Abmelden",
-    "hotelCardDetails": "Hotel Details & Contact",
-    "address": "Address",
-    "phone": "Phone",
-    "website": "Website",
-    "receptionExt": "Reception Ext.",
+    "hotelCardDetails": "Hoteldetails & Kontakt",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "website": "Webseite",
+    "receptionExt": "Rezeption Durchwahl",
     "tabs": {
       "services": "Hotel",
       "experiences": "Erlebnisse",
@@ -1305,11 +1305,12 @@ export const translations = {
       "requestSent": "Anfrage erfolgreich erhalten!",
       "cancel": "Abbrechen"
     },
-    "categoriesTitle": "Experience & Service Categories",
-    "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
-    "listingsCount": "Listings",
-    "inspectListings": "Browse Listings",
-    "categoriesList": {      "invest": {
+    "categoriesTitle": "Erlebnis- & Servicekategorien",
+    "categoriesSubtitle": "TÜRSAB-zertifizierte Touren, Tickets, Kulinarik und ausgewählte Services.",
+    "listingsCount": "Angebote",
+    "inspectListings": "Angebote ansehen",
+    "categoriesList": {
+      "invest": {
         "title": "Investieren in Istanbul",
         "desc": "Für die Staatsbürgerschaft berechtigte Luxusresidenzen, Villen am Wasser & Airbnb-Immobilien"
       },
@@ -1325,7 +1326,6 @@ export const translations = {
         "title": "Familie, Kinder & Themenparks",
         "desc": "Aquarium, Vialand & Rahmi Koç Museum"
       },
-
       "restaurants": {
         "title": "Empfohlene Restaurants",
         "desc": "Michelin-Sterne-Köche, historische Spezialitäten & Bosporus-Terrassen"
@@ -1373,10 +1373,10 @@ export const translations = {
       "aesthetic": {
         "title": "Ästhetik & Schönheitskliniken",
         "desc": "Medizinische Ästhetik, Haartransplantation & Hautpflege in Elite-Kliniken in Nişantaşı & Şişli"
-      },
+      }
     },
-    "experiencesTitle": "Istanbul Curated Experiences & Tours",
-    "experiencesSubtitle": "13 categories of TÜRSAB-certified premier tours, tickets, and activities.",
+    "experiencesTitle": "Istanbul Erlebnisse & Touren Katalog",
+    "experiencesSubtitle": "Erstklassige, TÜRSAB-zertifizierte Touren, Tickets und Aktivitäten in Istanbul.",
     "allCategories": "Alle Kategorien",
     "searchPlaceholder": "Touren oder Erlebnisse suchen...",
     "bookNow": "Jetzt buchen",
@@ -1389,65 +1389,65 @@ export const translations = {
     "duration": "Dauer",
     "location": "Ort",
     "rating": "Bewertung",
-    "tursabCertified": "TÜRSAB Licensed Listing",
-    "freeCancellation": "Free Cancellation Guarantee",
-    "instantConfirmation": "Instant Confirmation",
+    "tursabCertified": "TÜRSAB-lizenziertes Angebot",
+    "freeCancellation": "Kostenlose Stornierungsgarantie",
+    "instantConfirmation": "Sofortige Bestätigung",
     "whatsIncluded": "Inklusive Leistungen",
     "programSteps": "Programmablauf & Stationen",
     "timeSlots": {
-      "today": "Today",
-      "tomorrow": "Tomorrow",
-      "available": "Available",
-      "popular": "Popular Time"
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "available": "Verfügbar",
+      "popular": "Beliebte Zeit"
     },
-    "transitTitle": "Transit Options from Hotel",
-    "transitSubtitle": "Fastest and most convenient ways to reach your experience destination.",
-    "taxiOption": "Yellow Taxi (Est. Fare & Duration)",
+    "transitTitle": "Anfahrtsoptionen vom Hotel",
+    "transitSubtitle": "Die schnellsten und bequemsten Wege von Ihrem Hotel zum Erlebnisort.",
+    "taxiOption": "Gelbes Taxi (Geschätzter Preis & Dauer)",
     "vipOption": "VIP Mercedes Vito Transfer",
-    "transitOption": "Public Transit (Tram / Metro / Ferry)",
-    "openInGoogleMaps": "Open in Google Maps",
-    "posTitle": "Secure Virtual POS Payment",
-    "posSubtitle": "Instant booking purchase with 256-Bit SSL and 3D Secure guarantee.",
-    "posCardHolder": "Cardholder Name",
-    "posCardNumber": "Card Number",
-    "posExpiry": "Expires (MM/YY)",
+    "transitOption": "Öffentliche Verkehrsmittel (Straßenbahn / Metro / Fähre)",
+    "openInGoogleMaps": "In Google Maps öffnen",
+    "posTitle": "Sichere Online-Zahlung",
+    "posSubtitle": "Sofortbuchung mit 256-Bit SSL und 3D-Secure-Schutz.",
+    "posCardHolder": "Name des Karteninhabers",
+    "posCardNumber": "Kartennummer",
+    "posExpiry": "Gültig bis (MM/JJ)",
     "posCvv": "CVV",
-    "posPayButton": "Pay Securely",
-    "posSuccess": "Payment Successful!",
-    "posSmsNotice": "SMS and Email approval request sent to provider. Once approved, your 1-click Google Calendar sync will be ready.",
-    "addToCalendar": "Add to Google Calendar",
-    "pendingApproval": "Waiting for Provider Approval...",
-    "approved": "Booking Confirmed!",
-    "restaurantModalTitle": "Table Reservation",
-    "restaurantModalSubtitle": "Reserve your table in advance and enjoy priority seating with chef's compliments.",
-    "guestCount": "Guests",
-    "date": "Date",
-    "time": "Time",
-    "specialRequests": "Special Requests / Notes (e.g. Bosphorus view table, birthday)",
-    "confirmReservation": "Confirm Table Reservation",
-    "aiTitle": "comusAI - Personal Istanbul Concierge",
-    "aiSubtitle": "24/7 Google Gemini-powered guide tailored to your tastes, budget, and route.",
-    "aiPlaceholder": "Ask anything about Istanbul... (e.g. Best sunset rooftop near Galata?)",
-    "aiSend": "Send",
-    "knowMeBtn": "Get to Know Me",
-    "myPreferencesBtn": "My Preferences",
-    "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Hallo! Ich bin comus, Ihr persönlicher Istanbul-Guide. Fragen Sie mich gerne nach Bootstouren zum Sonnenuntergang, versteckten kulinarischen Schätzen der Historischen Halbinsel, Immobilieninvestitionen in Istanbul oder maßgeschneiderten Routen.\n\n✨ Klicken Sie auf die Schaltfläche 'Beni Tanı' (Get to Know Me), um meine Empfehlungen ganz auf Sie abzustimmen.",
+    "posPayButton": "Sicher bezahlen",
+    "posSuccess": "Zahlung erfolgreich!",
+    "posSmsNotice": "Bestätigungsanfrage per SMS und E-Mail an den Anbieter gesendet. Nach Bestätigung steht die Google Kalender-Synchronisierung bereit.",
+    "addToCalendar": "Zu Google Kalender hinzufügen",
+    "pendingApproval": "Warten auf Anbieterbestätigung...",
+    "approved": "Buchung bestätigt!",
+    "restaurantModalTitle": "Tischreservierung",
+    "restaurantModalSubtitle": "Reservieren Sie Ihren Tisch im Voraus und genießen Sie bevorzugte Platzierung.",
+    "guestCount": "Personenanzahl",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "specialRequests": "Besondere Wünsche / Notizen (z. B. Tisch mit Bosporusblick, Geburtstag)",
+    "confirmReservation": "Tischreservierung bestätigen",
+    "aiTitle": "comusAI - Ihr persönlicher Istanbul-Concierge",
+    "aiSubtitle": "24/7 Google Gemini-gestützter Guide, abgestimmt auf Ihren Geschmack, Ihr Budget und Ihre Route.",
+    "aiPlaceholder": "Fragen Sie alles über Istanbul... (z. B. Beste Dachterrasse zum Sonnenuntergang bei Galata?)",
+    "aiSend": "Senden",
+    "knowMeBtn": "Lern mich kennen",
+    "myPreferencesBtn": "Meine Präferenzen",
+    "knowMeChip": "✨ Lern mich kennen (Persönliche Tipps)",
+    "aiGreeting": "Hallo! Ich bin comus, Ihr persönlicher Istanbul-Guide. Fragen Sie mich gerne nach Bootstouren zum Sonnenuntergang, versteckten kulinarischen Schätzen der Historischen Halbinsel, Immobilieninvestitionen in Istanbul oder maßgeschneiderten Routen.\n\n✨ Klicken Sie auf die Schaltfläche 'Lern mich kennen', um meine Empfehlungen ganz auf Sie abzustimmen.",
     "quickChips": [
-      "I have 3 hours in Sultanahmet, what should I do?",
-      "Where is the best sunset dinner with Bosphorus view?",
-      "Where can I buy an Istanbulkart?",
-      "What time is breakfast served at the hotel?"
+      "Ich habe 3 Stunden in Sultanahmet, was soll ich tun?",
+      "Wo gibt es das beste Abendessen mit Bosporusblick zum Sonnenuntergang?",
+      "Wo kann ich eine Istanbulkart kaufen?",
+      "Wann wird im Hotel das Frühstück serviert?"
     ],
-    "practicalTitle": "Istanbul Practical Guides & Guest Shield",
-    "practicalSubtitle": "Essential transit cards, museum passes, tourist rights ombudsman, and emergency contacts.",
-    "istanbulkartTitle": "Istanbulkart (Public Transit Card)",
-    "istanbulkartDesc": "Valid across all metro, tram, Marmaray, and ferries. Top up online and get digital QR card.",
-    "istanbulkartLink": "Official Istanbulkart Online Portal",
-    "muzekartTitle": "Museum Pass & Official Tickets",
-    "muzekartDesc": "Skip ticket queues at top historic museums, palaces, and heritage sites with official pass.",
-    "muzekartLink": "muze.gov.tr Official Museum Tickets",
-    "emergencyTitle": "Essential Contacts & Emergency",
+    "practicalTitle": "Praktischer Istanbul-Guide & Gästeschutz",
+    "practicalSubtitle": "Wichtige ÖPNV-Karten, Museumspässe, Fair-Shopping-Charta und Notrufnummern.",
+    "istanbulkartTitle": "Istanbulkart (ÖPNV-Karte)",
+    "istanbulkartDesc": "Gültig in allen U-Bahnen, Straßenbahnen, Marmaray und Fähren. Online aufladen und digitale QR-Karte nutzen.",
+    "istanbulkartLink": "Offizielles Istanbulkart Online-Portal",
+    "muzekartTitle": "Museum Pass & Offizielle Tickets",
+    "muzekartDesc": "Umgehen Sie Warteschlangen an den wichtigsten historischen Museen, Palästen und Sehenswürdigkeiten.",
+    "muzekartLink": "muze.gov.tr Offizielle Museumstickets",
+    "emergencyTitle": "Wichtige Kontakte & Notrufnummern",
     "investTitle": "Investieren & Leben in Istanbul",
     "investSubtitle": "Luxusimmobilien für Staatsbürgerschaft und hohe Mieteinnahmen.",
     "allPersonas": "Gesamtes Portfolio",
@@ -1464,13 +1464,13 @@ export const translations = {
     "bathrooms": "Bäder",
     "grossArea": "Gesamtfläche",
     "district": "Bezirk",
-    "liveRequests": "Live In-Room Requests",
-    "noRequests": "No pending requests at the moment.",
+    "liveRequests": "Aktuelle Zimmeranfragen",
+    "noRequests": "Zurzeit keine offenen Anfragen.",
     "requestStatus": {
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
+      "pending": "Ausstehend",
+      "in_progress": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
     }
   },
   "fr": {
@@ -1494,11 +1494,11 @@ export const translations = {
     "guestSession": "Session Invité",
     "hotelManager": "Directeur de l'hôtel",
     "logout": "Déconnexion",
-    "hotelCardDetails": "Hotel Details & Contact",
-    "address": "Address",
-    "phone": "Phone",
-    "website": "Website",
-    "receptionExt": "Reception Ext.",
+    "hotelCardDetails": "Détails de l'hôtel & Contact",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "website": "Site web",
+    "receptionExt": "Poste Réception",
     "tabs": {
       "services": "Hôtel",
       "experiences": "Expériences",
@@ -1599,11 +1599,12 @@ export const translations = {
       "requestSent": "Demande bien reçue !",
       "cancel": "Annuler"
     },
-    "categoriesTitle": "Experience & Service Categories",
-    "categoriesSubtitle": "12 curated categories of TÜRSAB-certified tours, tickets, culinary delights, and real estate.",
-    "listingsCount": "Listings",
-    "inspectListings": "Browse Listings",
-    "categoriesList": {      "invest": {
+    "categoriesTitle": "Catégories d'Expériences & Services",
+    "categoriesSubtitle": "Visites certifiées TÜRSAB, billets, gastronomie et services sélectionnés.",
+    "listingsCount": "Offres",
+    "inspectListings": "Voir les offres",
+    "categoriesList": {
+      "invest": {
         "title": "Investir à Istanbul",
         "desc": "Résidences de luxe éligibles à la citoyenneté, manoirs au bord de l'eau et propriétés Airbnb"
       },
@@ -1619,7 +1620,6 @@ export const translations = {
         "title": "Famille, Enfants & Parcs",
         "desc": "Aquarium, Vialand et Musée Rahmi Koç"
       },
-
       "restaurants": {
         "title": "Restaurants Recommandés",
         "desc": "Chefs étoilés Michelin, saveurs historiques et terrasses avec vue sur le Bosphore"
@@ -1667,10 +1667,10 @@ export const translations = {
       "aesthetic": {
         "title": "Cliniques d'Esthétique & Beauté",
         "desc": "Médecine esthétique, greffe de cheveux et soins de la peau dans les cliniques d'élite de Nişantaşı et Şişli"
-      },
+      }
     },
-    "experiencesTitle": "Istanbul Curated Experiences & Tours",
-    "experiencesSubtitle": "13 categories of TÜRSAB-certified premier tours, tickets, and activities.",
+    "experiencesTitle": "Catalogue d'Expériences & Visites à Istanbul",
+    "experiencesSubtitle": "Visites d'exception, billets et activités certifiés TÜRSAB à Istanbul.",
     "allCategories": "Toutes les catégories",
     "searchPlaceholder": "Rechercher une visite ou activité...",
     "bookNow": "Réserver",
@@ -1683,65 +1683,65 @@ export const translations = {
     "duration": "Durée",
     "location": "Lieu",
     "rating": "Note",
-    "tursabCertified": "TÜRSAB Licensed Listing",
-    "freeCancellation": "Free Cancellation Guarantee",
-    "instantConfirmation": "Instant Confirmation",
+    "tursabCertified": "Offre agréée TÜRSAB",
+    "freeCancellation": "Garantie d'annulation gratuite",
+    "instantConfirmation": "Confirmation immédiate",
     "whatsIncluded": "Ce qui est inclus",
     "programSteps": "Déroulement de l'activité",
     "timeSlots": {
-      "today": "Today",
-      "tomorrow": "Tomorrow",
-      "available": "Available",
-      "popular": "Popular Time"
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "available": "Disponible",
+      "popular": "Horaire populaire"
     },
-    "transitTitle": "Transit Options from Hotel",
-    "transitSubtitle": "Fastest and most convenient ways to reach your experience destination.",
-    "taxiOption": "Yellow Taxi (Est. Fare & Duration)",
-    "vipOption": "VIP Mercedes Vito Transfer",
-    "transitOption": "Public Transit (Tram / Metro / Ferry)",
-    "openInGoogleMaps": "Open in Google Maps",
-    "posTitle": "Secure Virtual POS Payment",
-    "posSubtitle": "Instant booking purchase with 256-Bit SSL and 3D Secure guarantee.",
-    "posCardHolder": "Cardholder Name",
-    "posCardNumber": "Card Number",
-    "posExpiry": "Expires (MM/YY)",
+    "transitTitle": "Options de transport depuis l'hôtel",
+    "transitSubtitle": "Les moyens les plus rapides et pratiques pour rejoindre votre activité.",
+    "taxiOption": "Taxi Jaune (Tarif & Durée estimés)",
+    "vipOption": "Transfert VIP Mercedes Vito",
+    "transitOption": "Transports en commun (Tram / Métro / Ferry)",
+    "openInGoogleMaps": "Ouvrir dans Google Maps",
+    "posTitle": "Paiement Virtuel Sécurisé",
+    "posSubtitle": "Achat et réservation instantanés avec garantie SSL 256-Bit et 3D Secure.",
+    "posCardHolder": "Nom du titulaire de la carte",
+    "posCardNumber": "Numéro de carte",
+    "posExpiry": "Date d'expiration (MM/AA)",
     "posCvv": "CVV",
-    "posPayButton": "Pay Securely",
-    "posSuccess": "Payment Successful!",
-    "posSmsNotice": "SMS and Email approval request sent to provider. Once approved, your 1-click Google Calendar sync will be ready.",
-    "addToCalendar": "Add to Google Calendar",
-    "pendingApproval": "Waiting for Provider Approval...",
-    "approved": "Booking Confirmed!",
-    "restaurantModalTitle": "Table Reservation",
-    "restaurantModalSubtitle": "Reserve your table in advance and enjoy priority seating with chef's compliments.",
-    "guestCount": "Guests",
+    "posPayButton": "Payer en toute sécurité",
+    "posSuccess": "Paiement réussi !",
+    "posSmsNotice": "Demande de confirmation envoyée par SMS et e-mail au prestataire. Une fois approuvée, la synchronisation Google Agenda sera disponible.",
+    "addToCalendar": "Ajouter à Google Agenda",
+    "pendingApproval": "En attente de confirmation du prestataire...",
+    "approved": "Réservation confirmée !",
+    "restaurantModalTitle": "Réservation de Table",
+    "restaurantModalSubtitle": "Réservez votre table à l'avance et profitez d'un accueil prioritaire.",
+    "guestCount": "Nombre de convives",
     "date": "Date",
-    "time": "Time",
-    "specialRequests": "Special Requests / Notes (e.g. Bosphorus view table, birthday)",
-    "confirmReservation": "Confirm Table Reservation",
-    "aiTitle": "comusAI - Personal Istanbul Concierge",
-    "aiSubtitle": "24/7 Google Gemini-powered guide tailored to your tastes, budget, and route.",
-    "aiPlaceholder": "Ask anything about Istanbul... (e.g. Best sunset rooftop near Galata?)",
-    "aiSend": "Send",
-    "knowMeBtn": "Get to Know Me",
-    "myPreferencesBtn": "My Preferences",
-    "knowMeChip": "✨ Get to Know Me (Personalized Tips)",
-    "aiGreeting": "Bonjour ! Je suis comus, votre guide personnel d'Istanbul. N'hésitez pas à me poser des questions sur les croisières au coucher du soleil, les secrets culinaires de la Péninsule Historique, les investissements à Istanbul ou des itinéraires sur mesure.\n\n✨ Cliquez sur le bouton « Apprenez à me connaître » (Beni Tanı) pour personnaliser mes recommandations selon vos préférences.",
+    "time": "Heure",
+    "specialRequests": "Demandes spéciales / Notes (ex. table vue Bosphore, anniversaire)",
+    "confirmReservation": "Confirmer la réservation",
+    "aiTitle": "comusAI - Votre Concierge Personnel à Istanbul",
+    "aiSubtitle": "Guide disponible 24h/24 propulsé par Google Gemini, adapté à vos goûts, votre budget et votre itinéraire.",
+    "aiPlaceholder": "Posez toutes vos questions sur Istanbul... (ex. Meilleur rooftop au coucher du soleil près de Galata ?)",
+    "aiSend": "Envoyer",
+    "knowMeBtn": "Me connaître",
+    "myPreferencesBtn": "Mes Préférences",
+    "knowMeChip": "✨ Me connaître (Conseils personnalisés)",
+    "aiGreeting": "Bonjour ! Je suis comus, votre guide personnel d'Istanbul. N'hésitez pas à me poser des questions sur les croisières au coucher du soleil, les secrets culinaires de la Péninsule Historique, les investissements à Istanbul ou des itinéraires sur mesure.\n\n✨ Cliquez sur le bouton « Me connaître » pour personnaliser mes recommandations selon vos préférences.",
     "quickChips": [
-      "I have 3 hours in Sultanahmet, what should I do?",
-      "Where is the best sunset dinner with Bosphorus view?",
-      "Where can I buy an Istanbulkart?",
-      "What time is breakfast served at the hotel?"
+      "J'ai 3 heures à Sultanahmet, que faire ?",
+      "Où dîner au coucher du soleil avec vue sur le Bosphore ?",
+      "Où puis-je acheter une Istanbulkart ?",
+      "À quelle heure le petit-déjeuner est-il servi à l'hôtel ?"
     ],
-    "practicalTitle": "Istanbul Practical Guides & Guest Shield",
-    "practicalSubtitle": "Essential transit cards, museum passes, tourist rights ombudsman, and emergency contacts.",
-    "istanbulkartTitle": "Istanbulkart (Public Transit Card)",
-    "istanbulkartDesc": "Valid across all metro, tram, Marmaray, and ferries. Top up online and get digital QR card.",
-    "istanbulkartLink": "Official Istanbulkart Online Portal",
-    "muzekartTitle": "Museum Pass & Official Tickets",
-    "muzekartDesc": "Skip ticket queues at top historic museums, palaces, and heritage sites with official pass.",
-    "muzekartLink": "muze.gov.tr Official Museum Tickets",
-    "emergencyTitle": "Essential Contacts & Emergency",
+    "practicalTitle": "Guides Pratiques d'Istanbul & Bouclier Invité",
+    "practicalSubtitle": "Cartes de transport, pass musées, charte d'achat équitable et numéros d'urgence.",
+    "istanbulkartTitle": "Istanbulkart (Carte de Transport Public)",
+    "istanbulkartDesc": "Valable dans tous les métros, trams, Marmaray et ferries. Rechargez en ligne et obtenez une carte QR numérique.",
+    "istanbulkartLink": "Portail officiel en ligne Istanbulkart",
+    "muzekartTitle": "Museum Pass & Billets Officiels",
+    "muzekartDesc": "Évitez les files d'attente dans les principaux musées historiques, palais et sites patrimoniaux.",
+    "muzekartLink": "Billets officiels des musées sur muze.gov.tr",
+    "emergencyTitle": "Contacts Essentiels & Urgences",
     "investTitle": "Investir & Vivre à Istanbul",
     "investSubtitle": "Immobilier de prestige éligible à la citoyenneté et rendement locatif élevé.",
     "allPersonas": "Tout le portfolio",
@@ -1758,22 +1758,161 @@ export const translations = {
     "bathrooms": "Salles de bain",
     "grossArea": "Surface brute",
     "district": "Quartier",
-    "liveRequests": "Live In-Room Requests",
-    "noRequests": "No pending requests at the moment.",
+    "liveRequests": "Demandes en Chambre en Direct",
+    "noRequests": "Aucune demande en attente pour le moment.",
     "requestStatus": {
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
+      "pending": "En attente",
+      "in_progress": "En cours",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
     }
   }
 };
 
+export const MARKETPLACE_CATEGORY_TRANSLATIONS: Record<string, Record<Language, string>> = {
+  "cat-1": {
+    tr: "Boğaz Turları & Yat",
+    en: "Bosphorus & Boat Cruises",
+    ar: "جولات البوسفور واليخوت",
+    ru: "Круизы по Босфору и яхты",
+    de: "Bosporus & Bootstouren",
+    fr: "Croisières sur le Bosphore & Bateaux"
+  },
+  "cat-2": {
+    tr: "Tarihi Rotalar & Hızlı Geçişli Turlar",
+    en: "Historic Routes & Fast-Track Walks",
+    ar: "المسارات التاريخية والجولات السريعة",
+    ru: "Исторические маршруты и музеи",
+    de: "Historische Routen & Fast-Track-Touren",
+    fr: "Routes Historiques & Visites Coupe-File"
+  },
+  "cat-3": {
+    tr: "Gastronomi & Sokak Lezzetleri",
+    en: "Culinary & Street Food Trails",
+    ar: "جولات تذوق الطعام ومأكولات الشوارع",
+    ru: "Гастрономия и уличная еда",
+    de: "Kulinarik & Street-Food-Touren",
+    fr: "Gastronomie & Parcours Street Food"
+  },
+  "cat-4": {
+    tr: "Geleneksel Türk Hamamı & Spa Ritüelleri",
+    en: "Traditional Turkish Bath & Hammam Rituals",
+    ar: "طقوس الحمام التركي التقليدي والسبا",
+    ru: "Традиционный турецкий хаммам и спа",
+    de: "Traditionelles Türkisches Bad & Hamam",
+    fr: "Rituels Traditionnels de Bain Turc & Hammam"
+  },
+  "cat-5": {
+    tr: "Sanat & Semazen Gösterileri",
+    en: "Arts & Whirling Dervishes",
+    ar: "الفنون وعروض الدراويش المولوية",
+    ru: "Искусство и кружащиеся дервиши",
+    de: "Kunst & Tanzende Derwische",
+    fr: "Arts & Derviches Tourneurs"
+  },
+  "cat-6": {
+    tr: "Teras Fotoğraf Çekimi & Kostüm",
+    en: "Rooftop Photography & Costumes",
+    ar: "جلسات التصوير على الأسطح والأزياء",
+    ru: "Фотосессии на крышах и в костюмах",
+    de: "Rooftop-Fotografie & Kostüme",
+    fr: "Photographie sur les Toits & Costumes"
+  },
+  "cat-7": {
+    tr: "Özel VIP Havalimanı Transferi",
+    en: "Private VIP Airport Transfers (Licensed Fleets)",
+    ar: "توصيل المطار VIP الخاص (أسطول مرخص)",
+    ru: "Индивидуальный VIP-трансфер из аэропорта",
+    de: "Privater VIP-Flughafentransfer",
+    fr: "Transferts Aéroport VIP Privés"
+  },
+  "cat-8": {
+    tr: "Seçkin Zanaat & Çarşı Alışverişi",
+    en: "Curated Artisan & Bazaar Shopping",
+    ar: "تسوق الحرف اليدوية والبازارات المختارة",
+    ru: "Авторский шопинг и исторические базары",
+    de: "Kuratiertes Kunsthandwerk & Basar-Shopping",
+    fr: "Artisanat Sélectionné & Shopping aux Bazars"
+  },
+  "cat-9": {
+    tr: "Konaklama İçi Kahvaltı & Gurme İkramlar",
+    en: "In-Stay Breakfast & Gourmet Catering",
+    ar: "إفطار الإقامة والضيافة الفاخرة",
+    ru: "Завтраки и гастрономический кейтеринг",
+    de: "Frühstück & Gourmet-Catering im Hotel",
+    fr: "Petit-Déjeuner sur Place & Traiteur Gourmet"
+  },
+  "cat-10": {
+    tr: "Ekspres Çamaşırhane & Giysi Bakımı",
+    en: "In-Stay Express Laundry & Garment Care",
+    ar: "الغسيل السريع والعناية بالملابس",
+    ru: "Экспресс-прачечная и уход за одеждой",
+    de: "Express-Wäscheservice & Textilpflege",
+    fr: "Blanchisserie Express & Soin du Linge"
+  }
+};
+
+export function getLocalizedCategoryTitle(catKeyOrLabel: string, lang: Language): string {
+  const t = getT(lang);
+  if (catKeyOrLabel === 'all') return t.allCategories;
+  if (MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel]) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel][lang] || MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel].en;
+  }
+  const cleaned = catKeyOrLabel.replace(/^[0-9]+\.\s*/, '');
+  const lower = cleaned.toLowerCase();
+  if (lower.includes('bosphorus') || lower.includes('boğaz') || lower.includes('yat') || lower.includes('boat cruise')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-1'][lang];
+  }
+  if (lower.includes('historic') || lower.includes('tarih') || lower.includes('müze') || lower.includes('museum') || lower.includes('fast-track')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-2'][lang];
+  }
+  if (lower.includes('culinary') || lower.includes('street food') || lower.includes('gastro') || lower.includes('gurme')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-3'][lang];
+  }
+  if (lower.includes('hamam') || lower.includes('hammam') || lower.includes('turkish bath') || lower.includes('spa')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-4'][lang];
+  }
+  if (lower.includes('dervish') || lower.includes('semazen') || lower.includes('sanat') || lower.includes('arts &')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-5'][lang];
+  }
+  if (lower.includes('photo') || lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('costume')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-6'][lang];
+  }
+  if (lower.includes('transfer') || lower.includes('vip airport')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-7'][lang];
+  }
+  if (lower.includes('shopping') || lower.includes('bazaar') || lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('artisan')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-8'][lang];
+  }
+  if (lower.includes('breakfast') || lower.includes('catering') || lower.includes('restoran') || lower.includes('restaurant')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-9'][lang];
+  }
+  if (lower.includes('laundry') || lower.includes('garment') || lower.includes('çamaşır')) {
+    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-10'][lang];
+  }
+  if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
+  if (lower.includes('günübirlik') || lower.includes('şehir dışı') || lower.includes('day trip')) return t.categoriesList.dayTrips?.title || cleaned;
+  if (lower.includes('gece hayatı') || lower.includes('pub crawl') || lower.includes('nightlife')) return t.categoriesList.nightlife?.title || cleaned;
+  if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence') || lower.includes('family')) return t.categoriesList.family?.title || cleaned;
+  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('cultural heritage')) return t.categoriesList.culture.title;
+  if (lower.includes('macera') || lower.includes('doğa') || lower.includes('adventure')) return t.categoriesList.adventure.title;
+  if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
+  return cleaned;
+}
+
+const VALID_LANGUAGES: Language[] = ['tr', 'en', 'ar', 'ru', 'de', 'fr'];
+
 export function detectBrowserLanguage(): Language {
-  // English is the primary language of the site and app; other languages are opt-in via the language selector.
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('xenios_lang') as Language | null;
+    if (saved && VALID_LANGUAGES.includes(saved)) {
+      return saved;
+    }
+  }
   return 'en';
 }
 
 export function getT(lang: Language) {
   return translations[lang] || translations.en;
 }
+

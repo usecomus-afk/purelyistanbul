@@ -22,8 +22,305 @@ interface OnlineCheckinModalProps {
   onClose: () => void;
 }
 
+const CHECKIN_I18N: Record<Language, {
+  title: string;
+  kbsBadge: string;
+  kbsDesc: string;
+  scanTitle: string;
+  scanSubtitle: string;
+  scanningBtn: string;
+  scanBtn: string;
+  orText: string;
+  manualLink: string;
+  reviewNotice: string;
+  retakeBtn: string;
+  scannedPhotoTitle: string;
+  scannedPhotoDesc: string;
+  firstNameLabel: string;
+  firstNamePlaceholder: string;
+  lastNameLabel: string;
+  lastNamePlaceholder: string;
+  docTypeLabel: string;
+  docPassport: string;
+  docTckn: string;
+  docNationalId: string;
+  docNumberLabel: string;
+  docNumberPlaceholder: string;
+  nationalityLabel: string;
+  birthDateLabel: string;
+  backBtn: string;
+  savingBtn: string;
+  confirmBtn: string;
+  successTitle: string;
+  successDesc: string;
+  guestLabel: string;
+  roomNoLabel: string;
+  docLabel: string;
+  closeBtn: string;
+  toastScanned: string;
+  toastCheckManual: string;
+  toastScanError: string;
+  toastMissingFields: string;
+  toastSuccess: string;
+  toastSubmitError: string;
+}> = {
+  tr: {
+    title: "Online Check-in & Kimlik Teyidi",
+    kbsBadge: "Resmi EGM Kimlik Bildirim Sistemi (KBS) Uyumu",
+    kbsDesc: "Resepsiyonda beklemeden odanıza geçebilmeniz için pasaport veya kimliğinizi kameranızla çekip saniyeler içinde check-in yapabilirsiniz.",
+    scanTitle: "Kamera ile Pasaport / Kimlik Çekin",
+    scanSubtitle: "Otomatik OCR & EGM KBS Belge Okuyucu",
+    scanningBtn: "Pasaport Taranıyor...",
+    scanBtn: "Kamera ile Pasaport Tara",
+    orText: "veya",
+    manualLink: "bilgileri manuel girmek için tıklayın",
+    reviewNotice: "Kimlik bilgileriniz okundu. Lütfen kontrol edip onaylayınız.",
+    retakeBtn: "Yeniden Çek",
+    scannedPhotoTitle: "Taranan Pasaport Fotoğrafı",
+    scannedPhotoDesc: "✓ OCR ile metinler başarıyla ayrıştırıldı",
+    firstNameLabel: "Ad",
+    firstNamePlaceholder: "Adınız",
+    lastNameLabel: "Soyad",
+    lastNamePlaceholder: "Soyadınız",
+    docTypeLabel: "Belge Türü",
+    docPassport: "Pasaport",
+    docTckn: "T.C. Kimlik Kartı",
+    docNationalId: "Ulusal Kimlik Kartı",
+    docNumberLabel: "Belge No",
+    docNumberPlaceholder: "Pasaport veya TCKN No",
+    nationalityLabel: "Uyruk (3 Harfli Kod)",
+    birthDateLabel: "Doğum Tarihi",
+    backBtn: "Geri",
+    savingBtn: "Kaydediliyor...",
+    confirmBtn: "Kimliği Onayla ve Check-in Yap",
+    successTitle: "Check-in Başarıyla Tamamlandı!",
+    successDesc: "Bilgileriniz otel resepsiyonuna ve EGM KBS sistemine iletildi. Anahtarınızı resepsiyondan doğrudan alabilirsiniz.",
+    guestLabel: "Misafir:",
+    roomNoLabel: "Oda No:",
+    docLabel: "Pasaport / Kimlik:",
+    closeBtn: "Kapat ve Deneyimleri Keşfet",
+    toastScanned: "Pasaport başarıyla tarandı ve bilgiler ayrıştırıldı.",
+    toastCheckManual: "Görsel alındı, lütfen bilgileri kontrol edip eksikleri tamamlayınız.",
+    toastScanError: "Görsel işlenirken bir hata oluştu, lütfen manuel doldurunuz.",
+    toastMissingFields: "Lütfen Ad, Soyad ve Pasaport/Kimlik numaranızı eksiksiz giriniz.",
+    toastSuccess: "Dijital check-in ve kimlik bildirimi onaylandı.",
+    toastSubmitError: "Kayıt gönderilemedi."
+  },
+  en: {
+    title: "Online Check-in & ID Verification",
+    kbsBadge: "Official Identity Notification System (KBS) Compliance",
+    kbsDesc: "Scan your passport or national ID with your camera to complete check-in in seconds and skip the reception queue.",
+    scanTitle: "Scan Passport / ID with Camera",
+    scanSubtitle: "Automated OCR & Official Document Reader",
+    scanningBtn: "Scanning Document...",
+    scanBtn: "Scan Passport with Camera",
+    orText: "or",
+    manualLink: "click here to enter details manually",
+    reviewNotice: "Your identity details have been scanned. Please review and confirm.",
+    retakeBtn: "Retake",
+    scannedPhotoTitle: "Scanned Document Photo",
+    scannedPhotoDesc: "✓ Text extracted via OCR",
+    firstNameLabel: "First Name",
+    firstNamePlaceholder: "First Name",
+    lastNameLabel: "Last Name",
+    lastNamePlaceholder: "Last Name",
+    docTypeLabel: "Document Type",
+    docPassport: "Passport",
+    docTckn: "Turkish ID Card",
+    docNationalId: "National ID Card",
+    docNumberLabel: "Document Number",
+    docNumberPlaceholder: "Passport or ID Number",
+    nationalityLabel: "Nationality (ISO 3-Letter)",
+    birthDateLabel: "Date of Birth",
+    backBtn: "Back",
+    savingBtn: "Saving...",
+    confirmBtn: "Confirm Identity & Check-in",
+    successTitle: "Check-in Completed Successfully!",
+    successDesc: "Your details have been securely transmitted to reception. You may collect your room key directly at the front desk.",
+    guestLabel: "Guest:",
+    roomNoLabel: "Room No:",
+    docLabel: "Passport / ID:",
+    closeBtn: "Close & Explore Experiences",
+    toastScanned: "Passport scanned and details extracted.",
+    toastCheckManual: "Image captured. Please review and complete any missing fields.",
+    toastScanError: "Could not process image automatically, please fill in manually.",
+    toastMissingFields: "Please enter your First Name, Last Name, and Document Number.",
+    toastSuccess: "Digital check-in and identity verification confirmed.",
+    toastSubmitError: "Could not submit check-in."
+  },
+  ar: {
+    title: "تسجيل الدخول الإلكتروني وتأكيد الهوية",
+    kbsBadge: "متوافق مع نظام تسجيل الهوية الرسمي (KBS)",
+    kbsDesc: "قم بتصوير جواز السفر أو الهوية بكاميرا هاتفك لإتمام تسجيل الدخول خلال ثوانٍ دون الانتظار في الاستقبال.",
+    scanTitle: "تصوير جواز السفر / الهوية بالكاميرا",
+    scanSubtitle: "قارئ المستندات الذكي التلقائي OCR",
+    scanningBtn: "جاري مسح الجواز...",
+    scanBtn: "مسح جواز السفر بالكاميرا",
+    orText: "أو",
+    manualLink: "انقر هنا لإدخال البيانات يدوياً",
+    reviewNotice: "تمت قراءة بيانات الهوية. يرجى المراجعة والتأكيد.",
+    retakeBtn: "إعادة التصوير",
+    scannedPhotoTitle: "صورة جواز السفر الممسوحة",
+    scannedPhotoDesc: "✓ تم استخراج البيانات بنجاح",
+    firstNameLabel: "الاسم الأول",
+    firstNamePlaceholder: "الاسم الأول",
+    lastNameLabel: "اسم العائلة",
+    lastNamePlaceholder: "اسم العائلة",
+    docTypeLabel: "نوع الوثيقة",
+    docPassport: "جواز سفر",
+    docTckn: "الهوية التركية",
+    docNationalId: "بطاقة الهوية الوطنية",
+    docNumberLabel: "رقم الوثيقة",
+    docNumberPlaceholder: "رقم جواز السفر أو الهوية",
+    nationalityLabel: "الجنسية (رمز من 3 أحرف)",
+    birthDateLabel: "تاريخ الميلاد",
+    backBtn: "رجوع",
+    savingBtn: "جاري الحفظ...",
+    confirmBtn: "تأكيد الهوية وتسجيل الدخول",
+    successTitle: "تم تسجيل الدخول بنجاح!",
+    successDesc: "تم إرسال بياناتك بأمان إلى استقبال الفندق. يمكنك استلام مفتاح غرفتك مباشرة من الاستقبال.",
+    guestLabel: "النزيل:",
+    roomNoLabel: "رقم الغرفة:",
+    docLabel: "جواز السفر / الهوية:",
+    closeBtn: "إغلاق واستكشاف التجارب",
+    toastScanned: "تم مسح جواز السفر واستخراج البيانات بنجاح.",
+    toastCheckManual: "تم استلام الصورة، يرجى مراجعة البيانات وإكمال الحقول.",
+    toastScanError: "تعذر معالجة الصورة تلقائياً، يرجى إدخال البيانات يدوياً.",
+    toastMissingFields: "يرجى إدخال الاسم الأول واسم العائلة ورقم الوثيقة بالكامل.",
+    toastSuccess: "تم تأكيد تسجيل الدخول الإلكتروني والهوية.",
+    toastSubmitError: "تعذر إرسال التسجيل."
+  },
+  ru: {
+    title: "Онлайн-регистрация и проверка паспорта",
+    kbsBadge: "Официальная система регистрации гостей (KBS)",
+    kbsDesc: "Сфотографируйте паспорт или удостоверение личности камерой телефона, чтобы пройти регистрацию за несколько секунд без очереди на ресепшн.",
+    scanTitle: "Сфотографируйте паспорт / ID",
+    scanSubtitle: "Автоматическое распознавание документов OCR",
+    scanningBtn: "Сканирование паспорта...",
+    scanBtn: "Сканировать паспорт камерой",
+    orText: "или",
+    manualLink: "нажмите здесь для ручного ввода",
+    reviewNotice: "Данные считаны. Пожалуйста, проверьте и подтвердите.",
+    retakeBtn: "Переснять",
+    scannedPhotoTitle: "Фото документа",
+    scannedPhotoDesc: "✓ Данные успешно распознаны",
+    firstNameLabel: "Имя",
+    firstNamePlaceholder: "Ваше имя",
+    lastNameLabel: "Фамилия",
+    lastNamePlaceholder: "Ваша фамилия",
+    docTypeLabel: "Тип документа",
+    docPassport: "Загранпаспорт",
+    docTckn: "Турецкий ID",
+    docNationalId: "Национальное удостоверение",
+    docNumberLabel: "Номер документа",
+    docNumberPlaceholder: "Номер паспорта или ID",
+    nationalityLabel: "Гражданство (3 буквы ISO)",
+    birthDateLabel: "Дата рождения",
+    backBtn: "Назад",
+    savingBtn: "Сохранение...",
+    confirmBtn: "Подтвердить и зарегистрироваться",
+    successTitle: "Регистрация успешно завершена!",
+    successDesc: "Ваши данные переданы на ресепшн отеля. Вы можете сразу получить ключ от номера на стойке регистрации.",
+    guestLabel: "Гость:",
+    roomNoLabel: "Номер комнаты:",
+    docLabel: "Паспорт / ID:",
+    closeBtn: "Закрыть и перейти к впечатлениям",
+    toastScanned: "Паспорт успешно отсканирован.",
+    toastCheckManual: "Фото получено, пожалуйста, проверьте и дополните данные.",
+    toastScanError: "Не удалось распознать фото автоматически, заполните данные вручную.",
+    toastMissingFields: "Пожалуйста, введите имя, фамилию и номер документа.",
+    toastSuccess: "Онлайн-регистрация успешно подтверждена.",
+    toastSubmitError: "Ошибка отправки данных."
+  },
+  de: {
+    title: "Online Check-in & Ausweisprüfung",
+    kbsBadge: "Offizielles Meldesystem (KBS) Konformität",
+    kbsDesc: "Scannen Sie Ihren Reisepass oder Personalausweis mit Ihrer Kamera, um den Check-in in Sekunden ohne Wartezeit an der Rezeption abzuschließen.",
+    scanTitle: "Reisepass / Ausweis mit Kamera scannen",
+    scanSubtitle: "Automatischer OCR-Dokumentenscanner",
+    scanningBtn: "Dokument wird gescannt...",
+    scanBtn: "Reisepass mit Kamera scannen",
+    orText: "oder",
+    manualLink: "hier klicken, um Daten manuell einzugeben",
+    reviewNotice: "Ihre Ausweisdaten wurden erfasst. Bitte prüfen und bestätigen.",
+    retakeBtn: "Neu aufnehmen",
+    scannedPhotoTitle: "Gescanntes Dokumentenfoto",
+    scannedPhotoDesc: "✓ Text erfolgreich per OCR erkannt",
+    firstNameLabel: "Vorname",
+    firstNamePlaceholder: "Vorname",
+    lastNameLabel: "Nachname",
+    lastNamePlaceholder: "Nachname",
+    docTypeLabel: "Dokumententyp",
+    docPassport: "Reisepass",
+    docTckn: "Türkischer Personalausweis",
+    docNationalId: "Personalausweis",
+    docNumberLabel: "Dokumentennummer",
+    docNumberPlaceholder: "Pass- oder Ausweisnummer",
+    nationalityLabel: "Staatsangehörigkeit (3-Buchstaben-Code)",
+    birthDateLabel: "Geburtsdatum",
+    backBtn: "Zurück",
+    savingBtn: "Wird gespeichert...",
+    confirmBtn: "Ausweis bestätigen & Einchecken",
+    successTitle: "Check-in erfolgreich abgeschlossen!",
+    successDesc: "Ihre Daten wurden an die Hotelrezeption übermittelt. Sie können Ihren Zimmerschlüssel direkt am Empfang abholen.",
+    guestLabel: "Gast:",
+    roomNoLabel: "Zimmernr.:",
+    docLabel: "Reisepass / Ausweis:",
+    closeBtn: "Schließen & Erlebnisse entdecken",
+    toastScanned: "Reisepass erfolgreich gescannt.",
+    toastCheckManual: "Bild aufgenommen, bitte prüfen und ergänzen Sie die Angaben.",
+    toastScanError: "Bild konnte nicht automatisch verarbeitet werden, bitte manuell ausfüllen.",
+    toastMissingFields: "Bitte geben Sie Vorname, Nachname und Dokumentennummer ein.",
+    toastSuccess: "Digitaler Check-in erfolgreich bestätigt.",
+    toastSubmitError: "Registrierung konnte nicht gesendet werden."
+  },
+  fr: {
+    title: "Enregistrement en Ligne & Vérification d'Identité",
+    kbsBadge: "Conformité au Système Officiel de Déclaration d'Identité (KBS)",
+    kbsDesc: "Scannez votre passeport ou carte d'identité avec votre appareil photo pour vous enregistrer en quelques secondes sans attendre à la réception.",
+    scanTitle: "Scanner Passeport / Identité avec la Caméra",
+    scanSubtitle: "Lecteur de documents OCR automatisé",
+    scanningBtn: "Numérisation en cours...",
+    scanBtn: "Scanner le Passeport",
+    orText: "ou",
+    manualLink: "cliquez ici pour saisir les informations manuellement",
+    reviewNotice: "Vos informations d'identité ont été lues. Veuillez vérifier et confirmer.",
+    retakeBtn: "Reprendre",
+    scannedPhotoTitle: "Photo du document numérisé",
+    scannedPhotoDesc: "✓ Texte extrait avec succès via OCR",
+    firstNameLabel: "Prénom",
+    firstNamePlaceholder: "Votre prénom",
+    lastNameLabel: "Nom de famille",
+    lastNamePlaceholder: "Votre nom",
+    docTypeLabel: "Type de document",
+    docPassport: "Passeport",
+    docTckn: "Carte d'identité turque",
+    docNationalId: "Carte nationale d'identité",
+    docNumberLabel: "Numéro de document",
+    docNumberPlaceholder: "Numéro de passeport ou d'identité",
+    nationalityLabel: "Nationalité (Code 3 lettres)",
+    birthDateLabel: "Date de naissance",
+    backBtn: "Retour",
+    savingBtn: "Enregistrement...",
+    confirmBtn: "Confirmer l'identité & S'enregistrer",
+    successTitle: "Enregistrement terminé avec succès !",
+    successDesc: "Vos informations ont été transmises à la réception. Vous pouvez récupérer votre clé directement à l'accueil.",
+    guestLabel: "Client :",
+    roomNoLabel: "Chambre N° :",
+    docLabel: "Passeport / ID :",
+    closeBtn: "Fermer & Explorer les Expériences",
+    toastScanned: "Passeport numérisé avec succès.",
+    toastCheckManual: "Image reçue, veuillez vérifier et compléter les informations.",
+    toastScanError: "Erreur de lecture automatique, veuillez remplir manuellement.",
+    toastMissingFields: "Veuillez saisir votre prénom, nom et numéro de document.",
+    toastSuccess: "Enregistrement numérique confirmé.",
+    toastSubmitError: "Impossible d'envoyer l'enregistrement."
+  }
+};
+
 export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineCheckinModalProps) {
   const t = getT(lang);
+  const ui = CHECKIN_I18N[lang] || CHECKIN_I18N.en;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState<'UPLOAD' | 'REVIEW' | 'SUCCESS'>('UPLOAD');
@@ -84,17 +381,17 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
           setGender(rec.gender || 'MALE');
           setDocumentType(rec.document_type || 'PASSPORT');
 
-          toast.success('Pasaport başarıyla tarandı ve bilgiler ayrıştırıldı.');
+          toast.success(ui.toastScanned);
           setStep('REVIEW');
         } else {
-          toast.info('Görsel alındı, lütfen bilgileri kontrol edip eksikleri tamamlayınız.');
+          toast.info(ui.toastCheckManual);
           setStep('REVIEW');
         }
         setIsProcessingOcr(false);
       };
     } catch (error) {
       console.error('OCR Processing Error:', error);
-      toast.error('Görsel işlenirken bir hata oluştu, lütfen manuel doldurunuz.');
+      toast.error(ui.toastScanError);
       setStep('REVIEW');
       setIsProcessingOcr(false);
     }
@@ -102,7 +399,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
   const handleFinalSubmit = async () => {
     if (!firstName || !lastName || !documentNumber) {
-      toast.error('Lütfen Ad, Soyad ve Pasaport/Kimlik numaranızı eksiksiz giriniz.');
+      toast.error(ui.toastMissingFields);
       return;
     }
 
@@ -134,12 +431,12 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
           spread: 70,
           origin: { y: 0.6 }
         });
-        toast.success('Dijital check-in ve kimlik bildirimi onaylandı.');
+        toast.success(ui.toastSuccess);
       } else {
-        throw new Error('Kayıt gönderilemedi.');
+        throw new Error(ui.toastSubmitError);
       }
     } catch (err: any) {
-      toast.error(err.message || 'Bir hata oluştu.');
+      toast.error(err.message || ui.toastSubmitError);
     } finally {
       setIsSubmitting(false);
     }
@@ -175,10 +472,10 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
             </div>
             <div>
               <h2 className="font-luxury-serif text-base sm:text-lg font-bold uppercase tracking-[0.04em] text-[#141414]">
-                Online Check-in & Kimlik Teyidi
+                {ui.title}
               </h2>
               <p className="font-luxury-sans text-[11px] text-[#5C4938]">
-                {hotel.name} • Oda {roomNumber}
+                {hotel.name} • {t.room} {roomNumber}
               </p>
             </div>
           </div>
@@ -199,10 +496,10 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
               <div className="p-4 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] text-left space-y-1.5">
                 <div className="flex items-center gap-2 text-[#7D5E2A] font-bold text-xs">
                   <ShieldCheck className="w-4 h-4 text-[#8E7252]" />
-                  <span>Resmi EGM Kimlik Bildirim Sistemi (KBS) Uyumu</span>
+                  <span>{ui.kbsBadge}</span>
                 </div>
                 <p className="text-[11px] text-[#3D352E] leading-relaxed">
-                  Resepsiyonda beklemeden odanıza geçebilmeniz için pasaport veya kimliğinizi kameranızla çekip saniyeler içinde check-in yapabilirsiniz.
+                  {ui.kbsDesc}
                 </p>
               </div>
 
@@ -212,8 +509,8 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   <Camera className="w-7 h-7 stroke-[1.6]" />
                 </div>
                 <div>
-                  <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">Kamera ile Pasaport / Kimlik Çekin</strong>
-                  <span className="text-[10px] text-[#5C4938]">Otomatik OCR & EGM KBS Belge Okuyucu</span>
+                  <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">{ui.scanTitle}</strong>
+                  <span className="text-[10px] text-[#5C4938]">{ui.scanSubtitle}</span>
                 </div>
 
                 <button
@@ -225,24 +522,24 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   {isProcessingOcr ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Pasaport Taranıyor...</span>
+                      <span>{ui.scanningBtn}</span>
                     </>
                   ) : (
                     <>
                       <Camera className="w-4 h-4" />
-                      <span>Kamera ile Pasaport Tara</span>
+                      <span>{ui.scanBtn}</span>
                     </>
                   )}
                 </button>
               </div>
 
               <div className="text-[11px] text-[#5C4938]">
-                veya{' '}
+                {ui.orText}{' '}
                 <button
                   onClick={() => setStep('REVIEW')}
                   className="text-[#7D5E2A] font-bold underline hover:text-[#141414] cursor-pointer"
                 >
-                  bilgileri manuel girmek için tıklayın
+                  {ui.manualLink}
                 </button>
               </div>
             </div>
@@ -253,14 +550,14 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
               <div className="p-3 bg-[#FAF8F4] rounded-2xl border border-[#C4B8A4] text-[#141414] text-[11px] flex items-center justify-between font-medium">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8E7252] shrink-0" />
-                  <span>Kimlik bilgileriniz okundu. Lütfen kontrol edip onaylayınız.</span>
+                  <span>{ui.reviewNotice}</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleCameraClick}
                   className="text-[10px] text-[#7D5E2A] font-bold underline flex items-center gap-1 cursor-pointer shrink-0"
                 >
-                  <RefreshCw className="w-3 h-3" /> Yeniden Çek
+                  <RefreshCw className="w-3 h-3" /> {ui.retakeBtn}
                 </button>
               </div>
 
@@ -269,66 +566,66 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   <div className="w-16 h-12 rounded-xl overflow-hidden bg-[#EFE8DA] relative shrink-0 border border-[#C4B8A4]">
                     <img 
                       src={previewImage} 
-                      alt="Taranan Belge" 
+                      alt={ui.scannedPhotoTitle} 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="text-[11px] text-[#5C4938] min-w-0">
-                    <strong className="text-[#141414] block truncate">Taranan Pasaport Fotoğrafı</strong>
-                    <span className="text-[10px] text-[#7D5E2A] block font-semibold">✓ OCR ile metinler başarıyla ayrıştırıldı</span>
+                    <strong className="text-[#141414] block truncate">{ui.scannedPhotoTitle}</strong>
+                    <span className="text-[10px] text-[#7D5E2A] block font-semibold">{ui.scannedPhotoDesc}</span>
                   </div>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Ad (First Name)</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.firstNameLabel}</label>
                   <input
                     type="text"
                     value={firstName}
-                    placeholder="Adınız"
+                    placeholder={ui.firstNamePlaceholder}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Soyad (Last Name)</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.lastNameLabel}</label>
                   <input
                     type="text"
                     value={lastName}
-                    placeholder="Soyadınız"
+                    placeholder={ui.lastNamePlaceholder}
                     onChange={(e) => setLastName(e.target.value)}
                     className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Belge Türü</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.docTypeLabel}</label>
                   <select
                     value={documentType}
                     onChange={(e) => setDocumentType(e.target.value as any)}
                     className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   >
-                    <option value="PASSPORT">Pasaport (Passport)</option>
-                    <option value="TCKN">T.C. Kimlik Kartı</option>
-                    <option value="NATIONAL_ID">Ulusal Kimlik Kartı (National ID)</option>
+                    <option value="PASSPORT">{ui.docPassport}</option>
+                    <option value="TCKN">{ui.docTckn}</option>
+                    <option value="NATIONAL_ID">{ui.docNationalId}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Belge No</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.docNumberLabel}</label>
                   <input
                     type="text"
                     value={documentNumber}
-                    placeholder="Pasaport veya TCKN No"
+                    placeholder={ui.docNumberPlaceholder}
                     onChange={(e) => setDocumentNumber(e.target.value)}
                     className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-mono font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Uyruk (ISO 3-Letter)</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.nationalityLabel}</label>
                   <input
                     type="text"
                     value={nationality}
@@ -339,7 +636,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">Doğum Tarihi</label>
+                  <label className="text-[10px] uppercase font-bold text-[#5C4938] block mb-1">{ui.birthDateLabel}</label>
                   <input
                     type="date"
                     value={birthDate}
@@ -355,7 +652,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   onClick={() => setStep('UPLOAD')}
                   className="w-1/3 py-2.5 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] font-bold text-xs transition cursor-pointer"
                 >
-                  Geri
+                  {ui.backBtn}
                 </button>
                 <button
                   type="button"
@@ -366,12 +663,12 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Kaydediliyor...</span>
+                      <span>{ui.savingBtn}</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Kimliği Onayla ve Check-in Yap</span>
+                      <span>{ui.confirmBtn}</span>
                     </>
                   )}
                 </button>
@@ -385,23 +682,23 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                 <CheckCircle2 className="w-8 h-8 stroke-[1.75]" />
               </div>
               <div>
-                <h3 className="font-luxury-serif text-lg font-bold text-[#141414]">Check-in Başarıyla Tamamlandı!</h3>
+                <h3 className="font-luxury-serif text-lg font-bold text-[#141414]">{ui.successTitle}</h3>
                 <p className="text-xs text-[#5C4938] mt-1">
-                  Bilgileriniz otel resepsiyonuna ve EGM KBS sistemine iletildi. Anahtarınızı resepsiyondan doğrudan alabilirsiniz.
+                  {ui.successDesc}
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-[#FAF8F4] border border-[#C4B8A4] text-left space-y-1.5 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-[#5C4938]">Misafir:</span>
+                  <span className="text-[#5C4938]">{ui.guestLabel}</span>
                   <strong className="text-[#141414]">{firstName} {lastName}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#5C4938]">Oda No:</span>
+                  <span className="text-[#5C4938]">{ui.roomNoLabel}</span>
                   <strong className="text-[#141414]">{roomNumber}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#5C4938]">Pasaport / Kimlik:</span>
+                  <span className="text-[#5C4938]">{ui.docLabel}</span>
                   <strong className="text-[#7D5E2A] font-mono">{documentNumber}</strong>
                 </div>
               </div>
@@ -411,7 +708,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                 onClick={onClose}
                 className="w-full py-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-xs shadow-sm transition cursor-pointer"
               >
-                Kapat ve Deneyimleri Keşfet
+                {ui.closeBtn}
               </button>
             </div>
           )}
@@ -420,3 +717,4 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
     </div>
   );
 }
+

@@ -7,7 +7,7 @@ import { FirestoreService } from '@/lib/firestore-service';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { getModuleConfig, deriveStatus, formatFieldValue, resolvePricing } from '@/lib/service-modules';
-import { ServiceRequestForm } from './service-request-form';
+import { ServiceRequestForm, translateServiceOption } from './service-request-form';
 import { GuestRoomServiceMenu } from './guest-room-service-menu';
 import { LuxuryServiceIcon } from './luxury-service-icon';
 import { Clock } from 'lucide-react';
@@ -17,6 +17,15 @@ interface InRoomServicesProps {
   roomNumber: string;
   lang: Language;
 }
+
+const REQUEST_ERROR_I18N: Record<Language, string> = {
+  tr: 'Talep iletilirken bir sorun oluştu.',
+  en: 'An error occurred while submitting your request.',
+  ar: 'حدث خطأ أثناء إرسال طلبك.',
+  ru: 'Произошла ошибка при отправке запроса.',
+  de: 'Beim Senden Ihrer Anfrage ist ein Fehler aufgetreten.',
+  fr: 'Une erreur est survenue lors de l’envoi de votre demande.',
+};
 
 const BUILTIN_LUXURY_KEYS = new Set([
   'roomservice',
@@ -110,7 +119,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
       setSelectedService(null);
     } catch (err: any) {
       setIsSubmitting(false);
-      toast.error('Talep iletilirken bir sorun oluştu.');
+      toast.error(REQUEST_ERROR_I18N[lang] || REQUEST_ERROR_I18N.en);
     }
   };
 
@@ -153,7 +162,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
       setCustomCount(1);
     } catch (err) {
       setIsSubmitting(false);
-      toast.error('Talep iletilirken bir sorun oluştu.');
+      toast.error(REQUEST_ERROR_I18N[lang] || REQUEST_ERROR_I18N.en);
     }
   };
 
@@ -287,6 +296,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         isSubmitting={isSubmitting}
                         pricing={resolvePricing(config, settings?.pricing)}
                         fieldOptionOverrides={settings?.fieldOptions}
+                        lang={lang}
                       />
                     );
                   }
@@ -310,7 +320,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                             className="w-full text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C] font-medium"
                           >
                             {selectedService.options.map((opt, i) => (
-                              <option key={i} value={opt}>{opt}</option>
+                              <option key={i} value={opt}>{translateServiceOption(opt, lang)}</option>
                             ))}
                           </select>
                         </div>

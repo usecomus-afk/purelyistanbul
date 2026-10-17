@@ -75,7 +75,7 @@ export function AppIntroSplash() {
       videoRef.current.play().catch(() => {});
     }
 
-    const timer = setTimeout(dismiss, 5200);
+    const timer = setTimeout(dismiss, 10500);
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
@@ -108,7 +108,7 @@ export function AppIntroSplash() {
       {/* Tam ekran açılış videosu */}
       <video
         ref={videoRef}
-        src="/videos/splash-intro.mp4"
+        src="/videos/splash-intro.mp4?v=2"
         autoPlay
         muted
         playsInline
@@ -145,7 +145,7 @@ export function AppIntroSplash() {
             height: "100%",
             background: "linear-gradient(90deg, #8E7252, #C9AE82, #8E7252)",
             boxShadow: "0 0 12px rgba(142,114,82,0.5)",
-            animation: "splashProgress 5s cubic-bezier(0.4,0,0.2,1) forwards",
+            animation: "splashProgress 10.2s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         />
       </div>

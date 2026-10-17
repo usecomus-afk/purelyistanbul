@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
-import { RoomServiceMenuItem, Hotel } from '@/lib/types';
+import { RoomServiceMenuItem, Hotel, Language } from '@/lib/types';
 import { LuxuryServiceIcon } from './luxury-service-icon';
 import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,8 +16,266 @@ interface Props {
   onClose: () => void;
 }
 
+const ROOM_SERVICE_UI_I18N: Record<Language, {
+  title: string;
+  min: string;
+  add: string;
+  empty: string;
+  placeOrder: string;
+  orderReceivedTitle: string;
+  orderServiceLabel: string;
+  orderError: string;
+  categories: Record<string, string>;
+}> = {
+  tr: {
+    title: 'Oda Servisi Menüsü',
+    min: 'dk',
+    add: 'Ekle',
+    empty: 'Bu kategoride ürün bulunmuyor.',
+    placeOrder: 'Siparişi Ver',
+    orderReceivedTitle: 'Siparişiniz Alındı!',
+    orderServiceLabel: 'Oda Servisi',
+    orderError: 'Sipariş iletilirken bir hata oluştu.',
+    categories: {
+      'Tümü': 'Tümü',
+      'Kahvaltı': 'Kahvaltı',
+      'Ana Yemek': 'Ana Yemek',
+      'Atıştırmalık': 'Atıştırmalık',
+      'Tatlı': 'Tatlı',
+      'İçecek': 'İçecek',
+    },
+  },
+  en: {
+    title: 'In-Room Dining Menu',
+    min: 'min',
+    add: 'Add',
+    empty: 'No items available in this category.',
+    placeOrder: 'Place Order',
+    orderReceivedTitle: 'Order Received!',
+    orderServiceLabel: 'In-Room Dining',
+    orderError: 'An error occurred while submitting your order.',
+    categories: {
+      'Tümü': 'All',
+      'Kahvaltı': 'Breakfast',
+      'Ana Yemek': 'Main Course',
+      'Atıştırmalık': 'Snacks',
+      'Tatlı': 'Dessert',
+      'İçecek': 'Beverages',
+    },
+  },
+  ar: {
+    title: 'قائمة خدمة الغرف',
+    min: 'دقيقة',
+    add: 'إضافة',
+    empty: 'لا توجد عناصر متاحة في هذه الفئة.',
+    placeOrder: 'إتمام الطلب',
+    orderReceivedTitle: 'تم استلام طلبك!',
+    orderServiceLabel: 'خدمة الغرف',
+    orderError: 'حدث خطأ أثناء إرسال طلبك.',
+    categories: {
+      'Tümü': 'الكل',
+      'Kahvaltı': 'الإفطار',
+      'Ana Yemek': 'الطبق الرئيسي',
+      'Atıştırmalık': 'وجبات خفيفة',
+      'Tatlı': 'الحلويات',
+      'İçecek': 'المشروبات',
+    },
+  },
+  ru: {
+    title: 'Меню обслуживания в номере',
+    min: 'мин',
+    add: 'Добавить',
+    empty: 'В этой категории нет блюд.',
+    placeOrder: 'Оформить заказ',
+    orderReceivedTitle: 'Ваш заказ принят!',
+    orderServiceLabel: 'Обслуживание в номере',
+    orderError: 'Произошла ошибка при отправке заказа.',
+    categories: {
+      'Tümü': 'Все',
+      'Kahvaltı': 'Завтрак',
+      'Ana Yemek': 'Основное блюдо',
+      'Atıştırmalık': 'Закуски',
+      'Tatlı': 'Десерты',
+      'İçecek': 'Напитки',
+    },
+  },
+  de: {
+    title: 'Zimmerservice-Menü',
+    min: 'Min.',
+    add: 'Hinzufügen',
+    empty: 'Keine Artikel in dieser Kategorie verfügbar.',
+    placeOrder: 'Bestellung aufgeben',
+    orderReceivedTitle: 'Bestellung eingegangen!',
+    orderServiceLabel: 'Zimmerservice',
+    orderError: 'Beim Senden Ihrer Bestellung ist ein Fehler aufgetreten.',
+    categories: {
+      'Tümü': 'Alle',
+      'Kahvaltı': 'Frühstück',
+      'Ana Yemek': 'Hauptgericht',
+      'Atıştırmalık': 'Snacks',
+      'Tatlı': 'Dessert',
+      'İçecek': 'Getränke',
+    },
+  },
+  fr: {
+    title: 'Menu Service d’Étage',
+    min: 'min',
+    add: 'Ajouter',
+    empty: 'Aucun article disponible dans cette catégorie.',
+    placeOrder: 'Passer la commande',
+    orderReceivedTitle: 'Commande reçue !',
+    orderServiceLabel: 'Service d’Étage',
+    orderError: 'Une erreur est survenue lors de l’envoi de votre commande.',
+    categories: {
+      'Tümü': 'Tout',
+      'Kahvaltı': 'Petit-déjeuner',
+      'Ana Yemek': 'Plat principal',
+      'Atıştırmalık': 'Collations',
+      'Tatlı': 'Dessert',
+      'İçecek': 'Boissons',
+    },
+  },
+};
+
+const MENU_ITEMS_I18N: Record<string, Partial<Record<Language, { name: string; description: string }>>> = {
+  'menu-item-1': {
+    en: {
+      name: 'Traditional Turkish Spread Breakfast',
+      description: 'Ezine feta, aged Kars kashar, honeycomb, clotted cream, organic olives, butter, tomatoes, cucumbers, menemen, and freshly baked simit.',
+    },
+    ar: {
+      name: 'إفطار تركي تقليدي متنوع',
+      description: 'جبن إزينه، جبن قشقوان قارص، عسل بالشمع، قشطة، زيتون عضوي، زبدة، طماطم، خيار، شكشوكة تركية (مينيمين) وسميت طازج.',
+    },
+    ru: {
+      name: 'Традиционный турецкий завтрак',
+      description: 'Сыр Эзине, выдержанный кашар из Карса, сотовый мед, каймак, органические оливки, масло, томаты, огурцы, менемен и свежий симит.',
+    },
+    de: {
+      name: 'Traditionelles türkisches Frühstück',
+      description: 'Ezine-Schafskäse, gereifter Kars-Kaschkaval, Wabenhonig, Kaymak, Bio-Oliven, Butter, Tomaten, Gurken, Menemen und frischer Simit.',
+    },
+    fr: {
+      name: 'Petit-déjeuner traditionnel turc',
+      description: 'Fromage Ezine, kashar affiné de Kars, miel en rayon, kaymak, olives bio, beurre, tomates, concombres, menemen et simit fraîchement cuit.',
+    },
+  },
+  'menu-item-2': {
+    en: {
+      name: 'Grilled Ribeye & Truffle Mashed Potatoes',
+      description: '220g dry-aged ribeye served with roasted shallots, grilled asparagus, and fresh mashed potatoes infused with truffle oil.',
+    },
+    ar: {
+      name: 'ريب آي مشوي مع بيوريه البطاطس بالكمأة',
+      description: '220 غرام من لحم الريب آي المعتق يقدم مع الكراث المشوي والهليون المشوي وبيوريه البطاطس الطازجة بزيت الكمأة.',
+    },
+    ru: {
+      name: 'Рибай на гриле с трюфельным картофельным пюре',
+      description: 'Выдержанный стейк рибай 220 г с запеченным шалотом, спаржей на гриле и нежным картофельным пюре с трюфельным маслом.',
+    },
+    de: {
+      name: 'Gegrilltes Entrecôte & Trüffel-Kartoffelpüree',
+      description: '220g gereiftes Entrecôte mit gerösteten Schalotten, gegrilltem Spargel und frischem Kartoffelpüree mit Trüffelöl.',
+    },
+    fr: {
+      name: 'Entrecôte grillée & Purée de pommes de terre à la truffe',
+      description: 'Entrecôte maturée de 220g accompagnée d’échalotes rôties, d’asperges grillées et d’une purée fraîche à l’huile de truffe.',
+    },
+  },
+  'menu-item-3': {
+    en: {
+      name: 'Handmade Wild Mushroom Fettuccine',
+      description: 'Fresh handmade pasta with porcini and oyster mushrooms, creamy sauce, aged parmesan, and fresh thyme leaves.',
+    },
+    ar: {
+      name: 'فيتوتشيني يدوي بالفطر البري',
+      description: 'معكرونة طازجة محضرة يدوياً مع فطر البورسيني والمحار، صلصة الكريمة الطازجة، جبن البارميزان وأوراق الزعتر الطازجة.',
+    },
+    ru: {
+      name: 'Домашние феттуччине с лесными грибами',
+      description: 'Свежая паста ручной работы с белыми грибами и вешенками в сливочном соусе с пармезаном и свежим тимьяном.',
+    },
+    de: {
+      name: 'Hausgemachte Waldpilz-Fettuccine',
+      description: 'Frische handgemachte Pasta mit Steinpilzen und Austernpilzen, feiner Rahmsauce, Parmesan und frischem Thymian.',
+    },
+    fr: {
+      name: 'Fettuccine maison aux champignons sauvages',
+      description: 'Pâtes fraîches faites maison aux cèpes et pleurotes, sauce crémeuse, parmesan affiné et feuilles de thym frais.',
+    },
+  },
+  'menu-item-4': {
+    en: {
+      name: 'Xenios Gourmet Club Sandwich',
+      description: 'Grilled chicken breast, smoked beef, boiled egg, kashar cheese, tomato, crisp lettuce, and golden french fries.',
+    },
+    ar: {
+      name: 'كلوب ساندويتش غورميه',
+      description: 'صدر دجاج مشوي، لحم بقري مدخن، بيض مسلوق، جبن قشقوان، طماطم، خس مقرمش وبطاطس مقلية ذهبية.',
+    },
+    ru: {
+      name: 'Гурмэ клаб-сэндвич Xenios',
+      description: 'Куриная грудка на гриле, копченая говядина, яйцо, сыр кашар, томаты, хрустящий салат и картофель фри.',
+    },
+    de: {
+      name: 'Xenios Gourmet Club-Sandwich',
+      description: 'Gegrillte Hähnchenbrust, geräuchertes Rindfleisch, Ei, Kaschkaval-Käse, Tomate, Salat und knusprige Pommes frites.',
+    },
+    fr: {
+      name: 'Club Sandwich Gourmet Xenios',
+      description: 'Blanc de poulet grillé, bœuf fumé, œuf dur, fromage kashar, tomate, laitue croquante et frites dorées.',
+    },
+  },
+  'menu-item-5': {
+    en: {
+      name: 'Traditional Baked Rice Pudding & Hazelnuts',
+      description: 'Stone-oven caramelized water buffalo milk rice pudding topped with roasted Giresun hazelnuts.',
+    },
+    ar: {
+      name: 'أرز بالحليب بالفرن مع البندق',
+      description: 'أرز بالحليب التقليدي المخبوز في الفرن الحجري بحليب الجاموس الأصلي مع بندق غيرسون المحمص.',
+    },
+    ru: {
+      name: 'Традиционный запеченный рисовый пудинг с фундуком',
+      description: 'Запеченный в каменной печи сютлач на буйволином молоке с карамельной корочкой и обжаренным гиресунским фундуком.',
+    },
+    de: {
+      name: 'Traditioneller gebackener Milchreis & Haselnüsse',
+      description: 'Im Steinofen karamellisierter Büffelmilch-Milchreis (Fırın Sütlaç) mit gerösteten Giresun-Haselnüssen.',
+    },
+    fr: {
+      name: 'Riz au lait traditionnel au four & Noisettes',
+      description: 'Riz au lait de bufflonne caramélisé au four en pierre, garni de noisettes torréfiées de Giresun.',
+    },
+  },
+  'menu-item-6': {
+    en: {
+      name: 'Freshly Squeezed Mediterranean Orange Juice',
+      description: '100% pure, additive-free daily squeezed orange juice from Finike orchards in Antalya.',
+    },
+    ar: {
+      name: 'عصير برتقال متوسطي طازج',
+      description: 'عصير برتقال طبيعي 100% خالٍ من الإضافات معصور يومياً من بساتين فينيكي في أنطاليا.',
+    },
+    ru: {
+      name: 'Свежевыжатый средиземноморский апельсиновый сок',
+      description: '100% натуральный свежевыжатый сок из отборных апельсинов садов Финике в Анталье.',
+    },
+    de: {
+      name: 'Frisch gepresster mediterraner Orangensaft',
+      description: 'Täglich frisch gepresster 100% natürlicher Orangensaft aus den Gärten von Finike in Antalya.',
+    },
+    fr: {
+      name: 'Jus d’orange méditerranéen fraîchement pressé',
+      description: 'Jus d’orange 100 % naturel sans additifs, pressé quotidiennement à partir des orangers de Finike à Antalya.',
+    },
+  },
+};
+
 export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props) {
-  const t = getT(lang as any);
+  const safeLang: Language = (['tr', 'en', 'ar', 'ru', 'de', 'fr'].includes(lang) ? lang : 'en') as Language;
+  const t = getT(safeLang);
+  const ui = ROOM_SERVICE_UI_I18N[safeLang] || ROOM_SERVICE_UI_I18N.en;
   const [items] = useState<RoomServiceMenuItem[]>(() => XeniosStore.getRoomServiceMenu(hotel.id).filter(i => i.available));
   const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
   
@@ -41,6 +299,16 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
     if (selectedCategory === 'Tümü') return items;
     return items.filter(i => i.category === selectedCategory);
   }, [items, selectedCategory]);
+
+  const getLocalizedItemName = (item: RoomServiceMenuItem) => {
+    if (safeLang === 'tr') return item.name;
+    return MENU_ITEMS_I18N[item.id]?.[safeLang]?.name || item.name;
+  };
+
+  const getLocalizedItemDesc = (item: RoomServiceMenuItem) => {
+    if (safeLang === 'tr') return item.description;
+    return MENU_ITEMS_I18N[item.id]?.[safeLang]?.description || item.description;
+  };
 
   const addToCart = (id: string) => {
     setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
@@ -97,12 +365,12 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         details: { items: orderDetails, total: cartTotal }
       });
 
-      toast.success('Siparişiniz Alındı!', {
-        description: `${hotel.name} Oda ${roomNumber} · Oda Servisi`
+      toast.success(ui.orderReceivedTitle, {
+        description: `${hotel.name} ${t.room} ${roomNumber} · ${ui.orderServiceLabel}`
       });
       onClose();
     } catch (e) {
-      toast.error('Sipariş iletilirken bir hata oluştu.');
+      toast.error(ui.orderError);
       setIsSubmitting(false);
     }
   };
@@ -116,8 +384,8 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
             <LuxuryServiceIcon serviceKey="roomservice" className="w-11 h-11" />
           </div>
           <div>
-            <h3 className="font-luxury-serif text-[17px] font-bold uppercase tracking-[0.04em] text-[#141414]">Oda Servisi Menüsü</h3>
-            <p className="font-luxury-sans text-[11px] text-[#5C4938] font-medium">{hotel.name} · Oda {roomNumber}</p>
+            <h3 className="font-luxury-serif text-[17px] font-bold uppercase tracking-[0.04em] text-[#141414]">{ui.title}</h3>
+            <p className="font-luxury-sans text-[11px] text-[#5C4938] font-medium">{hotel.name} · {t.room} {roomNumber}</p>
           </div>
         </div>
         <button onClick={onClose} className="w-8 h-8 text-[#141414] font-bold bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full flex items-center justify-center transition cursor-pointer">
@@ -137,7 +405,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                 : 'bg-[#F7F3EA] text-[#221F1C] font-semibold border-[#C4B8A4] hover:bg-[#EFE8DA]'
             }`}
           >
-            {cat}
+            {ui.categories[cat] || cat}
           </button>
         ))}
       </div>
@@ -146,12 +414,14 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       <div className="flex-1 overflow-y-auto p-4 space-y-3.5 pb-44">
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
+          const itemName = getLocalizedItemName(item);
+          const itemDesc = getLocalizedItemDesc(item);
           return (
             <div key={item.id} className="luxury-service-card p-3.5 flex gap-3.5 transition-all">
               {/* Image placeholder if none */}
               <div className="w-24 h-24 rounded-2xl bg-[#EFE8DA] overflow-hidden shrink-0 relative border border-[#C4B8A4]">
                 {item.image ? (
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <img src={item.image} alt={itemName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#8E7252]">
                     <UtensilsCrossed className="w-8 h-8 stroke-[1.5]" />
@@ -166,17 +436,17 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
               {/* Info */}
               <div className="flex-1 flex flex-col min-w-0 font-luxury-sans">
                 <div className="flex items-start justify-between gap-2">
-                  <h4 className="font-luxury-serif font-bold text-[#141414] text-[15px] leading-tight line-clamp-2">{item.name}</h4>
+                  <h4 className="font-luxury-serif font-bold text-[#141414] text-[15px] leading-tight line-clamp-2">{itemName}</h4>
                 </div>
                 
                 <p className="text-[11px] text-[#3D352E] mt-1 line-clamp-2 leading-relaxed">
-                  {item.description}
+                  {itemDesc}
                 </p>
 
                 {item.preparationTimeMinutes && (
                   <div className="flex items-center gap-1 mt-1.5 text-[10px] text-[#6B5A48] font-medium">
                     <Clock className="w-3 h-3 text-[#8E7252]" />
-                    ~{item.preparationTimeMinutes} dk
+                    ~{item.preparationTimeMinutes} {ui.min}
                   </div>
                 )}
 
@@ -186,7 +456,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                       onClick={() => addToCart(item.id)}
                       className="px-4 py-1.5 bg-[#FAF8F4] text-[#7D5E2A] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                     >
-                      <Plus className="w-3.5 h-3.5" /> Ekle
+                      <Plus className="w-3.5 h-3.5" /> {ui.add}
                     </button>
                   ) : (
                     <div className="flex items-center gap-2.5 bg-[#FAF8F4] border border-[#C4B8A4] rounded-full p-1 shadow-2xs">
@@ -207,7 +477,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
 
         {filteredItems.length === 0 && (
           <div className="text-center py-12 font-luxury-sans text-[#5C4938] text-sm">
-            Bu kategoride ürün bulunmuyor.
+            {ui.empty}
           </div>
         )}
       </div>
@@ -224,7 +494,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
                 {cartCount}
               </div>
-              <span className="font-bold text-base">Siparişi Ver</span>
+              <span className="font-bold text-base">{ui.placeOrder}</span>
             </div>
             <div className="flex items-center gap-2 font-luxury-serif font-bold text-lg">
               {cartTotal}€
@@ -236,3 +506,4 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
     </div>
   );
 }
+

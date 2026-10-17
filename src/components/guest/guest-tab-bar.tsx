@@ -169,7 +169,11 @@ export function GuestTabBar({
   }, [propActiveTab]);
 
   useEffect(() => {
-    if (propLang) setCurrentLang(propLang);
+    if (propLang) {
+      setCurrentLang(propLang);
+    } else {
+      setCurrentLang(detectBrowserLanguage());
+    }
   }, [propLang]);
 
   // Global event listeners
@@ -199,7 +203,7 @@ export function GuestTabBar({
   const tabs: { id: TabId; label: string; iconType: 'hotel' | 'grid' | 'spiral' | 'guide' }[] = [
     { id: 'services', label: t.tabs.services || 'Stay Essentials', iconType: 'hotel' },
     { id: 'categories', label: t.tabs.categories || 'Categories', iconType: 'grid' },
-    { id: 'ai', label: 'Ask ComusAI', iconType: 'spiral' },
+    { id: 'ai', label: t.tabs.aiGuide || 'comusAI', iconType: 'spiral' },
     { id: 'practical', label: t.tabs.practical || 'Guide', iconType: 'guide' }
   ];
 

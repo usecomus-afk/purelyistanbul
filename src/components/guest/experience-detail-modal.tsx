@@ -3,6 +3,7 @@
 import { Experience, Hotel, Language } from '@/lib/types';
 import { getT } from '@/lib/i18n';
 import { formatPrice } from '@/lib/utils';
+import { getLocalizedExperience, getLocalizedExperienceCategoryTag, EXPERIENCE_UI_I18N } from '@/lib/experience-i18n';
 import { useState, useEffect } from 'react';
 import { 
   Star, MapPin, ShieldCheck, Heart, Share2, 
@@ -51,74 +52,37 @@ export function ExperienceDetailModal({
   if (!experience) return null;
 
   const t = getT(lang);
+  const ui = EXPERIENCE_UI_I18N[lang] || EXPERIENCE_UI_I18N.en;
+  const loc = getLocalizedExperience(experience, lang);
   const imageSrc = experience.image || `/images/experiences/${experience.id}.jpg`;
   const isRestaurant = experience.category.toLowerCase().includes('restoran') || experience.id.startsWith('rest-');
   const isAesthetic = experience.category.toLowerCase().includes('estetik') || experience.categoryTag === 'Aesthetic' || experience.id.startsWith('exp-aesthetic-');
 
-  const getLocalizedTag = () => {
-    const raw = experience.categoryTag || (experience.category.includes('.') ? experience.category.split('.')[1].trim() : experience.category);
-    const lower = raw.toLowerCase();
-    if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik') || experience.categoryTag === 'Aesthetic') return t.categoriesList.aesthetic?.title || 'Medikal Estetik & Güzellik';
-    if (lower.includes('restoran')) return t.categoriesList.restaurants.title;
-    if (lower.includes('boğaz') || lower.includes('yat')) return t.categoriesList.bosphorus.title;
-    if (lower.includes('tarih') || lower.includes('müze')) return t.categoriesList.history.title;
-    if (lower.includes('gastro') || lower.includes('gurme')) return t.categoriesList.gastronomy.title;
-    if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || raw;
-    if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
-    if (lower.includes('fotoğraf') || lower.includes('kostüm')) return t.categoriesList.photo.title;
-    if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || raw;
-    if (lower.includes('alışveriş') || lower.includes('çarşı')) return t.categoriesList.shopping.title;
-    if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || raw;
-    if (lower.includes('semazen') || lower.includes('sanat')) return t.categoriesList.art.title;
-    if (lower.includes('kültür') || lower.includes('miras')) return t.categoriesList.culture.title;
-    if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-    if (lower.includes('hamam') || lower.includes('spa')) return t.categoriesList.hamam.title;
-    if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
-    return raw;
-  };
+  const getLocalizedTag = () => getLocalizedExperienceCategoryTag(experience, lang);
 
-  // Dynamic tailored steps based on category
-  const steps = [
-    {
-      title: isRestaurant ? "Masa Rezervasyonu & Karşılama" : "Buluşma & Sıcak Karşılama",
-      desc: isRestaurant 
-        ? `${experience.title} ekibi tarafından kapıda karşılama ve ayrılan masanıza yerleşim.` 
-        : `${experience.provider} ekibi tarafından belirlenen noktada Türk çayı veya ikramlarla samimi bir karşılama.`,
-      img: imageSrc
-    },
-    {
-      title: isRestaurant ? "Menü & Gurme Tadım Rehberi" : "Tarih ve Zanaat Hikayesi",
-      desc: isRestaurant 
-        ? `${experience.cuisine || 'Şef'} imzalı mevsimlik lezzetler ve imza spesiyallerin tanıtımı.` 
-        : "Uzman rehber ve zanaatkarlardan deneyimin köklü İstanbul tarihi ve inceliklerini öğrenin.",
-      img: "/images/istanbul/499db9bf1acc9374f13ea0b3d0043ce6.webp"
-    },
-    {
-      title: isRestaurant ? "Ana Lezzet & Gastronomi Şöleni" : "Uygulama & Ana Deneyim",
-      desc: isRestaurant 
-        ? `Taze yerel malzemeler ve usta şefler tarafından hazırlanan özel tabakların sunumu.` 
-        : `Rehberlik eşliğinde ${experience.title.toLowerCase()} sürecine bizzat dahil olun.`,
-      img: "/images/istanbul/63bab1fbccecc867bfd70f0f41b0d943.webp"
-    },
-    {
-      title: isRestaurant ? "Geleneksel Tatlı & İkramlar" : "İkramlar & Fotoğraf Çekimi",
-      desc: isRestaurant 
-        ? "İstanbul usulü kahve veya geleneksel tatlı ikramlarıyla lezzet deneyiminin tamamlanması." 
-        : "Geleneksel Türk lezzetlerinin tadını çıkarırken unutulmaz anı fotoğrafları çekilin.",
-      img: "/images/istanbul/il_1588xN.7346047570_63w8.webp"
-    }
+  const stepImages = [
+    imageSrc,
+    "/images/istanbul/499db9bf1acc9374f13ea0b3d0043ce6.webp",
+    "/images/istanbul/63bab1fbccecc867bfd70f0f41b0d943.webp",
+    "/images/istanbul/il_1588xN.7346047570_63w8.webp"
   ];
+  const steps = ui.buildSteps({
+    isRestaurant,
+    title: loc.title,
+    provider: loc.provider || experience.provider,
+    cuisine: loc.cuisine,
+  }).map((s, idx) => ({ ...s, img: stepImages[idx] || imageSrc }));
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: experience.title,
-        text: experience.agentNote,
+        title: loc.title,
+        text: loc.agentNote,
         url: window.location.href
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Bağlantı kopyalandı!");
+      toast.success(ui.copiedLink);
     }
   };
 
@@ -134,30 +98,30 @@ export function ExperienceDetailModal({
         <button
           onClick={onClose}
           className="w-10 h-10 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer shadow-2xs"
-          aria-label="Geri Dön"
+          aria-label={ui.back}
         >
           <ArrowLeft className="w-4 h-4 stroke-[1.8]" />
         </button>
 
         <span className="font-luxury-serif text-[13px] font-bold uppercase tracking-[0.06em] text-[#5C4938] truncate max-w-[200px] sm:max-w-md">
-          {experience.location} · {getLocalizedTag()}
+          {loc.location} · {getLocalizedTag()}
         </span>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleShare}
             className="w-9 h-9 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer"
-            title="Paylaş"
+            title={ui.share}
           >
             <Share2 className="w-4 h-4 stroke-[1.7]" />
           </button>
           <button
             onClick={() => {
               setIsLiked(!isLiked);
-              toast.success(isLiked ? "Favorilerden çıkarıldı" : "Favorilere eklendi!");
+              toast.success(isLiked ? ui.removedFromFavorites : ui.addedToFavorites);
             }}
             className="w-9 h-9 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer"
-            title="Favorilere Ekle"
+            title={ui.addToFavorites}
           >
             <Heart className={`w-4 h-4 stroke-[1.7] ${isLiked ? 'fill-[#8E7252] text-[#8E7252]' : ''}`} />
           </button>
@@ -171,7 +135,7 @@ export function ExperienceDetailModal({
         <div className="relative h-72 sm:h-96 w-full rounded-[22px] overflow-hidden shadow-md border-[1.5px] border-[#C4B8A4] bg-[#1D2025]">
           <Image
             src={imageSrc}
-            alt={experience.title}
+            alt={loc.title}
             fill
             className="object-cover"
             priority
@@ -181,7 +145,7 @@ export function ExperienceDetailModal({
           {/* TÜRSAB / Verified Badge */}
           <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F4]/95 text-[#141414] border border-[#C4B8A4] font-luxury-sans text-xs font-bold shadow-md backdrop-blur-md">
             <ShieldCheck className="w-4 h-4 text-[#7D5E2A]" />
-            <span>{isRestaurant ? 'Doğrulanmış Restoran' : t.tursabCertified}</span>
+            <span>{isRestaurant ? ui.verifiedRestaurant : t.tursabCertified}</span>
           </div>
 
           {/* Rating Badge */}
@@ -197,35 +161,35 @@ export function ExperienceDetailModal({
             <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-bold bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4]">
               {getLocalizedTag()}
             </span>
-            {experience.cuisine && (
+            {loc.cuisine && (
               <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-semibold bg-[#FAF8F4] text-[#141414] border border-[#D8CBB8]">
-                {experience.cuisine}
+                {loc.cuisine}
               </span>
             )}
-            {experience.priceLevel && (
+            {loc.priceLevel && (
               <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-semibold bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4]">
-                {experience.priceLevel}
+                {loc.priceLevel}
               </span>
             )}
           </div>
 
           <h1 className="font-luxury-serif text-2xl sm:text-3xl font-bold text-[#141414] leading-tight">
-            {experience.title}
+            {loc.title}
           </h1>
 
           <p className="font-luxury-sans text-sm text-[#221F1C] leading-relaxed">
-            {experience.agentNote}
+            {loc.agentNote}
           </p>
 
           {/* Öne Çıkan Lezzetler / Specialties Section */}
-          {experience.specialties && experience.specialties.length > 0 && (
+          {loc.specialties && loc.specialties.length > 0 && (
             <div className="p-4 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-2">
               <div className="flex items-center gap-1.5 font-luxury-sans text-xs font-bold text-[#7D5E2A] uppercase tracking-wider">
                 <Sparkles className="w-4 h-4 text-[#8E7252]" />
                 <span>{t.specialties}</span>
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {experience.specialties.map((item, idx) => (
+                {loc.specialties.map((item, idx) => (
                   <span
                     key={idx}
                     className="font-luxury-sans inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-white text-[#141414] border border-[#D8CBB8] shadow-2xs"
@@ -241,7 +205,7 @@ export function ExperienceDetailModal({
           <div className="flex items-center gap-2 font-luxury-sans text-xs font-bold text-[#141414] pt-1">
             <span className="px-3 py-1 rounded-full bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4] font-semibold flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-[#8E7252]" />
-              <span>purelyİstanbul Güvencesi</span>
+              <span>{ui.purelyGuarantee}</span>
             </span>
           </div>
         </div>
@@ -275,14 +239,14 @@ export function ExperienceDetailModal({
         {/* BULUŞACAĞIMIZ YER (Meeting Point & Map) */}
         <div className="luxury-service-card p-5 space-y-3.5">
           <h2 className="font-luxury-serif text-lg sm:text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">
-            {experience.location}, İstanbul
+            {loc.location}, İstanbul
           </h2>
 
           {/* Live Open Google Maps Container */}
           <div className="space-y-3">
             <div className="relative h-64 w-full rounded-2xl overflow-hidden border-[1.5px] border-[#C4B8A4] shadow-sm bg-[#EFE8DA]">
               <iframe
-                title="Google Maps Buluşma Noktası"
+                title={t.meetingPoint}
                 width="100%"
                 height="100%"
                 style={{ border: 0, pointerEvents: 'none' }}
@@ -331,7 +295,7 @@ export function ExperienceDetailModal({
           <div className="space-y-0.5">
             <div className="flex items-center gap-1 font-luxury-sans text-[11px] text-[#7D5E2A] font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-[#8E7252]" />
-              <span>purelyİstanbul Onaylı Mekan</span>
+              <span>{ui.purelyApprovedVenue}</span>
             </div>
             <div>
               <span className="font-luxury-sans text-[10px] text-[#6B5A48] uppercase font-semibold block">
@@ -339,7 +303,7 @@ export function ExperienceDetailModal({
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="font-luxury-serif text-lg sm:text-xl font-bold text-[#141414]">
-                  {experience.priceLevel || formatPrice(experience.price, experience.currency)}
+                  {loc.priceLevel || formatPrice(experience.price, experience.currency)}
                 </span>
               </div>
             </div>
@@ -358,7 +322,7 @@ export function ExperienceDetailModal({
                   className="font-luxury-sans px-4 sm:px-6 py-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs sm:text-sm font-bold shadow-md flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Randevu Oluştur</span>
+                  <span>{ui.bookAppointment}</span>
                 </button>
 
                 <button
@@ -371,7 +335,7 @@ export function ExperienceDetailModal({
                   className="font-luxury-sans px-3.5 sm:px-5 py-3 rounded-2xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] text-xs sm:text-sm font-bold border border-[#C4B8A4] shadow-sm flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer"
                 >
                   <Phone className="w-4 h-4 text-[#8E7252]" />
-                  <span>Bilgi Almak İstiyorum</span>
+                  <span>{ui.requestInfo}</span>
                 </button>
               </>
             ) : isRestaurant ? (
@@ -392,7 +356,7 @@ export function ExperienceDetailModal({
                   type="button"
                   onClick={() => onOpenTransit(experience)}
                   className="px-3.5 py-3 rounded-2xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] text-xs sm:text-sm font-bold border border-[#C4B8A4] flex items-center gap-1.5 transition cursor-pointer"
-                  title="Yol Tarifi"
+                  title={ui.directions}
                 >
                   <Navigation className="w-4 h-4 text-[#8E7252]" />
                 </button>
@@ -413,3 +377,4 @@ export function ExperienceDetailModal({
     </div>
   );
 }
+
