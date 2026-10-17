@@ -31,30 +31,51 @@ export default function HotelLiveRequestsPage() {
       setRequests(liveList);
     });
 
+    const handleLocalSync = () => {
+      const localList = XeniosStore.getRequests().filter(
+        (r) => !currentHotel.id || !r.hotelId || r.hotelId === currentHotel.id
+      );
+      setRequests(localList);
+    };
+    window.addEventListener('xenios_requests_updated', handleLocalSync);
+
     return () => {
       unsubscribe();
+      window.removeEventListener('xenios_requests_updated', handleLocalSync);
     };
   }, [currentHotel.id]);
 
   const handleUpdateStatus = async (id: string, status: ServiceRequest['status']) => {
+    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
     await FirestoreService.updateRequestStatus(id, status);
     toast.success('Talep durumu güncellendi.');
   };
 
   const handleDeleteRequest = async (id: string) => {
+    setRequests((prev) => prev.filter((r) => r.id !== id));
     await FirestoreService.deleteRequest(id);
     toast.success('Talep kalıcı olarak silindi.');
+  };
+
+  const handleClearCompleted = async () => {
+    const completedIds = requests.filter((r) => r.status === 'completed').map((r) => r.id);
+    if (completedIds.length === 0) return;
+    setRequests((prev) => prev.filter((r) => r.status !== 'completed'));
+    await Promise.all(completedIds.map((id) => FirestoreService.deleteRequest(id)));
+    toast.success('Tamamlanan eski talepler temizlendi.');
   };
 
   const filtered = requests.filter((r) => {
     const matchesDept = filterDept === 'all' || (r.department && r.department.toLowerCase().includes(filterDept.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
     const matchesSearch = !search ||
-      r.roomNumber.includes(search) ||
-      r.serviceTitle.toLowerCase().includes(search.toLowerCase()) ||
+      (r.roomNumber && r.roomNumber.includes(search)) ||
+      (r.serviceTitle && r.serviceTitle.toLowerCase().includes(search.toLowerCase())) ||
       (r.notes && r.notes.toLowerCase().includes(search.toLowerCase()));
     return matchesDept && matchesStatus && matchesSearch;
   });
+
+  const completedCount = requests.filter((r) => r.status === 'completed').length;
 
   return (
     <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-12">
@@ -72,6 +93,17 @@ export default function HotelLiveRequestsPage() {
             Misafir odalarından gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
         </div>
+
+        {completedCount > 0 && (
+          <button
+            type="button"
+            onClick={handleClearCompleted}
+            className="self-start sm:self-center px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Tamamlananları Temizle ({completedCount})</span>
+          </button>
+        )}
       </div>
 
       {/* Filters Bar */}
@@ -136,12 +168,19 @@ export default function HotelLiveRequestsPage() {
               >
                 <div className="space-y-1.5 min-w-0 flex-1 relative">
                   {isCompleted && (
-                    <div className="absolute top-0 right-0 sm:hidden flex items-center gap-1 text-zinc-400 bg-white/80 px-2 py-0.5 rounded-full shadow-2xs pointer-events-none">
-                      <ChevronLeft className="w-3 h-3 animate-pulse" />
-                      <span className="text-[9px] font-bold">Sil</span>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteRequest(req.id);
+                      }}
+                      className="absolute top-0 right-0 sm:hidden flex items-center gap-1 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-full shadow-2xs cursor-pointer z-10"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span className="text-[10px] font-bold">Sil</span>
+                    </button>
                   )}
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 pr-14 sm:pr-0">
                     <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
                       Oda {req.roomNumber}
                     </span>
@@ -174,6 +213,7 @@ export default function HotelLiveRequestsPage() {
                 <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
                   {req.status === 'pending' && (
                     <button
+                      type="button"
                       onClick={() => handleUpdateStatus(req.id, 'in_progress')}
                       className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition cursor-pointer"
                     >
@@ -183,6 +223,7 @@ export default function HotelLiveRequestsPage() {
 
                   {req.status !== 'completed' && (
                     <button
+                      type="button"
                       onClick={() => handleUpdateStatus(req.id, 'completed')}
                       className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
                     >
@@ -197,6 +238,15 @@ export default function HotelLiveRequestsPage() {
                       <span>Tamamlandı</span>
                     </span>
                   )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteRequest(req.id)}
+                    className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Sil</span>
+                  </button>
                 </div>
               </div>
             );
@@ -208,12 +258,16 @@ export default function HotelLiveRequestsPage() {
                     {cardContent}
                     
                     {/* Delete Button Area (snap-end) */}
-                    <div className="w-24 shrink-0 snap-end flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors cursor-pointer" onClick={() => handleDeleteRequest(req.id)}>
+                    <button
+                      type="button"
+                      className="w-24 shrink-0 snap-end flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors cursor-pointer"
+                      onClick={() => handleDeleteRequest(req.id)}
+                    >
                       <div className="flex flex-col items-center justify-center text-white gap-1">
                         <Trash2 className="w-5 h-5" />
                         <span className="text-[10px] font-bold tracking-wider">SİL</span>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               );

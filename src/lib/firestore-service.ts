@@ -361,9 +361,18 @@ export const FirestoreService = {
       const q = query(colRef, limit(150));
 
       return onSnapshot(q, (snapshot) => {
+        const deletedIds = typeof window !== 'undefined' ? XeniosStore.getDeletedRequestIds() : new Set<string>();
+        const statusOverrides = typeof window !== 'undefined' ? XeniosStore.getRequestStatusOverrides() : {};
         const list: ServiceRequest[] = [];
         snapshot.forEach((d) => {
-          list.push({ id: d.id, ...(d.data() as any) });
+          if (deletedIds.has(d.id)) return;
+          const rawData = d.data() as any;
+          if (!rawData?.serviceTitle && !rawData?.serviceKey) return;
+          const item: ServiceRequest = { id: d.id, ...rawData };
+          if (statusOverrides[d.id]) {
+            item.status = statusOverrides[d.id];
+          }
+          list.push(item);
         });
 
         // Filter by hotelId if specified
@@ -380,7 +389,7 @@ export const FirestoreService = {
           const existingIds = new Set(currentLocal.map((r) => r.id));
 
           snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
+            if (change.type === 'added' && !deletedIds.has(change.doc.id)) {
               const newReq = { id: change.doc.id, ...(change.doc.data() as any) } as ServiceRequest;
               if (!existingIds.has(newReq.id) && newReq.status === 'pending') {
                 if (!hotelId || !newReq.hotelId || newReq.hotelId === hotelId) {

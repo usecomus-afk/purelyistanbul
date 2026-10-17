@@ -699,12 +699,38 @@ export const XeniosStore = {
   },
 
   // In-Room Service Requests
+  getDeletedRequestIds(): Set<string> {
+    try {
+      const raw = safeGet('xenios_deleted_request_ids');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return new Set(parsed);
+      }
+    } catch {}
+    return new Set();
+  },
+
+  getRequestStatusOverrides(): Record<string, ServiceRequest['status']> {
+    try {
+      const raw = safeGet('xenios_request_status_overrides');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {}
+    return {};
+  },
+
   getRequests(): ServiceRequest[] {
     try {
+      const deletedIds = this.getDeletedRequestIds();
+      const statusOverrides = this.getRequestStatusOverrides();
       const stored = safeGet(STORAGE_KEYS.REQUESTS);
       if (stored) {
         const list: ServiceRequest[] = JSON.parse(stored);
-        const realList = list.filter(r => !r.isDemo && !r.id?.includes('demo'));
+        const realList = list
+          .filter(r => !r.isDemo && !r.id?.includes('demo') && !deletedIds.has(r.id))
+          .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
         if (realList.length !== list.length) {
           safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(realList));
         }
@@ -734,6 +760,11 @@ export const XeniosStore = {
   },
 
   updateRequestStatus(id: string, status: ServiceRequest['status']) {
+    try {
+      const overrides = this.getRequestStatusOverrides();
+      overrides[id] = status;
+      safeSet('xenios_request_status_overrides', JSON.stringify(overrides));
+    } catch {}
     const list = this.getRequests();
     const item = list.find(r => r.id === id);
     if (item) {
@@ -747,6 +778,11 @@ export const XeniosStore = {
   },
 
   deleteRequest(id: string) {
+    try {
+      const deletedSet = this.getDeletedRequestIds();
+      deletedSet.add(id);
+      safeSet('xenios_deleted_request_ids', JSON.stringify(Array.from(deletedSet)));
+    } catch {}
     const list = this.getRequests();
     const filtered = list.filter(r => r.id !== id);
     try {
@@ -757,7 +793,12 @@ export const XeniosStore = {
 
   syncRequestsFromRemote(list: ServiceRequest[]) {
     try {
-      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+      const deletedIds = this.getDeletedRequestIds();
+      const statusOverrides = this.getRequestStatusOverrides();
+      const cleaned = list
+        .filter(r => !r.isDemo && !r.id?.includes('demo') && !deletedIds.has(r.id))
+        .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
+      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(cleaned));
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('xenios_requests_updated'));
       }
