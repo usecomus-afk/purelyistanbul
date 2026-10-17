@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
         if let win = self.window, let videoURL = videoURL {
-            let scriptSource = "try { sessionStorage.setItem('purely_splash_v2_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V2__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
+            let scriptSource = "try { sessionStorage.setItem('purely_splash_v4_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V4__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
             let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
             bridgeVC.webView?.evaluateJavaScript(scriptSource, completionHandler: nil)
