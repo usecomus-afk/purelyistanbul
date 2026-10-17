@@ -1,23 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import { LuxuryCategoryIcon } from '@/components/guest/luxury-category-icon';
 import { 
-  Shield, 
   ChevronDown, 
   ChevronUp, 
   ExternalLink, 
-  ArrowLeft, 
-  MapPin, 
-  PhoneCall, 
-  Building2, 
-  CreditCard,
-  Landmark,
-  ShieldCheck,
-  Scale
+  ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { BrandMark } from '@/components/brand-mark';
 
 export default function MisafirKalkaniPage() {
   const [openTrap, setOpenTrap] = useState<number | null>(1);
@@ -98,75 +89,71 @@ export default function MisafirKalkaniPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] pb-24 text-zinc-900 dark:text-slate-100">
-      <header className="bg-white dark:bg-slate-900 dark:border-slate-800 border-b border-amber-200/60 p-4 sticky top-0 z-30 shadow-xs">
+    <div className="min-h-screen bg-[#F7F3EA] pb-24 text-[#141414]">
+      <header className="bg-[#FAF8F4]/95 backdrop-blur-md border-b border-[#D8CBB8] p-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-zinc-700 transition">
-              <ArrowLeft className="w-4 h-4" />
+            <Link href="/" className="w-10 h-10 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] flex items-center justify-center text-[#141414] transition shadow-2xs">
+              <ArrowLeft className="w-4 h-4 stroke-[1.8]" />
             </Link>
-            <BrandMark size={34} showText={true} />
+            <div>
+              <h1 className="font-luxury-serif text-[16px] sm:text-[18px] font-semibold tracking-[0.12em] uppercase text-[#141414] leading-tight">
+                OLD CITY HERITAGE HOTEL
+              </h1>
+              <span className="font-luxury-serif text-[11px] font-medium tracking-[0.22em] uppercase text-[#5C4938] block">
+                ISTANBUL · MİSAFİR KALKANI
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1.5 rounded-full border border-red-300/60 text-xs font-bold text-red-900">
-            <div className="w-4 h-4 relative shrink-0">
-              <Image src="/icons/xenios-misafir-kalkani.png" alt="Kalkan" fill className="object-contain" />
-            </div>
-            <span>purelyİstanbul Misafir Kalkanı</span>
+          <div className="font-luxury-sans flex items-center gap-1.5 bg-[#FAF8F4] px-3 py-1.5 rounded-full border border-[#C4B8A4] text-xs font-bold text-[#7D5E2A]">
+            <span>Misafir Kalkanı</span>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4 space-y-6">
+      <main className="max-w-4xl mx-auto p-4 space-y-5">
         
-        {/* Top Header */}
-        <div className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 text-white p-6 rounded-3xl shadow-lg space-y-2 relative overflow-hidden">
+        {/* Top Hero Card */}
+        <div className="luxury-service-card p-5 sm:p-6 space-y-3 relative overflow-hidden">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-900 dark:border-slate-800 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+            <span className="font-luxury-sans px-2.5 py-0.5 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] text-[#7D5E2A] font-bold text-[10px] uppercase tracking-wider">
               Turist Güvenlik Rehberi
             </span>
           </div>
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-xl sm:text-2xl font-bold font-serif">
+            <div className="space-y-1.5">
+              <h1 className="font-luxury-serif text-xl sm:text-2xl font-bold text-[#141414]">
                 purelyİstanbul Misafir Kalkanı & İstanbul Seyahat Rehberi
               </h1>
-              <p className="text-xs text-white/90 leading-relaxed max-w-2xl">
-                İstanbul'da güvenli seyahat etmeniz için 9 yaygın sokak tuzağı, yasal sağlık haklarınız, resmi İstanbulkart & MüzeKart biletleri ve acil durum rehberleri.
+              <p className="font-luxury-sans text-xs text-[#221F1C] leading-relaxed max-w-2xl">
+                İstanbul&apos;da güvenli seyahat etmeniz için 9 yaygın sokak tuzağı, yasal sağlık haklarınız, resmi İstanbulkart & MüzeKart biletleri ve acil durum rehberleri.
               </p>
             </div>
-            <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-md p-2 border border-white/20 shrink-0 hidden sm:flex items-center justify-center">
-              <Image src="/icons/xenios-misafir-kalkani.png" alt="Kalkan" width={48} height={48} className="object-contain" />
+            <div className="shrink-0 hidden sm:flex items-center justify-center">
+              <LuxuryCategoryIcon categoryKey="shield" className="w-16 h-16" />
             </div>
           </div>
         </div>
 
-        {/* ISTANBULKART & MUZEKART MODULLERI (Same Page) */}
+        {/* ISTANBULKART & MUZEKART MODULLERI */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-black/90 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-md space-y-3 flex flex-col justify-between overflow-hidden">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-red-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-                  <Image 
-                    src="/icons/istanbulkart.png" 
-                    alt="Resmi İstanbulkart & Ulaşım" 
-                    width={84} 
-                    height={54} 
-                    className="object-contain drop-shadow-xs" 
-                  />
+          <div className="luxury-service-card p-4 sm:p-5 space-y-3 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3.5">
+                <div className="shrink-0">
+                  <LuxuryCategoryIcon categoryKey="istanbulkart" className="w-16 h-16" />
                 </div>
-                <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
-                  <Image 
-                    src="/images/istanbul-skyline-paper.png" 
-                    alt="Istanbul Skyline" 
-                    width={240} 
-                    height={60} 
-                    className="h-full w-auto object-contain drop-shadow-sm opacity-90"
-                  />
+                <div className="min-w-0">
+                  <span className="font-luxury-sans text-[10px] uppercase tracking-[0.14em] text-[#8C6D46] font-bold block mb-0.5">
+                    Ulaşım & Toplu Taşıma
+                  </span>
+                  <h3 className="font-luxury-serif text-[18px] font-bold text-[#141414] leading-tight">
+                    Resmi İstanbulkart & Ulaşım
+                  </h3>
                 </div>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Resmi İstanbulkart & Ulaşım</h3>
-              <p className="text-xs text-white/85 leading-relaxed">
+              <p className="font-luxury-sans text-xs text-[#221F1C] leading-relaxed">
                 Metro, tramvay, vapur, Marmaray ve otobüslerde geçerli tek resmi toplu taşıma kartı. Biletmatik cihazlarından veya online temin edebilirsiniz.
               </p>
             </div>
@@ -175,38 +162,30 @@ export default function MisafirKalkaniPage() {
               href="https://www.istanbulkart.istanbul"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+              className="font-luxury-sans w-full py-2.5 px-4 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
             >
               <span>İstanbulkart Resmi Portalı</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          <div className="bg-black/90 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-md space-y-3 flex flex-col justify-between overflow-hidden">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-amber-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-                  <Image 
-                    src="/icons/muzekart.png" 
-                    alt="Resmi MüzeKart & Biletler" 
-                    width={84} 
-                    height={54} 
-                    className="object-contain drop-shadow-xs" 
-                  />
+          <div className="luxury-service-card p-4 sm:p-5 space-y-3 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3.5">
+                <div className="shrink-0">
+                  <LuxuryCategoryIcon categoryKey="muzekart" className="w-16 h-16" />
                 </div>
-                <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
-                  <Image 
-                    src="/images/istanbul-skyline-paper.png" 
-                    alt="Istanbul Skyline" 
-                    width={240} 
-                    height={60} 
-                    className="h-full w-auto object-contain drop-shadow-sm opacity-90"
-                  />
+                <div className="min-w-0">
+                  <span className="font-luxury-sans text-[10px] uppercase tracking-[0.14em] text-[#8C6D46] font-bold block mb-0.5">
+                    Kültür & Müzeler
+                  </span>
+                  <h3 className="font-luxury-serif text-[18px] font-bold text-[#141414] leading-tight">
+                    Resmi MüzeKart & Biletler
+                  </h3>
                 </div>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Resmi MüzeKart & Biletler</h3>
-              <p className="text-xs text-white/85 leading-relaxed">
-                T.C. Kültür ve Turizm Bakanlığı'na bağlı 300'den fazla müze ve ören yerinde sıra beklemeden geçerli resmi giriş kartı.
+              <p className="font-luxury-sans text-xs text-[#221F1C] leading-relaxed">
+                T.C. Kültür ve Turizm Bakanlığı&apos;na bağlı 300&apos;den fazla müze ve ören yerinde sıra beklemeden geçerli resmi giriş kartı.
               </p>
             </div>
 
@@ -214,7 +193,7 @@ export default function MisafirKalkaniPage() {
               href="https://muze.gov.tr"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+              className="font-luxury-sans w-full py-2.5 px-4 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
             >
               <span>MüzeKart Satın Al / İncele</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -224,47 +203,47 @@ export default function MisafirKalkaniPage() {
 
         {/* 9 Hayati Tuzak ve Güvenlik Rehberi */}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold font-serif text-zinc-900 dark:text-slate-100">
+          <h2 className="font-luxury-serif text-lg sm:text-xl font-bold uppercase tracking-[0.04em] text-[#141414] px-1">
             Yaygın Sokak Tuzakları & Hukuki Koruma Rehberi
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-3 font-luxury-sans">
             {shieldTopics.map((item) => (
-              <div key={item.id} className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
+              <div key={item.id} className="luxury-service-card overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setOpenTrap(openTrap === item.id ? null : item.id)}
-                  className="w-full p-4 text-left font-bold text-xs sm:text-sm text-zinc-900 dark:text-slate-100 bg-zinc-50/80 hover:bg-amber-50/50 flex items-center justify-between transition cursor-pointer"
+                  className="w-full p-4 text-left font-bold text-xs sm:text-sm text-[#141414] hover:bg-[#FAF8F4]/60 flex items-center justify-between transition cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white text-xs font-bold flex items-center justify-center shrink-0">
                       {item.id}
                     </span>
-                    <span>{item.title}</span>
+                    <span className="font-luxury-serif text-[15px] font-bold">{item.title}</span>
                   </div>
-                  {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-slate-400" /> : <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-slate-400" />}
+                  {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-[#8E7252]" /> : <ChevronDown className="w-4 h-4 text-[#8E7252]" />}
                 </button>
 
                 {openTrap === item.id && (
-                  <div className="p-5 space-y-3.5 text-xs text-zinc-700 bg-white dark:bg-slate-900 dark:border-slate-800 border-t border-zinc-200 leading-relaxed">
+                  <div className="p-4 sm:p-5 space-y-3 text-xs text-[#221F1C] bg-[#FAF8F4]/90 border-t border-[#D8CBB8] leading-relaxed">
                     <div className="space-y-1">
-                      <strong className="text-red-700 block font-bold">⚠️ Karşılaşılan Sorun:</strong>
+                      <strong className="text-[#7D5E2A] block font-bold">Karşılaşılan Sorun:</strong>
                       <p>{item.problem}</p>
                     </div>
 
                     <div className="space-y-1">
-                      <strong className="text-amber-700 block font-bold">🛑 Olası Riskler:</strong>
+                      <strong className="text-[#141414] block font-bold">Olası Riskler:</strong>
                       <p>{item.risk}</p>
                     </div>
 
-                    <div className="space-y-1 bg-emerald-50/60 p-3 rounded-xl border border-emerald-200">
-                      <strong className="text-emerald-800 block font-bold">✅ Misafirin Yapması Gerekenler:</strong>
-                      <p className="text-emerald-950">{item.action}</p>
+                    <div className="space-y-1 bg-white p-3 rounded-xl border border-[#C4B8A4]">
+                      <strong className="text-[#7D5E2A] block font-bold">Misafirin Yapması Gerekenler:</strong>
+                      <p className="text-[#141414]">{item.action}</p>
                     </div>
 
-                    <div className="space-y-1 bg-zinc-50 p-3 rounded-xl border border-zinc-200">
-                      <strong className="text-zinc-800 dark:text-slate-200 block font-bold">📜 Türkiye'de Hukuk Nasıl İşler?:</strong>
-                      <p className="text-zinc-600 dark:text-slate-400">{item.law}</p>
+                    <div className="space-y-1 bg-[#F7F3EA] p-3 rounded-xl border border-[#D8CBB8]">
+                      <strong className="text-[#141414] block font-bold">Türkiye&apos;de Hukuk Nasıl İşler?:</strong>
+                      <p className="text-[#3D352E]">{item.law}</p>
                     </div>
                   </div>
                 )}
@@ -274,30 +253,35 @@ export default function MisafirKalkaniPage() {
         </div>
 
         {/* Emergency Contacts */}
-        <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-5 border border-amber-200/60 shadow-sm space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center p-1 border border-red-200">
-              <Image src="/icons/sos-emergency.png" alt="SOS Acil" width={20} height={20} className="object-contain" />
+        <div className="luxury-service-card p-5 space-y-3 font-luxury-sans">
+          <div className="flex items-center gap-3">
+            <div className="shrink-0">
+              <LuxuryCategoryIcon categoryKey="emergency" className="w-12 h-12" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Resmi Acil & Destek Hatları</h3>
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.14em] text-[#8C6D46] font-bold block">
+                7/24 Resmi Destek
+              </span>
+              <h3 className="font-luxury-serif text-[17px] font-bold text-[#141414]">Resmi Acil & Destek Hatları</h3>
+            </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Acil Çağrı Merkezi</span>
-              <strong className="text-red-600 text-sm font-mono">112</strong>
-            </div>
-            <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Turizm Polisi</span>
-              <strong className="text-blue-600 text-sm font-mono">+90 212 527 45 03</strong>
-            </div>
-            <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">İBB Beyaz Masa</span>
-              <strong className="text-zinc-800 dark:text-slate-200 text-sm font-mono">153</strong>
-            </div>
-            <div className="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/50">
-              <span className="text-zinc-500 dark:text-slate-400 block text-[10px]">Zabıta İhbar</span>
-              <strong className="text-amber-800 text-sm font-mono">153</strong>
-            </div>
+            <a href="tel:112" className="p-3 bg-[#FAF8F4] rounded-xl border border-[#C4B8A4] hover:bg-[#EFE8DA] transition">
+              <span className="text-[#5C4938] block text-[10px] font-semibold">Acil Çağrı Merkezi</span>
+              <strong className="font-luxury-serif text-[#141414] text-base font-bold">112</strong>
+            </a>
+            <a href="tel:+902125274503" className="p-3 bg-[#FAF8F4] rounded-xl border border-[#C4B8A4] hover:bg-[#EFE8DA] transition">
+              <span className="text-[#5C4938] block text-[10px] font-semibold">Turizm Polisi</span>
+              <strong className="font-luxury-serif text-[#7D5E2A] text-sm font-bold">+90 212 527 45 03</strong>
+            </a>
+            <a href="tel:153" className="p-3 bg-[#FAF8F4] rounded-xl border border-[#C4B8A4] hover:bg-[#EFE8DA] transition">
+              <span className="text-[#5C4938] block text-[10px] font-semibold">İBB Beyaz Masa</span>
+              <strong className="font-luxury-serif text-[#141414] text-base font-bold">153</strong>
+            </a>
+            <a href="tel:153" className="p-3 bg-[#FAF8F4] rounded-xl border border-[#C4B8A4] hover:bg-[#EFE8DA] transition">
+              <span className="text-[#5C4938] block text-[10px] font-semibold">Zabıta İhbar</span>
+              <strong className="font-luxury-serif text-[#7D5E2A] text-base font-bold">153</strong>
+            </a>
           </div>
         </div>
 

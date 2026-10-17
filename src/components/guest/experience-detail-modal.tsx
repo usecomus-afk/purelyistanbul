@@ -5,9 +5,9 @@ import { getT } from '@/lib/i18n';
 import { formatPrice } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { 
-  X, Star, MapPin, Clock, ShieldCheck, Heart, Share2, 
-  Check, ArrowLeft, Phone, Globe, ExternalLink,
-  CreditCard, Navigation, Utensils, Sparkles, Users, Activity
+  Star, MapPin, ShieldCheck, Heart, Share2, 
+  ArrowLeft, Phone, ExternalLink,
+  CreditCard, Navigation, Utensils, Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -124,52 +124,51 @@ export function ExperienceDetailModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100000] bg-white   overflow-y-scroll overflow-x-hidden text-slate-900 "
+      className="fixed inset-0 z-[100000] bg-[#F7F3EA] overflow-y-scroll overflow-x-hidden text-[#141414]"
       style={{ 
         WebkitOverflowScrolling: 'touch'
       }}
     >
-      
-      {/* Top Floating Airbnb Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200/80 px-4 py-3 flex items-center justify-between shadow-xs">
+      {/* Top Floating Luxury Navigation Bar */}
+      <header className="sticky top-0 z-40 bg-[#FAF8F4]/95 backdrop-blur-md border-b border-[#D8CBB8] px-4 py-3 flex items-center justify-between shadow-xs">
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-800  transition cursor-pointer"
+          className="w-10 h-10 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer shadow-2xs"
           aria-label="Geri Dön"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4 stroke-[1.8]" />
         </button>
 
-        <span className="text-xs font-semibold text-slate-600  truncate max-w-[200px] sm:max-w-md">
-          {experience.location} · {experience.categoryTag || experience.category}
+        <span className="font-luxury-serif text-[13px] font-bold uppercase tracking-[0.06em] text-[#5C4938] truncate max-w-[200px] sm:max-w-md">
+          {experience.location} · {getLocalizedTag()}
         </span>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={handleShare}
-            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-700 transition cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer"
             title="Paylaş"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-4 h-4 stroke-[1.7]" />
           </button>
           <button
             onClick={() => {
               setIsLiked(!isLiked);
               toast.success(isLiked ? "Favorilerden çıkarıldı" : "Favorilere eklendi!");
             }}
-            className="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-slate-700 transition cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] transition cursor-pointer"
             title="Favorilere Ekle"
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+            <Heart className={`w-4 h-4 stroke-[1.7] ${isLiked ? 'fill-[#8E7252] text-[#8E7252]' : ''}`} />
           </button>
         </div>
       </header>
 
       {/* Main Content Scroll Area */}
-      <div className="max-w-2xl mx-auto px-4 pt-4 pb-48 space-y-7">
+      <div className="max-w-2xl mx-auto px-4 pt-4 pb-48 space-y-5">
         
-        {/* Hero Photo Carousel Card */}
-        <div className="relative h-72 sm:h-96 w-full rounded-3xl overflow-hidden shadow-lg bg-zinc-900">
+        {/* Hero Photo Card */}
+        <div className="relative h-72 sm:h-96 w-full rounded-[22px] overflow-hidden shadow-md border-[1.5px] border-[#C4B8A4] bg-[#1D2025]">
           <Image
             src={imageSrc}
             alt={experience.title}
@@ -177,61 +176,61 @@ export function ExperienceDetailModal({
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/20" />
           
           {/* TÜRSAB / Verified Badge */}
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 text-slate-900  text-xs font-bold shadow-md backdrop-blur-md">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F4]/95 text-[#141414] border border-[#C4B8A4] font-luxury-sans text-xs font-bold shadow-md backdrop-blur-md">
+            <ShieldCheck className="w-4 h-4 text-[#7D5E2A]" />
             <span>{isRestaurant ? 'Doğrulanmış Restoran' : t.tursabCertified}</span>
           </div>
 
           {/* Rating Badge */}
-          <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1 rounded-full bg-black/70 text-amber-300 text-xs font-bold shadow-md backdrop-blur-md border border-amber-400/40">
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+          <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1 rounded-full bg-[#1D2025]/85 text-[#E5C896] font-luxury-sans text-xs font-bold shadow-md backdrop-blur-md border border-[#8E7252]/60">
+            <Star className="w-4 h-4 fill-[#C5A059] text-[#C5A059]" />
             <span>{experience.scoreStr || '4.8/5'}</span>
           </div>
         </div>
 
-        {/* Title, Category & Location */}
-        <div className="space-y-3 pb-6 border-b border-zinc-200">
+        {/* Title, Category & Location Card */}
+        <div className="luxury-service-card p-5 space-y-3.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900">
+            <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-bold bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4]">
               {getLocalizedTag()}
             </span>
             {experience.cuisine && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-slate-800 ">
-                🍽️ {experience.cuisine}
+              <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-semibold bg-[#FAF8F4] text-[#141414] border border-[#D8CBB8]">
+                {experience.cuisine}
               </span>
             )}
             {experience.priceLevel && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                💰 {experience.priceLevel}
+              <span className="font-luxury-sans px-3 py-1 rounded-full text-xs font-semibold bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4]">
+                {experience.priceLevel}
               </span>
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900  leading-tight">
+          <h1 className="font-luxury-serif text-2xl sm:text-3xl font-bold text-[#141414] leading-tight">
             {experience.title}
           </h1>
 
-          <p className="text-sm text-slate-600  leading-relaxed font-sans">
+          <p className="font-luxury-sans text-sm text-[#221F1C] leading-relaxed">
             {experience.agentNote}
           </p>
 
           {/* Öne Çıkan Lezzetler / Specialties Section */}
           {experience.specialties && experience.specialties.length > 0 && (
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-amber-600" />
+            <div className="p-4 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-2">
+              <div className="flex items-center gap-1.5 font-luxury-sans text-xs font-bold text-[#7D5E2A] uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-[#8E7252]" />
                 <span>{t.specialties}</span>
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {experience.specialties.map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-white   text-slate-800  border border-amber-300 shadow-2xs"
+                    className="font-luxury-sans inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-white text-[#141414] border border-[#D8CBB8] shadow-2xs"
                   >
-                    <span className="text-amber-600">✦</span>
+                    <span className="text-[#8E7252]">✦</span>
                     {item}
                   </span>
                 ))}
@@ -239,24 +238,24 @@ export function ExperienceDetailModal({
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-900  pt-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2 font-luxury-sans text-xs font-bold text-[#141414] pt-1">
+            <span className="px-3 py-1 rounded-full bg-[#FAF8F4] text-[#7D5E2A] border border-[#C4B8A4] font-semibold flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8E7252]" />
               <span>purelyİstanbul Güvencesi</span>
             </span>
           </div>
         </div>
 
         {/* NELER YAPACAKSINIZ? (Timeline Step-by-Step) */}
-        <div className="space-y-4 pb-7 border-b border-zinc-200">
-          <h2 className="text-lg sm:text-xl font-bold font-serif text-slate-900 ">
+        <div className="luxury-service-card p-5 space-y-4">
+          <h2 className="font-luxury-serif text-lg sm:text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">
             {t.programSteps}
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {steps.map((step, idx) => (
-              <div key={idx} className="flex items-start gap-4 p-3.5 rounded-2xl bg-zinc-50 hover:bg-amber-50/40 border border-zinc-100 transition">
-                <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 relative bg-zinc-200 shadow-xs">
+              <div key={idx} className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#D8CBB8] transition">
+                <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 relative bg-[#EFE8DA] border border-[#C4B8A4] shadow-xs">
                   <Image
                     src={step.img}
                     alt={step.title}
@@ -265,8 +264,8 @@ export function ExperienceDetailModal({
                   />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-slate-900 ">{step.title}</h4>
-                  <p className="text-xs text-slate-600  leading-relaxed">{step.desc}</p>
+                  <h4 className="font-luxury-serif text-[15px] font-bold text-[#141414]">{step.title}</h4>
+                  <p className="font-luxury-sans text-xs text-[#3D352E] leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -274,14 +273,14 @@ export function ExperienceDetailModal({
         </div>
 
         {/* BULUŞACAĞIMIZ YER (Meeting Point & Map) */}
-        <div className="space-y-3 pb-7 border-b border-zinc-200">
-          <h2 className="text-lg sm:text-xl font-bold font-serif text-slate-900 ">
+        <div className="luxury-service-card p-5 space-y-3.5">
+          <h2 className="font-luxury-serif text-lg sm:text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">
             {experience.location}, İstanbul
           </h2>
 
           {/* Live Open Google Maps Container */}
-          <div className="space-y-2.5">
-            <div className="relative h-64 w-full rounded-3xl overflow-hidden border border-zinc-300 shadow-md bg-zinc-100">
+          <div className="space-y-3">
+            <div className="relative h-64 w-full rounded-2xl overflow-hidden border-[1.5px] border-[#C4B8A4] shadow-sm bg-[#EFE8DA]">
               <iframe
                 title="Google Maps Buluşma Noktası"
                 width="100%"
@@ -305,17 +304,17 @@ export function ExperienceDetailModal({
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(experience.location + ', Istanbul, Turkey')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition"
+                className="font-luxury-sans px-3.5 py-2.5 rounded-xl bg-[#1D2025] hover:bg-black text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition"
               >
-                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                <MapPin className="w-3.5 h-3.5 text-[#C5A059]" />
                 <span>{t.openInGoogleMaps}</span>
-                <ExternalLink className="w-3 h-3 text-zinc-400" />
+                <ExternalLink className="w-3 h-3 text-[#C4B8A4]" />
               </a>
 
               <button
                 type="button"
                 onClick={() => onOpenTransit(experience)}
-                className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+                className="font-luxury-sans px-3.5 py-2.5 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
               >
                 <Navigation className="w-3.5 h-3.5" />
                 <span>{t.transitTitle}</span>
@@ -327,19 +326,19 @@ export function ExperienceDetailModal({
       </div>
 
       {/* FLOATING BOTTOM BAR (Sticky Footer) */}
-      <div className="fixed bottom-0 pb-[calc(1rem+env(safe-area-inset-bottom))] inset-x-0 bg-white/95 backdrop-blur-lg border-t border-zinc-200 p-3.5 sm:p-4 z-40 shadow-2xl">
+      <div className="fixed bottom-0 pb-[calc(1rem+env(safe-area-inset-bottom))] inset-x-0 bg-[#FAF8F4]/96 backdrop-blur-lg border-t border-[#D8CBB8] p-3.5 sm:p-4 z-40 shadow-2xl">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <div className="space-y-0.5">
-            <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 font-luxury-sans text-[11px] text-[#7D5E2A] font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8E7252]" />
               <span>purelyİstanbul Onaylı Mekan</span>
             </div>
             <div>
-              <span className="text-[10px] text-zinc-400 uppercase font-semibold block">
+              <span className="font-luxury-sans text-[10px] text-[#6B5A48] uppercase font-semibold block">
                 {isRestaurant ? t.priceLevel : t.price}
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="text-base sm:text-lg font-bold font-mono text-slate-900 ">
+                <span className="font-luxury-serif text-lg sm:text-xl font-bold text-[#141414]">
                   {experience.priceLevel || formatPrice(experience.price, experience.currency)}
                 </span>
               </div>
@@ -356,7 +355,7 @@ export function ExperienceDetailModal({
                       onOpenAestheticBooking(experience);
                     }
                   }}
-                  className="px-4 sm:px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-rose-500/25 flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
+                  className="font-luxury-sans px-4 sm:px-6 py-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs sm:text-sm font-bold shadow-md flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Randevu Oluştur</span>
@@ -369,9 +368,9 @@ export function ExperienceDetailModal({
                       onOpenAestheticInquiry(experience);
                     }
                   }}
-                  className="px-3.5 sm:px-5 py-3 rounded-2xl bg-white   hover:bg-rose-50/80 text-rose-900 text-xs sm:text-sm font-bold border border-rose-300 shadow-sm flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer"
+                  className="font-luxury-sans px-3.5 sm:px-5 py-3 rounded-2xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] text-xs sm:text-sm font-bold border border-[#C4B8A4] shadow-sm flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer"
                 >
-                  <Phone className="w-4 h-4 text-rose-600" />
+                  <Phone className="w-4 h-4 text-[#8E7252]" />
                   <span>Bilgi Almak İstiyorum</span>
                 </button>
               </>
@@ -384,7 +383,7 @@ export function ExperienceDetailModal({
                       onOpenRestaurantReserve(experience);
                     }
                   }}
-                  className="px-5 sm:px-7 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-amber-500/25 flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
+                  className="font-luxury-sans px-5 sm:px-7 py-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs sm:text-sm font-bold shadow-md flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
                 >
                   <Utensils className="w-4 h-4" />
                   <span>{t.reserveTable}</span>
@@ -392,18 +391,18 @@ export function ExperienceDetailModal({
                 <button
                   type="button"
                   onClick={() => onOpenTransit(experience)}
-                  className="px-3.5 py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-slate-800  text-xs sm:text-sm font-bold border border-zinc-200 flex items-center gap-1.5 transition cursor-pointer"
+                  className="px-3.5 py-3 rounded-2xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] text-xs sm:text-sm font-bold border border-[#C4B8A4] flex items-center gap-1.5 transition cursor-pointer"
                   title="Yol Tarifi"
                 >
-                  <Navigation className="w-4 h-4 text-amber-700" />
+                  <Navigation className="w-4 h-4 text-[#8E7252]" />
                 </button>
               </>
             ) : (
               <button
                 onClick={() => onOpenCheckout(experience)}
-                className="px-6 py-3 rounded-2xl bg-zinc-900 hover:bg-black text-white text-xs sm:text-sm font-bold shadow-lg shadow-black/20 flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
+                className="font-luxury-sans px-6 py-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs sm:text-sm font-bold shadow-md flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
               >
-                <CreditCard className="w-4 h-4 text-amber-400" />
+                <CreditCard className="w-4 h-4" />
                 <span>{t.buyNow}</span>
               </button>
             )}

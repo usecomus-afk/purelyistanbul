@@ -6,9 +6,8 @@ import { XeniosStore } from '@/lib/store';
 import { askGeminiConcierge, ChatMessage } from '@/lib/gemini';
 import { useState, useEffect, useRef } from 'react';
 import { GuestPreferenceSurvey } from './guest-preference-survey';
-import { Send, User, X, Sparkles, Trash2 } from 'lucide-react';
+import { Send, User, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import Image from 'next/image';
 
 interface AiChatDrawerProps {
   hotel: Hotel;
@@ -19,6 +18,27 @@ interface AiChatDrawerProps {
 }
 
 const DEFAULT_GREETING_TR = "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.\n\n✨ 'Beni Tanı' butonuna tıklayarak size özel rehberlik etmemi özelleştirebilirsiniz.";
+
+function ComusSpiralIcon({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" className={className}>
+      <circle cx="14" cy="14" r="11" stroke="#8E7252" strokeWidth="1.35" strokeDasharray="3 2" />
+      <path
+        d="M14 14C14 12.6 15.2 11.5 16.5 11.5C18.5 11.5 20 13.2 20 15.3C20 18.2 17.5 20.5 14.3 20.5C10.4 20.5 7.3 17.3 7.3 13.3C7.3 8.6 11.1 5 15.8 5C20.8 5 24.5 8.8 24.5 14"
+        stroke="#1D2025"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14 14C14.8 14 15.4 14.6 15.4 15.4C15.4 16.7 14.2 17.7 12.8 17.7C10.8 17.7 9.3 16 9.3 13.9C9.3 11.1 11.6 8.8 14.5 8.8C17.9 8.8 20.6 11.5 20.6 15"
+        stroke="#8E7252"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <circle cx="14" cy="14" r="1.6" fill="#8E7252" />
+    </svg>
+  );
+}
 
 export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiChatDrawerProps) {
   const t = getT(lang);
@@ -173,7 +193,6 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
       nextMessages
     );
 
-    // If assistant returned negative locks (Anti-Nagging)
     if (assistantMsg.negative_locked_categories?.length) {
       assistantMsg.negative_locked_categories.forEach(cat => {
         XeniosStore.addBlacklistedOffer(cat, 'Misafir chat üzerinden reddetti');
@@ -245,38 +264,31 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
   return (
     <div 
-      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white   w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-3xl shadow-2xl border border-amber-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-slate-900 "
+        className="bg-[#F7F3EA] w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-[24px] shadow-2xl border-[1.5px] border-[#C4B8A4] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-[#141414]"
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Header */}
-        <div className="px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-md shrink-0">
-          <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
-            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xs overflow-hidden p-1.5 shrink-0">
-              <Image
-                src="/icons/menu/aiGuide.png"
-                alt="comus AI"
-                width={26}
-                height={26}
-                className="object-contain"
-                priority
-              />
+        {/* Luxury Ivory/Champagne Header */}
+        <div className="px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[#C4B8A4] text-[#141414] flex items-center justify-between shadow-xs shrink-0">
+          <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#FAF7F0] to-[#EFE8DA] flex items-center justify-center border-[1.5px] border-[#C5A059] shadow-sm shrink-0">
+              <ComusSpiralIcon className="w-6 h-6" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-white leading-tight truncate">
-                {t.aiTitle || 'comusAI - Kişisel İstanbul Rehberiniz'}
+              <h3 className="font-luxury-serif text-[16px] font-bold tracking-[0.04em] text-[#141414] leading-tight truncate">
+                {t.aiTitle || 'comusAI · Kişisel İstanbul Rehberiniz'}
               </h3>
-              <div className="flex items-center gap-1.5 text-[10px] text-amber-100 mt-1">
-                <span className="truncate">{hotel.name} · {t.room} {roomNumber}</span>
-                <span className="text-amber-200/60 shrink-0">•</span>
-                <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[9px] font-mono text-white/95 font-medium shrink-0 border border-white/20">
-                  Gemini
+              <div className="flex items-center gap-1.5 font-luxury-sans text-[10.5px] text-[#5C4938] mt-0.5">
+                <span className="truncate font-medium">{hotel.name} · {t.room} {roomNumber}</span>
+                <span className="text-[#8E7252] shrink-0">•</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-[#FAF8F4] text-[9px] font-mono text-[#7D5E2A] font-bold shrink-0 border border-[#C4B8A4]">
+                  AI Concierge
                 </span>
               </div>
             </div>
@@ -287,7 +299,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
               <button
                 type="button"
                 onClick={handleClearChat}
-                className="p-1.5 rounded-xl bg-white/20 hover:bg-red-500/80 text-white transition cursor-pointer border border-white/20"
+                className="p-2 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#5C4938] transition cursor-pointer border border-[#C4B8A4]"
                 title="Sohbeti Temizle"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -296,16 +308,16 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm font-bold transition cursor-pointer"
+              className="w-8 h-8 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] border border-[#C4B8A4] flex items-center justify-center text-sm font-bold transition cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 stroke-[1.8]" />
             </button>
           </div>
         </div>
 
         {/* Survey Drawer Overlay if open */}
         {showSurvey ? (
-          <div className="flex-1 overflow-y-auto p-4 pb-[max(2rem,env(safe-area-inset-bottom))] bg-[#fbf8f1] overscroll-contain">
+          <div className="flex-1 overflow-y-auto p-4 pb-[max(2rem,env(safe-area-inset-bottom))] bg-[#F7F3EA] overscroll-contain">
             <GuestPreferenceSurvey
               initialProfile={profile}
               lang={lang}
@@ -317,7 +329,7 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
         ) : (
           <>
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#fbf8f1] overscroll-contain">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#F7F3EA] overscroll-contain">
               {messages.map((msg) => {
                 const isUser = msg.sender === 'user';
                 return (
@@ -326,21 +338,15 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                     className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
                   >
                     {!isUser && (
-                      <div className="w-8 h-8 rounded-2xl bg-amber-100 border border-amber-300 p-1 flex items-center justify-center shrink-0 shadow-xs mt-0.5 overflow-hidden">
-                        <Image
-                          src="/icons/menu/aiGuide.png"
-                          alt="comus"
-                          width={22}
-                          height={22}
-                          className="object-contain"
-                        />
+                      <div className="w-8 h-8 rounded-full bg-[#FAF8F4] border border-[#C5A059] p-1 flex items-center justify-center shrink-0 shadow-xs mt-0.5">
+                        <ComusSpiralIcon className="w-5 h-5" />
                       </div>
                     )}
 
-                    <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs space-y-2 ${
+                    <div className={`max-w-[85%] rounded-2xl p-3.5 font-luxury-sans text-xs shadow-sm space-y-2 ${
                       isUser
-                        ? 'bg-amber-500 text-white rounded-tr-xs'
-                        : 'bg-white   text-slate-800  border border-amber-200/80 rounded-tl-xs'
+                        ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white border border-[#7D5E2A] rounded-tr-xs'
+                        : 'luxury-service-card text-[#141414] rounded-tl-xs'
                     }`}>
                       <div className="whitespace-pre-wrap leading-relaxed">
                         {msg.text}
@@ -348,13 +354,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
 
                       {/* Interactive Action Buttons from Comus AI */}
                       {!isUser && msg.actions && msg.actions.length > 0 && (
-                        <div className="pt-2 flex flex-col gap-1.5 border-t border-amber-100">
+                        <div className="pt-2 flex flex-col gap-1.5 border-t border-[#D8CBB8]">
                           {msg.actions.map((act) => (
                             <button
                               key={act.id}
                               type="button"
                               onClick={() => handleExecuteAction(act)}
-                              className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer text-left"
+                              className="font-luxury-sans w-full py-2.5 px-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer text-left"
                             >
                               <span>{act.label}</span>
                             </button>
@@ -362,13 +368,13 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                         </div>
                       )}
 
-                      <div className={`text-[9px] font-mono flex items-center ${isUser ? 'text-amber-100 justify-end' : 'text-zinc-400 justify-end'}`}>
+                      <div className={`text-[9px] font-mono flex items-center ${isUser ? 'text-[#EFE8DA] justify-end' : 'text-[#6B5A48] justify-end'}`}>
                         <span>{msg.time}</span>
                       </div>
                     </div>
 
                     {isUser && (
-                      <div className="w-8 h-8 rounded-2xl bg-zinc-800 text-white flex items-center justify-center shrink-0 text-xs shadow-xs mt-0.5">
+                      <div className="w-8 h-8 rounded-full bg-[#1D2025] text-[#FAF8F4] border border-[#8E7252] flex items-center justify-center shrink-0 text-xs shadow-xs mt-0.5">
                         <User className="w-4 h-4" />
                       </div>
                     )}
@@ -377,29 +383,23 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
               })}
 
               {isLoading && (
-                <div className="flex gap-2 items-center text-xs text-amber-900 bg-amber-100/90 p-2.5 rounded-2xl border border-amber-300 w-fit shadow-xs">
-                  <div className="w-5 h-5 relative flex items-center justify-center shrink-0">
-                    <Image
-                      src="/icons/menu/aiGuide.png"
-                      alt="comus"
-                      width={18}
-                      height={18}
-                      className="object-contain animate-pulse"
-                    />
+                <div className="luxury-service-card flex gap-2.5 items-center font-luxury-sans text-xs text-[#141414] p-3 w-fit">
+                  <div className="w-5 h-5 relative flex items-center justify-center shrink-0 animate-spin">
+                    <ComusSpiralIcon className="w-5 h-5" />
                   </div>
-                  <span className="font-medium text-amber-950">comus yanıt hazırlıyor...</span>
+                  <span className="font-semibold text-[#5C4938]">comus yanıt hazırlıyor...</span>
                 </div>
               )}
               <div ref={chatBottomRef} />
             </div>
 
             {/* Quick Suggestion Chips */}
-            <div className="p-2.5 bg-white   border-t border-amber-100 overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
+            <div className="p-2.5 bg-[#FAF8F4] border-t border-[#D8CBB8] overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
               {(t.quickChips || []).map((chip, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(chip)}
-                  className="px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-medium whitespace-nowrap transition cursor-pointer shadow-2xs shrink-0"
+                  className="font-luxury-sans px-3 py-1.5 rounded-full bg-[#F7F3EA] hover:bg-[#EFE8DA] text-[#221F1C] border border-[#C4B8A4] text-[11px] font-semibold whitespace-nowrap transition cursor-pointer shadow-2xs shrink-0"
                 >
                   {chip}
                 </button>
@@ -412,19 +412,19 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
                 e.preventDefault();
                 handleSend();
               }}
-              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white   border-t border-amber-200 flex items-center gap-2 shrink-0"
+              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-[#FAF8F4] border-t border-[#C4B8A4] flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t.aiPlaceholder}
-                className="flex-1 text-xs p-3 rounded-2xl border border-amber-200 bg-[#fbf8f1] focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-slate-900  placeholder:text-zinc-400"
+                className="font-luxury-sans flex-1 text-xs p-3 rounded-2xl border border-[#C4B8A4] bg-[#F7F3EA] focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40 text-[#141414] placeholder:text-[#78716C]"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="p-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white transition shadow-md disabled:opacity-50 cursor-pointer shrink-0"
+                className="p-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white transition shadow-sm disabled:opacity-50 cursor-pointer shrink-0"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -435,4 +435,3 @@ export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiCha
     </div>
   );
 }
-

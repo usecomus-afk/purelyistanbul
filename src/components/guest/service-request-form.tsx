@@ -9,14 +9,12 @@ interface ServiceRequestFormProps {
   onSubmit: (details: Record<string, any>) => void;
   onCancel: () => void;
   isSubmitting: boolean;
-  /** Cockpit-managed pricing overrides for this module (see service-modules.ts). */
   pricing?: Record<string, number>;
-  /** Cockpit-managed content (option list) overrides, keyed by field key. */
   fieldOptionOverrides?: Record<string, string[]>;
 }
 
 function FieldInput({ field, options, value, onChange }: { field: ServiceField; options: string[]; value: any; onChange: (v: any) => void }) {
-  const baseClass = "w-full text-xs p-2.5 rounded-xl border border-amber-200 bg-white    focus:outline-none focus:ring-2 focus:ring-amber-500/40";
+  const baseClass = "w-full font-luxury-sans text-xs p-2.5 rounded-xl border border-[#C4B8A4] bg-[#FAF8F4] text-[#141414] placeholder:text-[#78716C] focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40";
 
   switch (field.type) {
     case 'select':
@@ -42,10 +40,10 @@ function FieldInput({ field, options, value, onChange }: { field: ServiceField; 
                   const next = active ? selected.filter((s) => s !== opt) : [...selected, opt];
                   onChange(next);
                 }}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition ${
+                className={`font-luxury-sans px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition cursor-pointer ${
                   active
-                    ? 'bg-amber-500 border-amber-500 text-white'
-                    : 'bg-white   border-amber-200 text-slate-700  hover:border-amber-400'
+                    ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] border-[#7D5E2A] text-white shadow-2xs'
+                    : 'bg-[#FAF8F4] border-[#C4B8A4] text-[#221F1C] hover:bg-[#EFE8DA]'
                 }`}
               >
                 {opt}
@@ -102,10 +100,10 @@ function FieldInput({ field, options, value, onChange }: { field: ServiceField; 
           <button
             type="button"
             onClick={() => onChange(true)}
-            className={`flex-1 py-2 rounded-lg text-[11px] font-bold border transition ${
+            className={`font-luxury-sans flex-1 py-2 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
               isOn
-                ? isAlert ? 'bg-red-500 border-red-500 text-white' : 'bg-amber-500 border-amber-500 text-white'
-                : 'bg-white   border-amber-200 text-slate-600 '
+                ? isAlert ? 'bg-[#1D2025] border-[#8E7252] text-white' : 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] border-[#7D5E2A] text-white'
+                : 'bg-[#FAF8F4] border-[#C4B8A4] text-[#5C4938]'
             }`}
           >
             {onLabel}
@@ -113,8 +111,8 @@ function FieldInput({ field, options, value, onChange }: { field: ServiceField; 
           <button
             type="button"
             onClick={() => onChange(false)}
-            className={`flex-1 py-2 rounded-lg text-[11px] font-bold border transition ${
-              !isOn ? 'bg-zinc-700 border-zinc-700 text-white' : 'bg-white   border-amber-200 text-slate-600 '
+            className={`font-luxury-sans flex-1 py-2 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
+              !isOn ? 'bg-[#1D2025] border-[#1D2025] text-white' : 'bg-[#FAF8F4] border-[#C4B8A4] text-[#5C4938]'
             }`}
           >
             {offLabel}
@@ -134,13 +132,13 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
   const setField = (key: string, value: any) => setDetails((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 font-luxury-sans">
       {config.fields.map((field) => {
         if (field.type === 'display') {
           return (
-            <div key={field.key} className="bg-amber-50/70  p-2.5 rounded-xl border border-amber-200/70  flex items-center justify-between gap-2 text-xs">
-              <span className="font-semibold text-slate-700 ">{field.label}</span>
-              <span className="font-bold text-amber-800  text-right">{field.compute ? field.compute(details, pricing) : '—'}</span>
+            <div key={field.key} className="bg-[#FAF8F4]/90 p-3 rounded-xl border border-[#C4B8A4] flex items-center justify-between gap-2 text-xs">
+              <span className="font-semibold text-[#3D352E]">{field.label}</span>
+              <span className="font-luxury-serif text-sm font-bold text-[#7D5E2A] text-right">{field.compute ? field.compute(details, pricing) : '—'}</span>
             </div>
           );
         }
@@ -150,10 +148,10 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
 
         return (
           <div key={field.key} className="space-y-1">
-            <label className="text-[11px] font-semibold text-slate-800  flex items-center gap-1">
+            <label className="text-[11px] font-bold text-[#141414] flex items-center gap-1">
               {field.label}
-              {field.optional && <span className="text-slate-500  font-normal">(İsteğe Bağlı)</span>}
-              {isUrgentAlert && <AlertTriangle className="w-3 h-3 text-red-500" />}
+              {field.optional && <span className="text-[#6B5A48] font-normal">(İsteğe Bağlı)</span>}
+              {isUrgentAlert && <AlertTriangle className="w-3.5 h-3.5 text-[#8E7252]" />}
             </label>
             <FieldInput field={field} options={options} value={details[field.key]} onChange={(v) => setField(field.key, v)} />
           </div>
@@ -164,7 +162,7 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-2.5 rounded-xl border border-zinc-200 text-xs font-semibold text-slate-700    hover:bg-zinc-50 transition"
+          className="flex-1 py-2.5 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-xs font-bold text-[#141414] transition cursor-pointer"
         >
           İptal
         </button>
@@ -172,7 +170,7 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
           type="button"
           onClick={() => onSubmit(details)}
           disabled={isSubmitting}
-          className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-md shadow-amber-500/30 transition"
+          className="flex-1 py-2.5 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold shadow-sm transition cursor-pointer"
         >
           {isSubmitting ? 'Gönderiliyor...' : 'Talebi İlet'}
         </button>

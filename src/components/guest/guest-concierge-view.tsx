@@ -302,7 +302,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[96px] overflow-hidden touch-none' : activeTab === 'categories' ? 'pt-1 pb-[28px]' : 'mt-3 sm:mt-4 space-y-5 sm:space-y-6'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-1 pb-[96px] overflow-hidden touch-none' : 'pt-1 pb-[28px] space-y-4'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
@@ -317,28 +317,39 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
         {/* TAB 2: Experiences & Tours Grid (Tüm İlanlar) */}
         {activeTab === 'experiences' && (
-          <div className="space-y-4">
+          <div className="space-y-4 px-1">
             {selectedCategory && selectedCategory !== 'all' ? (
-              <div>
-                <h2 className="text-xl font-bold font-serif text-slate-900">{getCategoryLabel(selectedCategory)}</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+                  {getCategoryLabel(selectedCategory)}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('categories')}
+                  className="font-luxury-sans text-[11px] font-bold text-[#7D5E2A] bg-[#FAF8F4]/90 px-3 py-1.5 rounded-xl border border-[#C4B8A4] shadow-sm hover:bg-[#F3ECE0] transition cursor-pointer"
+                >
+                  ← {t.allCategories}
+                </button>
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-bold font-serif text-slate-900">{t.experiencesTitle}</h2>
-                <p className="text-xs text-slate-600">{t.experiencesSubtitle}</p>
+                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+                  {t.experiencesTitle}
+                </h2>
+                <p className="font-luxury-sans text-xs text-[#5C4938]">{t.experiencesSubtitle}</p>
               </div>
             )}
 
             {/* Search & Category Filter */}
             <div className="space-y-2.5">
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-600 absolute left-3.5 top-3.5" />
+                <Search className="w-4 h-4 text-[#8E7252] absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/50 backdrop-blur-md rounded-2xl border border-slate-900/10 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs font-luxury-sans text-[#141414] placeholder:text-[#78716C] bg-[#FAF8F4]/90 backdrop-blur-md rounded-2xl border-[1.5px] border-[#C4B8A4]/85 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40"
                 />
               </div>
 
@@ -349,10 +360,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     <button
                       key={cIdx}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`text-[11px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-medium transition cursor-pointer ${
+                      className={`font-luxury-sans text-[11px] px-3.5 py-1.5 rounded-xl whitespace-nowrap transition cursor-pointer ${
                         selectedCategory === cat
-                          ? 'bg-white/60 text-slate-900 font-bold shadow-sm'
-                          : 'bg-white/50 backdrop-blur-md text-slate-700 hover:bg-white/50 border border-amber-200/60'
+                          ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold shadow-sm border border-[#7D5E2A]'
+                          : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border border-[#C4B8A4]/80'
                       }`}
                     >
                       {getCategoryLabel(cat)}
@@ -363,7 +374,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             </div>
 
             {/* Experiences Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
               {filteredExperiences.map((exp) => (
                 <ExperienceCard
                   key={exp.id}
@@ -381,10 +392,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             </div>
 
             {filteredExperiences.length === 0 && (
-              <div className="text-center py-12 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-900/10 p-6 space-y-2">
-                <Compass className="w-10 h-10 text-amber-500/40 mx-auto" />
-                <h3 className="text-sm font-bold text-slate-900">{t.noRequests}</h3>
-                <p className="text-xs text-slate-600 max-w-xs mx-auto">
+              <div className="luxury-service-card text-center py-10 p-6 space-y-2.5">
+                <Compass className="w-10 h-10 text-[#8E7252] mx-auto stroke-[1.6]" />
+                <h3 className="font-luxury-serif text-base font-bold text-[#141414]">{t.noRequests}</h3>
+                <p className="font-luxury-sans text-xs text-[#5C4938] max-w-xs mx-auto">
                   Arama kriterlerinize uygun ilan bulunamadı. Lütfen filtreyi temizleyiniz.
                 </p>
                 <button
@@ -392,7 +403,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     setSelectedCategory('all');
                     setSearchQuery('');
                   }}
-                  className="mt-2 text-xs font-bold text-amber-700 bg-white/50 px-4 py-2 rounded-xl border border-amber-200"
+                  className="mt-2 font-luxury-sans text-xs font-bold text-white bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] px-4 py-2 rounded-xl shadow-sm cursor-pointer"
                 >
                   {t.allCategories}
                 </button>
@@ -444,10 +455,12 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
         {/* TAB 4: Practical Info & Ombudsman (Rehber & Haklar) */}
         {activeTab === 'practical' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-bold font-serif text-slate-900">{t.practicalTitle}</h2>
-              <p className="text-xs text-slate-600">{t.practicalSubtitle}</p>
+          <div className="space-y-4">
+            <div className="px-1">
+              <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+                {t.practicalTitle}
+              </h2>
+              <p className="font-luxury-sans text-xs text-[#5C4938]">{t.practicalSubtitle}</p>
             </div>
 
             {/* Xenios Fair Shopping Policy & Misafir Kalkanı Component */}
@@ -543,7 +556,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       {/* In-Room Requests Modal (Triggered from Top Hotel Card) */}
       {showRequestsModal && (
         <div 
-          className="fixed inset-0 z-50 overflow-y-scroll bg-white/80 backdrop-blur-sm p-3 sm:p-6"
+          className="fixed inset-0 z-50 overflow-y-scroll bg-black/45 backdrop-blur-sm p-3 sm:p-6"
           style={{ WebkitOverflowScrolling: 'touch' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowRequestsModal(false);
@@ -551,54 +564,54 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         >
           <div className="min-h-full flex items-center justify-center py-6">
             <div 
-              className="relative w-full max-w-lg bg-white/50 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95 text-slate-900"
+              className="luxury-service-card relative w-full max-w-lg p-5 sm:p-6 space-y-4 animate-in zoom-in-95 text-[#141414]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center text-amber-700">
-                    <Bell className="w-4 h-4" />
+              <div className="flex items-center justify-between border-b border-[#D8CBB8] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-[#FAF8F4] border border-[#C4B8A4] flex items-center justify-center text-[#8E7252] shadow-sm">
+                    <Bell className="w-4 h-4 stroke-[1.75]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">{t.activeRequests}</h3>
-                    <p className="text-[11px] text-slate-600">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
+                    <h3 className="font-luxury-serif text-base font-bold text-[#141414]">{t.activeRequests}</h3>
+                    <p className="font-luxury-sans text-[11px] text-[#5C4938]">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowRequestsModal(false)} 
-                  className="w-7 h-7 rounded-full bg-white/60 hover:bg-black/60 text-slate-900 flex items-center justify-center text-sm font-bold cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] text-[#141414] flex items-center justify-center text-xs font-bold cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               {requests.length === 0 ? (
-                <div className="py-8 text-center text-slate-600 space-y-2">
-                  <Bell className="w-8 h-8 mx-auto text-amber-400 opacity-50" />
-                  <p className="text-xs">{t.noRequests}</p>
+                <div className="py-8 text-center text-[#5C4938] space-y-2">
+                  <Bell className="w-8 h-8 mx-auto text-[#8E7252] opacity-60 stroke-[1.6]" />
+                  <p className="font-luxury-sans text-xs">{t.noRequests}</p>
                 </div>
               ) : (
                 <div className="space-y-2.5">
                   {requests.map((req) => (
                     <div
                       key={req.id}
-                      className="bg-white/50 p-3.5 rounded-2xl border border-slate-900/10 flex items-center justify-between gap-3 text-xs"
+                      className="bg-[#FAF8F4]/90 p-3.5 rounded-2xl border border-[#C4B8A4]/80 flex items-center justify-between gap-3 text-xs shadow-sm"
                     >
                       <div className="space-y-1">
-                        <strong className="text-slate-900 block">{req.serviceTitle}</strong>
-                        {req.notes && <p className="text-[11px] text-slate-700">{req.notes}</p>}
-                        <div className="flex items-center gap-1 text-[10px] text-slate-600 font-mono">
-                          <Clock className="w-3.5 h-3.5 text-slate-600" />
+                        <strong className="font-luxury-sans text-[#141414] font-bold block">{req.serviceTitle}</strong>
+                        {req.notes && <p className="font-luxury-sans text-[11px] text-[#3D352E]">{req.notes}</p>}
+                        <div className="flex items-center gap-1 text-[10px] text-[#6B5A48] font-mono">
+                          <Clock className="w-3.5 h-3.5 text-[#8E7252]" />
                           <span>{new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       </div>
 
-                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
+                      <span className={`font-luxury-sans text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 border ${
                         req.status === 'completed' 
-                          ? 'bg-emerald-100 text-emerald-800' 
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
                           : req.status === 'in_progress'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-amber-100 text-amber-800 animate-pulse'
+                            ? 'bg-amber-50 text-[#7D5E2A] border-[#D8CBB8]'
+                            : 'bg-[#FAF3E6] text-[#8C6D46] border-[#C4B8A4] animate-pulse'
                       }`}>
                         {t.requestStatus[req.status]}
                       </span>

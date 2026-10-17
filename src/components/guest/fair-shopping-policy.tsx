@@ -20,9 +20,9 @@ import {
   Landmark
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Language } from '@/lib/types';
 import { getT } from '@/lib/i18n';
+import { LuxuryCategoryIcon } from './luxury-category-icon';
 
 interface FairShoppingPolicyProps {
   lang?: Language;
@@ -393,46 +393,30 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
   const [openTrap, setOpenTrap] = useState<number | null>(null);
 
   return (
-    <div className="space-y-6">
-      
-      {/* RESMİ İSTANBULKART & MÜZEKART MODÜLLERİ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="space-y-5 font-luxury-sans text-[#141414]">
+      {/* RESMİ İSTANBULKART & MÜZEKART MODÜLLERİ — 2-Column Luxury Grid matching Hotel Page */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
         {/* İstanbulkart Card */}
-        <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
-          <div className="space-y-3">
-            {/* Top row: Icon box & Skyline artwork */}
-            <div className="flex items-center justify-between gap-2 pt-1">
-              <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-red-500/40 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-                <Image 
-                  src="/icons/istanbulkart.png" 
-                  alt={lt.officialIstanbulkartTitle} 
-                  width={84} 
-                  height={54} 
-                  className="object-contain" 
-                />
-              </div>
-              <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
-                <Image 
-                  src="/images/istanbul-skyline-paper.png" 
-                  alt="Istanbul Skyline" 
-                  width={240} 
-                  height={60} 
-                  className="h-full w-auto object-contain drop-shadow-sm opacity-90"
-                />
-              </div>
+        <div className="luxury-service-card p-5 space-y-3.5 flex flex-col justify-between relative overflow-hidden">
+          <div className="flex items-start gap-3.5">
+            <div className="shrink-0 flex items-center justify-center">
+              <LuxuryCategoryIcon categoryKey="istanbulkart" className="w-16 h-16 sm:w-20 sm:h-20" />
             </div>
-
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{lt.officialIstanbulkartTitle}</h3>
-            <p className="text-xs text-slate-900/85 leading-relaxed">
-              {lt.officialIstanbulkartDesc}
-            </p>
+            <div className="space-y-1.5 min-w-0">
+              <h3 className="font-luxury-sans text-[14.5px] sm:text-[16px] font-bold text-[#141414] leading-snug">
+                {lt.officialIstanbulkartTitle}
+              </h3>
+              <p className="text-xs text-[#4A433B] leading-relaxed">
+                {lt.officialIstanbulkartDesc}
+              </p>
+            </div>
           </div>
 
           <a
             href="https://www.istanbulkart.istanbul"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-slate-900 text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8E6C35] hover:to-[#6B4F21] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-[0_6px_14px_rgba(92,68,30,0.22)] transition cursor-pointer"
           >
             <span>{lt.officialIstanbulkartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -440,41 +424,26 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
         </div>
 
         {/* MüzeKart Card */}
-        <div className="bg-black/40 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg space-y-4 flex flex-col justify-between relative overflow-hidden">
-          <div className="space-y-3">
-            {/* Top row: Icon box & Skyline artwork */}
-            <div className="flex items-center justify-between gap-2 pt-1">
-              <div className="h-16 w-24 rounded-2xl bg-black/40 p-1.5 border border-white/30 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-                <Image 
-                  src="/icons/muzekart.png" 
-                  alt={lt.officialMuzekartTitle}
-                  width={84} 
-                  height={54} 
-                  className="object-contain" 
-                />
-              </div>
-              <div className="h-14 sm:h-16 max-w-[55%] flex items-center justify-end overflow-hidden">
-                <Image 
-                  src="/images/istanbul-skyline-paper.png" 
-                  alt="Istanbul Skyline" 
-                  width={240} 
-                  height={60} 
-                  className="h-full w-auto object-contain drop-shadow-sm opacity-90"
-                />
-              </div>
+        <div className="luxury-service-card p-5 space-y-3.5 flex flex-col justify-between relative overflow-hidden">
+          <div className="flex items-start gap-3.5">
+            <div className="shrink-0 flex items-center justify-center">
+              <LuxuryCategoryIcon categoryKey="muzekart" className="w-16 h-16 sm:w-20 sm:h-20" />
             </div>
-
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{lt.officialMuzekartTitle}</h3>
-            <p className="text-xs text-slate-900/85 leading-relaxed">
-              {lt.officialMuzekartDesc}
-            </p>
+            <div className="space-y-1.5 min-w-0">
+              <h3 className="font-luxury-sans text-[14.5px] sm:text-[16px] font-bold text-[#141414] leading-snug">
+                {lt.officialMuzekartTitle}
+              </h3>
+              <p className="text-xs text-[#4A433B] leading-relaxed">
+                {lt.officialMuzekartDesc}
+              </p>
+            </div>
           </div>
 
           <a
             href="https://muze.gov.tr"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 rounded-2xl bg-[#e66a00] hover:bg-[#d05f00] text-slate-900 text-xs font-bold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8E6C35] hover:to-[#6B4F21] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-[0_6px_14px_rgba(92,68,30,0.22)] transition cursor-pointer"
           >
             <span>{lt.officialMuzekartLink}</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -483,118 +452,117 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
       </div>
 
       {/* SECTION 1: purelyİstanbul MİSAFİR KALKANI */}
-      <div className="space-y-5">
-          
-          <div className="space-y-3">
-            <h3 className="text-base font-bold font-serif text-slate-900">
+      <div className="space-y-4">
+        <div className="luxury-service-card p-5 space-y-3.5">
+          <div className="flex items-center gap-3">
+            <LuxuryCategoryIcon categoryKey="shield" className="w-12 h-12 shrink-0" />
+            <h3 className="font-luxury-serif text-lg sm:text-xl font-semibold text-[#141414] tracking-wide">
               {lt.shieldTitle}
             </h3>
+          </div>
 
-            <div className="space-y-3">
-              {shieldTopics.map((item) => (
-                <div key={item.id} className="bg-black/20 backdrop-blur-md rounded-3xl border border-white/20 shadow-xs overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => setOpenTrap(openTrap === item.id ? null : item.id)}
-                    className="w-full p-4 text-left font-bold text-xs sm:text-sm text-slate-900 bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-full bg-amber-600 text-slate-900 text-xs font-bold flex items-center justify-center shrink-0">
-                        {item.id}
-                      </span>
-                      <span>{item.title}</span>
-                    </div>
-                    {openTrap === item.id ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
-                  </button>
-
-                  {openTrap === item.id && (
-                    <div className="p-5 space-y-3.5 text-xs text-slate-900/90 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
-                      <div className="space-y-1">
-                        <strong className="text-red-700 block font-bold">{lt.problemLabel}</strong>
-                        <div>{item.problem}</div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <strong className="text-amber-700 block font-bold">{lt.riskLabel}</strong>
-                        <p>{item.risk}</p>
-                      </div>
-
-                      <div className="space-y-1 bg-emerald-50/60 p-3 rounded-xl border border-emerald-200">
-                        <strong className="text-emerald-800 block font-bold">{lt.actionLabel}</strong>
-                        <p className="text-emerald-950">{item.action}</p>
-                      </div>
-
-                      <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/20">
-                        <strong className="text-slate-900 block font-bold">{lt.lawLabel}</strong>
-                        <p className="text-slate-700">{item.law}</p>
-                      </div>
-                    </div>
+          <div className="space-y-2.5">
+            {shieldTopics.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-2xl bg-[#FAF8F4]/90 border border-[#D8CBB8] overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenTrap(openTrap === item.id ? null : item.id)}
+                  className="w-full p-3.5 text-left font-bold text-xs sm:text-sm text-[#141414] hover:bg-[#F3ECE0]/70 flex items-center justify-between transition cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-6 h-6 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs">
+                      {item.id}
+                    </span>
+                    <span>{item.title}</span>
+                  </div>
+                  {openTrap === item.id ? (
+                    <ChevronUp className="w-4 h-4 text-[#8C6D46]" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-[#8C6D46]" />
                   )}
-                </div>
-              ))}
-            </div>
-          </div>
+                </button>
 
-          {/* Emergency Contacts */}
-          <div className="bg-black/20 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-sm space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center p-1 border border-red-200">
-                <Image src="/icons/sos-emergency.png" alt="SOS Acil" width={20} height={20} className="object-contain" />
-              </div>
-              <h3 className="text-sm font-bold text-slate-900">{lt.emergencyContactsTitle}</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-slate-600 block text-[10px]">{lt.emergencyCallCenter}</span>
-                <strong className="text-red-600 text-sm font-mono">112</strong>
-              </div>
-              <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-slate-600 block text-[10px]">{lt.tourismPolice}</span>
-                <strong className="text-slate-900 text-sm font-mono font-bold">+90 212 527 45 03</strong>
-              </div>
-              <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-slate-600 block text-[10px]">{lt.ibbWhiteDesk}</span>
-                <strong className="text-slate-900 text-sm font-mono">153</strong>
-              </div>
-              <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-                <span className="text-slate-600 block text-[10px]">{lt.zabıta}</span>
-                <strong className="text-amber-800 text-sm font-mono">153</strong>
-              </div>
-            </div>
-          </div>
+                {openTrap === item.id && (
+                  <div className="p-4 space-y-3 text-xs text-[#2C2620] bg-[#FDFBF7] border-t border-[#E5DEC9] leading-relaxed">
+                    <div className="space-y-1">
+                      <strong className="text-[#8B3A2B] block font-bold">{lt.problemLabel}</strong>
+                      <div>{item.problem}</div>
+                    </div>
 
+                    <div className="space-y-1">
+                      <strong className="text-[#8C6D46] block font-bold">{lt.riskLabel}</strong>
+                      <p>{item.risk}</p>
+                    </div>
+
+                    <div className="space-y-1 bg-[#F5EFE4] p-3 rounded-xl border border-[#D8C7A8]">
+                      <strong className="text-[#5C4322] block font-bold">{lt.actionLabel}</strong>
+                      <p className="text-[#2C2620]">{item.action}</p>
+                    </div>
+
+                    <div className="space-y-1 bg-white/80 p-3 rounded-xl border border-[#E5DEC9]">
+                      <strong className="text-[#141414] block font-bold">{lt.lawLabel}</strong>
+                      <p className="text-[#4A433B]">{item.law}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-      {/* SECTION 2: purelyİstanbul ADİL ALIŞVERİŞ POLİTİKASI */}
-      <div className="space-y-6">
-        <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-md space-y-5">
-          <div className="flex flex-col items-center text-center space-y-2">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-red-600 text-white text-xs font-bold uppercase tracking-wider shadow-md">
-              {lt.badExperienceBadge}
+        {/* Emergency Contacts */}
+        <div className="luxury-service-card p-5 space-y-3.5">
+          <div className="flex items-center gap-3">
+            <LuxuryCategoryIcon categoryKey="emergency" className="w-12 h-12 shrink-0" />
+            <h3 className="font-luxury-serif text-lg font-semibold text-[#141414]">
+              {lt.emergencyContactsTitle}
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+            <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+              <span className="text-[#6E655B] block text-[10.5px] font-medium">{lt.emergencyCallCenter}</span>
+              <strong className="text-[#8B3A2B] text-sm font-mono font-bold">112</strong>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-serif text-slate-900 mt-2">
+            <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+              <span className="text-[#6E655B] block text-[10.5px] font-medium">{lt.tourismPolice}</span>
+              <strong className="text-[#141414] text-sm font-mono font-bold">+90 212 527 45 03</strong>
+            </div>
+            <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+              <span className="text-[#6E655B] block text-[10.5px] font-medium">{lt.ibbWhiteDesk}</span>
+              <strong className="text-[#141414] text-sm font-mono font-bold">153</strong>
+            </div>
+            <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+              <span className="text-[#6E655B] block text-[10.5px] font-medium">{lt.zabıta}</span>
+              <strong className="text-[#8C6D46] text-sm font-mono font-bold">153</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 2: purelyİstanbul ADİL ALIŞVERİŞ POLİTİKASI */}
+      <div className="space-y-4">
+        <div className="luxury-service-card p-5 sm:p-6 space-y-4">
+          <div className="flex flex-col items-center text-center space-y-2">
+            <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#F5EFE4] border border-[#C9AE82] text-[#6E501E] text-[11px] font-bold uppercase tracking-wider">
+              {lt.badExperienceBadge}
+            </span>
+            <h2 className="font-luxury-serif text-xl sm:text-2xl font-semibold text-[#141414] mt-1">
               {lt.policyMainTitle}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-700 max-w-xl">
+            <p className="text-xs text-[#4A433B] max-w-xl leading-relaxed">
               {lt.policyMainDesc}
             </p>
           </div>
 
-          <div className="bg-black/20 backdrop-blur-md p-5 rounded-2xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-orange-500/10 p-1.5 flex items-center justify-center shrink-0 border border-orange-200/80 shadow-xs">
-                <Image
-                  src="/icons/bad-experience.png"
-                  alt="Bad Experience"
-                  width={48}
-                  height={48}
-                  unoptimized
-                  className="object-contain"
-                />
-              </div>
+          <div className="bg-[#FAF8F4]/90 p-4 rounded-2xl border border-[#D8CBB8] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+            <div className="flex items-center gap-3.5 text-center sm:text-left">
+              <LuxuryCategoryIcon categoryKey="complaint" className="w-14 h-14 shrink-0" />
               <div>
-                <h4 className="text-sm font-bold text-slate-900">{lt.sorryTitle}</h4>
-                <p className="text-xs text-slate-700 mt-0.5 max-w-md">
+                <h4 className="text-sm font-bold text-[#141414]">{lt.sorryTitle}</h4>
+                <p className="text-xs text-[#4A433B] mt-0.5 max-w-md">
                   {lt.sorryDesc}
                 </p>
               </div>
@@ -602,119 +570,122 @@ export function FairShoppingPolicy({ lang = 'tr' }: FairShoppingPolicyProps) {
 
             <Link
               href="/complaints"
-              className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-md transition shrink-0 flex items-center gap-1.5 cursor-pointer"
+              className="px-5 py-2.5 bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8E6C35] hover:to-[#6B4F21] text-white text-xs font-bold rounded-2xl shadow-[0_6px_14px_rgba(92,68,30,0.22)] transition shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
               <span>{lt.submitComplaintBtn}</span>
             </Link>
           </div>
         </div>
 
-          <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
-              <span>{lt.howToComplainTitle}</span>
-            </h3>
+        <div className="luxury-service-card p-5 sm:p-6 space-y-3.5">
+          <h3 className="font-luxury-serif text-lg font-semibold text-[#141414]">
+            {lt.howToComplainTitle}
+          </h3>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse border border-white/20 rounded-xl overflow-hidden">
-                <thead>
-                  <tr className="bg-white/10 text-slate-900 font-bold border-b border-white/20">
-                    <th className="p-2.5">{lt.proofType}</th>
-                    <th className="p-2.5">{lt.whatIsIt}</th>
-                    <th className="p-2.5">{lt.example}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/20 text-slate-700">
-                  <tr>
-                    <td className="p-2.5 font-bold text-slate-900">{lt.proofReceipt}</td>
-                    <td className="p-2.5">{lt.proofReceiptDesc}</td>
-                    <td className="p-2.5">{lt.proofReceiptEx}</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-slate-900">{lt.proofScreenshot}</td>
-                    <td className="p-2.5">{lt.proofScreenshotDesc}</td>
-                    <td className="p-2.5">{lt.proofScreenshotEx}</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-slate-900">{lt.proofLocation}</td>
-                    <td className="p-2.5">{lt.proofLocationDesc}</td>
-                    <td className="p-2.5">{lt.proofLocationEx}</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-bold text-slate-900">{lt.proofTaxi}</td>
-                    <td className="p-2.5">{lt.proofTaxiDesc}</td>
-                    <td className="p-2.5">{lt.proofTaxiEx}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left border-collapse border border-[#D8CBB8] rounded-xl overflow-hidden bg-[#FAF8F4]/85">
+              <thead>
+                <tr className="bg-[#F3ECE0] text-[#141414] font-bold border-b border-[#D8CBB8]">
+                  <th className="p-2.5">{lt.proofType}</th>
+                  <th className="p-2.5">{lt.whatIsIt}</th>
+                  <th className="p-2.5">{lt.example}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5DEC9] text-[#4A433B]">
+                <tr>
+                  <td className="p-2.5 font-bold text-[#141414]">{lt.proofReceipt}</td>
+                  <td className="p-2.5">{lt.proofReceiptDesc}</td>
+                  <td className="p-2.5">{lt.proofReceiptEx}</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-[#141414]">{lt.proofScreenshot}</td>
+                  <td className="p-2.5">{lt.proofScreenshotDesc}</td>
+                  <td className="p-2.5">{lt.proofScreenshotEx}</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-[#141414]">{lt.proofLocation}</td>
+                  <td className="p-2.5">{lt.proofLocationDesc}</td>
+                  <td className="p-2.5">{lt.proofLocationEx}</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-[#141414]">{lt.proofTaxi}</td>
+                  <td className="p-2.5">{lt.proofTaxiDesc}</td>
+                  <td className="p-2.5">{lt.proofTaxiEx}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
-          <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
-              <span>{lt.whatHappensNextTitle}</span>
-            </h3>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-1">
-                <strong className="text-slate-900 font-bold block">{lt.step1Title}</strong>
-                <p className="text-slate-700">{lt.step1Desc}</p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-1">
-                <strong className="text-slate-900 font-bold block">{lt.step2Title}</strong>
-                <p className="text-slate-700">{lt.step2Desc}</p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/20 space-y-2.5">
-                <strong className="text-slate-900 font-bold block">{lt.step3Title}</strong>
-
-                <div className="p-3 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl space-y-1">
-                  <strong className="text-slate-900 font-bold flex items-center gap-1.5">
-                    <Landmark className="w-4 h-4 text-red-600" />
-                    <span>{lt.cimerTitle}</span>
-                  </strong>
-                  <p className="text-slate-600">{lt.cimerDesc}</p>
-                </div>
-
-                <div className="p-3 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl space-y-1">
-                  <strong className="text-slate-900 font-bold flex items-center gap-1.5">
-                    <Car className="w-4 h-4 text-amber-600" />
-                    <span>{lt.tudesTitle}</span>
-                  </strong>
-                  <p className="text-slate-600">{lt.tudesDesc}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-sm space-y-4">
-            <h3 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-amber-600" />
-              <span>{lt.faqTitle}</span>
-            </h3>
-
-            <div className="space-y-2 text-xs">
-              {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-white/20 rounded-2xl overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full p-3.5 text-left font-bold text-slate-900 bg-white/5 hover:bg-white/10 flex items-center justify-between transition cursor-pointer"
-                  >
-                    <span>{faq.q}</span>
-                    {openFaq === idx ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
-                  </button>
-                  {openFaq === idx && (
-                    <div className="p-3.5 text-slate-700 bg-black/20 backdrop-blur-md border-t border-white/20 leading-relaxed">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
+
+        <div className="luxury-service-card p-5 sm:p-6 space-y-3.5">
+          <h3 className="font-luxury-serif text-lg font-semibold text-[#141414]">
+            {lt.whatHappensNextTitle}
+          </h3>
+
+          <div className="space-y-2.5 text-xs">
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#D8CBB8] space-y-1">
+              <strong className="text-[#141414] font-bold block">{lt.step1Title}</strong>
+              <p className="text-[#4A433B]">{lt.step1Desc}</p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#D8CBB8] space-y-1">
+              <strong className="text-[#141414] font-bold block">{lt.step2Title}</strong>
+              <p className="text-[#4A433B]">{lt.step2Desc}</p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#D8CBB8] space-y-2.5">
+              <strong className="text-[#141414] font-bold block">{lt.step3Title}</strong>
+
+              <div className="p-3 bg-white/80 border border-[#E5DEC9] rounded-xl space-y-1">
+                <strong className="text-[#141414] font-bold flex items-center gap-1.5">
+                  <Landmark className="w-4 h-4 text-[#8C6D46]" />
+                  <span>{lt.cimerTitle}</span>
+                </strong>
+                <p className="text-[#4A433B]">{lt.cimerDesc}</p>
+              </div>
+
+              <div className="p-3 bg-white/80 border border-[#E5DEC9] rounded-xl space-y-1">
+                <strong className="text-[#141414] font-bold flex items-center gap-1.5">
+                  <Car className="w-4 h-4 text-[#8C6D46]" />
+                  <span>{lt.tudesTitle}</span>
+                </strong>
+                <p className="text-[#4A433B]">{lt.tudesDesc}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="luxury-service-card p-5 sm:p-6 space-y-3.5">
+          <h3 className="font-luxury-serif text-lg font-semibold text-[#141414] flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-[#8C6D46]" />
+            <span>{lt.faqTitle}</span>
+          </h3>
+
+          <div className="space-y-2 text-xs">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="border border-[#D8CBB8] bg-[#FAF8F4]/90 rounded-2xl overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-3.5 text-left font-bold text-[#141414] hover:bg-[#F3ECE0]/70 flex items-center justify-between transition cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  {openFaq === idx ? (
+                    <ChevronUp className="w-4 h-4 text-[#8C6D46]" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-[#8C6D46]" />
+                  )}
+                </button>
+                {openFaq === idx && (
+                  <div className="p-3.5 text-[#4A433B] bg-[#FDFBF7] border-t border-[#E5DEC9] leading-relaxed">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

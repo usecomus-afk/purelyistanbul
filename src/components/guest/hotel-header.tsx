@@ -8,6 +8,7 @@ import { getT } from '@/lib/i18n';
 import { LanguageSelector } from './language-selector';
 import { PwaNotificationModal } from '../pwa-notification-modal';
 import { OnlineCheckinModal } from './online-checkin-modal';
+import { LuxuryCategoryIcon } from './luxury-category-icon';
 import { PwaNotificationManager } from '@/lib/pwa-notifications';
 import { BrandMark } from '../brand-mark';
 import { XeniosStore } from '@/lib/store';
@@ -174,59 +175,67 @@ export function HotelHeader({
       </div>
       {/* FULL HOTEL & WI-FI DETAILS MODAL (Tıklanınca Açılan Pencere) */}
       {showHotelModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white   rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-amber-200 max-h-[85vh] overflow-y-auto space-y-4 animate-in zoom-in-95 text-slate-900  relative">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowHotelModal(false);
+          }}
+        >
+          <div 
+            className="luxury-service-card max-w-lg w-full p-5 sm:p-6 max-h-[85vh] overflow-y-auto space-y-4 animate-in zoom-in-95 text-[#141414] relative font-luxury-sans"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             <button
               onClick={() => setShowHotelModal(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-slate-700 flex items-center justify-center text-sm font-bold cursor-pointer"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] flex items-center justify-center text-sm font-bold cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 stroke-[1.8]" />
             </button>
 
             {/* Hotel Title & Badge */}
-            <div className="space-y-1 pr-8">
+            <div className="space-y-1.5 pr-8">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-900 font-bold uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-[#FAF8F4] border border-[#C4B8A4] text-[#7D5E2A] font-bold uppercase tracking-wider">
                   {hotel.type}
                 </span>
-                <span className="px-2.5 py-0.5 bg-amber-500 text-white rounded-full text-xs font-bold">
+                <span className="px-2.5 py-0.5 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white rounded-full text-xs font-bold">
                   {t.room} {roomNumber}
                 </span>
               </div>
-              <h2 className="text-xl font-bold font-serif text-slate-900 ">{hotel.name}</h2>
-              <p className="text-xs text-slate-500  flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <h2 className="font-luxury-serif text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">{hotel.name}</h2>
+              <p className="text-xs text-[#5C4938] flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
                 <span>{hotel.address}</span>
               </p>
             </div>
 
             {/* Wi-Fi Credentials Box */}
-            <div className="bg-gradient-to-r from-amber-500/10 via-amber-100/30 to-amber-50 p-4 rounded-2xl border border-amber-300/80 space-y-2.5">
+            <div className="bg-[#FAF8F4]/90 p-4 rounded-2xl border border-[#C4B8A4] space-y-2.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center">
-                    <Wifi className="w-4 h-4" />
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-white border border-[#C4B8A4] text-[#8E7252] flex items-center justify-center shadow-2xs">
+                    <Wifi className="w-4 h-4 stroke-[1.75]" />
                   </div>
                   <div>
-                    <strong className="text-xs text-slate-900  block">{t.wifiNetwork}</strong>
-                    <span className="text-[11px] text-slate-600  font-mono">{wifiSsid}</span>
+                    <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">{t.wifiNetwork}</strong>
+                    <span className="text-[11px] text-[#5C4938] font-mono">{wifiSsid}</span>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={copyWifi}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
                 >
                   {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? t.wifiCopied : t.wifiCopy}</span>
                 </button>
               </div>
 
-              <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between text-xs">
-                <span className="text-slate-500 ">{t.wifiPassword}:</span>
-                <code className="bg-white   px-2.5 py-1 rounded-lg text-amber-900 font-mono font-bold border border-amber-200 text-xs">
+              <div className="pt-2 border-t border-[#D8CBB8] flex items-center justify-between text-xs">
+                <span className="text-[#5C4938] font-semibold">{t.wifiPassword}:</span>
+                <code className="bg-white px-2.5 py-1 rounded-lg text-[#7D5E2A] font-mono font-bold border border-[#C4B8A4] text-xs">
                   {wifiPass}
                 </code>
               </div>
@@ -234,16 +243,16 @@ export function HotelHeader({
 
             {/* Key Hotel Schedules & Services Grid */}
             <div className="grid grid-cols-2 gap-2.5 text-xs">
-              <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-zinc-400 block">{t.breakfast}</span>
-                <strong className="text-slate-800  block text-xs">{hotel.breakfastHours}</strong>
-                <span className="text-[10px] text-slate-500 ">Ana Restoran / Teras</span>
+              <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#7D5E2A] block">{t.breakfast}</span>
+                <strong className="font-luxury-serif text-[#141414] block text-sm font-bold">{hotel.breakfastHours}</strong>
+                <span className="text-[10px] text-[#5C4938]">Ana Restoran / Teras</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-zinc-400 block">{t.checkout}</span>
-                <strong className="text-slate-800  block text-xs">{hotel.checkoutTime}</strong>
-                <span className="text-[10px] text-slate-500 ">Geç çıkış için resepsiyon</span>
+              <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#7D5E2A] block">{t.checkout}</span>
+                <strong className="font-luxury-serif text-[#141414] block text-sm font-bold">{hotel.checkoutTime}</strong>
+                <span className="text-[10px] text-[#5C4938]">Geç çıkış için resepsiyon</span>
               </div>
             </div>
 
@@ -251,15 +260,15 @@ export function HotelHeader({
             <div className="space-y-2 pt-1">
               <div className={hotel.modules?.enable_guest_self_kbs !== false ? "grid grid-cols-2 gap-2" : ""}>
                 {/* 50% Width Reception Extension Badge */}
-                <div className="p-3 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center justify-between text-xs">
+                <div className="p-3 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Phone className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    <Phone className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
                     <div className="truncate">
-                      <strong className="text-slate-900  block text-[11px] truncate">{t.receptionExt}</strong>
-                      <span className="text-[9px] text-slate-500  block truncate">Dahili Hat</span>
+                      <strong className="text-[#141414] block text-[11px] truncate">{t.receptionExt}</strong>
+                      <span className="text-[9px] text-[#5C4938] block truncate">Dahili Hat</span>
                     </div>
                   </div>
-                  <strong className="text-xs font-mono text-amber-800 bg-white   px-2 py-0.5 rounded-lg border border-amber-200 font-bold shrink-0 ml-1">
+                  <strong className="text-xs font-mono text-[#7D5E2A] bg-white px-2 py-0.5 rounded-lg border border-[#C4B8A4] font-bold shrink-0 ml-1">
                     {hotel.receptionExt}
                   </strong>
                 </div>
@@ -272,22 +281,16 @@ export function HotelHeader({
                       setShowHotelModal(false);
                       setShowCheckinModal(true);
                     }}
-                    className="p-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-300/80 flex items-center gap-2 text-left transition cursor-pointer group shadow-2xs"
+                    className="p-2.5 rounded-2xl bg-[#FAF8F4]/90 hover:bg-[#EFE8DA] border border-[#C4B8A4] flex items-center gap-2 text-left transition cursor-pointer group shadow-2xs"
                   >
-                    <div className="w-7 h-7 rounded-xl bg-white   border border-amber-200 flex items-center justify-center shrink-0 p-0.5 shadow-2xs">
-                      <Image 
-                        src="/icons/kbs-online-checkin.png" 
-                        alt="Online Check-in" 
-                        width={24} 
-                        height={24} 
-                        className="w-full h-full object-contain"
-                      />
+                    <div className="shrink-0">
+                      <LuxuryCategoryIcon categoryKey="kbs" className="w-9 h-9" />
                     </div>
                     <div className="min-w-0">
-                      <strong className="text-[11px] font-bold text-amber-950 block truncate group-hover:text-amber-900">
+                      <strong className="text-[11px] font-bold text-[#141414] block truncate">
                         Online Check-in
                       </strong>
-                      <span className="text-[9px] text-amber-700 block truncate">
+                      <span className="text-[9px] text-[#7D5E2A] font-semibold block truncate">
                         Kimlik & KBS
                       </span>
                     </div>
@@ -302,7 +305,7 @@ export function HotelHeader({
                     setShowHotelModal(false);
                     onOpenRequests();
                   }}
-                  className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <BellRing className="w-4 h-4" />
                   <span>{t.activeRequests} ({activeRequestsCount})</span>

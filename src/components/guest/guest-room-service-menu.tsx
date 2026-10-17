@@ -3,7 +3,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { RoomServiceMenuItem, Hotel } from '@/lib/types';
-import { Plus, Minus, Info, Clock, CheckCircle2, ChevronRight, UtensilsCrossed } from 'lucide-react';
+import { LuxuryServiceIcon } from './luxury-service-icon';
+import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
 import { getT } from '@/lib/i18n';
@@ -107,33 +108,33 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   };
 
   return (
-    <div className="flex flex-col h-[85vh] bg-zinc-50 rounded-t-3xl sm:rounded-3xl overflow-hidden relative shadow-2xl">
+    <div className="flex flex-col h-[85vh] bg-[#F7F3EA] rounded-t-[24px] sm:rounded-[24px] border-[1.5px] border-[#C4B8A4] overflow-hidden relative shadow-2xl text-[#141414]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-white   border-b border-zinc-100 z-10 shrink-0">
+      <div className="flex items-center justify-between p-4 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[#C4B8A4] z-10 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-            <UtensilsCrossed className="w-5 h-5" />
+          <div className="shrink-0">
+            <LuxuryServiceIcon serviceKey="roomservice" className="w-11 h-11" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 ">Oda Servisi Menüsü</h3>
-            <p className="text-[10px] text-slate-600  font-mono">Oda {roomNumber}</p>
+            <h3 className="font-luxury-serif text-[17px] font-bold uppercase tracking-[0.04em] text-[#141414]">Oda Servisi Menüsü</h3>
+            <p className="font-luxury-sans text-[11px] text-[#5C4938] font-medium">{hotel.name} · Oda {roomNumber}</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-800 font-bold bg-zinc-100 hover:bg-zinc-200 rounded-full transition">
+        <button onClick={onClose} className="w-8 h-8 text-[#141414] font-bold bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full flex items-center justify-center transition cursor-pointer">
           ✕
         </button>
       </div>
 
       {/* Categories */}
-      <div className="flex overflow-x-auto gap-2 p-3 bg-white   border-b border-zinc-100 shrink-0 hide-scrollbar">
+      <div className="flex overflow-x-auto gap-2 p-3 bg-[#FAF8F4] border-b border-[#D8CBB8] shrink-0 hide-scrollbar">
         {categories.map(cat => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
+            className={`font-luxury-sans px-4 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors border cursor-pointer ${
               selectedCategory === cat 
-                ? 'bg-amber-500 text-white shadow-sm' 
-                : 'bg-zinc-100 text-slate-700  hover:bg-zinc-200'
+                ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm' 
+                : 'bg-[#F7F3EA] text-[#221F1C] font-semibold border-[#C4B8A4] hover:bg-[#EFE8DA]'
             }`}
           >
             {cat}
@@ -142,58 +143,58 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Item List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-44">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 pb-44">
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
           return (
-            <div key={item.id} className="bg-white   rounded-2xl p-4 shadow-xs border border-zinc-100 flex gap-4 transition-all">
+            <div key={item.id} className="luxury-service-card p-3.5 flex gap-3.5 transition-all">
               {/* Image placeholder if none */}
-              <div className="w-24 h-24 rounded-xl bg-zinc-100 overflow-hidden shrink-0 relative border border-zinc-100">
+              <div className="w-24 h-24 rounded-2xl bg-[#EFE8DA] overflow-hidden shrink-0 relative border border-[#C4B8A4]">
                 {item.image ? (
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-300">
-                    <UtensilsCrossed className="w-8 h-8" />
+                  <div className="w-full h-full flex items-center justify-center text-[#8E7252]">
+                    <UtensilsCrossed className="w-8 h-8 stroke-[1.5]" />
                   </div>
                 )}
                 {/* Price tag */}
-                <div className="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-900  shadow-sm border border-zinc-200/50">
+                <div className="absolute bottom-1.5 right-1.5 bg-[#FAF8F4]/95 backdrop-blur-sm px-2 py-0.5 rounded-lg font-luxury-serif text-[12px] font-bold text-[#141414] shadow-sm border border-[#C4B8A4]">
                   {item.price}{item.currency === 'EUR' ? '€' : item.currency}
                 </div>
               </div>
 
               {/* Info */}
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="flex-1 flex flex-col min-w-0 font-luxury-sans">
                 <div className="flex items-start justify-between gap-2">
-                  <h4 className="font-bold text-slate-900  text-sm leading-tight line-clamp-2">{item.name}</h4>
+                  <h4 className="font-luxury-serif font-bold text-[#141414] text-[15px] leading-tight line-clamp-2">{item.name}</h4>
                 </div>
                 
-                <p className="text-[10px] text-slate-600  mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-[11px] text-[#3D352E] mt-1 line-clamp-2 leading-relaxed">
                   {item.description}
                 </p>
 
                 {item.preparationTimeMinutes && (
-                  <div className="flex items-center gap-1 mt-1.5 text-[10px] text-slate-500 font-medium">
-                    <Clock className="w-3 h-3" />
+                  <div className="flex items-center gap-1 mt-1.5 text-[10px] text-[#6B5A48] font-medium">
+                    <Clock className="w-3 h-3 text-[#8E7252]" />
                     ~{item.preparationTimeMinutes} dk
                   </div>
                 )}
 
-                <div className="mt-auto pt-3 flex items-center justify-end">
+                <div className="mt-auto pt-2.5 flex items-center justify-end">
                   {qty === 0 ? (
                     <button 
                       onClick={() => addToCart(item.id)}
-                      className="px-4 py-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200 rounded-full text-xs font-bold transition flex items-center gap-1"
+                      className="px-4 py-1.5 bg-[#FAF8F4] text-[#7D5E2A] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                     >
                       <Plus className="w-3.5 h-3.5" /> Ekle
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-full p-1 shadow-2xs">
-                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white   flex items-center justify-center text-amber-600 shadow-xs hover:bg-zinc-50 transition">
+                    <div className="flex items-center gap-2.5 bg-[#FAF8F4] border border-[#C4B8A4] rounded-full p-1 shadow-2xs">
+                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white border border-[#D8CBB8] flex items-center justify-center text-[#7D5E2A] shadow-xs hover:bg-[#EFE8DA] transition cursor-pointer">
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="font-extrabold text-sm w-5 text-center text-slate-900  select-none">{qty}</span>
-                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-xs hover:bg-amber-600 transition">
+                      <span className="font-extrabold text-sm w-5 text-center text-[#141414] select-none">{qty}</span>
+                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] flex items-center justify-center text-white shadow-xs transition cursor-pointer">
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -205,7 +206,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         })}
 
         {filteredItems.length === 0 && (
-          <div className="text-center py-12 text-slate-600  text-sm">
+          <div className="text-center py-12 font-luxury-sans text-[#5C4938] text-sm">
             Bu kategoride ürün bulunmuyor.
           </div>
         )}
@@ -213,11 +214,11 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
 
       {/* Floating Cart Footer */}
       {cartCount > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent pt-10 pb-8 sm:pb-6 z-30">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#F7F3EA] via-[#F7F3EA]/95 to-transparent pt-10 pb-8 sm:pb-6 z-30">
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait"
+            className="font-luxury-sans w-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-2xl p-4 flex items-center justify-between shadow-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
@@ -225,9 +226,9 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
               </div>
               <span className="font-bold text-base">Siparişi Ver</span>
             </div>
-            <div className="flex items-center gap-2 font-bold text-lg">
+            <div className="flex items-center gap-2 font-luxury-serif font-bold text-lg">
               {cartTotal}€
-              <ChevronRight className="w-5 h-5 opacity-70" />
+              <ChevronRight className="w-5 h-5 opacity-80" />
             </div>
           </button>
         </div>

@@ -253,23 +253,23 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
           ) : (
             <div className="min-h-full flex items-center justify-center py-6">
               <div
-                className="relative w-full max-w-md bg-[#FAF8F4]/95 backdrop-blur-xl rounded-3xl p-5 sm:p-6 shadow-[0_24px_48px_rgba(28,24,18,0.18)] border border-[#DFD5C5] animate-in zoom-in-95 space-y-4 text-[#221F1C]"
+                className="luxury-service-card relative w-full max-w-md p-5 sm:p-6 animate-in zoom-in-95 space-y-4 text-[#141414]"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between border-b border-[#E8DFD1] pb-3">
+                <div className="flex items-center justify-between border-b border-[#D8CBB8] pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-[#F5EFE4] p-1 border border-[#D8C7A8] flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-[#FAF8F4] p-1 border border-[#C4B8A4] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
                       {renderServiceVisual(selectedService, "w-10 h-10")}
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-[#1E1C19]">{getLocalizedTitle(selectedService)}</h3>
-                      <p className="text-xs text-[#6E675F]">{hotel.name} - {t.room} {roomNumber}</p>
+                      <h3 className="font-luxury-serif text-[17px] font-bold uppercase tracking-[0.04em] text-[#141414]">{getLocalizedTitle(selectedService)}</h3>
+                      <p className="font-luxury-sans text-xs text-[#5C4938]">{hotel.name} · {t.room} {roomNumber}</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSelectedService(null)}
-                    className="text-[#8C8479] hover:text-[#221F1C] text-lg font-medium p-1 cursor-pointer transition"
+                    className="w-8 h-8 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] text-sm font-bold flex items-center justify-center cursor-pointer transition"
                   >
                     ✕
                   </button>

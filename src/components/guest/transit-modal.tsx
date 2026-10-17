@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { Experience, Hotel, Language } from '@/lib/types';
 import { calculateTransitOptions } from '@/lib/transit';
 import { getT } from '@/lib/i18n';
-import { MapPin, Navigation, Car, Sparkles, Train, ExternalLink, X, Compass } from 'lucide-react';
-import Image from 'next/image';
+import { LuxuryCategoryIcon } from './luxury-category-icon';
+import { ExternalLink, X, Compass } from 'lucide-react';
 
 interface TransitModalProps {
   experience: Experience;
@@ -15,7 +15,6 @@ interface TransitModalProps {
 }
 
 export function TransitModal({ experience, hotel, lang, onClose }: TransitModalProps) {
-  
   const t = getT(lang);
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
@@ -30,7 +29,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
 
   return (
     <div 
-      className="fixed inset-0 z-50 overflow-y-scroll bg-black/75 backdrop-blur-sm p-3 sm:p-6"
+      className="fixed inset-0 z-50 overflow-y-scroll bg-black/50 backdrop-blur-sm p-3 sm:p-6"
       style={{ WebkitOverflowScrolling: 'touch' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -38,135 +37,123 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
     >
       <div className="min-h-full flex items-center justify-center py-6">
         <div 
-          className="relative w-full max-w-xl bg-white   rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-200 my-auto space-y-4 animate-in zoom-in-95 text-slate-900 "
+          className="luxury-service-card relative w-full max-w-xl p-5 sm:p-6 my-auto space-y-4 animate-in zoom-in-95 text-[#141414]"
           onClick={(e) => e.stopPropagation()}
         >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-          <div>
-            <h3 className="text-base font-bold font-serif text-slate-900 ">{t.transitTitle}</h3>
-            <p className="text-xs text-slate-500 ">
-              <span className="font-semibold text-slate-700">{hotel.name}</span> → <span className="text-amber-800 font-semibold">{experience.title}</span>
-            </p>
-          </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-slate-800  font-bold">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Distance Banner */}
-        <div className="bg-gradient-to-r from-amber-500/15 via-amber-100/30 to-amber-500/10 p-3.5 rounded-2xl flex items-center justify-between border border-amber-200">
-          <div className="flex items-center gap-2">
-            <Compass className="w-5 h-5 text-amber-700" />
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[#D8CBB8] pb-3">
             <div>
-              <span className="text-xs text-slate-600  block">Kuşuçuşu / Rota Mesafesi</span>
-              <strong className="text-sm text-slate-900  font-mono font-bold">~{transit.distanceKm} km</strong>
+              <h3 className="font-luxury-serif text-lg font-bold uppercase tracking-[0.04em] text-[#141414]">{t.transitTitle}</h3>
+              <p className="font-luxury-sans text-xs text-[#5C4938]">
+                <span className="font-semibold text-[#141414]">{hotel.name}</span> → <span className="text-[#7D5E2A] font-bold">{experience.title}</span>
+              </p>
+            </div>
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] font-bold cursor-pointer">
+              <X className="w-4 h-4 stroke-[1.8]" />
+            </button>
+          </div>
+
+          {/* Distance Banner */}
+          <div className="bg-[#FAF8F4]/90 p-3.5 rounded-2xl flex items-center justify-between border border-[#C4B8A4]">
+            <div className="flex items-center gap-2.5">
+              <Compass className="w-5 h-5 text-[#8E7252]" />
+              <div>
+                <span className="font-luxury-sans text-[11px] text-[#5C4938] block">Kuşuçuşu / Rota Mesafesi</span>
+                <strong className="font-luxury-serif text-base text-[#141414] font-bold">~{transit.distanceKm} km</strong>
+              </div>
+            </div>
+
+            <a
+              href={googleMapsRouteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-luxury-sans flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-xl text-xs font-bold shadow-sm transition"
+            >
+              <span>Google Haritalarda Aç</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* 3 Transit Alternatives */}
+          <div className="space-y-3 font-luxury-sans">
+            {/* 1. Yellow Taxi */}
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="shrink-0">
+                    <LuxuryCategoryIcon categoryKey="taxi" className="w-11 h-11" />
+                  </div>
+                  <div>
+                    <h4 className="font-luxury-serif text-[15px] font-bold text-[#141414]">{t.taxiOption}</h4>
+                    <span className="text-[11px] text-[#5C4938]">~{transit.taxi.durationMin} dakika</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="font-luxury-serif text-sm font-bold text-[#141414]">~{transit.taxi.costTl} TL</span>
+                  <span className="text-[10px] text-[#6B5A48] block">Taksimetre tahmini</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-[#3D352E] leading-relaxed">{transit.taxi.desc}</p>
+            </div>
+
+            {/* 2. VIP Transfer */}
+            <div className="p-3.5 rounded-2xl bg-[#1D2025] text-white border border-[#8E7252] space-y-1.5 shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#FAF8F4] border border-[#C5A059] p-0.5 flex items-center justify-center shrink-0">
+                    <LuxuryCategoryIcon categoryKey="transfer" className="w-10 h-10" />
+                  </div>
+                  <div>
+                    <h4 className="font-luxury-serif text-[15px] font-bold text-[#E5C896]">{t.vipOption}</h4>
+                    <span className="text-[11px] text-[#D8CBB8]">~{transit.vipTransfer.durationMin} dakika (Özel Şoförlü)</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="font-luxury-serif text-sm font-bold text-[#E5C896]">€{transit.vipTransfer.costEur}</span>
+                  <span className="text-[10px] text-[#D8CBB8] block">Sabit fiyat</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-[#EDE5D6] leading-relaxed">{transit.vipTransfer.desc}</p>
+            </div>
+
+            {/* 3. Public Transit (İETT / Tram / Metro) */}
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="shrink-0">
+                    <LuxuryCategoryIcon categoryKey="istanbulkart" className="w-11 h-11" />
+                  </div>
+                  <div>
+                    <h4 className="font-luxury-serif text-[15px] font-bold text-[#141414]">{t.transitOption}</h4>
+                    <span className="text-[11px] text-[#5C4938]">~{transit.publicTransit.durationMin} dakika ({transit.publicTransit.lineName})</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="font-luxury-serif text-sm font-bold text-[#7D5E2A]">~{transit.publicTransit.costTl} TL</span>
+                  <span className="text-[10px] text-[#6B5A48] block">İstanbulkart</span>
+                </div>
+              </div>
+
+              <div className="bg-white/90 p-3 rounded-xl text-[11px] text-[#221F1C] space-y-1 border border-[#D8CBB8]">
+                <strong className="text-[#7D5E2A] block text-[10px] uppercase tracking-wider">Adım Adım Güzergah:</strong>
+                {transit.publicTransit.routeSteps.map((step, sIdx) => (
+                  <div key={sIdx} className="flex items-start gap-1.5">
+                    <span className="text-[#8E7252] font-bold">•</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <a
-            href={googleMapsRouteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white   text-slate-900  border border-amber-300 rounded-xl text-xs font-bold hover:bg-amber-50 shadow-sm transition"
-          >
-            <span>Google Haritalarda Aç</span>
-            <ExternalLink className="w-3 h-3 text-amber-700" />
-          </a>
-        </div>
-
-        {/* 3 Transit Alternatives */}
-        <div className="space-y-3">
-          {/* 1. Yellow Taxi */}
-          <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
-                  🚕
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 ">{t.taxiOption}</h4>
-                  <span className="text-[11px] text-slate-500 ">~{transit.taxi.durationMin} dakika</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-slate-900  font-mono">~{transit.taxi.costTl} TL</span>
-                <span className="text-[10px] text-zinc-400 block">Taksimetre tahmini</span>
-              </div>
-            </div>
-            <p className="text-[11px] text-slate-600 ">{transit.taxi.desc}</p>
+          <div className="pt-1">
+            <button
+              onClick={onClose}
+              className="font-luxury-sans w-full py-2.5 bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-xl text-xs font-bold text-[#141414] transition cursor-pointer"
+            >
+              Kapat
+            </button>
           </div>
-
-          {/* 2. VIP Transfer */}
-          <div className="p-3.5 rounded-2xl bg-zinc-900 text-white space-y-1.5 shadow-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 p-1 flex items-center justify-center shrink-0">
-                  <Image 
-                    src="/icons/categories/ozel-vip-transfer.png" 
-                    alt="VIP Transfer" 
-                    width={28} 
-                    height={28} 
-                    className="object-contain" 
-                  />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-amber-400">{t.vipOption}</h4>
-                  <span className="text-[11px] text-zinc-400">~{transit.vipTransfer.durationMin} dakika (Özel Şoförlü)</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-amber-400 font-mono">€{transit.vipTransfer.costEur}</span>
-                <span className="text-[10px] text-zinc-400 block">Sabit fiyat</span>
-              </div>
-            </div>
-            <p className="text-[11px] text-zinc-300">{transit.vipTransfer.desc}</p>
-          </div>
-
-          {/* 3. Public Transit (İETT / Tram / Metro) */}
-          <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/15 border border-blue-300 p-1 flex items-center justify-center shrink-0">
-                  <Image 
-                    src="/icons/istanbulkart.png" 
-                    alt="İstanbulkart" 
-                    width={32} 
-                    height={22} 
-                    className="object-contain" 
-                  />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 ">{t.transitOption}</h4>
-                  <span className="text-[11px] text-slate-500 ">~{transit.publicTransit.durationMin} dakika ({transit.publicTransit.lineName})</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-blue-900 font-mono">~{transit.publicTransit.costTl} TL</span>
-                <span className="text-[10px] text-blue-700 block">İstanbulkart</span>
-              </div>
-            </div>
-
-            <div className="bg-white/80 p-2.5 rounded-xl text-[11px] text-slate-700 space-y-1 border border-blue-100">
-              <strong className="text-blue-900 block text-[10px] uppercase tracking-wider">Adım Adım Güzergah:</strong>
-              {transit.publicTransit.routeSteps.map((step, sIdx) => (
-                <div key={sIdx} className="flex items-start gap-1.5">
-                  <span className="text-blue-600 font-bold">•</span>
-                  <span>{step}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-2">
-          <button
-            onClick={onClose}
-            className="w-full py-2.5 bg-zinc-100 hover:bg-zinc-200 rounded-xl text-xs font-bold text-slate-800  transition"
-          >
-            Kapat
-          </button>
-        </div>
         </div>
       </div>
     </div>
