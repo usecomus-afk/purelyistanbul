@@ -15,7 +15,7 @@ interface LuxuryCategoryIconProps {
  */
 export function LuxuryCategoryIcon({
   categoryKey,
-  className = "w-16 h-16 sm:w-20 sm:h-20",
+  className = "w-[78px] h-[78px] sm:w-24 sm:h-24",
 }: LuxuryCategoryIconProps) {
   const uid = useId().replace(/:/g, '');
   const strokeGradId = `cat-stroke-${uid}`;
@@ -868,55 +868,55 @@ export function LuxuryCategoryIcon({
 
   return (
     <svg
-      viewBox="0 0 64 64"
+      viewBox="4 4 56 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`${className} overflow-visible`}
       aria-hidden="true"
     >
       <defs>
-        {/* 24K Gilded Gold & Burnished Bronze Relief Contour Stroke */}
-        <linearGradient id={strokeGradId} x1="10" y1="12" x2="54" y2="54" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#6B4812" />
-          <stop offset="28%" stopColor="#C4922A" />
-          <stop offset="52%" stopColor="#EAC864" />
-          <stop offset="76%" stopColor="#9C6E1B" />
-          <stop offset="100%" stopColor="#583A0D" />
+        {/* High-Contrast Deep Burnished Bronze & Espresso-Gold Contour Stroke */}
+        <linearGradient id={strokeGradId} x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#261806" />
+          <stop offset="35%" stopColor="#4A300D" />
+          <stop offset="68%" stopColor="#634112" />
+          <stop offset="100%" stopColor="#1F1304" />
         </linearGradient>
 
-        {/* Luminous Gilded Gold Leaf Accent & Filigree Stroke */}
-        <linearGradient id={bronzeGradId} x1="18" y1="10" x2="56" y2="54" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#DEB54A" />
-          <stop offset="42%" stopColor="#F7DF8A" />
-          <stop offset="72%" stopColor="#B88624" />
-          <stop offset="100%" stopColor="#724E12" />
+        {/* Rich Antique Gold Filigree & Interior Detail Stroke */}
+        <linearGradient id={bronzeGradId} x1="14" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4E330D" />
+          <stop offset="45%" stopColor="#754D14" />
+          <stop offset="100%" stopColor="#332007" />
         </linearGradient>
 
         {/* 3D Embossed 24K Gold Leaf Fill */}
         <linearGradient id={goldFillId} x1="14" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFCEE" />
-          <stop offset="28%" stopColor="#F9E292" />
-          <stop offset="65%" stopColor="#D8A83B" />
-          <stop offset="100%" stopColor="#9B6D1A" />
+          <stop offset="0%" stopColor="#FFFDF4" />
+          <stop offset="28%" stopColor="#F8DF8C" />
+          <stop offset="68%" stopColor="#D4A138" />
+          <stop offset="100%" stopColor="#9A6B19" />
         </linearGradient>
 
-        {/* Soft 3D Gilded Pearl & Champagne Gold Relief Fill */}
+        {/* Soft 3D Champagne-Gold Body Fill */}
         <linearGradient id={champagneFillId} x1="12" y1="14" x2="50" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFDF6" stopOpacity="0.98" />
-          <stop offset="45%" stopColor="#F9EAC1" stopOpacity="0.95" />
-          <stop offset="82%" stopColor="#E5C578" stopOpacity="0.92" />
-          <stop offset="100%" stopColor="#C6993E" stopOpacity="0.9" />
+          <stop offset="0%" stopColor="#FFFDF8" />
+          <stop offset="45%" stopColor="#F7E6BC" />
+          <stop offset="82%" stopColor="#DFBA6A" />
+          <stop offset="100%" stopColor="#B88930" />
         </linearGradient>
 
-        {/* 3D Bas-Relief Embossed Gold ("Yaldızlı Kabartılı") Filter */}
-        <filter id={shadowFilterId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="-0.85" dy="-1.05" stdDeviation="0.38" floodColor="#FFFDF5" floodOpacity="0.96" />
-          <feDropShadow dx="0.85" dy="1.35" stdDeviation="0.35" floodColor="#6E4B12" floodOpacity="0.62" />
-          <feDropShadow dx="0" dy="3.2" stdDeviation="1.8" floodColor="#3A2608" floodOpacity="0.28" />
+        {/* Sculpted 3D High-Relief ("Kabarık & Belirgin") Elevation Shadow Filter */}
+        <filter id={shadowFilterId} x="-25%" y="-25%" width="150%" height="155%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="-0.75" dy="-0.95" stdDeviation="0.25" floodColor="#FFFFFF" floodOpacity="0.95" />
+          <feDropShadow dx="0.9" dy="1.5" stdDeviation="0.35" floodColor="#3D2708" floodOpacity="0.72" />
+          <feDropShadow dx="0" dy="3.8" stdDeviation="2.2" floodColor="#1E1304" floodOpacity="0.38" />
         </filter>
       </defs>
 
-      {renderPaths()}
+      <g strokeWidth="2.05">
+        {renderPaths()}
+      </g>
     </svg>
   );
 }

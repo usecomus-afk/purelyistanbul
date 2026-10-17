@@ -490,7 +490,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 {/* 3D Gilded Embossed Icon (özel ikon yüklendiyse o gösterilir) */}
                 <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
                   {cat.customIcon ? (
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full gilded-icon-plinth flex items-center justify-center p-2.5">
+                    <div className="w-[78px] h-[78px] sm:w-24 sm:h-24 rounded-full gilded-icon-plinth flex items-center justify-center p-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={cat.customIcon}
@@ -499,7 +499,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                       />
                     </div>
                   ) : (
-                    <LuxuryCategoryIcon categoryKey={cat.catKey || cat.rawKey} className="w-16 h-16 sm:w-20 sm:h-20" />
+                    <LuxuryCategoryIcon categoryKey={cat.catKey || cat.rawKey} className="w-[78px] h-[78px] sm:w-24 sm:h-24" />
                   )}
                 </div>
 

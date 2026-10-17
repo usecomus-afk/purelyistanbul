@@ -212,8 +212,8 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 }`}
               >
                 {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
-                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-300 relative">
-                  {renderServiceVisual(item, "w-16 h-16 sm:w-20 sm:h-20")}
+                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
+                  {renderServiceVisual(item, "w-[78px] h-[78px] sm:w-24 sm:h-24")}
                 </div>
 
                 {/* Clean Bold Modern Sans-Serif Card Label */}
