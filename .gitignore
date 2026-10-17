@@ -1,6 +1,7 @@
 node_modules
 .next
 .git
+.tmp.driveupload
 *.log
 .env*
 *.tsbuildinfo

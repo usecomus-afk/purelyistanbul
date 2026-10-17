@@ -18,10 +18,16 @@
       "node_modules",
       ".git",
       ".next",
+      ".tmp.driveupload",
+      ".github",
       "android",
       "ios",
       "latest_ipa",
       "fastlane",
+      "*.ipa",
+      "temp.html",
+      "old_exp.json",
+      "tsconfig.tsbuildinfo",
       "firebase-debug.log",
       "firebase-debug.*.log"
     ]
