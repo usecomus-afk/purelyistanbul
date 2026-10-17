@@ -97,7 +97,7 @@ export function HotelHeader({
   };
 
   return (
-    <header className="pt-6 pb-2 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
+    <header className="pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+0.5rem))] pb-2 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
         
         {/* Centered Logo/Name — Two-line European Luxury Serif */}

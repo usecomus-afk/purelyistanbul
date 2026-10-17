@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HotelAuthGuard } from "@/components/hotel/hotel-auth-guard";
-import { BrandMark } from "@/components/brand-mark";
-import { Building2, BellRing, LogOut, ArrowLeft, ChevronDown, Volume2, VolumeX, Sparkles, DoorOpen } from "lucide-react";
+import { Building2, BellRing, LogOut, ArrowLeft, Volume2, VolumeX, DoorOpen } from "lucide-react";
 import { XeniosStore } from "@/lib/store";
 import { HotelAudioNotification, HotelAudioNotificationPrefs } from "@/lib/hotel-audio-notification";
 import { HotelLiveAlertBanner } from "@/components/hotel/hotel-live-alert-banner";
@@ -32,13 +32,11 @@ export default function HotelPortalLayout({
 
   useEffect(() => {
     refreshState();
-    // Auto-request notification permissions on native device / browser
     HotelAudioNotification.requestSystemNotificationPermission().catch(() => {});
     const handlePrefsUpdate = () => setAudioPrefs(HotelAudioNotification.getPreferences());
     window.addEventListener('xenios_hotels_updated', refreshState);
     window.addEventListener('xenios_hotel_audio_prefs_updated', handlePrefsUpdate);
 
-    // Live subscription to Firestore across all devices
     const unsubscribe = FirestoreService.subscribeToLiveRequests(activeHotelId, (reqs) => {
       const pending = reqs.filter(r => (r.hotelId === activeHotelId || !r.hotelId) && r.status === 'pending');
       setPendingReqCount(pending.length);
@@ -53,8 +51,8 @@ export default function HotelPortalLayout({
 
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0] || {
     id: 'hotel-1',
-    name: 'Pera Palace Hotel',
-    district: 'Beyoğlu',
+    name: 'Old City Heritage Hotel Istanbul',
+    district: 'Fatih',
     rooms: []
   };
 
@@ -80,41 +78,110 @@ export default function HotelPortalLayout({
   };
 
   const isSubPage = pathname !== '/hotel-portal';
+  const hotelNameUpper = (currentHotel.name || 'OLD CITY HERITAGE HOTEL ISTANBUL').toUpperCase();
 
   return (
     <HotelAuthGuard>
       <HotelLiveAlertBanner />
-      <div className={`${isSubPage ? 'min-h-screen' : 'h-[100dvh] max-h-[100dvh] overflow-hidden touch-none'} bg-[#f8f6f0] text-zinc-900 dark:text-slate-100 flex flex-col overscroll-none`}>
-        {/* Modern Top Header Bar */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs px-3.5 sm:px-6 pb-2.5 pt-[max(2.75rem,calc(env(safe-area-inset-top)+0.5rem))] sm:py-3">
-          <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
-            
-            {/* Left: Title */}
-            <div className="flex items-center min-w-0 shrink">
-              <Link href="/hotel-portal" className="flex items-center gap-2 sm:gap-2.5 shrink min-w-0" title="Otel Yönetim Paneli">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs">
-                  <Building2 className="w-4.5 h-4.5 text-amber-800" />
-                </div>
-                <div className="min-w-0 shrink">
-                  <span className="font-serif font-extrabold text-xs sm:text-sm md:text-base text-black tracking-tight block leading-tight truncate">
-                    OTEL YÖNETİM PANELİ
-                  </span>
-                </div>
-              </Link>
-            </div>
+      <div className={`${isSubPage ? 'min-h-[100dvh]' : 'fixed inset-0 h-[100dvh] w-screen overscroll-none'} text-[#221F1C] flex flex-col relative`}>
+        {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
+        <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
+          <Image
+            src="/images/light-mosque-bg.jpg"
+            alt="Historic Istanbul Mosque Silhouette"
+            fill
+            priority
+            quality={90}
+            unoptimized
+            className="object-cover object-center scale-[1.01] blur-[2px] sepia-[0.18] saturate-[0.88] brightness-[1.01] contrast-[0.98]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
+        </div>
 
-            {/* Right: Sound Toggle, Live Notifications & Logout */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 ml-auto shrink-0">
-              {/* Back Button for Sub-pages */}
+        {/* Luxury Header Matching Hotel Page 1:1 */}
+        <header className="pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+0.5rem))] pb-2 px-3.5 sm:px-4 w-full relative z-40">
+          <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
+            {/* Centered Two-Line European Luxury Serif Title */}
+            <Link href="/hotel-portal" className="group text-center select-none mt-0.5">
+              <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28]">
+                {hotelNameUpper.endsWith(' ISTANBUL') ? (
+                  <>
+                    {currentHotel.name.slice(0, -9)}
+                    <br />
+                    ISTANBUL
+                  </>
+                ) : (
+                  currentHotel.name
+                )}
+              </h1>
+            </Link>
+
+            {/* Clean Neomorphic Top Bar Pill */}
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
+              {/* Back Button on Sub-pages */}
               {isSubPage && (
-                <Link
-                  href="/hotel-portal"
-                  className="p-2 sm:px-3 sm:py-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200/80 shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0 mr-1 sm:mr-2"
-                  title="Geri Dön"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
+                <>
+                  <Link
+                    href="/hotel-portal"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#EAE3D5]/95 hover:bg-[#E2D8C7] text-[#221F1C] border border-[#D4C9B8]/80 text-[11px] font-luxury-sans font-semibold transition cursor-pointer shrink-0"
+                    title="Yönetim Menüsüne Dön"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 text-[#8E7252]" />
+                    <span>Menü</span>
+                  </Link>
+                  <div className="w-[1px] h-3.5 bg-[#D5CBB8]" />
+                </>
               )}
+
+              {/* Live Room Requests Bell */}
+              <Link
+                href="/hotel-portal/requests"
+                title="Canlı Oda Talepleri"
+                className={`p-1.5 rounded-full transition relative cursor-pointer flex items-center gap-1 ${
+                  pendingReqCount > 0
+                    ? 'text-[#9E2A2B] bg-[#FDECEC] border border-[#E5B8B8]'
+                    : 'text-[#2C2824] hover:bg-black/5'
+                }`}
+              >
+                <BellRing className={`w-4 h-4 stroke-[1.7] ${pendingReqCount > 0 ? 'animate-bounce text-[#9E2A2B]' : ''}`} />
+                {pendingReqCount > 0 && (
+                  <span className="text-[10.5px] font-luxury-sans font-bold pr-1">
+                    {pendingReqCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Sound Toggle */}
+              <button
+                type="button"
+                onClick={handleToggleSound}
+                title={audioPrefs.soundEnabled ? "Sesli Bildirimler Açık" : "Sesli Bildirimler Kapalı"}
+                className={`p-1.5 rounded-full transition cursor-pointer flex items-center gap-1 ${
+                  audioPrefs.soundEnabled
+                    ? 'text-[#8E7252] bg-[#FAF8F4]/90 border border-[#D4C9B8]/80'
+                    : 'text-[#6E655B] hover:bg-black/5'
+                }`}
+              >
+                {audioPrefs.soundEnabled ? (
+                  <Volume2 className="w-4 h-4 stroke-[1.7]" />
+                ) : (
+                  <VolumeX className="w-4 h-4 stroke-[1.7]" />
+                )}
+              </button>
+
+              <div className="w-[1px] h-3.5 bg-[#D5CBB8]" />
+
+              {/* Portal Status Badge */}
+              <Link
+                href="/hotel-portal"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAE3D5]/90 border border-[#D4C9B8]/70 text-[#221F1C]"
+              >
+                <Building2 className="w-3.5 h-3.5 text-[#8E7252] stroke-[1.7]" />
+                <span className="font-luxury-sans text-[11px] font-medium tracking-tight whitespace-nowrap">
+                  Yönetim
+                </span>
+              </Link>
+
               {/* Preview Guest Screen */}
               <Link
                 href="/"
@@ -123,77 +190,37 @@ export default function HotelPortalLayout({
                     localStorage.setItem('xenios_app_role', 'guest');
                   }
                 }}
-                className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-2xl text-xs font-bold transition flex items-center gap-1 shadow-xs cursor-pointer"
-                title="Misafir Ekranını Önizle"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF8F4]/90 hover:bg-white text-[#221F1C] border border-[#D4C9B8]/80 text-[11px] font-luxury-sans font-medium shadow-2xs transition cursor-pointer whitespace-nowrap"
+                title="Misafir Ekranına Geç"
               >
-                <DoorOpen className="w-3.5 h-3.5 text-amber-700" />
-                <span className="hidden lg:inline text-[11px]">Misafir Görünümü</span>
-              </Link>
-
-              {/* Quick Sound Control Button */}
-              <button
-                onClick={handleToggleSound}
-                title={audioPrefs.soundEnabled ? "Sesli Bildirimler Açık (Tıkla ve Kapat)" : "Sesli Bildirimler Kapalı (Tıkla ve Aç)"}
-                className={`p-2 rounded-2xl border transition shadow-xs flex items-center gap-1.5 text-xs font-bold cursor-pointer ${
-                  audioPrefs.soundEnabled
-                    ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
-                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-500 border-zinc-200'
-                }`}
-              >
-                {audioPrefs.soundEnabled ? (
-                  <>
-                    <Volume2 className="w-4 h-4 text-amber-700 animate-pulse" />
-                    <span className="hidden lg:inline text-[11px]">Ses Açık</span>
-                  </>
-                ) : (
-                  <>
-                    <VolumeX className="w-4 h-4 text-zinc-400" />
-                    <span className="hidden lg:inline text-[11px]">Sessiz</span>
-                  </>
-                )}
-              </button>
-
-              {/* Notification Button */}
-              <Link
-                href="/hotel-portal/requests"
-                className={`p-2 rounded-2xl border transition relative shadow-xs flex items-center gap-1.5 text-xs font-bold ${
-                  pendingReqCount > 0
-                    ? 'bg-rose-50 border-rose-300 text-rose-800 hover:bg-rose-100'
-                    : 'bg-white border-amber-200 text-zinc-700 hover:bg-amber-50'
-                }`}
-                title="Canlı Oda Talepleri"
-              >
-                <BellRing className={`w-4 h-4 ${pendingReqCount > 0 ? 'text-rose-600 animate-bounce' : 'text-zinc-600'}`} />
-                {pendingReqCount > 0 && (
-                  <span className="flex items-center gap-1 text-[11px]">
-                    <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
-                    <span>{pendingReqCount}</span>
-                  </span>
-                )}
+                <DoorOpen className="w-3.5 h-3.5 text-[#8E7252] stroke-[1.7]" />
+                <span>Misafir</span>
               </Link>
 
               {/* Logout Button */}
               <button
+                type="button"
                 onClick={handleLogout}
-                className="p-2 sm:px-3 sm:py-1.5 bg-white hover:bg-rose-50 text-zinc-600 hover:text-rose-700 border border-zinc-200 hover:border-rose-200 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
-                title="Çıkış Yap"
+                className="p-1.5 rounded-full bg-[#FAF8F4]/90 hover:bg-[#FDECEC] text-[#5C4938] hover:text-[#9E2A2B] border border-[#D4C9B8]/80 transition cursor-pointer"
+                title="Oturumu Kapat"
               >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline">Çıkış</span>
+                <LogOut className="w-3.5 h-3.5 stroke-[1.7]" />
               </button>
             </div>
-
           </div>
         </header>
 
         {/* Main Content Area */}
-        <main className={`flex-1 w-full max-w-6xl mx-auto ${isSubPage ? 'p-3.5 sm:p-6 md:p-8 space-y-6 overflow-y-auto' : 'px-3.5 pt-2.5 pb-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] sm:p-4 overflow-hidden touch-none flex flex-col min-h-0'}`}>
+        <main
+          className={`relative z-10 flex-1 w-full max-w-4xl mx-auto ${
+            isSubPage
+              ? 'p-3.5 sm:p-6 space-y-5 overflow-y-auto pb-[max(2rem,calc(env(safe-area-inset-bottom,0px)+1rem))]'
+              : 'px-3.5 sm:px-4 pt-1 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.75rem))] overflow-hidden touch-none flex flex-col min-h-0'
+          }`}
+        >
           {children}
         </main>
       </div>
     </HotelAuthGuard>
   );
 }
-
-
-

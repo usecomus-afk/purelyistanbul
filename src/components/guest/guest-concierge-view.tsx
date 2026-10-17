@@ -174,31 +174,22 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     };
   }, []);
 
-  // Lock vertical movement when on the Otel ('services') page
+  // Lock vertical movement when on the Otel ('services') page without clipping document.body safe-area bleed
   useEffect(() => {
     const container = document.getElementById('guest-scroll-container');
     if (activeTab === 'services') {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
       document.body.style.overscrollBehavior = 'none';
       if (container) {
         container.style.overflowY = 'hidden';
         container.scrollTop = 0;
       }
     } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
       document.body.style.overscrollBehavior = '';
       if (container) {
         container.style.overflowY = 'auto';
       }
     }
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
       document.body.style.overscrollBehavior = '';
       if (container) {
         container.style.overflowY = 'auto';
@@ -273,9 +264,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className={`w-full text-[#221F1C] ${activeTab === 'services' ? 'fixed inset-0 h-[100dvh] w-screen overflow-hidden overscroll-none' : 'min-h-[100dvh]'} relative`}>
+    <div className={`w-full text-[#221F1C] ${activeTab === 'services' ? 'fixed inset-0 h-[100dvh] w-screen overscroll-none' : 'min-h-[100dvh]'} relative`}>
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
+      <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
         <Image 
           src="/images/light-mosque-bg.jpg" 
           alt="Historic Istanbul Mosque Silhouette"

@@ -6,17 +6,12 @@ import { Capacitor } from "@capacitor/core";
 import { XeniosStore } from "@/lib/store";
 
 /**
- * Tam ekran açılış GIF'i.
- *  - Native uygulama: her açılışta gösterilir.
+ * Tam ekran açılış görseli (Splash).
+ *  - Native uygulama: her açılışta tam ekran (safe-area şeritleri olmadan) gösterilir.
  *  - Web/PWA: yalnızca otel misafiri QR oturumunda gösterilir, normal
  *    marketplace ziyaretlerinde atlanır.
  *  - 5 saniye sonra veya dokunmayla kapanır.
  *  - sessionStorage bayrağı ile oturum içi tekrar gösterilmez.
- *
- * Sorunlar ve düzeltmeler:
- *  1. İlk frame'de sayfa içeriği görünüyor (mounted=false anında null dönmek
- *     yerine, sayfanın üzerini kapatan statik bir overlay SSR'da render edilir).
- *  2. GIF tam ekran kaplamıyor: padding/max-width kaldırıldı, object-cover kullanıldı.
  */
 
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
@@ -42,27 +37,48 @@ function shouldSkipSplash(pathname: string | null | undefined): boolean {
 export function AppIntroSplash() {
   const pathname = usePathname();
 
-  // İstemci taraflı durum. Başlangıç değeri sunucuda bilinmez; "görünür" olarak
-  // başlat ki hidrasyon öncesi beyaz/boş sayfa frame'i görünmesin.
   const [visible, setVisible] = useState(true);
   const [fadingOut, setFadingOut] = useState(false);
   const [ready, setReady] = useState(false);
   const [isNight, setIsNight] = useState(false);
+  const [bleed, setBleed] = useState({ top: 64, bottom: 44 });
 
   const dismiss = useCallback(() => {
     setFadingOut(true);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("purely_splash_played", "true");
+      try {
+        (window as any).Capacitor?.Plugins?.SystemBars?.show?.({});
+      } catch {}
     }
     setTimeout(() => setVisible(false), 450);
   }, []);
 
   useEffect(() => {
-    // Hydrasyon tamamlandı; artık gerçek karar verilebilir.
     if (shouldSkipSplash(pathname)) {
       setVisible(false);
       setReady(true);
       return;
+    }
+
+    // iOS WKWebView safe-area contentInset telafisi:
+    // Eğer native kabukta contentInset: 'automatic' aktifse, window.screen.height > window.innerHeight
+    // farkı kadar üst ve alt şerit boşluğu oluşur. Bunu birebir ölçüp negatif inset ile tam ekran kaplıyoruz.
+    if (typeof window !== "undefined") {
+      const screenH = window.screen?.height || 0;
+      const innerH = window.innerHeight || 0;
+      const gap = screenH > innerH + 20 ? screenH - innerH : 0;
+      if (gap > 0) {
+        const bottomInset = 34;
+        const topInset = Math.max(0, gap - bottomInset);
+        setBleed({ top: topInset + 4, bottom: bottomInset + 4 });
+      } else {
+        setBleed({ top: 0, bottom: 0 });
+      }
+
+      try {
+        (window as any).Capacitor?.Plugins?.SystemBars?.hide?.({});
+      } catch {}
     }
 
     // Gündüz/Gece kontrolü (Akşam 18:00 - Sabah 06:00 arası gece kabul edilir)
@@ -76,21 +92,22 @@ export function AppIntroSplash() {
     setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    const timer = setTimeout(dismiss, 5000); // 5 saniye
+    const timer = setTimeout(dismiss, 5000);
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
-  // Henüz hydrasyon tamamlanmadıysa SABİT arka plan katmanı döndür.
+  // Henüz hydrasyon tamamlanmadıysa tam ekran (üst/alt safe-area dahil) sabit arka plan katmanı döndür.
   if (!ready) {
     return (
       <div
         style={{
           position: "fixed",
-          inset: 0,
+          top: -70,
+          bottom: -50,
+          left: 0,
+          right: 0,
           zIndex: 999999,
-          backgroundColor: "#F3F2EE",
-          width: "100vw",
-          height: "100dvh",
+          backgroundColor: "#F6F1E7",
         }}
       />
     );
@@ -104,21 +121,22 @@ export function AppIntroSplash() {
       onTouchStart={dismiss}
       style={{
         position: "fixed",
-        inset: 0,
+        top: `calc(-1 * env(safe-area-inset-top, 0px) - ${bleed.top}px)`,
+        bottom: `calc(-1 * env(safe-area-inset-bottom, 0px) - ${bleed.bottom}px)`,
+        left: `calc(-1 * env(safe-area-inset-left, 0px))`,
+        right: `calc(-1 * env(safe-area-inset-right, 0px))`,
         zIndex: 999999,
-        width: "100vw",
-        height: "100dvh",
         overflow: "hidden",
         cursor: "pointer",
         userSelect: "none",
-        backgroundColor: "#090807",
+        backgroundColor: "#F6F1E7",
         transition: "opacity 500ms ease-out, transform 500ms ease-out",
         opacity: fadingOut ? 0 : 1,
-        transform: fadingOut ? "scale(1.05)" : "scale(1)",
+        transform: fadingOut ? "scale(1.03)" : "scale(1)",
         pointerEvents: fadingOut ? "none" : "auto",
       }}
     >
-      {/* Görsel tam ekranı kaplar */}
+      {/* Görsel üst ve alt safe-area alanları dahil tüm fiziksel ekranı kaplar */}
       <img
         src={isNight ? "/images/splash-night.jpg" : "/images/splash-day.jpg"}
         alt="purelyİstanbul"
@@ -128,7 +146,7 @@ export function AppIntroSplash() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          objectPosition: "center",
+          objectPosition: "center center",
           display: "block",
           pointerEvents: "none",
         }}
@@ -150,8 +168,8 @@ export function AppIntroSplash() {
         <div
           style={{
             height: "100%",
-            background: "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626)",
-            boxShadow: "0 0 12px rgba(220,38,38,0.5)",
+            background: "linear-gradient(90deg, #8E7252, #C9AE82, #8E7252)",
+            boxShadow: "0 0 12px rgba(142,114,82,0.5)",
             animation: "splashProgress 5s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         />

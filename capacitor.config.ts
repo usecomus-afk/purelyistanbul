@@ -10,8 +10,8 @@ const config: CapacitorConfig = {
     allowNavigation: ['*'],
   },
   ios: {
-    contentInset: 'automatic',
-    backgroundColor: '#090807',
+    contentInset: 'never',
+    backgroundColor: '#F6F1E7',
     preferredContentMode: 'mobile',
   },
 };
