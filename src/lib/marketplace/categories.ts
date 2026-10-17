@@ -44,7 +44,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
 export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = MARKETPLACE_CATEGORIES.map((c, i) => ({
   ...c,
   order: i,
-  hidden: false,
+  hidden: c.key === "cat-11" || c.key === "cat-12",
   custom: false,
 }));
 

@@ -1452,7 +1452,10 @@
       "Ameliyatsız Yüz Gençleştirme",
       "İleri Cilt Protokolü",
       "Zero Downtime"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-2",
@@ -1480,7 +1483,10 @@
       "Vortex Vakum",
       "Gözenek Temizliği",
       "Hyaluronik Serum"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-3",
@@ -1508,7 +1514,10 @@
       "Kök Hücre",
       "Mezoterapi",
       "Biyo-Canlandırıcı"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-4",
@@ -1536,7 +1545,10 @@
       "Safir FUE",
       "DHI Saç Ekimi",
       "VIP Turist Paketi"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-5",
@@ -1564,7 +1576,10 @@
       "Baby Botox",
       "Doğal Dudak Dolgusu",
       "Altın Oran"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-6",
@@ -1592,7 +1607,10 @@
       "Oksijen İnfüzyonu",
       "Anti-Stress Detoks",
       "Jet-Lag Recovery"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-7",
@@ -1620,7 +1638,10 @@
       "Hollywood Smile",
       "3D CAD/CAM",
       "Zirkonyum Kaplama"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-8",
@@ -1648,7 +1669,10 @@
       "Piezo Rhinoplasty",
       "Kapalı Burun Estetiği",
       "Minimum Morluk"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-9",
@@ -1676,7 +1700,10 @@
       "Vaser Hi-Def",
       "Mommy Makeover",
       "Kombine Vücut Cerrahisi"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-10",
@@ -1704,7 +1731,10 @@
       "Elit-DHI",
       "İğnesiz Anestezi",
       "Tıraşsız Ekim"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-11",
@@ -1732,7 +1762,10 @@
       "Baby Botox",
       "Jawline Dolgusu",
       "Profhilo Gençlik Aşısı"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   },
   {
     "id": "exp-aesthetic-12",
@@ -1760,6 +1793,9 @@
       "IV Glutatyon",
       "NAD+ Terapi",
       "Hücresel Detoks"
-    ]
+    ],
+    "status": "suspended",
+    "publishToWeb": false,
+    "publishToMobile": false
   }
 ]

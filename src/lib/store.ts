@@ -325,12 +325,14 @@ export const XeniosStore = {
       }
     }
 
+    const cat11Hidden = this.getCategoryConfigs().find((c) => c.key === 'cat-11')?.hidden !== false;
     const mergedSeedItems: Experience[] = [];
     for (const seed of seedList) {
       if (deletedIds.has(seed.id)) continue;
       const existing = itemMap.get(seed.id);
       if (existing) {
         const isLegacyNumbered = !existing.category || /^[0-9]+\./.test(existing.category.trim());
+        const isAestheticSeed = seed.id.startsWith('exp-aesthetic-') || seed.category === 'Medikal Estetik & Güzellik';
         mergedSeedItems.push({
           ...seed,
           ...existing,
@@ -338,6 +340,9 @@ export const XeniosStore = {
           categoryTag: existing.categoryTag || seed.categoryTag,
           iconName: existing.iconName || seed.iconName,
           image: existing.image || seed.image,
+          ...(isAestheticSeed && cat11Hidden
+            ? { status: 'suspended', publishToWeb: false, publishToMobile: false }
+            : {}),
         });
       } else {
         mergedSeedItems.push(seed);
@@ -494,7 +499,7 @@ export const XeniosStore = {
   // Site Kategorileri — panelden düzenlenebilir (web + mobil uygulama ortak okur)
   getCategoryOverrides(): Partial<CategoryConfig>[] {
     try {
-      const stored = safeGet('xenios_site_categories');
+      const stored = safeGet('xenios_site_categories_v2');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) return parsed;
@@ -504,7 +509,7 @@ export const XeniosStore = {
   },
 
   saveCategoryOverrides(list: Partial<CategoryConfig>[]) {
-    safeSet('xenios_site_categories', JSON.stringify(list));
+    safeSet('xenios_site_categories_v2', JSON.stringify(list));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_categories_updated'));
     }
@@ -561,12 +566,15 @@ export const XeniosStore = {
 
   // Invest & Live in Istanbul — Emlak & Mülk Yönetimi Vitrini
   getPropertyListings(): PropertyListing[] {
+    const cat12Hidden = this.getCategoryConfigs().find((c) => c.key === 'cat-12')?.hidden !== false;
     try {
       const stored = safeGet(STORAGE_KEYS.PROPERTIES);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return cat12Hidden
+            ? parsed.map((p: PropertyListing) => ({ ...p, status: 'suspended', publishToWeb: false }))
+            : parsed;
         }
       }
     } catch (e) {}

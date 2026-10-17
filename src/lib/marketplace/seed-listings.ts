@@ -112,9 +112,9 @@ export function propertyToMarketplaceListing(prop: PropertyListing): Marketplace
   };
 }
 
-export const SEED_LISTINGS: MarketplaceListing[] = (rawExperiences as any[]).map((exp, index) =>
-  experienceToMarketplaceListing(exp as Experience, index)
-);
+export const SEED_LISTINGS: MarketplaceListing[] = (rawExperiences as any[])
+  .filter((exp) => exp.status !== 'suspended' && exp.publishToWeb !== false)
+  .map((exp, index) => experienceToMarketplaceListing(exp as Experience, index));
 
 /**
  * Returns live catalog listings from XeniosStore (reflecting Admin additions, edits, and suspensions).

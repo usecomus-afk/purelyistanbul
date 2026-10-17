@@ -34,7 +34,8 @@
       "short_term_rental",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-2",
@@ -71,7 +72,8 @@
       "citizenship",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-3",
@@ -108,7 +110,8 @@
       "citizenship",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-4",
@@ -144,7 +147,8 @@
     "personas": [
       "short_term_rental"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-5",
@@ -181,7 +185,8 @@
       "short_term_rental",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-6",
@@ -218,7 +223,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-7",
@@ -254,7 +260,8 @@
     "personas": [
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-8",
@@ -291,7 +298,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-9",
@@ -327,7 +335,8 @@
     "personas": [
       "short_term_rental"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-10",
@@ -364,7 +373,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-11",
@@ -401,7 +411,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-12",
@@ -439,7 +450,8 @@
       "citizenship",
       "short_term_rental"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-13",
@@ -476,7 +488,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-14",
@@ -514,7 +527,8 @@
       "citizenship",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-15",
@@ -550,7 +564,8 @@
     "personas": [
       "short_term_rental"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-16",
@@ -586,7 +601,8 @@
     "personas": [
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-17",
@@ -623,7 +639,8 @@
       "luxury_lifestyle",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-18",
@@ -661,7 +678,8 @@
       "short_term_rental",
       "citizenship"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-19",
@@ -698,7 +716,8 @@
       "citizenship",
       "luxury_lifestyle"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   },
   {
     "id": "invest-20",
@@ -734,6 +753,7 @@
     "personas": [
       "short_term_rental"
     ],
-    "status": "active"
+    "status": "suspended",
+    "publishToWeb": false
   }
 ]
