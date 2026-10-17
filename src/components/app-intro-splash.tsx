@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
 import { XeniosStore } from "@/lib/store";
 
 /**
- * Tam ekran açılış görseli (Splash).
+ * Tam ekran açılış videosu (Splash).
  *  - Native uygulama: her açılışta tam ekran (safe-area şeritleri olmadan) gösterilir.
  *  - Web/PWA: yalnızca otel misafiri QR oturumunda gösterilir, normal
  *    marketplace ziyaretlerinde atlanır.
- *  - 5 saniye sonra veya dokunmayla kapanır.
+ *  - Video bitince, 5.2 saniye sonra veya dokunmayla kapanır.
  *  - sessionStorage bayrağı ile oturum içi tekrar gösterilmez.
  */
 
@@ -36,11 +36,11 @@ function shouldSkipSplash(pathname: string | null | undefined): boolean {
 
 export function AppIntroSplash() {
   const pathname = usePathname();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [visible, setVisible] = useState(true);
   const [fadingOut, setFadingOut] = useState(false);
   const [ready, setReady] = useState(false);
-  const [isNight, setIsNight] = useState(false);
 
   const dismiss = useCallback(() => {
     setFadingOut(true);
@@ -63,20 +63,20 @@ export function AppIntroSplash() {
       } catch {}
     }
 
-    // Gündüz/Gece kontrolü (Akşam 18:00 - Sabah 06:00 arası gece kabul edilir)
-    const currentHour = new Date().getHours();
-    if (currentHour >= 18 || currentHour < 6) {
-      setIsNight(true);
-    }
-
     setVisible(true);
     setFadingOut(false);
     setReady(true);
     sessionStorage.setItem("purely_splash_played", "true");
 
-    const timer = setTimeout(dismiss, 5000);
+    const timer = setTimeout(dismiss, 5200);
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
+
+  useEffect(() => {
+    if (ready && visible && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [ready, visible]);
 
   // Henüz hydrasyon tamamlanmadıysa tam ekran sabit arka plan katmanı döndür.
   if (!ready) {
@@ -91,7 +91,11 @@ export function AppIntroSplash() {
           width: "100vw",
           height: "100dvh",
           zIndex: 999999,
-          backgroundColor: "#F6F1E7",
+          backgroundColor: "#2B6A6C",
+          backgroundImage: "url('/images/splash-poster.jpg')",
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
         }}
       />
     );
@@ -115,17 +119,40 @@ export function AppIntroSplash() {
         overflow: "hidden",
         cursor: "pointer",
         userSelect: "none",
-        backgroundColor: "#F6F1E7",
+        backgroundColor: "#2B6A6C",
         transition: "opacity 500ms ease-out, transform 500ms ease-out",
         opacity: fadingOut ? 0 : 1,
         transform: fadingOut ? "scale(1.02)" : "scale(1)",
         pointerEvents: fadingOut ? "none" : "auto",
       }}
     >
-      {/* Görsel hiçbir yazıyı kesmeden tüm ekranı birebir kaplar */}
+      {/* İlk kare poster katmanı (video yüklenirken sıfır gecikme sağlar) */}
       <img
-        src={isNight ? "/images/splash-night.jpg" : "/images/splash-day.jpg"}
+        src="/images/splash-poster.jpg"
         alt="purelyİstanbul"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "fill",
+          objectPosition: "center center",
+          display: "block",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Tam ekran açılış videosu */}
+      <video
+        ref={videoRef}
+        src="/videos/splash-intro.mp4"
+        poster="/images/splash-poster.jpg"
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        onEnded={dismiss}
         style={{
           position: "absolute",
           top: 0,
