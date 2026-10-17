@@ -89,7 +89,7 @@ function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
  * Multi-line Nautilus / Vortex Spiral SVG Icon for comusAI matching reference bottom bar
  */
 function LuxurySpiralIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#A67C46" : "currentColor";
+  const strokeColor = active ? "#7D5E2A" : "#8B6220";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -264,7 +264,7 @@ export function GuestTabBar({
               onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center justify-center py-0.5 px-3 rounded-2xl transition-all relative cursor-pointer active:scale-95 ${
                 isComusTrigger
-                  ? 'text-[#0B192C] font-bold'
+                  ? 'text-[#8B6220] font-bold'
                   : isActive
                     ? 'text-[#9E7035] font-semibold'
                     : 'text-[#222222] hover:text-[#000000] font-normal'
@@ -273,7 +273,7 @@ export function GuestTabBar({
               <div
                 className={`transition-all duration-300 flex items-center justify-center relative ${
                   isComusTrigger
-                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#0B192C] to-[#162B47] border-[1.5px] border-[#D47A43] text-[#D47A43] shadow-[0_4px_14px_rgba(212,122,67,0.38)]'
+                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7] via-[#F5E6C8] to-[#E2C285] border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.32),inset_0_1px_2px_rgba(255,255,255,0.95)]'
                     : isActive
                       ? 'w-11 h-11 rounded-full bg-gradient-to-b from-[#FDFCF9] to-[#F0EAE0] border-[1.5px] border-[#C9AE82] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.16),inset_0_1px_2px_rgba(255,255,255,1)]'
                       : 'w-10 h-10 text-[#1E1E1E]'
@@ -281,13 +281,13 @@ export function GuestTabBar({
               >
                 {isComusTrigger && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0B192C] animate-pulse"
+                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#F5F2EC] animate-pulse"
                     aria-hidden="true"
                   />
                 )}
                 {tab.iconType === 'hotel' && <LuxuryHotelBuildingIcon active={isActive} />}
                 {tab.iconType === 'grid' && <LayoutGrid className="w-[21px] h-[21px] stroke-[1.55]" />}
-                {tab.iconType === 'spiral' && <LuxurySpiralIcon active={true} />}
+                {tab.iconType === 'spiral' && <LuxurySpiralIcon active={isActive} />}
                 {tab.iconType === 'guide' && <LuxuryGuideInfoIcon active={isActive} />}
               </div>
               <span className="font-luxury-sans text-[11.5px] tracking-[0.01em] mt-0.5 leading-tight">
