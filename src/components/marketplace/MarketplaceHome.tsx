@@ -17,7 +17,6 @@ import {
   Scale,
   HeartHandshake,
   Compass,
-  Sparkles,
   QrCode,
   Building2,
   ArrowRight,
