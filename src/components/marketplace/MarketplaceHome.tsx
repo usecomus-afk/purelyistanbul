@@ -35,6 +35,7 @@ import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
+import { AiChatDrawer } from "@/components/guest/ai-chat-drawer";
 import { toast } from "sonner";
 
 type DurationBucket = "" | "short" | "half" | "full";
@@ -120,6 +121,7 @@ export function MarketplaceHome() {
 
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [isComusOpen, setIsComusOpen] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [groupType, setGroupType] = useState<GroupType | "">("");
@@ -691,9 +693,17 @@ export function MarketplaceHome() {
                 <Sparkles className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
               </div>
               <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">ComusAI Spotlight</h3>
-              <p className="text-[13.5px] text-white/75 leading-relaxed">
+              <p className="text-[13.5px] text-white/75 leading-relaxed mb-4">
                 Meet &ldquo;ComusAI&rdquo; — our proprietary Gemini-powered hyper-local AI concierge. It automatically speaks the guest&apos;s native browser language, offers scam-free live navigation, and crafts tailored daily walks like a trusted local friend.
               </p>
+              <button
+                type="button"
+                onClick={() => setIsComusOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-[#D47A43] hover:bg-[#c06933] text-white text-xs font-semibold px-4 py-2 transition cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Ask ComusAI Now
+              </button>
             </div>
           </div>
         </div>
@@ -735,6 +745,38 @@ export function MarketplaceHome() {
           </div>
         </div>
       </section>
+
+      {/* Floating Animated "Ask ComusAI" Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsComusOpen(true)}
+        aria-label="Ask ComusAI"
+        className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-[#0B192C] hover:bg-[#142946] text-white px-4 py-3 shadow-[0_12px_32px_rgba(11,25,44,0.38)] border border-[#D47A43]/70 transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer group"
+      >
+        <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D47A43] to-[#b5602d]">
+          <Sparkles className="w-3.5 h-3.5 text-white" />
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#0B192C] animate-ping" />
+        </span>
+        <span className="text-xs sm:text-[13px] font-semibold tracking-tight pr-1">
+          Ask ComusAI
+        </span>
+      </button>
+
+      {/* ComusAI Concierge Drawer */}
+      <AiChatDrawer
+        isOpen={isComusOpen}
+        onClose={() => setIsComusOpen(false)}
+        onExploreCategory={(catKey) => {
+          setFilterCategory(catKey);
+          setIsComusOpen(false);
+          setTimeout(() => {
+            document.getElementById("marketplace-listings")?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }, 120);
+        }}
+      />
 
       <MarketplaceFooter />
     </>

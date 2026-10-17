@@ -697,6 +697,15 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           setIsAiOpen(false);
           if (activeTab === 'ai') setActiveTab('services');
         }}
+        onExploreCategory={(catKey) => {
+          setSearchQuery('');
+          setSelectedCategory(catKey);
+          setActiveTab('experiences');
+          setIsAiOpen(false);
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
       />
       </div>
     </div>

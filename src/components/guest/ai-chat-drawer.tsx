@@ -1,437 +1,1040 @@
 "use client";
 
-import { Hotel, Language, GuestProfile } from '@/lib/types';
-import { getT } from '@/lib/i18n';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Hotel, Language } from '@/lib/types';
 import { XeniosStore } from '@/lib/store';
-import { askGeminiConcierge, ChatMessage } from '@/lib/gemini';
-import { useState, useEffect, useRef } from 'react';
-import { GuestPreferenceSurvey } from './guest-preference-survey';
-import { Send, User, X, Trash2 } from 'lucide-react';
+import { FirestoreService } from '@/lib/firestore-service';
+import { ChatMessage } from '@/lib/gemini';
+import {
+  Send,
+  X,
+  RotateCcw,
+  Sparkles,
+  WifiOff,
+  ArrowRight,
+  CheckCircle2,
+  ShieldCheck,
+  Clock,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
-interface AiChatDrawerProps {
-  hotel: Hotel;
-  roomNumber: string;
-  lang: Language;
+export interface AiChatDrawerProps {
+  hotel?: Hotel;
+  roomNumber?: string;
+  lang?: Language;
   isOpen: boolean;
   onClose: () => void;
+  /** Optional callback when an explore_category action is triggered */
+  onExploreCategory?: (categoryKey: string) => void;
 }
 
-const DEFAULT_GREETING_TR = "Merhaba! Ben comus, Sizin kişisel İstanbul rehberinizim. Gün batımı tekne turları, Tarihi Yarımada'nın gizli lezzetleri, İstanbul’da yatırım veya size özel rotalar hakkında dilediğinizi sorabilirsiniz.\n\n✨ 'Beni Tanı' butonuna tıklayarak size özel rehberlik etmemi özelleştirebilirsiniz.";
+export interface ParsedComusAction {
+  raw: string;
+  actionType: string; // 'explore_category' | 'in_stay'
+  targetKind: 'id' | 'service';
+  targetValue: string; // 'bosphorus' | 'transfer' | 'breakfast' | 'support' | etc.
+  label: string;
+  sublabel: string;
+}
 
-function ComusSpiralIcon({ className = "w-6 h-6" }: { className?: string }) {
+export const QUICK_SUGGESTION_CHIPS = [
+  '🚕 How much should a taxi to Sultanahmet cost?',
+  '🍳 Authentic breakfast near my stay',
+  '🕌 Dress code & prayer times for Blue Mosque',
+  '🚢 Best sunset boat trip without crowds',
+  '🔧 Report a room / Wi-Fi issue',
+] as const;
+
+const INITIAL_WELCOME_MESSAGE: ChatMessage = {
+  id: 'comus-welcome-1',
+  sender: 'assistant',
+  text: `Welcome to Istanbul! I am **ComusAI**, your hyper-local Istanbul Guardian & Concierge—here to treat you as our honored guest (*Tanrı Misafiri*).
+
+• **Scam-Free Guidance:** Ask me about fair taxi fares, public transit, or how to avoid tourist traps across Fatih, Beyoğlu (Galata/Karaköy/Cihangir), Beşiktaş, and Kadıköy (Moda).
+• **Verified Experiences:** Discover private Bosphorus sunset cruises, fast-track historic walks, and authentic 16th-century Turkish hammams.
+• **In-Stay Suite Care:** Order a doorstep breakfast box, schedule express laundry, or report a room/Wi-Fi issue in seconds.
+
+[action:explore_category, id:bosphorus]`,
+  time: 'Just now',
+};
+
+const ACTION_TAG_REGEX = /\[action:(\w+),\s*(id|service):(\w+)\]/g;
+
+const ACTION_METADATA: Record<
+  string,
+  { label: string; sublabel: string; categoryKey?: string }
+> = {
+  'service:breakfast': {
+    label: '🥐 Order Doorstep Breakfast Box',
+    sublabel: 'Fresh artisanal Turkish spread delivered to your suite door',
+  },
+  'service:support': {
+    label: '🛎️ Open Urgent Maintenance Ticket',
+    sublabel: 'Pre-filled suite & Wi-Fi support form routed to management',
+  },
+  'service:laundry': {
+    label: '👔 Request Express Laundry & Garment Care',
+    sublabel: 'Doorstep laundry pickup & 24-hour pressed delivery',
+  },
+  'id:transfer': {
+    label: '🚐 Book Scam-Free VIP Chauffeur',
+    sublabel: 'Fixed-rate licensed Mercedes-Benz Vito airport & city fleet',
+    categoryKey: 'cat-7',
+  },
+  'id:bosphorus': {
+    label: '⛵ Explore Verified Bosphorus Cruises',
+    sublabel: 'Private yachts & small-group sunset cruises with zero markups',
+    categoryKey: 'cat-1',
+  },
+  'id:history': {
+    label: '🏛️ Explore Historic Routes & Fast-Track Walks',
+    sublabel: 'Licensed historian guides for Hagia Sophia, Blue Mosque & cisterns',
+    categoryKey: 'cat-2',
+  },
+  'id:hammam': {
+    label: '🫧 Explore Traditional Turkish Bath & Hammam Rituals',
+    sublabel: 'Vetted 16th-century Ottoman marble baths & private scrub rituals',
+    categoryKey: 'cat-4',
+  },
+  'id:culinary': {
+    label: '🍢 Explore Culinary & Street Food Trails',
+    sublabel: 'Celebrated local staples across Kadıköy, Karaköy & Fatih',
+    categoryKey: 'cat-3',
+  },
+  'id:photography': {
+    label: '📸 Explore Rooftop Photography & Costumes',
+    sublabel: 'Private golden-hour Bosphorus & Galata rooftop sessions',
+    categoryKey: 'cat-6',
+  },
+};
+
+export function parseMessageAndActions(rawText: string): {
+  cleanText: string;
+  parsedActions: ParsedComusAction[];
+} {
+  const parsedActions: ParsedComusAction[] = [];
+  const seen = new Set<string>();
+
+  const regex = new RegExp(ACTION_TAG_REGEX.source, 'g');
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(rawText)) !== null) {
+    const [raw, actionType, targetKind, targetValue] = match;
+    const lookupKey = `${targetKind}:${targetValue}`;
+    if (!seen.has(lookupKey)) {
+      seen.add(lookupKey);
+      const meta = ACTION_METADATA[lookupKey] || {
+        label:
+          targetKind === 'service'
+            ? `🛎️ Open ${targetValue.charAt(0).toUpperCase() + targetValue.slice(1)} Service`
+            : `✨ Explore ${targetValue.charAt(0).toUpperCase() + targetValue.slice(1)}`,
+        sublabel: 'Verified Purely Istanbul In-Stay Concierge Action',
+      };
+      parsedActions.push({
+        raw,
+        actionType,
+        targetKind: targetKind as 'id' | 'service',
+        targetValue,
+        label: meta.label,
+        sublabel: meta.sublabel,
+      });
+    }
+  }
+
+  // Strip complete action tags and any partially-streamed trailing "[action:..." fragment
+  const cleanText = rawText
+    .replace(ACTION_TAG_REGEX, '')
+    .replace(/\[action:[^\]]*$/g, '')
+    .trim();
+
+  return { cleanText, parsedActions };
+}
+
+function renderFormattedText(text: string) {
+  const lines = text.split('\n');
+  return lines.map((line, lineIdx) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      return <div key={lineIdx} className="h-2" />;
+    }
+
+    const isBullet =
+      trimmed.startsWith('•') || trimmed.startsWith('- ') || trimmed.startsWith('* ');
+    const contentStr = isBullet ? trimmed.replace(/^[•\-*]\s*/, '') : line;
+
+    // Parse inline **bold** and *italic*
+    const parts = contentStr.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    const renderedParts = parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={i} className="font-semibold text-[#0B192C]">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return (
+          <em key={i} className="italic text-slate-700">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+      return <React.Fragment key={i}>{part}</React.Fragment>;
+    });
+
+    if (isBullet) {
+      return (
+        <div key={lineIdx} className="flex items-start gap-2 pl-0.5 py-0.5">
+          <span className="text-[#D47A43] font-bold leading-snug select-none">•</span>
+          <span className="flex-1 leading-relaxed">{renderedParts}</span>
+        </div>
+      );
+    }
+
+    return (
+      <p key={lineIdx} className="leading-relaxed">
+        {renderedParts}
+      </p>
+    );
+  });
+}
+
+/**
+ * Glowing Indigo (#0B192C) & Terracotta (#D47A43) ComusAI Emblem
+ */
+export function ComusGlowingAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
+  const dims = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
+  const iconDims = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
   return (
-    <svg viewBox="0 0 28 28" fill="none" className={className}>
-      <circle cx="14" cy="14" r="11" stroke="#8E7252" strokeWidth="1.35" strokeDasharray="3 2" />
-      <path
-        d="M14 14C14 12.6 15.2 11.5 16.5 11.5C18.5 11.5 20 13.2 20 15.3C20 18.2 17.5 20.5 14.3 20.5C10.4 20.5 7.3 17.3 7.3 13.3C7.3 8.6 11.1 5 15.8 5C20.8 5 24.5 8.8 24.5 14"
-        stroke="#1D2025"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+    <div className={`relative ${dims} shrink-0 flex items-center justify-center`}>
+      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#0B192C] via-[#1E3A5F] to-[#D47A43] opacity-80 blur-[3px] animate-pulse" />
+      <div
+        className={`relative ${dims} rounded-full bg-gradient-to-br from-[#0B192C] to-[#162B47] border border-[#D47A43]/70 flex items-center justify-center shadow-[0_0_14px_rgba(212,122,67,0.45)]`}
+      >
+        <Sparkles className={`${iconDims} text-[#D47A43]`} />
+      </div>
+      <span
+        className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0B192C]"
+        aria-hidden="true"
       />
-      <path
-        d="M14 14C14.8 14 15.4 14.6 15.4 15.4C15.4 16.7 14.2 17.7 12.8 17.7C10.8 17.7 9.3 16 9.3 13.9C9.3 11.1 11.6 8.8 14.5 8.8C17.9 8.8 20.6 11.5 20.6 15"
-        stroke="#8E7252"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <circle cx="14" cy="14" r="1.6" fill="#8E7252" />
-    </svg>
+    </div>
   );
 }
 
-export function AiChatDrawer({ hotel, roomNumber, lang, isOpen, onClose }: AiChatDrawerProps) {
-  const t = getT(lang);
-  const [profile, setProfile] = useState<GuestProfile>(XeniosStore.getGuestProfile());
-  const [showSurvey, setShowSurvey] = useState(false);
-  const [introDismissed, setIntroDismissed] = useState(true);
+export function AiChatDrawer({
+  hotel,
+  roomNumber = '304',
+  isOpen,
+  onClose,
+  onExploreCategory,
+}: AiChatDrawerProps) {
+  const resolvedHotelName = hotel?.name || 'Purely Istanbul Partner Suite';
+  const resolvedHotelId = hotel?.id || 'hotel-1';
+
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [isWaitingForFirstToken, setIsWaitingForFirstToken] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+
+  // Interactive Sub-Modals triggered by Action Cards
+  const [activeActionModal, setActiveActionModal] = useState<
+    null | 'breakfast' | 'support' | 'transfer' | 'laundry'
+  >(null);
+
+  // Sub-modal states
+  const [breakfastBoxType, setBreakfastBoxType] = useState('Traditional Anatolian Serpme Box (For 2)');
+  const [breakfastTime, setBreakfastTime] = useState('08:30 AM');
+  const [breakfastNotes, setBreakfastNotes] = useState('');
+
+  const [supportIssueType, setSupportIssueType] = useState('Wi-Fi & Internet Connectivity');
+  const [supportNotes, setSupportNotes] = useState('Need immediate assistance in suite.');
+
+  const [transferAirport, setTransferAirport] = useState('Istanbul Airport (IST) — €65 Fixed Rate');
+  const [transferFlightNo, setTransferFlightNo] = useState('');
+  const [transferPickupTime, setTransferPickupTime] = useState('Today · 16:00');
+
+  const [laundryPackage, setLaundryPackage] = useState('Express Wash, Fold & Steam Press (24h)');
+  const [laundryPickupTime, setLaundryPickupTime] = useState('Within 30 Minutes');
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = XeniosStore.getAiChatMessages();
-    if (saved && saved.length > 0) return saved;
-    return [
-      {
-        id: 'init-1',
-        sender: 'assistant',
-        text: t.aiGreeting || DEFAULT_GREETING_TR,
-        time: 'Now',
-        actions: [
-          {
-            id: 'act-know-me',
-            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
-            type: 'OPEN_SURVEY'
-          }
-        ],
-        recommendations: [
-          { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
-          { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
-        ]
+    if (saved && saved.length > 0) {
+      // Ensure English welcome if first message is old Turkish default
+      if (saved[0]?.id?.startsWith('init') && saved[0]?.text?.includes('Merhaba')) {
+        return [INITIAL_WELCOME_MESSAGE];
       }
-    ];
+      return saved;
+    }
+    return [INITIAL_WELCOME_MESSAGE];
   });
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+  }, [messages, isWaitingForFirstToken, isStreaming]);
 
+  // Offline / Wi-Fi Disconnection Detector
   useEffect(() => {
-    if (isOpen) {
-      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [isOpen]);
+    if (typeof window === 'undefined') return;
+    setIsOffline(!navigator.onLine);
 
-  useEffect(() => {
-    if (isOpen) {
-      setProfile(XeniosStore.getGuestProfile());
-      setIntroDismissed(XeniosStore.getAiIntroDismissed());
-      setShowSurvey(false);
-      const saved = XeniosStore.getAiChatMessages();
-      if (saved && saved.length > 0) {
-        setMessages(saved);
-      }
-    }
-  }, [isOpen]);
-
-  // Update initial greeting if language changes and no chat history exists
-  useEffect(() => {
-    if (messages.length === 1 && messages[0].id.startsWith('init')) {
-      const updatedInit: ChatMessage = {
-        ...messages[0],
-        text: t.aiGreeting || DEFAULT_GREETING_TR,
-        actions: [
-          {
-            id: 'act-know-me',
-            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
-            type: 'OPEN_SURVEY'
-          }
-        ]
-      };
-      setMessages([updatedInit]);
-      XeniosStore.saveAiChatMessages([updatedInit]);
-    }
-  }, [lang, t]);
-
-  if (!isOpen) return null;
-
-  const handleSaveProfile = (updated: GuestProfile) => {
-    setProfile(updated);
-    XeniosStore.setGuestProfile(updated);
-    XeniosStore.setAiIntroDismissed(true);
-    setIntroDismissed(true);
-    setShowSurvey(false);
-  };
-
-  const handleClearProfile = () => {
-    const cleared = XeniosStore.clearGuestProfile();
-    setProfile(cleared);
-    XeniosStore.setAiIntroDismissed(false);
-    setIntroDismissed(false);
-    setShowSurvey(false);
-  };
-
-  const handleClearChat = () => {
-    XeniosStore.clearAiChatMessages();
-    const initial: ChatMessage[] = [
-      {
-        id: `init-${Date.now()}`,
-        sender: 'assistant',
-        text: t.aiGreeting || DEFAULT_GREETING_TR,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        actions: [
-          {
-            id: 'act-know-me',
-            label: `✨ ${t.knowMeBtn || 'Beni Tanı'} (Kişisel Rehberliği Özelleştir)`,
-            type: 'OPEN_SURVEY'
-          }
-        ],
-        recommendations: [
-          { title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
-          { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür", location: "Sultanahmet" }
-        ]
-      }
-    ];
-    setMessages(initial);
-    XeniosStore.saveAiChatMessages(initial);
-    toast.success("Sohbet geçmişi temizlendi.");
-  };
-
-  const handleSend = async (customText?: string) => {
-    const userMsg = (customText || input).trim();
-    if (!userMsg || isLoading) return;
-    setInput('');
-
-    const newMsg: ChatMessage = {
-      id: `usr-${Date.now()}`,
-      sender: 'user',
-      text: userMsg,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const handleOffline = () => {
+      setIsOffline(true);
+      toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
+    };
+    const handleOnline = () => {
+      setIsOffline(false);
     };
 
-    const nextMessages = [...messages, newMsg];
-    setMessages(nextMessages);
-    XeniosStore.saveAiChatMessages(nextMessages);
-    setIsLoading(true);
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, []);
 
-    const userPrefs = XeniosStore.getUserPreferences();
-    const assistantMsg = await askGeminiConcierge(
-      userMsg,
-      profile,
-      hotel.name,
-      hotel.district,
-      lang,
-      roomNumber,
-      userPrefs,
-      nextMessages
-    );
-
-    if (assistantMsg.negative_locked_categories?.length) {
-      assistantMsg.negative_locked_categories.forEach(cat => {
-        XeniosStore.addBlacklistedOffer(cat, 'Misafir chat üzerinden reddetti');
-      });
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+      return () => {
+        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+      };
     }
+  }, [isOpen]);
 
-    const finalMessages = [...nextMessages, assistantMsg];
-    setMessages(finalMessages);
-    XeniosStore.saveAiChatMessages(finalMessages);
-    setIsLoading(false);
-  };
+  const handleClearHistory = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsStreaming(false);
+    setIsWaitingForFirstToken(false);
+    const fresh: ChatMessage = {
+      ...INITIAL_WELCOME_MESSAGE,
+      id: `comus-welcome-${Date.now()}`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setMessages([fresh]);
+    XeniosStore.saveAiChatMessages([fresh]);
+    toast.success('Conversation history cleared.');
+  }, []);
 
-  const handleExecuteAction = (action: any) => {
-    if (action.type === 'OPEN_SURVEY') {
-      setShowSurvey(true);
+  const handleSend = async (customPrompt?: string) => {
+    const queryText = (customPrompt ?? input).trim();
+    if (!queryText || isStreaming) return;
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setIsOffline(true);
+      toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
       return;
     }
 
-    if (action.type === 'BOOK_APPOINTMENT') {
-      const payload = action.payload || {};
-      const serviceTitle = payload.service_title || 'Seçili Hizmet';
-      const prefDate = payload.preferred_date || '2026-08-24';
-      const prefTime = payload.preferred_time || '11:00';
+    setInput('');
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      XeniosStore.addToBookedItinerary({
-        booking_id: `bk_${Date.now()}`,
-        title: serviceTitle,
-        category: payload.booking_type || 'Rezervasyon',
-        location_name: payload.listing_id?.includes('hamam') ? 'Cağaloğlu Hamamı' : 'Quartz Clinique',
-        district: payload.listing_id?.includes('hamam') ? 'Sultanahmet' : 'Nişantaşı',
-        location_coordinates: payload.listing_id?.includes('hamam') ? { lat: 41.0102, lng: 28.9755 } : { lat: 41.0485, lng: 28.9942 },
-        date: prefDate,
-        start_time: prefTime,
-        end_time: '12:00',
-        status: 'CONFIRMED'
+    const userMsg: ChatMessage = {
+      id: `usr-${Date.now()}`,
+      sender: 'user',
+      text: queryText,
+      time: nowTime,
+    };
+
+    const assistantMsgId = `ai-${Date.now() + 1}`;
+    const updatedWithUser = [...messages, userMsg];
+    setMessages(updatedWithUser);
+    XeniosStore.saveAiChatMessages(updatedWithUser);
+
+    setIsStreaming(true);
+    setIsWaitingForFirstToken(true);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    try {
+      const historyPayload = updatedWithUser.slice(-8).map((m) => ({
+        role: m.sender === 'user' ? 'user' : 'model',
+        content: m.text,
+      }));
+
+      const res = await fetch('/api/comus-ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: queryText,
+          messages: historyPayload,
+          hotelName: resolvedHotelName,
+          roomNumber,
+        }),
+        signal: controller.signal,
       });
 
-      const confirmMsg: ChatMessage = {
-        id: `conf-${Date.now()}`,
-        sender: 'assistant',
-        text: `Harika bir seçim! ${serviceTitle} randevunuz ${prefDate} saat ${prefTime} için adınıza başarıyla oluşturulmuştur. 🎟️\n\n📅 Haftalık seyahat ajandanıza eklendi. Ulaşım rotanız otel resepsiyonu ve VIP transfer ekibimize bildirildi.`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => {
-        const updated = [...prev, confirmMsg];
-        XeniosStore.saveAiChatMessages(updated);
-        return updated;
-      });
-    } else if (action.type === 'VIEW_ITINERARY') {
-      const userPrefs = XeniosStore.getUserPreferences();
-      const itinerary = userPrefs.booked_itinerary || [];
-      const text = itinerary.length > 0
-        ? `📅 **Haftalık Seyahat Ajandanız:**\n` + itinerary.map(i => `• ${i.date} ${i.start_time}: ${i.title} (${i.location_name})`).join('\n') + `\n\n🚗 *Trafik Notu:* Sultanahmet - Nişantaşı aksında 17:00-19:30 saatleri arasında M2 Metrosunu tercih etmeniz önerilir.`
-        : `Henüz kayıtlı bir seyahat randevunuz bulunmamaktadır. Dilerseniz hemen bir etkinlik veya estetik seansı planlayabiliriz.`;
-      
-      const itinMsg: ChatMessage = {
-        id: `itin-${Date.now()}`,
-        sender: 'assistant',
-        text,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => {
-        const updated = [...prev, itinMsg];
-        XeniosStore.saveAiChatMessages(updated);
-        return updated;
-      });
+      if (!res.ok || !res.body) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let sseBuffer = '';
+      let accumulatedText = '';
+      let receivedFirstToken = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        sseBuffer += decoder.decode(value, { stream: true });
+        const events = sseBuffer.split('\n\n');
+        sseBuffer = events.pop() || '';
+
+        for (const evt of events) {
+          const lines = evt.split('\n');
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const dataPayload = trimmed.slice(5).trim();
+            if (dataPayload === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(dataPayload);
+              if (typeof parsed.text === 'string' && parsed.text.length > 0) {
+                if (!receivedFirstToken) {
+                  receivedFirstToken = true;
+                  setIsWaitingForFirstToken(false);
+                }
+                accumulatedText += parsed.text;
+                const currentText = accumulatedText;
+                setMessages((prev) => {
+                  const hasAssistant = prev.some((m) => m.id === assistantMsgId);
+                  if (!hasAssistant) {
+                    return [
+                      ...prev,
+                      {
+                        id: assistantMsgId,
+                        sender: 'assistant',
+                        text: currentText,
+                        time: nowTime,
+                      },
+                    ];
+                  }
+                  return prev.map((m) =>
+                    m.id === assistantMsgId ? { ...m, text: currentText } : m
+                  );
+                });
+              }
+            } catch {
+              // ignore malformed SSE chunk
+            }
+          }
+        }
+      }
+
+      setIsWaitingForFirstToken(false);
+      setIsStreaming(false);
+
+      if (accumulatedText) {
+        const finalHistory: ChatMessage[] = [
+          ...updatedWithUser,
+          {
+            id: assistantMsgId,
+            sender: 'assistant',
+            text: accumulatedText,
+            time: nowTime,
+          },
+        ];
+        setMessages(finalHistory);
+        XeniosStore.saveAiChatMessages(finalHistory);
+      }
+    } catch (error: any) {
+      if (error?.name === 'AbortError') return;
+      setIsWaitingForFirstToken(false);
+      setIsStreaming(false);
+
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        setIsOffline(true);
+        toast.error('Please connect to your suite Wi-Fi to chat with ComusAI.');
+      } else {
+        toast.error('Connection interrupted. Please check your suite Wi-Fi.');
+      }
     }
   };
 
+  const handleActionCardClick = (act: ParsedComusAction) => {
+    if (act.targetKind === 'service') {
+      if (act.targetValue === 'breakfast') {
+        setActiveActionModal('breakfast');
+        return;
+      }
+      if (act.targetValue === 'support') {
+        setActiveActionModal('support');
+        return;
+      }
+      if (act.targetValue === 'laundry') {
+        setActiveActionModal('laundry');
+        return;
+      }
+    }
+
+    if (act.targetKind === 'id') {
+      if (act.targetValue === 'transfer') {
+        setActiveActionModal('transfer');
+        return;
+      }
+
+      const categoryKeyMap: Record<string, string> = {
+        bosphorus: 'cat-1',
+        history: 'cat-2',
+        culinary: 'cat-3',
+        hammam: 'cat-4',
+        photography: 'cat-6',
+      };
+      const targetCatKey = categoryKeyMap[act.targetValue] || 'cat-1';
+
+      if (onExploreCategory) {
+        onExploreCategory(targetCatKey);
+        onClose();
+        return;
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('xenios_explore_category', {
+            detail: { categoryKey: targetCatKey, id: act.targetValue },
+          })
+        );
+        onClose();
+      }
+    }
+  };
+
+  const submitInStayRequest = async (
+    serviceKey: string,
+    serviceTitle: string,
+    notes: string,
+    priority: 'standart' | 'acil' = 'standart'
+  ) => {
+    try {
+      await FirestoreService.addRequest({
+        hotelId: resolvedHotelId,
+        hotelName: resolvedHotelName,
+        roomNumber,
+        serviceKey,
+        serviceTitle,
+        notes,
+        status: 'pending',
+        department: priority === 'acil' ? 'Engineering & IT' : 'In-Stay Concierge',
+        stage: 'pending',
+        priority,
+      });
+    } catch {
+      // Fallback local persistence already handled inside FirestoreService / XeniosStore
+    }
+
+    const confirmText =
+      serviceKey === 'breakfast'
+        ? `✅ **Doorstep Breakfast Box Confirmed:** Your *${breakfastBoxType}* is scheduled for **${breakfastTime}** to Suite **${roomNumber}**.${breakfastNotes ? ` Note: "${breakfastNotes}"` : ''}`
+        : serviceKey === 'support'
+          ? `🛎️ **Urgent Maintenance Ticket Dispatched:** Our property team has been alerted for **${supportIssueType}** in Suite **${roomNumber}** (Priority: **URGENT**).`
+          : serviceKey === 'laundry'
+            ? `👔 **Express Garment Pickup Scheduled:** Valet pickup (**${laundryPickupTime}**) for *${laundryPackage}* from Suite **${roomNumber}** is confirmed.`
+            : `🚐 **VIP Chauffeur Transfer Reserved:** Your licensed Mercedes-Benz Vito for **${transferAirport}** (${transferPickupTime}${transferFlightNo ? ` · Flight ${transferFlightNo}` : ''}) is confirmed.`;
+
+    const confirmMsg: ChatMessage = {
+      id: `act-confirm-${Date.now()}`,
+      sender: 'assistant',
+      text: confirmText,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => {
+      const next = [...prev, confirmMsg];
+      XeniosStore.saveAiChatMessages(next);
+      return next;
+    });
+
+    setActiveActionModal(null);
+    toast.success(`${serviceTitle} confirmed for Suite ${roomNumber}!`);
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div 
-      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in"
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="ComusAI — Your Istanbul Guardian"
+      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#0B192C]/65 backdrop-blur-sm overflow-hidden overscroll-contain animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div 
-        className="bg-[#F7F3EA] w-full sm:max-w-lg h-[100dvh] sm:h-[82vh] max-h-[100dvh] sm:max-h-[82vh] rounded-none sm:rounded-[24px] shadow-2xl border-[1.5px] border-[#C4B8A4] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 text-[#141414]"
+      <div
+        className="w-full sm:max-w-lg h-[100dvh] sm:h-[85vh] max-h-[100dvh] sm:max-h-[760px] bg-[#FBFBF9] rounded-none sm:rounded-3xl shadow-[0_24px_70px_rgba(11,25,44,0.45)] border-0 sm:border sm:border-slate-200/80 flex flex-col overflow-hidden overscroll-contain relative text-[#0B192C]"
         onClick={(e) => e.stopPropagation()}
       >
-        
-        {/* Luxury Ivory/Champagne Header */}
-        <div className="px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[#C4B8A4] text-[#141414] flex items-center justify-between shadow-xs shrink-0">
-          <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#FAF7F0] to-[#EFE8DA] flex items-center justify-center border-[1.5px] border-[#C5A059] shadow-sm shrink-0">
-              <ComusSpiralIcon className="w-6 h-6" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-luxury-serif text-[16px] font-bold tracking-[0.04em] text-[#141414] leading-tight truncate">
-                {t.aiTitle || 'comusAI · Kişisel İstanbul Rehberiniz'}
-              </h3>
-              <div className="flex items-center gap-1.5 font-luxury-sans text-[10.5px] text-[#5C4938] mt-0.5">
-                <span className="truncate font-medium">{hotel.name} · {t.room} {roomNumber}</span>
-                <span className="text-[#8E7252] shrink-0">•</span>
-                <span className="px-1.5 py-0.5 rounded-md bg-[#FAF8F4] text-[9px] font-mono text-[#7D5E2A] font-bold shrink-0 border border-[#C4B8A4]">
-                  AI Concierge
+        {/* 1. HEADER */}
+        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-[#0B192C] text-white flex items-center justify-between gap-3 shrink-0 border-b border-white/10">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <ComusGlowingAvatar size="md" />
+            <div className="min-w-0 flex-1">
+              <h2 className="font-luxury-serif text-[16px] sm:text-[17px] font-bold tracking-tight text-white truncate">
+                ComusAI — Your Istanbul Guardian
+              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-[10.5px] font-semibold text-emerald-300 tracking-wide">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  Online • Local Guide
+                </span>
+                <span className="text-[11px] text-slate-300 truncate hidden xs:inline">
+                  Suite {roomNumber}
                 </span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            {messages.length > 1 && (
-              <button
-                type="button"
-                onClick={handleClearChat}
-                className="p-2 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#5C4938] transition cursor-pointer border border-[#C4B8A4]"
-                title="Sohbeti Temizle"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleClearHistory}
+              title="Reset / Clear History"
+              aria-label="Reset / Clear History"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
 
             <button
+              type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] border border-[#C4B8A4] flex items-center justify-center text-sm font-bold transition cursor-pointer"
+              aria-label="Close ComusAI"
+              className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition cursor-pointer"
             >
-              <X className="w-4 h-4 stroke-[1.8]" />
+              <X className="w-4 h-4" />
             </button>
           </div>
+        </header>
+
+        {/* 2. QUICK SUGGESTION CHIPS (Horizontal Scroll directly below header) */}
+        <div className="px-3.5 py-2.5 bg-white border-b border-slate-200/80 overflow-x-auto flex items-center gap-2 no-scrollbar shrink-0">
+          {QUICK_SUGGESTION_CHIPS.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              disabled={isStreaming}
+              onClick={() => handleSend(chip)}
+              className="px-3 py-1.5 rounded-full bg-[#F8FAFC] hover:bg-[#0B192C] hover:text-white text-[#1E293B] border border-slate-200/90 hover:border-[#0B192C] text-[11.5px] font-medium whitespace-nowrap transition-all duration-150 cursor-pointer shrink-0 shadow-2xs disabled:opacity-50"
+            >
+              {chip}
+            </button>
+          ))}
         </div>
 
-        {/* Survey Drawer Overlay if open */}
-        {showSurvey ? (
-          <div className="flex-1 overflow-y-auto p-4 pb-[max(2rem,env(safe-area-inset-bottom))] bg-[#F7F3EA] overscroll-contain">
-            <GuestPreferenceSurvey
-              initialProfile={profile}
-              lang={lang}
-              onSave={handleSaveProfile}
-              onClear={handleClearProfile}
-              onCancel={() => setShowSurvey(false)}
-            />
+        {/* OFFLINE DETECTOR BANNER */}
+        {isOffline && (
+          <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-2 shrink-0">
+            <WifiOff className="w-4 h-4 text-[#D47A43] shrink-0" />
+            <span>Please connect to your suite Wi-Fi to chat with ComusAI.</span>
           </div>
-        ) : (
-          <>
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#F7F3EA] overscroll-contain">
-              {messages.map((msg) => {
-                const isUser = msg.sender === 'user';
-                return (
+        )}
+
+        {/* 3. MESSAGE BUBBLES & INTERACTIVE ACTION CARDS */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-[#FBFBF9] overscroll-contain">
+          {messages.map((msg) => {
+            const isUser = msg.sender === 'user';
+            const { cleanText, parsedActions } = isUser
+              ? { cleanText: msg.text, parsedActions: [] }
+              : parseMessageAndActions(msg.text);
+
+            return (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-2`}
+              >
+                <div
+                  className={`flex items-start gap-2.5 max-w-[88%] ${
+                    isUser ? 'flex-row-reverse' : 'flex-row'
+                  }`}
+                >
+                  {!isUser && <ComusGlowingAvatar size="sm" />}
+
                   <div
-                    key={msg.id}
-                    className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
-                  >
-                    {!isUser && (
-                      <div className="w-8 h-8 rounded-full bg-[#FAF8F4] border border-[#C5A059] p-1 flex items-center justify-center shrink-0 shadow-xs mt-0.5">
-                        <ComusSpiralIcon className="w-5 h-5" />
-                      </div>
-                    )}
-
-                    <div className={`max-w-[85%] rounded-2xl p-3.5 font-luxury-sans text-xs shadow-sm space-y-2 ${
+                    className={`rounded-2xl px-4 py-3 text-[13px] shadow-xs ${
                       isUser
-                        ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white border border-[#7D5E2A] rounded-tr-xs'
-                        : 'luxury-service-card text-[#141414] rounded-tl-xs'
-                    }`}>
-                      <div className="whitespace-pre-wrap leading-relaxed">
-                        {msg.text}
-                      </div>
-
-                      {/* Interactive Action Buttons from Comus AI */}
-                      {!isUser && msg.actions && msg.actions.length > 0 && (
-                        <div className="pt-2 flex flex-col gap-1.5 border-t border-[#D8CBB8]">
-                          {msg.actions.map((act) => (
-                            <button
-                              key={act.id}
-                              type="button"
-                              onClick={() => handleExecuteAction(act)}
-                              className="font-luxury-sans w-full py-2.5 px-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer text-left"
-                            >
-                              <span>{act.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className={`text-[9px] font-mono flex items-center ${isUser ? 'text-[#EFE8DA] justify-end' : 'text-[#6B5A48] justify-end'}`}>
-                        <span>{msg.time}</span>
-                      </div>
-                    </div>
-
-                    {isUser && (
-                      <div className="w-8 h-8 rounded-full bg-[#1D2025] text-[#FAF8F4] border border-[#8E7252] flex items-center justify-center shrink-0 text-xs shadow-xs mt-0.5">
-                        <User className="w-4 h-4" />
+                        ? 'bg-[#0B192C] text-white rounded-tr-xs'
+                        : 'bg-[#F8FAFC] text-[#1E293B] border border-slate-200/90 rounded-tl-xs'
+                    }`}
+                  >
+                    {isUser ? (
+                      <p className="whitespace-pre-wrap leading-relaxed text-white">
+                        {cleanText}
+                      </p>
+                    ) : (
+                      <div className="space-y-1 text-[#1E293B]">
+                        {renderFormattedText(cleanText)}
                       </div>
                     )}
-                  </div>
-                );
-              })}
 
-              {isLoading && (
-                <div className="luxury-service-card flex gap-2.5 items-center font-luxury-sans text-xs text-[#141414] p-3 w-fit">
-                  <div className="w-5 h-5 relative flex items-center justify-center shrink-0 animate-spin">
-                    <ComusSpiralIcon className="w-5 h-5" />
+                    <div
+                      className={`mt-1.5 text-[10px] flex items-center justify-end gap-1 ${
+                        isUser ? 'text-slate-300' : 'text-[#64748B]'
+                      }`}
+                    >
+                      <span>{msg.time}</span>
+                    </div>
                   </div>
-                  <span className="font-semibold text-[#5C4938]">comus yanıt hazırlıyor...</span>
+                </div>
+
+                {/* Dynamically Rendered Interactive Action Banner Cards */}
+                {!isUser && parsedActions.length > 0 && (
+                  <div className="pl-10 w-full max-w-[88%] space-y-2">
+                    {parsedActions.map((act) => (
+                      <button
+                        key={act.raw}
+                        type="button"
+                        onClick={() => handleActionCardClick(act)}
+                        className="w-full group rounded-2xl bg-gradient-to-r from-[#0B192C] to-[#152C4A] hover:from-[#122844] hover:to-[#1E3B63] text-white p-3.5 border border-[#D47A43]/50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-between gap-3 text-left cursor-pointer"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D47A43]">
+                              Verified Instant Action
+                            </span>
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#D47A43]" />
+                          </div>
+                          <p className="text-[13px] font-bold text-white mt-0.5 truncate">
+                            {act.label}
+                          </p>
+                          <p className="text-[11px] text-slate-300 truncate mt-0.5">
+                            {act.sublabel}
+                          </p>
+                        </div>
+                        <div className="w-8 h-8 rounded-xl bg-[#D47A43] text-white flex items-center justify-center shrink-0 group-hover:translate-x-0.5 transition-transform">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* 4. WARM TYPING INDICATOR (While waiting for first token) */}
+          {isWaitingForFirstToken && (
+            <div className="flex items-start gap-2.5">
+              <ComusGlowingAvatar size="sm" />
+              <div className="bg-[#F8FAFC] border border-slate-200/90 rounded-2xl rounded-tl-xs px-4 py-3 shadow-xs flex items-center gap-3">
+                <div className="flex items-center gap-1" aria-label="ComusAI is typing">
+                  <span
+                    className="w-2 h-2 rounded-full bg-[#D47A43] animate-bounce"
+                    style={{ animationDelay: '0ms' }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full bg-[#D47A43] animate-bounce"
+                    style={{ animationDelay: '150ms' }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full bg-[#D47A43] animate-bounce"
+                    style={{ animationDelay: '300ms' }}
+                  />
+                </div>
+                <span className="text-xs font-medium text-[#64748B]">
+                  ComusAI is crafting your local guide...
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div ref={chatBottomRef} />
+        </div>
+
+        {/* INTERACTIVE IN-STAY / TRANSFER ACTION SUB-MODAL OVERLAY */}
+        {activeActionModal && (
+          <div className="absolute inset-0 z-30 bg-[#0B192C]/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
+            <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 space-y-4 text-[#0B192C]">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#D47A43]">
+                    Purely Istanbul · Suite {roomNumber}
+                  </span>
+                  <h3 className="font-luxury-serif text-base font-bold text-[#0B192C] mt-0.5">
+                    {activeActionModal === 'breakfast' && '🥐 Order Doorstep Breakfast Box'}
+                    {activeActionModal === 'support' && '🛎️ Open Urgent Maintenance Ticket'}
+                    {activeActionModal === 'transfer' && '🚐 Book Scam-Free VIP Chauffeur'}
+                    {activeActionModal === 'laundry' && '👔 Express Laundry & Garment Care'}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveActionModal(null)}
+                  className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {activeActionModal === 'breakfast' && (
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Select Artisanal Breakfast Box
+                    </label>
+                    <select
+                      value={breakfastBoxType}
+                      onChange={(e) => setBreakfastBoxType(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-[#F8FAFC] text-[#0B192C] font-medium"
+                    >
+                      <option>Traditional Anatolian Serpme Box (For 2) — €28</option>
+                      <option>Galata Artisan Simit, Ezine Cheese & Kaymak Box — €16</option>
+                      <option>Healthy Mediterranean Avocado & Poached Eggs Box — €18</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Preferred Doorstep Delivery Time
+                    </label>
+                    <select
+                      value={breakfastTime}
+                      onChange={(e) => setBreakfastTime(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-[#F8FAFC] text-[#0B192C] font-medium"
+                    >
+                      <option>08:00 AM</option>
+                      <option>08:30 AM</option>
+                      <option>09:00 AM</option>
+                      <option>09:30 AM</option>
+                      <option>10:00 AM</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Dietary Preferences or Tea/Coffee Note
+                    </label>
+                    <input
+                      type="text"
+                      value={breakfastNotes}
+                      onChange={(e) => setBreakfastNotes(e.target.value)}
+                      placeholder="e.g., Fresh brewed Turkish tea, no nuts..."
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-[#F8FAFC] text-[#0B192C]"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      submitInStayRequest(
+                        'breakfast',
+                        'Doorstep Breakfast Box',
+                        `${breakfastBoxType} · Delivery: ${breakfastTime}${breakfastNotes ? ` · ${breakfastNotes}` : ''}`,
+                        'standart'
+                      )
+                    }
+                    className="w-full py-3 rounded-xl bg-[#D47A43] hover:bg-[#c06933] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Confirm Doorstep Breakfast Delivery</span>
+                  </button>
                 </div>
               )}
-              <div ref={chatBottomRef} />
-            </div>
 
-            {/* Quick Suggestion Chips */}
-            <div className="p-2.5 bg-[#FAF8F4] border-t border-[#D8CBB8] overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
-              {(t.quickChips || []).map((chip, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSend(chip)}
-                  className="font-luxury-sans px-3 py-1.5 rounded-full bg-[#F7F3EA] hover:bg-[#EFE8DA] text-[#221F1C] border border-[#C4B8A4] text-[11px] font-semibold whitespace-nowrap transition cursor-pointer shadow-2xs shrink-0"
-                >
-                  {chip}
-                </button>
-              ))}
-            </div>
+              {activeActionModal === 'support' && (
+                <div className="space-y-3 text-xs">
+                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+                    <span className="font-semibold">
+                      Unit: {resolvedHotelName} · Suite {roomNumber}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase">
+                      Urgent Priority
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Issue Category
+                    </label>
+                    <select
+                      value={supportIssueType}
+                      onChange={(e) => setSupportIssueType(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-[#F8FAFC] text-[#0B192C] font-medium"
+                    >
+                      <option>Wi-Fi & Internet Connectivity</option>
+                      <option>Air Conditioning / Heating Climate Control</option>
+                      <option>Hot Water / Bathroom Plumbing</option>
+                      <option>Fresh Towels / Housekeeping Refill</option>
+                      <option>Smart Lock / Keycard Access</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Details for Property Manager
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={supportNotes}
+                      onChange={(e) => setSupportNotes(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-[#F8FAFC] text-[#0B192C]"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      submitInStayRequest(
+                        'support',
+                        `Urgent Support: ${supportIssueType}`,
+                        `${supportIssueType} · ${supportNotes}`,
+                        'acil'
+                      )
+                    }
+                    className="w-full py-3 rounded-xl bg-[#0B192C] hover:bg-[#162d4c] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-[#D47A43]" />
+                    <span>Dispatch Urgent Maintenance Ticket</span>
+                  </button>
+                </div>
+              )}
 
-            {/* Input Form */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSend();
-              }}
-              className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-[#FAF8F4] border-t border-[#C4B8A4] flex items-center gap-2 shrink-0"
-            >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={t.aiPlaceholder}
-                className="font-luxury-sans flex-1 text-xs p-3 rounded-2xl border border-[#C4B8A4] bg-[#F7F3EA] focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40 text-[#141414] placeholder:text-[#78716C]"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="p-3 rounded-2xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white transition shadow-sm disabled:opacity-50 cursor-pointer shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-          </>
+              {activeActionModal === 'transfer' && (
+                <div className="space-y-3 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-[#D47A43] shrink-0" />
+                    <span>
+                      TÜRSAB Licensed VIP Mercedes-Benz Vito Fleet · 100% Fixed Local Rate (Zero Toll Tricks)
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Transfer Route & Fixed Rate
+                    </label>
+                    <select
+                      value={transferAirport}
+                      onChange={(e) => setTransferAirport(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-[#F8FAFC] text-[#0B192C] font-medium"
+                    >
+                      <option>Istanbul Airport (IST) — €65 Fixed Rate (Up to 6 Guests)</option>
+                      <option>Sabiha Gökçen Airport (SAW) — €70 Fixed Rate (Up to 6 Guests)</option>
+                      <option>Private Half-Day City Chauffeur (4 Hours) — €140 Fixed Rate</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">
+                        Pickup Date & Time
+                      </label>
+                      <input
+                        type="text"
+                        value={transferPickupTime}
+                        onChange={(e) => setTransferPickupTime(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-[#F8FAFC] text-[#0B192C]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">
+                        Flight Number (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={transferFlightNo}
+                        onChange={(e) => setTransferFlightNo(e.target.value)}
+                        placeholder="e.g. TK1984 / BA676"
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-[#F8FAFC] text-[#0B192C]"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      submitInStayRequest(
+                        'transfer',
+                        'VIP Airport Chauffeur Booking',
+                        `${transferAirport} · Pickup: ${transferPickupTime}${transferFlightNo ? ` · Flight: ${transferFlightNo}` : ''}`,
+                        'standart'
+                      )
+                    }
+                    className="w-full py-3 rounded-xl bg-[#D47A43] hover:bg-[#c06933] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Reserve Licensed VIP Chauffeur</span>
+                  </button>
+                </div>
+              )}
+
+              {activeActionModal === 'laundry' && (
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Garment Care Package
+                    </label>
+                    <select
+                      value={laundryPackage}
+                      onChange={(e) => setLaundryPackage(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-[#F8FAFC] text-[#0B192C] font-medium"
+                    >
+                      <option>Express Wash, Fold & Steam Press (24h) — €25 / Bag</option>
+                      <option>Same-Day Evening Suit & Dress Dry Cleaning — €35</option>
+                      <option>Express 2-Hour Steam Pressing Only — €15</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Suite Doorstep Pickup Window
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#D47A43]" />
+                      <input
+                        type="text"
+                        value={laundryPickupTime}
+                        onChange={(e) => setLaundryPickupTime(e.target.value)}
+                        className="flex-1 rounded-xl border border-slate-300 px-3 py-2 bg-[#F8FAFC] text-[#0B192C]"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      submitInStayRequest(
+                        'laundry',
+                        'In-Stay Express Laundry & Garment Care',
+                        `${laundryPackage} · Pickup: ${laundryPickupTime}`,
+                        'standart'
+                      )
+                    }
+                    className="w-full py-3 rounded-xl bg-[#0B192C] hover:bg-[#162d4c] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-[#D47A43]" />
+                    <span>Schedule Doorstep Valet Pickup</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         )}
+
+        {/* 5. MESSAGE INPUT BAR */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend();
+          }}
+          className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-white border-t border-slate-200/90 flex items-center gap-2 shrink-0"
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask ComusAI in any language (fares, food, history, room help)..."
+            className="flex-1 text-[13px] px-4 py-3 rounded-2xl border border-slate-200 bg-[#F8FAFC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D47A43]/50 focus:border-[#D47A43] text-[#0B192C] placeholder:text-[#64748B] transition"
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || isStreaming}
+            aria-label="Send message to ComusAI"
+            className="p-3 rounded-2xl bg-[#0B192C] hover:bg-[#162B47] text-white transition shadow-sm disabled:opacity-40 cursor-pointer shrink-0 flex items-center justify-center"
+          >
+            <Send className="w-4 h-4 text-[#D47A43]" />
+          </button>
+        </form>
       </div>
     </div>
   );
 }
+
+export { AiChatDrawer as ComusAiConcierge };

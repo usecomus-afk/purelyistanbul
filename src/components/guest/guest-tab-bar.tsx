@@ -197,10 +197,10 @@ export function GuestTabBar({
   const t = getT(currentLang);
 
   const tabs: { id: TabId; label: string; iconType: 'hotel' | 'grid' | 'spiral' | 'guide' }[] = [
-    { id: 'services', label: t.tabs.services, iconType: 'hotel' },
-    { id: 'categories', label: t.tabs.categories, iconType: 'grid' },
-    { id: 'ai', label: t.tabs.aiGuide, iconType: 'spiral' },
-    { id: 'practical', label: t.tabs.practical, iconType: 'guide' }
+    { id: 'services', label: t.tabs.services || 'Stay Essentials', iconType: 'hotel' },
+    { id: 'categories', label: t.tabs.categories || 'Categories', iconType: 'grid' },
+    { id: 'ai', label: 'Ask ComusAI', iconType: 'spiral' },
+    { id: 'practical', label: t.tabs.practical || 'Guide', iconType: 'guide' }
   ];
 
   const handleTabClick = (tabId: TabId) => {
@@ -251,6 +251,7 @@ export function GuestTabBar({
       <div className="max-w-md mx-auto flex items-center justify-around relative z-10">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
+          const isComusTrigger = tab.id === 'ai';
 
           return (
             <button
@@ -258,21 +259,31 @@ export function GuestTabBar({
               type="button"
               onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center justify-center py-0.5 px-3 rounded-2xl transition-all relative cursor-pointer active:scale-95 ${
-                isActive
-                  ? 'text-[#9E7035] font-semibold'
-                  : 'text-[#222222] hover:text-[#000000] font-normal'
+                isComusTrigger
+                  ? 'text-[#0B192C] font-bold'
+                  : isActive
+                    ? 'text-[#9E7035] font-semibold'
+                    : 'text-[#222222] hover:text-[#000000] font-normal'
               }`}
             >
               <div
-                className={`transition-all duration-300 flex items-center justify-center ${
-                  isActive
-                    ? 'w-11 h-11 rounded-full bg-gradient-to-b from-[#FDFCF9] to-[#F0EAE0] border-[1.5px] border-[#C9AE82] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.16),inset_0_1px_2px_rgba(255,255,255,1)]'
-                    : 'w-10 h-10 text-[#1E1E1E]'
+                className={`transition-all duration-300 flex items-center justify-center relative ${
+                  isComusTrigger
+                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#0B192C] to-[#162B47] border-[1.5px] border-[#D47A43] text-[#D47A43] shadow-[0_4px_14px_rgba(212,122,67,0.38)]'
+                    : isActive
+                      ? 'w-11 h-11 rounded-full bg-gradient-to-b from-[#FDFCF9] to-[#F0EAE0] border-[1.5px] border-[#C9AE82] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.16),inset_0_1px_2px_rgba(255,255,255,1)]'
+                      : 'w-10 h-10 text-[#1E1E1E]'
                 }`}
               >
+                {isComusTrigger && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0B192C] animate-pulse"
+                    aria-hidden="true"
+                  />
+                )}
                 {tab.iconType === 'hotel' && <LuxuryHotelBuildingIcon active={isActive} />}
                 {tab.iconType === 'grid' && <LayoutGrid className="w-[21px] h-[21px] stroke-[1.55]" />}
-                {tab.iconType === 'spiral' && <LuxurySpiralIcon active={isActive} />}
+                {tab.iconType === 'spiral' && <LuxurySpiralIcon active={true} />}
                 {tab.iconType === 'guide' && <LuxuryGuideInfoIcon active={isActive} />}
               </div>
               <span className="font-luxury-sans text-[11.5px] tracking-[0.01em] mt-0.5 leading-tight">
