@@ -100,16 +100,20 @@ export function HotelHeader({
     <header className="pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.35rem))] pb-1 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-2">
         
-        {/* Centered Logo/Name — Two-line European Luxury Serif */}
+        {/* Centered Logo/Name — Hotel Name ONLY on Hotel page; PURELY ISTANBUL on all other pages */}
         <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5">
-          {hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
-            <>
-              {hotel.name.slice(0, -9)}
-              <br />
-              ISTANBUL
-            </>
+          {isHotelServices ? (
+            hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
+              <>
+                {hotel.name.slice(0, -9)}
+                <br />
+                ISTANBUL
+              </>
+            ) : (
+              hotel.name
+            )
           ) : (
-            hotel.name
+            'PURELY ISTANBUL'
           )}
         </h1>
 
@@ -151,7 +155,7 @@ export function HotelHeader({
             type="button"
             onClick={() => setShowHotelModal(true)}
             className="w-7 h-7 rounded-full hover:bg-white/60 flex items-center justify-center transition cursor-pointer"
-            title={hotel.name}
+            title={isHotelServices ? hotel.name : 'Purely Istanbul'}
           >
             <Building2 className="w-4 h-4 text-[#8C6D46] stroke-[1.6]" />
           </button>
@@ -217,7 +221,9 @@ export function HotelHeader({
                   {t.room} {roomNumber}
                 </span>
               </div>
-              <h2 className="font-luxury-serif text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">{hotel.name}</h2>
+              <h2 className="font-luxury-serif text-xl font-bold uppercase tracking-[0.04em] text-[#141414]">
+                {isHotelServices ? hotel.name : 'Purely Istanbul'}
+              </h2>
               <p className="text-xs text-[#5C4938] flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
                 <span>{hotel.address}</span>

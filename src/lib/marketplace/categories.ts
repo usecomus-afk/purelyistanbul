@@ -14,6 +14,7 @@ export interface CategoryConfig extends MarketplaceCategory {
   description?: string;
   order: number;
   hidden: boolean;
+  unhiddenByAdmin?: boolean;
   custom: boolean;
   deleted?: boolean;
   updatedAt?: string;
@@ -33,6 +34,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
 ];
 
 const REMOVED_CATEGORY_KEYS = new Set(["cat-11", "cat-12"]);
+const DEFAULT_HIDDEN_CATEGORY_KEYS = new Set(["cat-9", "cat-10"]);
 
 const STALE_DEFAULT_LABELS = new Set([
   "Tarih & Müzeler",
@@ -107,7 +109,7 @@ export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = MARKETPLACE_CATEGORIES
   ...c,
   labelEn: c.label,
   order: i,
-  hidden: false,
+  hidden: DEFAULT_HIDDEN_CATEGORY_KEYS.has(c.key),
   custom: false,
 }));
 
@@ -136,6 +138,11 @@ export function mergeCategoryConfigs(overrides: Partial<CategoryConfig>[]): Cate
       !o.icon ||
       o.icon.startsWith("/icons/categories/") ||
       o.icon.startsWith("/icons/menu/");
+    const resolvedHidden = DEFAULT_HIDDEN_CATEGORY_KEYS.has(base.key)
+      ? o.unhiddenByAdmin === true
+        ? !!o.hidden
+        : true
+      : !!o.hidden;
     return {
       ...base,
       ...o,
@@ -143,6 +150,7 @@ export function mergeCategoryConfigs(overrides: Partial<CategoryConfig>[]): Cate
       label: resolvedLabel,
       labelEn: resolvedLabel,
       icon: useBaseIcon ? base.icon : o.icon!,
+      hidden: resolvedHidden,
       order: base.order,
       custom: false,
     } as CategoryConfig;

@@ -35,7 +35,6 @@ import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
-import { AiChatDrawer } from "@/components/guest/ai-chat-drawer";
 import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
 import { toast } from "sonner";
 
@@ -122,7 +121,6 @@ export function MarketplaceHome() {
 
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [isComusOpen, setIsComusOpen] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [groupType, setGroupType] = useState<GroupType | "">("");
@@ -276,13 +274,13 @@ export function MarketplaceHome() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-5 text-center pt-1 pb-2">
           <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-terracotta mb-1.5">
-            London-Registered Hospitality Technology SaaS &amp; Curated Marketplace
+            Curated Istanbul Experiences &amp; Authentic Local Marketplace
           </p>
           <h1 className="font-luxury-serif text-xl sm:text-2xl md:text-3xl font-semibold text-ink tracking-tight">
             Purely Istanbul — Nothing but Istanbul.
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted max-w-2xl mx-auto mt-1.5 leading-relaxed">
-            The in-room hospitality operating system and curated city companion for travelers staying in Istanbul&apos;s finest boutique hotels and designer suites.
+            Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul.
           </p>
         </div>
       </section>
@@ -656,7 +654,7 @@ export function MarketplaceHome() {
               Purely Istanbul — Nothing but Istanbul.
             </h2>
             <p className="mt-3 text-sm sm:text-base text-white/80 leading-relaxed">
-              The in-room hospitality operating system and curated city companion for travelers staying in Istanbul&apos;s finest boutique hotels and designer suites.
+              Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul&apos;s finest neighborhoods.
             </p>
           </div>
 
@@ -667,7 +665,7 @@ export function MarketplaceHome() {
               </div>
               <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">The Genesis</h3>
               <p className="text-[13.5px] text-white/75 leading-relaxed">
-                Founded in London by proud locals, Purely Istanbul was created to end predatory tourist traps and bridge discerning world travelers directly to the city’s heart.
+                Created by proud Istanbul locals, Purely Istanbul was born to end predatory tourist traps and bridge discerning world travelers directly to the city&apos;s authentic heart.
               </p>
             </div>
 
@@ -675,34 +673,26 @@ export function MarketplaceHome() {
               <div className="w-10 h-10 rounded-xl bg-[#D47A43]/20 border border-[#D47A43]/40 flex items-center justify-center mb-4">
                 <QrCode className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
               </div>
-              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">The Trojan Horse Innovation</h3>
+              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">Seamless Guest Access</h3>
               <p className="text-[13.5px] text-white/75 leading-relaxed">
-                An in-room smart QR stand offering instant Wi-Fi access, seamless PWA guest services (maintenance, catering, laundry), and vetted city excursions without downloading an app.
+                Whether booking online or connecting via an in-room smart QR stand at a partner boutique hotel, guests enjoy instant access to vetted city excursions and guest services without downloading an app.
               </p>
             </div>
 
             <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
               <div className="w-10 h-10 rounded-xl bg-[#D47A43]/20 border border-[#D47A43]/40 flex items-center justify-center mb-4">
-                <Sparkles className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
+                <ShieldCheck className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
               </div>
-              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">ComusAI Spotlight</h3>
-              <p className="text-[13.5px] text-white/75 leading-relaxed mb-4">
-                Meet &ldquo;ComusAI&rdquo; — our proprietary Gemini-powered hyper-local AI concierge. It automatically speaks the guest&apos;s native browser language, offers scam-free live navigation, and crafts tailored daily walks like a trusted local friend.
+              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">Vetted Local Perfection</h3>
+              <p className="text-[13.5px] text-white/75 leading-relaxed">
+                Every experience is hand-selected and operated by licensed TÜRSAB Group A agencies, certified D2 luxury fleets, and time-honored Istanbul artisans at transparent local rates.
               </p>
-              <button
-                type="button"
-                onClick={() => setIsComusOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-[#D47A43] hover:bg-[#c06933] text-white text-xs font-semibold px-4 py-2 transition cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Ask ComusAI Now
-              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION: For Boutique Hotels & Property Managers (B2B Hospitality SaaS) */}
+      {/* SECTION: For Boutique Hotels & Property Managers */}
       <section className="max-w-6xl mx-auto px-5 md:px-8 py-8">
         <div className="rounded-3xl border border-sand-border bg-white p-6 sm:p-10 md:p-12 shadow-[0_8px_36px_rgba(11,25,44,0.05)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
           <div className="max-w-2xl space-y-3">
@@ -711,10 +701,10 @@ export function MarketplaceHome() {
               For Boutique Hotels &amp; Property Managers
             </span>
             <h2 className="font-luxury-serif text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
-              Zero Software Fees, Zero Extra Work.
+              Zero Setup Fees, Zero Extra Work.
             </h2>
             <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-              Enhance your guest satisfaction with a branded in-room PWA, automate Wi-Fi &amp; housekeeping requests, and earn passive ancillary revenue on every city experience booked by your guests.
+              Enhance your guest satisfaction with a branded in-room concierge experience, streamline guest requests, and earn passive ancillary revenue on every city experience booked by your guests.
             </p>
             <p className="text-xs sm:text-sm font-medium text-terracotta">
               Custom in-room acrylic stands provided to verified partners with zero upfront friction.
@@ -738,38 +728,6 @@ export function MarketplaceHome() {
           </div>
         </div>
       </section>
-
-      {/* Floating Animated "Ask ComusAI" Trigger Button */}
-      <button
-        type="button"
-        onClick={() => setIsComusOpen(true)}
-        aria-label="Ask ComusAI"
-        className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-[#0B192C] hover:bg-[#142946] text-white px-4 py-3 shadow-[0_12px_32px_rgba(11,25,44,0.38)] border border-[#D47A43]/70 transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer group"
-      >
-        <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D47A43] to-[#b5602d]">
-          <Sparkles className="w-3.5 h-3.5 text-white" />
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#0B192C] animate-ping" />
-        </span>
-        <span className="text-xs sm:text-[13px] font-semibold tracking-tight pr-1">
-          Ask ComusAI
-        </span>
-      </button>
-
-      {/* ComusAI Concierge Drawer */}
-      <AiChatDrawer
-        isOpen={isComusOpen}
-        onClose={() => setIsComusOpen(false)}
-        onExploreCategory={(catKey) => {
-          setFilterCategory(catKey);
-          setIsComusOpen(false);
-          setTimeout(() => {
-            document.getElementById("marketplace-listings")?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }, 120);
-        }}
-      />
 
       <MarketplaceFooter />
     </>

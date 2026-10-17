@@ -866,10 +866,6 @@ export function LuxuryCategoryIcon({
     );
   };
 
-  const plinthFillId = `cat-plinth-${uid}`;
-  const plinthRimId = `cat-plinth-rim-${uid}`;
-  const plinthShadowId = `cat-plinth-shadow-${uid}`;
-
   return (
     <svg
       viewBox="0 0 64 64"
@@ -912,28 +908,6 @@ export function LuxuryCategoryIcon({
           <stop offset="100%" stopColor="#C6993E" stopOpacity="0.9" />
         </linearGradient>
 
-        {/* Raised 3D Medallion Plinth Dome Fill */}
-        <radialGradient id={plinthFillId} cx="36%" cy="26%" r="74%">
-          <stop offset="0%" stopColor="#FFFDF8" />
-          <stop offset="48%" stopColor="#FAF0D7" />
-          <stop offset="82%" stopColor="#ECD8AE" />
-          <stop offset="100%" stopColor="#DAB97B" />
-        </radialGradient>
-
-        {/* Raised 3D Medallion Bevel Rim */}
-        <linearGradient id={plinthRimId} x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFF7DC" />
-          <stop offset="35%" stopColor="#DFB755" />
-          <stop offset="70%" stopColor="#B58626" />
-          <stop offset="100%" stopColor="#7D5814" />
-        </linearGradient>
-
-        {/* Plinth Elevation Shadow */}
-        <filter id={plinthShadowId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="0" dy="2" stdDeviation="0.4" floodColor="#B89452" floodOpacity="0.7" />
-          <feDropShadow dx="0" dy="4.5" stdDeviation="2.4" floodColor="#3A260A" floodOpacity="0.22" />
-        </filter>
-
         {/* 3D Bas-Relief Embossed Gold ("Yaldızlı Kabartılı") Filter */}
         <filter id={shadowFilterId} x="-18%" y="-16%" width="136%" height="140%" filterUnits="userSpaceOnUse">
           <feDropShadow dx="-0.85" dy="-1.05" stdDeviation="0.38" floodColor="#FFFDF5" floodOpacity="0.96" />
@@ -941,28 +915,6 @@ export function LuxuryCategoryIcon({
           <feDropShadow dx="0" dy="3.2" stdDeviation="1.8" floodColor="#3A2608" floodOpacity="0.28" />
         </filter>
       </defs>
-
-      {/* 3D Embossed Gilded Medallion Plinth Base */}
-      <g filter={`url(#${plinthShadowId})`}>
-        <circle
-          cx="32"
-          cy="32.5"
-          r="27.2"
-          fill={`url(#${plinthFillId})`}
-          stroke={`url(#${plinthRimId})`}
-          strokeWidth="1.45"
-        />
-        <circle
-          cx="32"
-          cy="32.5"
-          r="24.6"
-          fill="none"
-          stroke={`url(#${bronzeGradId})`}
-          strokeWidth="0.75"
-          strokeDasharray="2.2 2.2"
-          opacity="0.72"
-        />
-      </g>
 
       {renderPaths()}
     </svg>

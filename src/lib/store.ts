@@ -540,7 +540,11 @@ export const XeniosStore = {
 
   /** Kategori kaydını (tam alanlarıyla) yerel olarak kaydeder ve Firestore'a yansıtır. */
   upsertCategoryConfig(cfg: CategoryConfig) {
-    const stamped: CategoryConfig = { ...cfg, updatedAt: new Date().toISOString() };
+    const stamped: CategoryConfig = {
+      ...cfg,
+      unhiddenByAdmin: !cfg.hidden,
+      updatedAt: new Date().toISOString(),
+    };
     const list = this.getCategoryOverrides().filter((o) => o.key !== stamped.key);
     list.push(stamped);
     this.saveCategoryOverrides(list);

@@ -315,7 +315,7 @@ export function RestaurantReservationModal({
           <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#C4B8A4] flex items-center justify-between">
             <div>
               <span className="text-[10px] text-[#6B5A48] font-semibold block">{rm.hotelAndRoomInfo}</span>
-              <strong className="text-[#141414] font-bold">{hotel.name} — {t.room} {roomNumber}</strong>
+              <strong className="text-[#141414] font-bold">Purely Istanbul — {t.room} {roomNumber}</strong>
             </div>
             <span className="px-2.5 py-1 rounded-xl bg-white border border-[#D8CBB8] text-[#7D5E2A] font-bold text-[10px] flex items-center gap-1">
               <ShieldCheck className="w-3 h-3 text-[#8E7252]" /> {rm.conciergeGuarantee}

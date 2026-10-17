@@ -127,7 +127,7 @@ export function TransitModal({ experience, hotel, lang, onClose }: TransitModalP
             <div>
               <h3 className="font-luxury-serif text-lg font-bold uppercase tracking-[0.04em] text-[#141414]">{t.transitTitle}</h3>
               <p className="font-luxury-sans text-xs text-[#5C4938]">
-                <span className="font-semibold text-[#141414]">{hotel.name}</span> → <span className="text-[#7D5E2A] font-bold">{locExp.title}</span>
+                <span className="font-semibold text-[#141414]">Purely Istanbul</span> → <span className="text-[#7D5E2A] font-bold">{locExp.title}</span>
               </p>
             </div>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] flex items-center justify-center text-[#141414] font-bold cursor-pointer">

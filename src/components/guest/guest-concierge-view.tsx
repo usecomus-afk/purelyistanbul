@@ -635,7 +635,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   </div>
                   <div>
                     <h3 className="font-luxury-serif text-base font-bold text-[#141414]">{t.activeRequests}</h3>
-                    <p className="font-luxury-sans text-[11px] text-[#5C4938]">{currentHotel.name} - {t.room} {activeRoomNumber}</p>
+                    <p className="font-luxury-sans text-[11px] text-[#5C4938]">
+                      {activeTab === 'services' ? currentHotel.name : 'Purely Istanbul'} - {t.room} {activeRoomNumber}
+                    </p>
                   </div>
                 </div>
                 <button 

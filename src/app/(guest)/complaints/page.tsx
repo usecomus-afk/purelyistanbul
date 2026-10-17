@@ -91,10 +91,10 @@ export default function GuestComplaintsPage() {
             </Link>
             <div>
               <h1 className="font-luxury-serif text-[16px] sm:text-[18px] font-semibold tracking-[0.12em] uppercase text-[#141414] leading-tight">
-                OLD CITY HERITAGE HOTEL
+                PURELY ISTANBUL
               </h1>
               <span className="font-luxury-serif text-[11px] font-medium tracking-[0.22em] uppercase text-[#5C4938] block">
-                ISTANBUL · HAKEM MASASI
+                HAKEM MASASI
               </span>
             </div>
           </div>
