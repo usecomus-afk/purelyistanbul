@@ -22,6 +22,8 @@ import { MARKETPLACE_COLLECTIONS } from "@/lib/marketplace/collections";
 import type { HostApplication, MarketplaceListing } from "@/lib/marketplace/types";
 import { approveHostApplication, rejectHostApplication } from "@/lib/marketplace/firestore";
 import { watchPendingListings, approveListing, rejectListing } from "@/lib/marketplace/listings";
+import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
+import { getCategoryCode } from "@/lib/marketplace/seed-listings";
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
@@ -119,13 +121,18 @@ const EMPTY_DRAFT: NewExpDraft = {
 };
 
 const CATEGORIES = [
+  { label: "Tarih & Müzeler", tag: "Tarih & Kültür" },
+  { label: "Gastronomi & Gurme", tag: "Gastronomi" },
+  { label: "Sanat & Semazen", tag: "Sanat & Tasarım" },
+  { label: "Alışveriş & Çarşılar", tag: "Alışveriş" },
   { label: "Boğaz Turları & Yat", tag: "Boğaz & Deniz" },
-  { label: "Tarihi Yarımada & Kültür", tag: "Tarih & Kültür" },
-  { label: "Fine Dining & Gastronomi", tag: "Gastronomi" },
-  { label: "Geleneksel Hamam & Spa", tag: "Wellness & Spa" },
-  { label: "VIP Transfer & Helikopter", tag: "VIP Ulaşım" },
-  { label: "Sanat, Müzayede & Alışveriş", tag: "Sanat & Lüks" },
-  { label: "Butik Konaklama & Yalı", tag: "Konaklama" },
+  { label: "Kültürel Miras", tag: "Kültür & İnanç" },
+  { label: "Türk Hamamı & Spa", tag: "Wellness & Spa" },
+  { label: "Fotoğraf & Kostüm", tag: "Fotoğraf & Anı" },
+  { label: "Özel VIP Transfer", tag: "VIP Ulaşım" },
+  { label: "Önerdiğimiz Restoranlar", tag: "Seçkin Restoranlar" },
+  { label: "Medikal Estetik & Güzellik", tag: "Medikal Estetik" },
+  { label: "İstanbul'da Yatırım", tag: "Gayrimenkul & Yatırım" },
 ];
 
 const APP_MODULES_CONFIG = [
@@ -264,6 +271,7 @@ export default function UsePurelyDashboardPage() {
   const [editDraft, setEditDraft] = useState<NewExpDraft>(EMPTY_DRAFT);
   const [listingSearch, setListingSearch] = useState("");
   const [listingFilterChannel, setListingFilterChannel] = useState<"all" | "web" | "mobile">("all");
+  const [listingFilterCategory, setListingFilterCategory] = useState<string>("all");
 
   // Module toggles (persisted in localStorage for instant UI feedback)
   const [disabledModules, setDisabledModules] = useState<string[]>([]);
@@ -580,6 +588,66 @@ export default function UsePurelyDashboardPage() {
     );
   };
 
+  // 1-Click Category Passivation / Activation (Hides/shows category & all its listings on both Web and Mobile App)
+  const handleToggleCategoryActive = async (catValue: string, catLabel: string) => {
+    const allExps = XeniosStore.getExperiences();
+    const matchingExps = allExps.filter((e) => getCategoryCode(e.category) === catValue);
+    const allProps = XeniosStore.getPropertyListings();
+
+    const activeExpCount = matchingExps.filter(
+      (e) => e.status !== "suspended" && (e.publishToWeb !== false || e.publishToMobile !== false)
+    ).length;
+    const activePropCount =
+      catValue === "cat-12"
+        ? allProps.filter((p) => p.status !== "suspended").length
+        : 0;
+
+    const isCurrentlyActive = activeExpCount + activePropCount > 0;
+    const nextStatus = isCurrentlyActive ? "suspended" : "active";
+
+    const updatedExps: Experience[] = [];
+    const nextExpsList = allExps.map((e) => {
+      if (getCategoryCode(e.category) === catValue) {
+        const patched: Experience =
+          nextStatus === "suspended"
+            ? { ...e, status: "suspended" }
+            : { ...e, status: "active", publishToWeb: true, publishToMobile: true };
+        updatedExps.push(patched);
+        return patched;
+      }
+      return e;
+    });
+    XeniosStore.saveExperiences(nextExpsList);
+
+    const updatedProps: PropertyListing[] = [];
+    if (catValue === "cat-12") {
+      const nextPropsList = allProps.map((p) => {
+        const patched: PropertyListing =
+          nextStatus === "suspended"
+            ? { ...p, status: "suspended", publishToWeb: false }
+            : { ...p, status: "active", publishToWeb: true };
+        updatedProps.push(patched);
+        return patched;
+      });
+      XeniosStore.savePropertyListings(nextPropsList);
+    }
+
+    refreshAllData();
+
+    toast.success(
+      nextStatus === "suspended"
+        ? `"${catLabel}" kategorisi ve ait olan tüm ilanlar Web sitesinden ve Mobil Uygulamadan gizlendi (pasife alındı).`
+        : `"${catLabel}" kategorisi ve ait olan tüm ilanlar tekrar yayına alındı!`
+    );
+
+    try {
+      await Promise.all([
+        ...updatedExps.map((item) => FirestoreService.upsertExperience(item)),
+        ...updatedProps.map((item) => FirestoreService.upsertProperty(item)),
+      ]);
+    } catch {}
+  };
+
   const handleDeleteListing = (exp: Experience) => {
     if (
       !window.confirm(
@@ -614,6 +682,11 @@ export default function UsePurelyDashboardPage() {
         return false;
       if (listingFilterChannel === "mobile" && exp.publishToMobile === false)
         return false;
+      if (
+        listingFilterCategory !== "all" &&
+        getCategoryCode(exp.category) !== listingFilterCategory
+      )
+        return false;
       if (!listingSearch.trim()) return true;
       const q = listingSearch.toLowerCase();
       return (
@@ -623,7 +696,106 @@ export default function UsePurelyDashboardPage() {
         exp.location.toLowerCase().includes(q)
       );
     });
-  }, [experiences, listingSearch, listingFilterChannel]);
+  }, [experiences, listingSearch, listingFilterChannel, listingFilterCategory]);
+
+  const renderCategoryPassivationSection = () => (
+    <div className="comus-card space-y-4 border border-[#3B6D11]/35">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#C8C4B0]/60">
+        <div>
+          <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+            Hızlı Kategori Kontrolü (Web + iOS App + PWA)
+          </div>
+          <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
+            Kategorileri ve Ait İlanları Tek Tıkla Gizle / Pasife Al
+          </h3>
+          <p className="text-xs text-[#6B6B55]">
+            Pasife aldığınız kategori ve içindeki tüm ilanlar hem{" "}
+            <strong>purelyistanbul.com</strong> web sitesinden hem de{" "}
+            <strong>iOS Mobil Uygulama / Otel PWA</strong> ekranlarından anında
+            gizlenir. İstediğiniz zaman tek tıkla tekrar yayına alabilirsiniz.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {MARKETPLACE_CATEGORIES.map((cat) => {
+          const matchingExps = experiences.filter(
+            (e) => getCategoryCode(e.category) === cat.key
+          );
+          const activeExps = matchingExps.filter(
+            (e) =>
+              e.status !== "suspended" &&
+              (e.publishToWeb !== false || e.publishToMobile !== false)
+          );
+          const totalProps = cat.key === "cat-12" ? properties.length : 0;
+          const activeProps =
+            cat.key === "cat-12"
+              ? properties.filter((p) => p.status !== "suspended").length
+              : 0;
+
+          const totalCount = matchingExps.length + totalProps;
+          const activeCount = activeExps.length + activeProps;
+          const isCategoryActive = activeCount > 0;
+
+          return (
+            <div
+              key={cat.key}
+              className={`p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition ${
+                isCategoryActive
+                  ? "bg-[#FFFCFA] border-[#C8C4B0]"
+                  : "bg-[#EDE8DE]/70 border-[#C1622F]/40 opacity-85"
+              }`}
+            >
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-[#2C2C1A]">
+                    {cat.label}
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0 ${
+                      isCategoryActive
+                        ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                        : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
+                    }`}
+                  >
+                    {isCategoryActive ? "Yayında (Aktif)" : "Pasif (Gizli)"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#6B6B55]">
+                  Toplam <strong>{totalCount}</strong> ilan •{" "}
+                  <strong>{activeCount}</strong> aktif
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2 border-t border-[#C8C4B0]/50">
+                <button
+                  type="button"
+                  onClick={() => handleToggleCategoryActive(cat.key, cat.label)}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                    isCategoryActive
+                      ? "bg-[#F3E3D8] text-[#9C4E24] hover:bg-[#E5C4B0] border border-[#E5C4B0]"
+                      : "bg-[#3B6D11] text-white hover:bg-[#2F570D]"
+                  }`}
+                >
+                  {isCategoryActive ? (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>Kategoriyi &amp; İlanları Gizle</span>
+                    </>
+                  ) : (
+                    <>
+                      <Power className="w-3.5 h-3.5" />
+                      <span>Tekrar Yayına Al</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   // Computed stats
   const webActiveCount = experiences.filter(
@@ -1336,6 +1508,9 @@ export default function UsePurelyDashboardPage() {
                 </div>
               </section>
 
+              {/* 1-Click Category Passivation / Activation */}
+              {renderCategoryPassivationSection()}
+
               {/* Quick Recent Listings & Recent Requests */}
               <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recent Listings */}
@@ -1555,7 +1730,9 @@ export default function UsePurelyDashboardPage() {
 
               {/* SUBTAB 1: WEB & MOBILE CHANNEL MATRIX */}
               {channelSubTab === "matrix" && (
-                <div className="comus-card space-y-4">
+                <div className="space-y-6">
+                  {renderCategoryPassivationSection()}
+                  <div className="comus-card space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#C8C4B0]/60">
                     <div>
                       <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
@@ -1642,6 +1819,7 @@ export default function UsePurelyDashboardPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
                   </div>
                 </div>
               )}
@@ -2375,6 +2553,9 @@ export default function UsePurelyDashboardPage() {
                 </form>
               )}
 
+              {/* 1-Click Category Passivation / Activation */}
+              {renderCategoryPassivationSection()}
+
               {/* Search & Filter Bar */}
               <div className="comus-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-4">
                 <div className="relative flex-1">
@@ -2387,6 +2568,18 @@ export default function UsePurelyDashboardPage() {
                     className="comus-input pl-10"
                   />
                 </div>
+                <select
+                  value={listingFilterCategory}
+                  onChange={(e) => setListingFilterCategory(e.target.value)}
+                  className="comus-input w-auto text-xs py-2 px-3"
+                >
+                  <option value="all">Tüm Kategoriler</option>
+                  {MARKETPLACE_CATEGORIES.map((cat) => (
+                    <option key={cat.key} value={cat.key}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
                 <div className="flex items-center gap-2">
                   {(
                     [

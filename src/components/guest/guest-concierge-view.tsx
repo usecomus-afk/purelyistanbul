@@ -6,6 +6,7 @@ import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
+import { getCategoryCode } from '@/lib/marketplace/seed-listings';
 import { HotelHeader } from '@/components/guest/hotel-header';
 import { InRoomServices } from '@/components/guest/in-room-services';
 import { LuxuryCategoryIcon } from '@/components/guest/luxury-category-icon';
@@ -44,6 +45,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const [hotels, setHotels] = useState<Hotel[]>(() => XeniosStore.getHotels());
   const [allExperiences, setAllExperiences] = useState<Experience[]>(() =>
     XeniosStore.getExperiences().filter((e) => e.status !== 'suspended' && e.publishToMobile !== false)
+  );
+  const [activePropertiesCount, setActivePropertiesCount] = useState<number>(() =>
+    XeniosStore.getPropertyListings().filter((p) => p.status !== 'suspended').length
   );
 
   const [activeHotelId, setActiveHotelId] = useState(() => initialHotelId || XeniosStore.getActiveHotelId());
@@ -99,10 +103,14 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       setAllExperiences(
         XeniosStore.getExperiences().filter((e) => e.status !== 'suspended' && e.publishToMobile !== false)
       );
+      setActivePropertiesCount(
+        XeniosStore.getPropertyListings().filter((p) => p.status !== 'suspended').length
+      );
     };
     handleCatalogUpdate();
     const unsubCatalog = FirestoreService.subscribeToCatalogSync();
     window.addEventListener('xenios_experiences_updated', handleCatalogUpdate);
+    window.addEventListener('xenios_properties_updated', handleCatalogUpdate);
     window.addEventListener('xenios_hotels_updated', handleCatalogUpdate);
 
     const handleReqUpdate = () => {
@@ -165,6 +173,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     return () => {
       unsubCatalog();
       window.removeEventListener('xenios_experiences_updated', handleCatalogUpdate);
+      window.removeEventListener('xenios_properties_updated', handleCatalogUpdate);
       window.removeEventListener('xenios_hotels_updated', handleCatalogUpdate);
       window.removeEventListener('xenios_requests_updated', handleReqUpdate);
       window.removeEventListener('xenios_session_updated', handleSessionUpdate);
@@ -216,7 +225,16 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     { key: t.categoriesList.restaurants.title, rawKey: "Önerdiğimiz Restoranlar", targetCategory: "Önerdiğimiz Restoranlar", iconPath: '/icons/categories/onerdigimiz-restoranlar.png', count: 20, desc: t.categoriesList.restaurants.desc },
     { key: t.categoriesList.aesthetic?.title || "Medikal Estetik & Güzellik", rawKey: "Medikal Estetik & Güzellik", targetCategory: "Medikal Estetik & Güzellik", iconPath: '/icons/categories/aesthetic-beauty.png', count: 12, desc: t.categoriesList.aesthetic?.desc || "Nişantaşı & Şişli'nin seçkin kliniklerinde medikal estetik, saç ekimi & cilt bakımı" },
     { key: t.categoriesList.invest.title, rawKey: "İstanbul'da Yatırım", targetCategory: "İstanbul'da Yatırım", iconPath: '/icons/categories/invest.png', count: 20, desc: t.categoriesList.invest.desc, tab: 'invest' }
-  ];
+  ].filter((cat) => {
+    const code = getCategoryCode(cat.rawKey);
+    const expCount = allExperiences.filter(
+      (e) => e.category === cat.rawKey || getCategoryCode(e.category) === code
+    ).length;
+    if ((cat as any).tab === 'invest') {
+      return activePropertiesCount > 0 || expCount > 0;
+    }
+    return expCount > 0;
+  });
 
   // Filter experiences (admin-suspended listings never reach the guest catalog)
   const filteredExperiences = allExperiences.filter(e => {

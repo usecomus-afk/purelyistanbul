@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { LayoutGrid } from "lucide-react";
-import { MARKETPLACE_CATEGORIES } from "@/lib/marketplace/categories";
+import { MARKETPLACE_CATEGORIES, type MarketplaceCategory } from "@/lib/marketplace/categories";
 
 interface CategoryFilterBarProps {
   value: string;
   onChange: (key: string) => void;
+  categories?: MarketplaceCategory[];
 }
 
-export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
+export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CATEGORIES }: CategoryFilterBarProps) {
   function handleSelect(key: string) {
     onChange(key);
     const target = document.getElementById(key === "all" ? "shelves-top" : `shelf-${key}`);
@@ -22,7 +23,7 @@ export function CategoryFilterBar({ value, onChange }: CategoryFilterBarProps) {
         <div className="flex items-start gap-4 sm:gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2 sm:px-0 sm:justify-between" style={{ WebkitOverflowScrolling: 'touch' }}>
 
           {/* Dinamik Kategoriler */}
-          {MARKETPLACE_CATEGORIES.map((c) => {
+          {categories.map((c) => {
             const isSelected = value === c.key;
             return (
               <button

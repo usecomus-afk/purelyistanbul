@@ -127,6 +127,10 @@ export function MarketplaceHome() {
     return Array.from(map.values());
   }, [listings, catalogListings]);
   const withCover = useMemo(() => source.filter((l) => !!l.coverImageUrl), [source]);
+  const visibleCategories = useMemo(
+    () => MARKETPLACE_CATEGORIES.filter((c) => withCover.some((l) => l.category === c.key)),
+    [withCover]
+  );
 
   const searchResults = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -201,7 +205,7 @@ export function MarketplaceHome() {
 
       {/* Kategori Çubuğu */}
       <div className="relative z-20 mt-1 sm:mt-3">
-        <CategoryFilterBar value={category} onChange={setCategory} />
+        <CategoryFilterBar value={category} onChange={setCategory} categories={visibleCategories} />
       </div>
 
       {/* Arama Kutusu (Kategorilerin Altında) */}
@@ -229,7 +233,7 @@ export function MarketplaceHome() {
                 className="flex items-center gap-1.5 bg-transparent text-[13.5px] font-medium text-ink outline-none cursor-pointer hover:text-terracotta transition"
               >
                 <span className="truncate max-w-[200px]">
-                  {filterCategory ? MARKETPLACE_CATEGORIES.find(c => c.key === filterCategory)?.label : "Tüm Kategoriler"}
+                  {filterCategory ? visibleCategories.find(c => c.key === filterCategory)?.label : "Tüm Kategoriler"}
                 </span>
                 <ChevronDown className={`w-4 h-4 text-ink-muted transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} strokeWidth={1.75} />
               </button>
@@ -248,7 +252,7 @@ export function MarketplaceHome() {
                       </div>
                       <span className={`text-[13.5px] ${!filterCategory ? "font-semibold text-terracotta" : "font-medium text-ink"}`}>Tüm Kategoriler</span>
                     </button>
-                    {MARKETPLACE_CATEGORIES.map((c) => (
+                    {visibleCategories.map((c) => (
                       <button
                         key={c.key}
                         type="button"
