@@ -228,6 +228,47 @@ function buildGuardianFallbackResponse(userMessage: string): string {
 [action:explore_category, id:bosphorus]`;
 }
 
+function inferActionTagForQuery(userMessage: string): string | null {
+  const q = userMessage.toLowerCase();
+  if (q.includes('taxi') || q.includes('taksi') || q.includes('transfer') || q.includes('airport') || q.includes('chauffeur')) {
+    return '[action:explore_category, id:transfer]';
+  }
+  if (q.includes('breakfast') || q.includes('kahvaltı') || q.includes('serpme')) {
+    return '[action:in_stay, service:breakfast]';
+  }
+  if (
+    q.includes('room') ||
+    q.includes('wifi') ||
+    q.includes('wi-fi') ||
+    q.includes('ac') ||
+    q.includes('towel') ||
+    q.includes('issue') ||
+    q.includes('maintenance') ||
+    q.includes('support')
+  ) {
+    return '[action:in_stay, service:support]';
+  }
+  if (q.includes('laundry') || q.includes('dry clean') || q.includes('iron') || q.includes('garment')) {
+    return '[action:in_stay, service:laundry]';
+  }
+  if (q.includes('boat') || q.includes('bosphorus') || q.includes('sunset') || q.includes('cruise') || q.includes('yacht')) {
+    return '[action:explore_category, id:bosphorus]';
+  }
+  if (q.includes('mosque') || q.includes('hagia sophia') || q.includes('dress code') || q.includes('prayer') || q.includes('historic') || q.includes('history') || q.includes('walk')) {
+    return '[action:explore_category, id:history]';
+  }
+  if (q.includes('hammam') || q.includes('bath') || q.includes('spa') || q.includes('kese')) {
+    return '[action:explore_category, id:hammam]';
+  }
+  if (q.includes('photo') || q.includes('rooftop') || q.includes('costume')) {
+    return '[action:explore_category, id:photography]';
+  }
+  if (q.includes('food') || q.includes('culinary') || q.includes('eat') || q.includes('restaurant') || q.includes('street food')) {
+    return '[action:explore_category, id:culinary]';
+  }
+  return null;
+}
+
 export async function POST(req: Request) {
   const encoder = new TextEncoder();
 
@@ -263,7 +304,7 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
         };
 
-        let streamedAnyToken = false;
+        let streamedText = '';
 
         if (apiKey) {
           try {
@@ -289,13 +330,16 @@ export async function POST(req: Request) {
                 systemInstruction: COMUS_AI_SYSTEM_INSTRUCTION,
                 temperature: 0.4,
                 maxOutputTokens: 350,
+                thinkingConfig: {
+                  thinkingBudget: 0,
+                },
               },
             });
 
             for await (const chunk of responseStream) {
               const deltaText = chunk.text;
               if (deltaText) {
-                streamedAnyToken = true;
+                streamedText += deltaText;
                 sendChunk(deltaText);
               }
             }
@@ -305,12 +349,19 @@ export async function POST(req: Request) {
         }
 
         // If upstream Gemini key is restricted/unavailable in the current environment, stream the Guardian fallback smoothly
-        if (!streamedAnyToken) {
+        if (!streamedText.trim()) {
           const fallbackText = buildGuardianFallbackResponse(userMessage);
           const tokens = fallbackText.match(/.{1,14}(\s|$)|.{1,14}/g) || [fallbackText];
           for (const token of tokens) {
+            streamedText += token;
             sendChunk(token);
             await new Promise((r) => setTimeout(r, 18));
+          }
+        } else if (!/\[action:\w+,\s*(id|service):\w+\]/.test(streamedText)) {
+          // Ensure matching action tag is always appended when relevant
+          const inferredTag = inferActionTagForQuery(userMessage);
+          if (inferredTag) {
+            sendChunk(`\n\n${inferredTag}`);
           }
         }
 
