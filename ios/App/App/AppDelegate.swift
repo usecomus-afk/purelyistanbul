@@ -9,6 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var window: UIWindow?
     private var silentAudioPlayer: AVAudioPlayer?
     private var requestPollTimer: Timer?
+    private var gcdPollTimer: DispatchSourceTimer?
     private var bgTask: UIBackgroundTaskIdentifier = .invalid
     private var isPolling = false
 
@@ -45,18 +46,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Set Notification Center delegate
-        UNUserNotificationCenter.current().delegate = self
+    func requestNotificationPermissions() {
+        AppDelegate.requestNotificationPermissions()
+    }
 
-        // Request native iOS notification authorization (Alert, Sound, Badge)
+    static func requestNotificationPermissions() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
             if granted {
                 DispatchQueue.main.async {
-                    application.registerForRemoteNotifications()
+                    UIApplication.shared.registerForRemoteNotifications()
                 }
             }
         }
+    }
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+
+        AppDelegate.requestNotificationPermissions()
+        setupAudioSessionObservers()
 
         // Start silent background keep-alive and live Firestore request watcher
         // so room service & hotel menu orders notify even when the screen/keypad is locked
@@ -66,11 +74,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
+    private func setupAudioSessionObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAudioSessionInterruption(_:)),
+            name: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleMediaServicesReset(_:)),
+            name: AVAudioSession.mediaServicesWereResetNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+    }
+
+    @objc private func handleAudioSessionInterruption(_ notification: Notification) {
+        // When WKWebView suspends on screen lock, it can interrupt AVAudioSession.
+        // Immediately re-activate our playback session and resume silent audio keep-alive.
+        DispatchQueue.main.async { [weak self] in
+            self?.startSilentBackgroundKeepAlive()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.startSilentBackgroundKeepAlive()
+        }
+    }
+
+    @objc private func handleMediaServicesReset(_ notification: Notification) {
+        DispatchQueue.main.async { [weak self] in
+            self?.silentAudioPlayer = nil
+            self?.startSilentBackgroundKeepAlive()
+        }
+    }
+
     private func buildSilentWavData() -> Data {
         let sampleRate: UInt32 = 8000
         let numChannels: UInt16 = 1
         let bitsPerSample: UInt16 = 16
-        let numSamples: UInt32 = sampleRate // 1 second of 1-LSB inaudible signal
+        let numSamples: UInt32 = sampleRate * 20 // 20 seconds continuous low-energy carrier
         let dataSize: UInt32 = numSamples * UInt32(numChannels) * UInt32(bitsPerSample / 8)
         let chunkSize: UInt32 = 36 + dataSize
         let byteRate: UInt32 = sampleRate * UInt32(numChannels) * UInt32(bitsPerSample / 8)
@@ -94,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         withUnsafeBytes(of: dataSize.littleEndian) { data.append(contentsOf: $0) }
         var pcm = Data(capacity: Int(dataSize))
         for i in 0..<Int(numSamples) {
-            let sample: Int16 = (i % 2 == 0) ? 1 : -1
+            let sample: Int16 = (i % 4 < 2) ? 8 : -8
             withUnsafeBytes(of: sample.littleEndian) { pcm.append(contentsOf: $0) }
         }
         data.append(pcm)
@@ -111,11 +152,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let wavData = buildSilentWavData()
                 let player = try AVAudioPlayer(data: wavData, fileTypeHint: AVFileType.wav.rawValue)
                 player.numberOfLoops = -1
-                player.volume = 0.01
+                player.volume = 0.02
                 player.prepareToPlay()
                 player.play()
                 self.silentAudioPlayer = player
             } else if silentAudioPlayer?.isPlaying == false {
+                silentAudioPlayer?.prepareToPlay()
                 silentAudioPlayer?.play()
             }
         } catch {
@@ -123,13 +165,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    private func renewBackgroundTask() {
+        let app = UIApplication.shared
+        let oldTask = self.bgTask
+        self.bgTask = app.beginBackgroundTask(withName: "PurelyIstanbulLiveRequestWatcher") { [weak self] in
+            guard let self = self else { return }
+            self.startSilentBackgroundKeepAlive()
+            if self.bgTask != .invalid {
+                let expiring = self.bgTask
+                self.bgTask = .invalid
+                app.endBackgroundTask(expiring)
+            }
+        }
+        if oldTask != .invalid {
+            app.endBackgroundTask(oldTask)
+        }
+    }
+
     func startFirestoreRequestWatcher() {
         requestPollTimer?.invalidate()
-        let timer = Timer(timeInterval: 3.0, repeats: true) { [weak self] _ in
-            self?.pollFirestoreServiceRequests()
+        let timer = Timer(timeInterval: 2.5, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            if self.silentAudioPlayer?.isPlaying != true {
+                self.startSilentBackgroundKeepAlive()
+            }
+            self.pollFirestoreServiceRequests()
         }
         RunLoop.main.add(timer, forMode: .common)
         self.requestPollTimer = timer
+
+        gcdPollTimer?.cancel()
+        let gcdTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
+        gcdTimer.schedule(deadline: .now() + 2.5, repeating: 2.5)
+        gcdTimer.setEventHandler { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if self.silentAudioPlayer?.isPlaying != true {
+                    self.startSilentBackgroundKeepAlive()
+                }
+            }
+            self.pollFirestoreServiceRequests()
+        }
+        gcdTimer.resume()
+        self.gcdPollTimer = gcdTimer
+
         pollFirestoreServiceRequests()
     }
 
@@ -142,8 +221,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         isPolling = true
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 8.0
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.timeoutInterval = 7.0
 
         let queryBody: [String: Any] = [
             "structuredQuery": [
@@ -188,7 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let isActiveStatus = status == "pending"
                 let roomNumber = (fields["roomNumber"]?["stringValue"] as? String) ?? "101"
                 let hotelName = (fields["hotelName"]?["stringValue"] as? String) ?? "Purely Istanbul"
-                let serviceTitle = (fields["serviceTitle"]?["stringValue"] as? String) ?? "Oda Hizmeti Talebi"
+                let serviceTitle = (fields["serviceTitle"]?["stringValue"] as? String) ?? "Birim Hizmeti Talebi"
                 let notes = (fields["notes"]?["stringValue"] as? String) ?? ""
                 let priority = (fields["priority"]?["stringValue"] as? String) ?? "standart"
                 let createdAtStr = (fields["createdAt"]?["stringValue"] as? String) ?? ""
@@ -227,12 +308,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.body = body
         content.sound = UNNotificationSound.default
         content.badge = 1
-        if #available(iOS 15.0, *) {
-            content.interruptionLevel = .timeSensitive
-        }
 
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-        let request = UNNotificationRequest(identifier: id.isEmpty ? UUID().uuidString : id, content: content, trigger: trigger)
+        // trigger: nil delivers the notification immediately even when locked/backgrounded
+        let request = UNNotificationRequest(identifier: id.isEmpty ? UUID().uuidString : id, content: content, trigger: nil)
 
         UNUserNotificationCenter.current().add(request) { error in
             completion?(error == nil)
@@ -268,16 +346,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationWillResignActive(_ application: UIApplication) {
         startSilentBackgroundKeepAlive()
+        renewBackgroundTask()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         startSilentBackgroundKeepAlive()
-        if bgTask == .invalid {
-            bgTask = application.beginBackgroundTask(withName: "PurelyIstanbulLiveRequestWatcher") { [weak self] in
-                if let task = self?.bgTask, task != .invalid {
-                    application.endBackgroundTask(task)
-                    self?.bgTask = .invalid
-                }
+        renewBackgroundTask()
+        pollFirestoreServiceRequests()
+
+        // Re-assert keep-alive after WKWebView finishes suspending its media session on screen lock
+        for delay in [0.3, 1.0, 2.5, 5.0] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                self?.startSilentBackgroundKeepAlive()
+                self?.pollFirestoreServiceRequests()
             }
         }
     }
@@ -287,6 +368,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             application.endBackgroundTask(bgTask)
             bgTask = .invalid
         }
+        startSilentBackgroundKeepAlive()
         pollFirestoreServiceRequests()
     }
 

@@ -31,6 +31,9 @@ export function PwaRegister() {
       if (nativeApp || shouldAlert) {
         HotelAudioNotification.requestSystemNotificationPermission().catch(() => {});
         HotelAudioNotification.startNativeWebViewKeepAlive();
+        PwaNotificationManager.subscribeToWebPush({ role: 'staff' }).catch(() => {});
+      } else {
+        PwaNotificationManager.subscribeToWebPush({ role: 'guest' }).catch(() => {});
       }
 
       if (shouldAlert && !unsub) {
@@ -41,12 +44,24 @@ export function PwaRegister() {
       }
     };
 
+    const handleUserGestureForPush = () => {
+      if (shouldReceiveStaffRequestAlerts(pathname || undefined)) {
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+          HotelAudioNotification.requestSystemNotificationPermission().catch(() => {});
+        } else {
+          PwaNotificationManager.subscribeToWebPush({ role: 'staff' }).catch(() => {});
+        }
+      }
+    };
+
     evaluateAndSubscribe();
     const t1 = setTimeout(evaluateAndSubscribe, 400);
     const t2 = setTimeout(evaluateAndSubscribe, 1500);
     window.addEventListener('xenios_hotel_portal_auth', evaluateAndSubscribe);
     window.addEventListener('xenios_master_admin_auth', evaluateAndSubscribe);
     window.addEventListener('storage', evaluateAndSubscribe);
+    window.addEventListener('click', handleUserGestureForPush, { once: true, passive: true });
+    window.addEventListener('touchstart', handleUserGestureForPush, { once: true, passive: true });
 
     return () => {
       clearTimeout(t1);
@@ -54,6 +69,8 @@ export function PwaRegister() {
       window.removeEventListener('xenios_hotel_portal_auth', evaluateAndSubscribe);
       window.removeEventListener('xenios_master_admin_auth', evaluateAndSubscribe);
       window.removeEventListener('storage', evaluateAndSubscribe);
+      window.removeEventListener('click', handleUserGestureForPush);
+      window.removeEventListener('touchstart', handleUserGestureForPush);
       if (unsub) {
         unsub();
         unsub = null;
@@ -65,7 +82,3 @@ export function PwaRegister() {
 
   return <HotelLiveAlertBanner />;
 }
-
-
-
-

@@ -1,11 +1,13 @@
 {
-  "name": "Purely Istanbul",
-  "short_name": "Purely",
+  "name": "purelyİstanbul",
+  "short_name": "purelyİstanbul",
   "description": "Purely Istanbul — Curated Experiences & Digital Guest Concierge",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8f6f0",
-  "theme_color": "#c9a227",
+  "background_color": "#F6F1E7",
+  "theme_color": "#C9A227",
   "categories": [
     "travel",
     "hospitality",
@@ -13,43 +15,25 @@
   ],
   "icons": [
     {
-      "src": "../icons/icon-48.webp",
+      "src": "/icon.png",
       "type": "image/png",
-      "sizes": "48x48",
-      "purpose": "any maskable"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "../icons/icon-72.webp",
+      "src": "/apple-icon.png",
       "type": "image/png",
-      "sizes": "72x72",
-      "purpose": "any maskable"
+      "sizes": "180x180",
+      "purpose": "any"
     },
     {
-      "src": "../icons/icon-96.webp",
-      "type": "image/png",
-      "sizes": "96x96",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "../icons/icon-128.webp",
-      "type": "image/png",
-      "sizes": "128x128",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "../icons/icon-192.webp",
+      "src": "/icons/icon-192x192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-256.webp",
-      "type": "image/png",
-      "sizes": "256x256",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "../icons/icon-512.webp",
+      "src": "/icons/icon-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"

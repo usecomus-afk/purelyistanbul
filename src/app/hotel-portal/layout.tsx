@@ -60,9 +60,10 @@ export default function HotelPortalLayout({
     const next = !audioPrefs.soundEnabled;
     HotelAudioNotification.savePreferences({ soundEnabled: next });
     setAudioPrefs(prev => ({ ...prev, soundEnabled: next }));
+    HotelAudioNotification.requestSystemNotificationPermission().catch(() => {});
     if (next) {
       HotelAudioNotification.play();
-      toast.success("Sesli bildirimler aktif edildi!");
+      toast.success("Sesli ve kilit ekranı bildirimleri aktif edildi!");
     } else {
       toast.info("Sesli bildirimler sessize alındı.");
     }

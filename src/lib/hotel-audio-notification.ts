@@ -41,6 +41,7 @@ export function isNativeHostApp(): boolean {
     Capacitor.isNativePlatform() ||
     !!w.Capacitor?.isNativePlatform?.() ||
     !!w.webkit?.messageHandlers?.bridge ||
+    !!w.webkit?.messageHandlers?.purelyNotify ||
     !!w.__PURELY_NATIVE_VIDEO_SPLASH__ ||
     !!w.__PURELY_NATIVE_VIDEO_SPLASH_V2__ ||
     !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__
@@ -120,7 +121,6 @@ export function shouldShowInPageStaffBanner(pathname?: string): boolean {
 class HotelAudioNotificationService {
   private audioCtx: AudioContext | null = null;
   private notifiedRequestIds: Set<string> = new Set();
-  private keepAliveAudioEl: HTMLAudioElement | null = null;
   private keepAliveStarted = false;
 
   private syncNotifiedFromStorage() {
@@ -156,6 +156,12 @@ class HotelAudioNotificationService {
         const serialized = JSON.stringify(arr);
         localStorage.setItem(NOTIFIED_IDS_KEY, serialized);
         sessionStorage.setItem(NOTIFIED_IDS_KEY, serialized);
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'MARK_NOTIFIED',
+            requestId,
+          });
+        }
       } catch {}
     }
   }
@@ -180,75 +186,58 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Builds a 1-second 8kHz 16-bit mono WAV with 1-LSB non-zero amplitude
-   * so iOS WKWebView / mediaserverd keeps the native app process awake in the background
-   * when the hotel manager switches to another app or locks the screen.
+   * Coordinates background lock-screen watcher without letting WKWebView HTML5 audio
+   * hijack or deactivate the native iOS AppDelegate AVAudioSession when the screen locks.
    */
-  private buildKeepAliveWavDataUri(): string {
-    const sampleRate = 8000;
-    const numSamples = sampleRate;
-    const dataSize = numSamples * 2;
-    const buffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(buffer);
-    const writeStr = (offset: number, str: string) => {
-      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-    };
-    writeStr(0, 'RIFF');
-    view.setUint32(4, 36 + dataSize, true);
-    writeStr(8, 'WAVE');
-    writeStr(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
-    writeStr(36, 'data');
-    view.setUint32(40, dataSize, true);
-    for (let i = 0; i < numSamples; i++) {
-      view.setInt16(44 + i * 2, i % 2 === 0 ? 1 : -1, true);
-    }
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return `data:audio/wav;base64,${btoa(binary)}`;
-  }
-
   public startNativeWebViewKeepAlive() {
     if (typeof window === 'undefined' || !shouldReceiveStaffRequestAlerts()) return;
 
-    const activateKeepAlive = () => {
+    const w = window as any;
+
+    // In the Native iOS App, let AppDelegate.swift own AVAudioSession (.playback) exclusively.
+    // Do NOT create an HTML5 <audio> loop inside WKWebView, because WebKit pauses HTML5 <audio>
+    // when the screen locks, which deactivates the shared iOS AVAudioSession and suspends the app!
+    if (isNativeHostApp()) {
+      if (w.webkit?.messageHandlers?.purelyNotify?.postMessage) {
+        try {
+          w.webkit.messageHandlers.purelyNotify.postMessage({ action: 'startKeepAlive' });
+        } catch {}
+      }
+      return;
+    }
+
+    // For Web / Home Screen PWA: notify Service Worker to watch Firestore when screen locks
+    const triggerServiceWorkerBackgroundWatch = () => {
       try {
-        if (!this.keepAliveAudioEl) {
-          const audio = new Audio(this.buildKeepAliveWavDataUri());
-          audio.loop = true;
-          audio.volume = 0.01;
-          (audio as any).playsInline = true;
-          audio.setAttribute('playsinline', 'true');
-          this.keepAliveAudioEl = audio;
-        }
-        if (this.keepAliveAudioEl.paused) {
-          this.keepAliveAudioEl.play().catch(() => {});
-        }
-        const ctx = this.getAudioContext();
-        if (ctx && ctx.state === 'suspended') {
-          ctx.resume().catch(() => {});
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          this.syncNotifiedFromStorage();
+          navigator.serviceWorker.controller.postMessage({
+            type: 'SEED_NOTIFIED_IDS',
+            ids: Array.from(this.notifiedRequestIds).slice(-200),
+          });
+          navigator.serviceWorker.controller.postMessage({
+            type: 'START_BACKGROUND_WATCH',
+            durationMs: 240000,
+          });
         }
       } catch {}
     };
 
-    activateKeepAlive();
-
     if (!this.keepAliveStarted) {
       this.keepAliveStarted = true;
-      window.addEventListener('touchstart', activateKeepAlive, { passive: true });
-      window.addEventListener('click', activateKeepAlive, { passive: true });
       document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && shouldReceiveStaffRequestAlerts()) {
+          triggerServiceWorkerBackgroundWatch();
+        }
+      });
+      window.addEventListener('pagehide', () => {
         if (shouldReceiveStaffRequestAlerts()) {
-          activateKeepAlive();
+          triggerServiceWorkerBackgroundWatch();
+        }
+      });
+      window.addEventListener('blur', () => {
+        if (shouldReceiveStaffRequestAlerts()) {
+          triggerServiceWorkerBackgroundWatch();
         }
       });
     }
@@ -276,8 +265,7 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Request iOS Native System Notification Permission
-   * This registers the app into iPhone Settings -> Notifications!
+   * Request iOS Native System Notification Permission or Web Push Subscription
    */
   public async requestSystemNotificationPermission(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
@@ -295,16 +283,25 @@ class HotelAudioNotificationService {
         const res = await XeniosNotifications.requestNotificationPermissions();
         return res.display === 'granted';
       } catch {
-        // Native AppDelegate already requests UNUserNotificationCenter permissions on launch
         return true;
       }
     }
 
-    // 2. Web Browser Fallback
+    // 2. Web Browser & PWA Fallback + Web Push (VAPID) Subscription
     if ('Notification' in window) {
       try {
-        const permission = await Notification.requestPermission();
-        return permission === 'granted';
+        const permission =
+          Notification.permission === 'granted'
+            ? 'granted'
+            : await Notification.requestPermission();
+        if (permission === 'granted') {
+          import('./pwa-notifications')
+            .then(({ PwaNotificationManager }) => {
+              PwaNotificationManager.subscribeToWebPush({ role: 'staff' }).catch(() => {});
+            })
+            .catch(() => {});
+          return true;
+        }
       } catch (err) {
         console.warn('Web notification request error:', err);
       }
@@ -335,62 +332,6 @@ class HotelAudioNotificationService {
     return 'prompt';
   }
 
-  private buildChimeWavDataUri(isUrgent: boolean, volume: number = 0.85): string {
-    const sampleRate = 16000;
-    const durationSec = isUrgent ? 0.75 : 0.65;
-    const numSamples = Math.floor(sampleRate * durationSec);
-    const dataSize = numSamples * 2;
-    const buffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(buffer);
-    const writeStr = (offset: number, str: string) => {
-      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-    };
-    writeStr(0, 'RIFF');
-    view.setUint32(4, 36 + dataSize, true);
-    writeStr(8, 'WAVE');
-    writeStr(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
-    writeStr(36, 'data');
-    view.setUint32(40, dataSize, true);
-
-    const amp = Math.max(0.15, Math.min(1.0, volume));
-    for (let i = 0; i < numSamples; i++) {
-      const t = i / sampleRate;
-      let sample = 0;
-      if (isUrgent) {
-        const freq = t < 0.22 ? 880 : t < 0.44 ? 1046 : 1318;
-        const localT = t % 0.22;
-        const env = Math.exp(-localT * 9.0);
-        sample = Math.sin(2 * Math.PI * freq * t) * env;
-      } else {
-        const env1 = Math.exp(-t * 4.5);
-        const env2 = t >= 0.14 ? Math.exp(-(t - 0.14) * 4.0) : 0;
-        sample =
-          Math.sin(2 * Math.PI * 1175 * t) * 0.55 * env1 +
-          Math.sin(2 * Math.PI * 1760 * t) * 0.45 * env2;
-      }
-      const pcm = Math.max(-32767, Math.min(32767, Math.floor(sample * amp * 28000)));
-      view.setInt16(44 + i * 2, pcm, true);
-    }
-
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    const chunkSize = 4096;
-    for (let i = 0; i < bytes.byteLength; i += chunkSize) {
-      binary += String.fromCharCode.apply(
-        null,
-        Array.from(bytes.subarray(i, Math.min(i + chunkSize, bytes.byteLength)))
-      );
-    }
-    return `data:audio/wav;base64,${btoa(binary)}`;
-  }
-
   private getAudioContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
     try {
@@ -410,24 +351,19 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Synthesize and play authentic luxury hotel desk bell / concierge chime
+   * Synthesize and play authentic luxury hotel desk bell / concierge chime (foreground only)
    */
   public async play(soundType?: HotelSoundType, customVolume?: number): Promise<void> {
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+      // Do not touch WebAudio / HTMLAudio while backgrounded or locked so OS notification sound plays cleanly
+      return;
+    }
+
     const prefs = this.getPreferences();
     if (!prefs.soundEnabled && customVolume === undefined) return;
 
     const sound = soundType || prefs.selectedSound || 'luxury_bell';
     const volume = customVolume !== undefined ? customVolume : prefs.volume;
-
-    // Play HTML5 Audio WAV chime so iOS AVAudioSession plays even when WebAudio is suspended
-    try {
-      const wavUri = this.buildChimeWavDataUri(sound === 'urgent_chime', volume);
-      const htmlAudio = new Audio(wavUri);
-      htmlAudio.volume = Math.max(0.1, Math.min(1.0, volume));
-      (htmlAudio as any).playsInline = true;
-      htmlAudio.setAttribute('playsinline', 'true');
-      htmlAudio.play().catch(() => {});
-    } catch {}
 
     const ctx = this.getAudioContext();
     if (!ctx) return;
@@ -436,29 +372,25 @@ class HotelAudioNotificationService {
 
     try {
       if (sound === 'luxury_bell') {
-        // 🛎️ Authentic Dual-tone Brass Concierge Desk Bell (D6 1175Hz + A6 1760Hz with harmonic overtone)
         const masterGain = ctx.createGain();
         masterGain.gain.setValueAtTime(volume * 0.7, now);
         masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
         masterGain.connect(ctx.destination);
 
-        // Primary fundamental bell
         const osc1 = ctx.createOscillator();
         osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(1175, now); // D6
+        osc1.frequency.setValueAtTime(1175, now);
         osc1.connect(masterGain);
 
-        // High crystal overtone
         const osc2 = ctx.createOscillator();
         osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(1760, now); // A6
+        osc2.frequency.setValueAtTime(1760, now);
         const gain2 = ctx.createGain();
         gain2.gain.setValueAtTime(0.6, now);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
         osc2.connect(gain2);
         gain2.connect(masterGain);
 
-        // Metallic harmonic strike
         const osc3 = ctx.createOscillator();
         osc3.type = 'triangle';
         osc3.frequency.setValueAtTime(2350, now);
@@ -475,12 +407,10 @@ class HotelAudioNotificationService {
         osc2.stop(now + 1.85);
         osc3.stop(now + 1.85);
       } else if (sound === 'dual_melody') {
-        // 🎶 Two-tone Ascending Concierge Chime (G5 784Hz -> C6 1046Hz)
         const masterGain = ctx.createGain();
         masterGain.gain.setValueAtTime(volume * 0.7, now);
         masterGain.connect(ctx.destination);
 
-        // Note 1 (G5)
         const osc1 = ctx.createOscillator();
         osc1.type = 'sine';
         osc1.frequency.setValueAtTime(784, now);
@@ -492,7 +422,6 @@ class HotelAudioNotificationService {
         osc1.start(now);
         osc1.stop(now + 0.55);
 
-        // Note 2 (C6)
         const osc2 = ctx.createOscillator();
         osc2.type = 'sine';
         osc2.frequency.setValueAtTime(1046, now + 0.22);
@@ -505,7 +434,6 @@ class HotelAudioNotificationService {
         osc2.start(now + 0.22);
         osc2.stop(now + 1.55);
       } else if (sound === 'urgent_chime') {
-        // 🚨 High Priority Urgent Alert (Triple Ping: 880Hz -> 1046Hz -> 1318Hz)
         const masterGain = ctx.createGain();
         masterGain.gain.setValueAtTime(volume * 0.8, now);
         masterGain.connect(ctx.destination);
@@ -525,7 +453,6 @@ class HotelAudioNotificationService {
           osc.stop(t + 0.65);
         });
       } else {
-        // 💡 Modern Digital Glass Ping (1200Hz soft decay)
         const osc = ctx.createOscillator();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(1200, now);
@@ -606,9 +533,10 @@ class HotelAudioNotificationService {
           if (reg && typeof reg.showNotification === 'function') {
             await reg.showNotification(opts.title, {
               body: opts.body,
-              icon: '/logo.png',
+              icon: '/icons/icon-192x192.png',
               badge: '/icon.png',
               tag: opts.id || `purely-${Date.now()}`,
+              renotify: true,
               vibrate: [200, 100, 200],
               data: { url: opts.url || '/hotel-portal/requests' },
             } as any);
@@ -621,7 +549,8 @@ class HotelAudioNotificationService {
         try {
           new Notification(opts.title, {
             body: opts.body,
-            icon: '/icon.png',
+            icon: '/icons/icon-192x192.png',
+            tag: opts.id || `purely-${Date.now()}`,
           });
           delivered = true;
         } catch {}
@@ -644,7 +573,7 @@ class HotelAudioNotificationService {
     const prefs = this.getPreferences();
     const showStaffBanner = shouldShowInPageStaffBanner();
 
-    // 1. Play sound chime (always on staff routes, or in native app when enabled)
+    // 1. Play sound chime (when visible in foreground)
     if (prefs.soundEnabled && (showStaffBanner || isNativeHostApp())) {
       const soundType = isUrgent ? 'urgent_chime' : prefs.selectedSound;
       this.play(soundType);
@@ -676,4 +605,3 @@ class HotelAudioNotificationService {
 }
 
 export const HotelAudioNotification = new HotelAudioNotificationService();
-

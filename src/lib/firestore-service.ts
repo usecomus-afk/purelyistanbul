@@ -804,6 +804,35 @@ export const FirestoreService = {
       }
     };
 
+    // Fire server-side Web Push (RFC 8030 VAPID) immediately so staff devices receive
+    // the notification even when their keypad/screen is locked or the app is in the background.
+    if (typeof window !== 'undefined') {
+      const isUrgent = local.priority === 'acil';
+      const pushTitle = isUrgent
+        ? `🚨 ACİL TALEP: Birim ${local.roomNumber}`
+        : `🛎️ Yeni Sipariş / Talep: Birim ${local.roomNumber}`;
+      const cleanNotes = local.notes ? local.notes.replace(/\s+/g, ' ').trim() : '';
+      const pushBody = `${local.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
+
+      fetch('/api/notifications/push', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetRole: 'staff',
+          hotelId: local.hotelId || 'hotel-heritage-1',
+          roomNumber: local.roomNumber || '101',
+          requestId: local.id,
+          priority: local.priority || 'standart',
+          urgency: isUrgent ? 'HIGH' : 'NORMAL',
+          title: pushTitle,
+          subtitle: local.hotelName || 'Purely Istanbul',
+          body: pushBody,
+          url: '/hotel-portal/requests',
+        }),
+      }).catch(() => {});
+    }
+
     // Fire REST PATCH (with keepalive: true) immediately in parallel with Firebase SDK setDoc
     // so orders from a Home Screen QR PWA reach Firestore in <150ms even if the user switches apps immediately.
     const restPromise = saveViaRest();
@@ -891,8 +920,38 @@ export const FirestoreService = {
   },
 
   async updateRequestStatus(id: string, status: ServiceRequest['status']): Promise<void> {
+    const existingReq = XeniosStore.getRequests().find((r) => r.id === id);
     XeniosStore.updateRequestStatus(id, status);
     const updatedAt = new Date().toISOString();
+
+    if (typeof window !== 'undefined' && existingReq && (status === 'in_progress' || status === 'completed')) {
+      const guestTitle =
+        status === 'completed'
+          ? `✅ Talebiniz Tamamlandı (Birim ${existingReq.roomNumber})`
+          : `🛎️ Talebiniz Hazırlanıyor (Birim ${existingReq.roomNumber})`;
+      const guestBody =
+        status === 'completed'
+          ? `"${existingReq.serviceTitle}" talebiniz tamamlanmıştır. Keyifli konaklamalar dileriz.`
+          : `"${existingReq.serviceTitle}" talebiniz ekibimiz tarafından işleme alındı.`;
+
+      fetch('/api/notifications/push', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetRole: 'guest',
+          hotelId: existingReq.hotelId || 'hotel-heritage-1',
+          roomNumber: existingReq.roomNumber || '101',
+          requestId: `${id}-${status}`,
+          priority: 'standart',
+          urgency: 'HIGH',
+          title: guestTitle,
+          subtitle: existingReq.hotelName || 'Purely Istanbul',
+          body: guestBody,
+          url: `/stay/${encodeURIComponent(existingReq.hotelId || 'hotel-1')}/${encodeURIComponent(existingReq.roomNumber || '101')}`,
+        }),
+      }).catch(() => {});
+    }
 
     const patchViaRest = async () => {
       try {

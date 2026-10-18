@@ -3,7 +3,7 @@ import { NotificationDispatcher, SmartNotificationRequest } from '@/services/not
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as SmartNotificationRequest;
+    const body = (await req.json()) as SmartNotificationRequest;
 
     if (!body.title || !body.body) {
       return NextResponse.json(

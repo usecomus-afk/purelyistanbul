@@ -10,8 +10,17 @@ class PurelyNotifyScriptHandler: NSObject, WKScriptMessageHandler {
         if let bodyDict = message.body as? [String: Any] {
             let action = (bodyDict["action"] as? String) ?? "scheduleNotification"
             if action == "requestPermissions" {
+                AppDelegate.requestNotificationPermissions()
                 if let appDel = UIApplication.shared.delegate as? AppDelegate {
-                    appDel.requestNotificationPermissions()
+                    appDel.startSilentBackgroundKeepAlive()
+                    appDel.pollFirestoreServiceRequests()
+                }
+                return
+            }
+            if action == "startKeepAlive" {
+                if let appDel = UIApplication.shared.delegate as? AppDelegate {
+                    appDel.startSilentBackgroundKeepAlive()
+                    appDel.pollFirestoreServiceRequests()
                 }
                 return
             }
@@ -19,6 +28,9 @@ class PurelyNotifyScriptHandler: NSObject, WKScriptMessageHandler {
             let title = (bodyDict["title"] as? String) ?? "purelyİstanbul"
             let subtitle = bodyDict["subtitle"] as? String
             let body = (bodyDict["body"] as? String) ?? "Yeni bir bildiriminiz var."
+            if !id.isEmpty && !AppDelegate.markIfNew(id) {
+                return
+            }
             AppDelegate.deliverLocalNotification(id: id, title: title, subtitle: subtitle, body: body)
         }
     }
@@ -66,6 +78,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.webView?.scrollView.contentInsetAdjustmentBehavior = .never
         bridgeVC.webView?.scrollView.contentInset = .zero
         bridgeVC.webView?.scrollView.scrollIndicatorInsets = .zero
+
+        // Register custom plugin on storyboard-instantiated CAPBridgeViewController as well
+        bridgeVC.bridge?.registerPluginInstance(XeniosNotificationPlugin())
 
         bridgeVC.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "purelyNotify")
         bridgeVC.webView?.configuration.userContentController.add(notifyScriptHandler, name: "purelyNotify")
@@ -150,6 +165,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         if let bridgeVC = self.window?.rootViewController as? CAPBridgeViewController {
+            bridgeVC.bridge?.registerPluginInstance(XeniosNotificationPlugin())
             let hideWebSplash = "try { document.querySelectorAll('#purely-intro-splash').forEach(function(el){ el.style.display = 'none'; }); } catch(e) {}"
             bridgeVC.webView?.evaluateJavaScript(hideWebSplash, completionHandler: nil)
         }
@@ -206,4 +222,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 }
-

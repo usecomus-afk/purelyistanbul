@@ -1,7 +1,13 @@
-// Xenios Istanbul PWA Service Worker with Push Notifications
-const CACHE_NAME = 'xenios-v1';
+// Purely Istanbul PWA Service Worker — Lock-Screen Web Push & Background Live Request Watcher
+const CACHE_NAME = 'xenios-v3';
+const FIRESTORE_QUERY_URL =
+  'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery';
 
-self.addEventListener('install', (event) => {
+const notifiedIds = new Set();
+let seedCompleted = false;
+let watcherActive = false;
+
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
@@ -9,25 +15,122 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Push Notification Listener
+async function pollFirestoreRequestsOnce() {
+  try {
+    const res = await fetch(FIRESTORE_QUERY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+      cache: 'no-store',
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{ collectionId: 'service_requests' }],
+          orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+          limit: 35,
+        },
+      }),
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return;
+
+    const nowMs = Date.now();
+    const isFirstSeed = !seedCompleted;
+    if (isFirstSeed) seedCompleted = true;
+
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const docObj = rows[i] && rows[i].document;
+      const fields = docObj && docObj.fields;
+      if (!fields) continue;
+      const docName = String(docObj.name || '');
+      const fallbackId = docName.split('/').pop() || '';
+      const reqId = (fields.id && fields.id.stringValue) || fallbackId;
+      if (!reqId || reqId.includes('test') || reqId.includes('demo')) continue;
+
+      const status = (fields.status && fields.status.stringValue) || 'pending';
+      const createdAtStr = (fields.createdAt && fields.createdAt.stringValue) || '';
+      const createdMs = createdAtStr ? new Date(createdAtStr).getTime() : 0;
+      const ageMs = createdMs > 0 ? nowMs - createdMs : 999999999;
+
+      if (notifiedIds.has(reqId)) continue;
+
+      if (isFirstSeed) {
+        const isVeryRecent = ageMs > -300000 && ageMs < 60000;
+        notifiedIds.add(reqId);
+        if (isVeryRecent && status === 'pending') {
+          await showRequestNotification(reqId, fields);
+        }
+      } else {
+        notifiedIds.add(reqId);
+        const isActiveWindow = ageMs > -300000 && ageMs < 1800000;
+        if (isActiveWindow && status === 'pending') {
+          await showRequestNotification(reqId, fields);
+        }
+      }
+    }
+  } catch (err) {
+    // Ignore transient network errors
+  }
+}
+
+async function showRequestNotification(reqId, fields) {
+  const roomNumber = (fields.roomNumber && fields.roomNumber.stringValue) || '101';
+  const hotelName = (fields.hotelName && fields.hotelName.stringValue) || 'Purely Istanbul';
+  const serviceTitle = (fields.serviceTitle && fields.serviceTitle.stringValue) || 'Birim Hizmeti Talebi';
+  const notes = ((fields.notes && fields.notes.stringValue) || '').replace(/\s+/g, ' ').trim();
+  const priority = (fields.priority && fields.priority.stringValue) || 'standart';
+  const isUrgent = priority === 'acil';
+
+  const title = isUrgent
+    ? `🚨 ACİL TALEP: Birim ${roomNumber}`
+    : `🛎️ Yeni Sipariş / Talep: Birim ${roomNumber}`;
+  const body = notes ? `${serviceTitle} · ${notes}` : serviceTitle;
+
+  await self.registration.showNotification(title, {
+    body: `${hotelName} — ${body}`,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icon.png',
+    tag: reqId,
+    renotify: true,
+    requireInteraction: isUrgent,
+    vibrate: isUrgent ? [300, 100, 300, 100, 400] : [200, 100, 200],
+    data: {
+      url: '/hotel-portal/requests',
+      requestId: reqId,
+    },
+  });
+}
+
+// Push Notification Listener (RFC 8030 Web Push from Server when screen is locked)
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
+  if (!event.data) {
+    event.waitUntil(pollFirestoreRequestsOnce());
+    return;
+  }
 
   try {
     const data = event.data.json();
+    const reqId = data.requestId || data.tag || `purely-${Date.now()}`;
+    if (data.requestId) {
+      notifiedIds.add(data.requestId);
+    }
     const title = data.title || 'purelyİstanbul';
+    const isUrgent = data.priority === 'acil' || data.urgency === 'HIGH';
     const options = {
       body: data.body || 'Yeni bir bildiriminiz var.',
-      icon: data.icon || '/logo.png',
+      icon: data.icon || '/icons/icon-192x192.png',
       badge: '/icon.png',
-      vibrate: [100, 50, 100],
+      tag: reqId,
+      renotify: true,
+      requireInteraction: isUrgent,
+      vibrate: isUrgent ? [300, 100, 300, 100, 400] : [200, 100, 200],
       data: {
-        url: data.url || '/'
+        url: data.url || '/hotel-portal/requests',
+        requestId: reqId,
       },
       actions: [
         { action: 'open', title: 'Görüntüle' },
-        { action: 'close', title: 'Kapat' }
-      ]
+        { action: 'close', title: 'Kapat' },
+      ],
     };
 
     event.waitUntil(self.registration.showNotification(title, options));
@@ -36,8 +139,52 @@ self.addEventListener('push', (event) => {
     event.waitUntil(
       self.registration.showNotification('purelyİstanbul', {
         body: text,
-        icon: '/logo.png'
+        icon: '/icons/icon-192x192.png',
+        badge: '/icon.png',
+        vibrate: [200, 100, 200],
+        data: { url: '/hotel-portal/requests' },
       })
+    );
+  }
+});
+
+// Client -> Service Worker Message Listener (Background Lock-Screen Watcher & Direct Notifications)
+self.addEventListener('message', (event) => {
+  const msg = event.data;
+  if (!msg || typeof msg !== 'object') return;
+
+  if (msg.type === 'MARK_NOTIFIED' && msg.requestId) {
+    notifiedIds.add(msg.requestId);
+    seedCompleted = true;
+    return;
+  }
+
+  if (msg.type === 'SEED_NOTIFIED_IDS' && Array.isArray(msg.ids)) {
+    msg.ids.forEach((id) => {
+      if (id) notifiedIds.add(id);
+    });
+    seedCompleted = true;
+    return;
+  }
+
+  if (msg.type === 'START_BACKGROUND_WATCH') {
+    if (watcherActive) return;
+    watcherActive = true;
+    const durationMs = Math.min(Number(msg.durationMs) || 180000, 300000);
+    const intervalMs = 3000;
+    const steps = Math.floor(durationMs / intervalMs);
+
+    event.waitUntil(
+      (async () => {
+        try {
+          for (let i = 0; i < steps; i++) {
+            await pollFirestoreRequestsOnce();
+            await new Promise((r) => setTimeout(r, intervalMs));
+          }
+        } finally {
+          watcherActive = false;
+        }
+      })()
     );
   }
 });
@@ -48,11 +195,11 @@ self.addEventListener('notificationclick', (event) => {
 
   if (event.action === 'close') return;
 
-  const targetUrl = event.notification.data?.url || '/';
+  const targetUrl = event.notification.data?.url || '/hotel-portal/requests';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (let client of windowClients) {
+      for (const client of windowClients) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(targetUrl);
           return client.focus();
