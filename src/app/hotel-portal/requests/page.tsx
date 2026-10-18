@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { ServiceRequest } from '@/lib/types';
+import { getModuleConfig, formatFieldValue, resolvePricing } from '@/lib/service-modules';
 import {
   BellRing,
   CheckCircle2,
@@ -10,11 +11,272 @@ import {
   Search,
   AlertTriangle,
   Trash2,
-  ChevronLeft,
+  Clock,
   CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
+
+interface ParsedRequestView {
+  deptBadge: string;
+  timeLabel: string;
+  mainTitle: string;
+  categoryDeptLine: string;
+  urgencyLine: string;
+  isUrgent: boolean;
+  noteLine: string;
+  extraDetails: Array<{ label: string; value: string }>;
+  folioLine: string | null;
+  isPaidOnline: boolean;
+}
+
+function shortenDepartment(dept?: string): string {
+  if (!dept) return 'Genel';
+  const d = dept.trim();
+  if (d.toLowerCase().includes('teknik')) return 'Teknik';
+  if (d.toLowerCase().includes('mutfak') || d.toLowerCase().includes('room service')) return 'Mutfak';
+  if (d.toLowerCase().includes('housekeeping')) return 'Housekeeping';
+  if (d.toLowerCase().includes('concierge') || d.toLowerCase().includes('ulaşım')) return 'Concierge';
+  if (d.toLowerCase().includes('ön büro') || d.toLowerCase().includes('resepsiyon')) return 'Ön Büro';
+  if (d.toLowerCase().includes('çamaşırhane')) return 'Çamaşırhane';
+  return d;
+}
+
+const PRIMARY_SUBJECT_KEYS = [
+  'vehicleType',
+  'category',
+  'issueType',
+  'breakfastType',
+  'menuItems',
+  'towelType',
+  'pillowType',
+  'setType',
+  'drinkSelection',
+  'changeType',
+  'serviceType',
+  'reason',
+  'extensionUnit',
+  'requestedTime',
+];
+
+const PRIMARY_SUBJECT_LABELS = [
+  'Araç Tipi',
+  'Sorun Kategorisi',
+  'Sorun Türü',
+  'Kahvaltı Türü',
+  'Menü Seçimi',
+  'Havlu Türü',
+  'Yastık Türü',
+  'Set Türü',
+  'İçecek Seçimi',
+  'Değişim Türü',
+  'Hizmet Türü',
+  'Temizlik Nedeni',
+  'Uzatma Süresi (Gece/Gün)',
+  'İstenen Çıkış Saati',
+  'Seçenek',
+];
+
+const NOTE_LABELS = [
+  'Sorun Açıklaması',
+  'Detay Açıklaması',
+  'Özel Not',
+  'Özel Notlar',
+  'Özel İstekler',
+  'Not (Opsiyonel)',
+  'Not',
+  'Allerji Uyarıları',
+];
+
+function parseRequestForCard(req: ServiceRequest): ParsedRequestView {
+  const config = getModuleConfig(req.serviceKey);
+  const deptBadge = shortenDepartment(req.department || config?.department);
+
+  // Format created time (e.g., "09:06")
+  let createdClock = '';
+  try {
+    createdClock = new Date(req.createdAt).toLocaleTimeString('tr-TR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    createdClock = '';
+  }
+
+  // Parse dot-separated req.notes if present
+  const rawNotes = (req.notes || '').trim();
+  let bracketPayment: string | null = null;
+  const parsedPairs: Array<{ label: string; value: string }> = [];
+  const plainChunks: string[] = [];
+
+  if (rawNotes) {
+    const parts = rawNotes.split(/\s*·\s*/);
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      if (!part) continue;
+      if (part.startsWith('[')) {
+        // Reconstruct bracketed payment token if it was split on ' · '
+        const remaining = parts.slice(i).join(' · ');
+        const match = remaining.match(/^\[(.*?)\]/);
+        if (match) {
+          bracketPayment = match[1].trim();
+          break;
+        }
+      }
+      const colonIdx = part.indexOf(':');
+      if (colonIdx > 0 && colonIdx < 40) {
+        const label = part.slice(0, colonIdx).trim();
+        const value = part.slice(colonIdx + 1).trim();
+        if (value && value !== '—') {
+          parsedPairs.push({ label, value });
+        }
+      } else {
+        plainChunks.push(part);
+      }
+    }
+  }
+
+  // If structured details exist and parsedPairs is empty, populate from config
+  if (parsedPairs.length === 0 && config && req.details) {
+    for (const f of config.fields) {
+      if (f.type === 'display') continue;
+      const val = formatFieldValue(f, req.details[f.key]);
+      if (val && val !== '—') {
+        parsedPairs.push({ label: f.label, value: val });
+      }
+    }
+  }
+
+  // Determine Primary Subject (Ana Başlık)
+  let primarySubject = '';
+  if (req.details && config) {
+    for (const key of PRIMARY_SUBJECT_KEYS) {
+      const val = req.details[key];
+      if (Array.isArray(val) && val.length > 0) {
+        primarySubject = val.join(', ');
+        break;
+      } else if (typeof val === 'string' && val.trim()) {
+        primarySubject = val.trim();
+        break;
+      }
+    }
+  }
+  if (!primarySubject) {
+    const found = parsedPairs.find((p) =>
+      PRIMARY_SUBJECT_LABELS.some((lbl) => lbl.toLowerCase() === p.label.toLowerCase())
+    );
+    if (found) primarySubject = found.value;
+  }
+
+  const mainTitle = primarySubject || req.serviceTitle || 'Misafir Talebi';
+  const categoryDeptLine =
+    primarySubject && req.serviceTitle && primarySubject !== req.serviceTitle
+      ? `${req.serviceTitle} · ${deptBadge}`
+      : req.department || deptBadge;
+
+  // Determine Urgency & Delivery Time
+  const urgencyPair = parsedPairs.find(
+    (p) =>
+      p.label.toLowerCase().includes('aciliyet') ||
+      p.label.toLowerCase().includes('acil yardım')
+  );
+  const timePair = parsedPairs.find(
+    (p) =>
+      p.label.toLowerCase() === 'zaman' ||
+      p.label.toLowerCase() === 'saat' ||
+      p.label.toLowerCase() === 'teslimat zamanı'
+  );
+
+  const isUrgent =
+    req.priority === 'acil' ||
+    (urgencyPair?.value.toLowerCase().includes('acil') ?? false);
+  const urgencyLine = urgencyPair?.value || (isUrgent ? 'Acil' : 'Standart');
+
+  const timeLabel =
+    timePair?.value && timePair.value.length <= 18
+      ? `${createdClock} · ${timePair.value}`
+      : createdClock;
+
+  // Determine Note / Issue Description
+  const notePair = parsedPairs.find((p) =>
+    NOTE_LABELS.some((lbl) => lbl.toLowerCase() === p.label.toLowerCase())
+  );
+  const noteLine =
+    notePair?.value ||
+    (plainChunks.length > 0 ? plainChunks.join(', ') : '');
+
+  // Remaining extra details (excluding what we already promoted to mainTitle, urgency, note, or time)
+  const usedLabels = new Set<string>();
+  if (primarySubject) {
+    const pMatch = parsedPairs.find((p) => p.value === primarySubject);
+    if (pMatch) usedLabels.add(pMatch.label.toLowerCase());
+  }
+  if (urgencyPair) usedLabels.add(urgencyPair.label.toLowerCase());
+  if (notePair) usedLabels.add(notePair.label.toLowerCase());
+  if (timePair && timePair.value.length <= 18) usedLabels.add(timePair.label.toLowerCase());
+
+  const extraDetails = parsedPairs.filter(
+    (p) => !usedLabels.has(p.label.toLowerCase())
+  );
+
+  // Determine Folio / Payment Line (e.g., "180 ₺ · Birim Folyosu")
+  const currencySymbol =
+    req.paymentCurrency === 'EUR'
+      ? '€'
+      : req.paymentCurrency === 'USD'
+      ? '$'
+      : '₺';
+
+  let folioLine: string | null = null;
+  const isPaidOnline = req.paymentStatus === 'paid_online';
+
+  if (req.paymentAmount && req.paymentAmount > 0) {
+    const amt = `${req.paymentAmount.toLocaleString('tr-TR')} ${currencySymbol}`;
+    if (isPaidOnline) {
+      folioLine = `${amt} · Online Ödendi${req.paymentReference ? ` (#${req.paymentReference})` : ''}`;
+    } else {
+      folioLine = `${amt} · Birim Folyosu`;
+    }
+  } else if (bracketPayment) {
+    // Convert "[BİRİM FOLYOSU · 180 ₺]" -> "180 ₺ · Birim Folyosu"
+    const subParts = bracketPayment.split(/\s*·\s*/);
+    if (subParts.length >= 2) {
+      const statusPart = subParts[0]
+        .replace(/BİRİM FOLYOSU/i, 'Birim Folyosu')
+        .replace(/ODA FOLYOSU/i, 'Birim Folyosu')
+        .replace(/ONLİNE ÖDENDİ/i, 'Online Ödendi');
+      const pricePart = subParts[1];
+      const refPart = subParts[2] ? ` (${subParts[2]})` : '';
+      folioLine = `${pricePart} · ${statusPart}${refPart}`;
+    } else {
+      folioLine = bracketPayment;
+    }
+  } else if (config && req.details) {
+    // Check if module has a computed fee display field
+    const feeField = config.fields.find(
+      (f) => f.type === 'display' && (f.key === 'totalPrice' || f.key === 'fee' || f.key === 'priceEstimate' || f.key === 'feeEstimate')
+    );
+    if (feeField?.compute) {
+      const computedFee = feeField.compute(req.details, resolvePricing(config));
+      if (computedFee && !computedFee.toLowerCase().includes('ücretsiz')) {
+        folioLine = `${computedFee} · Birim Folyosu`;
+      }
+    }
+  }
+
+  return {
+    deptBadge,
+    timeLabel,
+    mainTitle,
+    categoryDeptLine,
+    urgencyLine,
+    isUrgent,
+    noteLine,
+    extraDetails,
+    folioLine,
+    isPaidOnline,
+  };
+}
 
 export default function HotelLiveRequestsPage() {
   const hotels = XeniosStore.getHotels();
@@ -67,7 +329,7 @@ export default function HotelLiveRequestsPage() {
     const matchesDept = filterDept === 'all' || (r.department && r.department.toLowerCase().includes(filterDept.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
     const matchesSearch = !search ||
-      (r.roomNumber && r.roomNumber.includes(search)) ||
+      (r.roomNumber && r.roomNumber.toLowerCase().includes(search.toLowerCase())) ||
       (r.serviceTitle && r.serviceTitle.toLowerCase().includes(search.toLowerCase())) ||
       (r.notes && r.notes.toLowerCase().includes(search.toLowerCase()));
     return matchesDept && matchesStatus && matchesSearch;
@@ -76,18 +338,20 @@ export default function HotelLiveRequestsPage() {
   const completedCount = requests.filter((r) => r.status === 'completed').length;
 
   return (
-    <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-12">
+    <div className="w-full max-w-full min-w-0 box-border overflow-x-hidden space-y-5 text-zinc-900 dark:text-slate-100 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200/80 pb-4 w-full box-border">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0" />
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-lg font-bold uppercase tracking-wider whitespace-normal break-words">
+              {currentHotel.name}
+            </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 whitespace-normal break-words">
             Canlı Misafir Talepleri
           </h1>
-          <p className="text-xs text-zinc-600 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5 whitespace-normal break-words">
             Konaklama birimlerinden gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
         </div>
@@ -98,35 +362,44 @@ export default function HotelLiveRequestsPage() {
             onClick={handleClearCompleted}
             className="self-start sm:self-center px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-3.5 h-3.5 shrink-0" />
             <span>Tamamlananları Temizle ({completedCount})</span>
           </button>
         )}
       </div>
 
-      {/* Filters Bar */}
-      <div className="luxury-service-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
+      {/* Filters Bar — 100% width, zero horizontal scroll */}
+      <div
+        className="w-full box-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3.5"
+        style={{
+          background: 'rgba(245, 215, 130, 0.22)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1.5px solid rgba(230, 185, 75, 0.5)',
+          borderRadius: '16px',
+        }}
+      >
+        <div className="relative flex-1 min-w-0">
+          <Search className="w-4 h-4 text-zinc-600 absolute left-3 top-2.5 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Birim no, hizmet adı veya not ara..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full box-border pl-9 pr-3 py-2 text-xs bg-white/75 border border-amber-300/80 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="text-xs bg-amber-50/50 border border-amber-200 text-zinc-800 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="w-full sm:w-auto min-w-0 text-xs bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Departmanlar</option>
             <option value="Housekeeping">Housekeeping</option>
-            <option value="Mutfak">Kahvaltı & Yeme-İçme / Mutfak</option>
-            <option value="Resepsiyon">Danışma / Resepsiyon</option>
+            <option value="Mutfak">Kahvaltı & Yeme-İçme</option>
+            <option value="Resepsiyon">Danışma / Ön Büro</option>
             <option value="Teknik">Teknik Servis</option>
             <option value="Concierge">Concierge & Taksi</option>
           </select>
@@ -134,7 +407,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs bg-amber-50/50 border border-amber-200 text-zinc-800 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="w-full sm:w-auto min-w-0 text-xs bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Durumlar</option>
             <option value="pending">Bekleyenler</option>
@@ -144,113 +417,199 @@ export default function HotelLiveRequestsPage() {
         </div>
       </div>
 
-      {/* Requests List */}
-      <div className="space-y-3">
+      {/* Requests List — Vertical Sectioned Mobile Cards */}
+      <div className="space-y-3.5 w-full box-border">
         {filtered.length === 0 ? (
-          <div className="luxury-service-card p-12 text-center rounded-3xl text-zinc-600 space-y-2">
-            <BellRing className="w-8 h-8 mx-auto text-amber-700/70" />
-            <p className="text-xs font-semibold">Şu anda bekleyen veya filtrelere uyan talep bulunmuyor.</p>
+          <div
+            className="w-full box-border p-10 text-center text-zinc-700 space-y-2"
+            style={{
+              background: 'rgba(245, 215, 130, 0.22)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1.5px solid rgba(230, 185, 75, 0.5)',
+              borderRadius: '16px',
+            }}
+          >
+            <BellRing className="w-8 h-8 mx-auto text-amber-800/70" />
+            <p className="text-xs font-semibold whitespace-normal break-words">
+              Şu anda bekleyen veya filtrelere uyan talep bulunmuyor.
+            </p>
           </div>
         ) : (
           filtered.map((req) => {
             const isCompleted = req.status === 'completed';
-            const cardContent = (
-              <div
-                className={`p-4 rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-full shrink-0 snap-start ${
-                  isCompleted
-                    ? 'luxury-service-card opacity-80'
-                    : req.priority === 'acil'
-                    ? 'bg-red-50/70 backdrop-blur-[18px] border-[1.5px] border-red-300 shadow-xs'
-                    : 'luxury-service-card'
+            const parsed = parseRequestForCard(req);
+
+            return (
+              <article
+                key={req.id}
+                className={`w-full box-border flex flex-col gap-3 transition whitespace-normal break-words ${
+                  isCompleted ? 'opacity-85' : ''
                 }`}
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  background: 'rgba(245, 215, 130, 0.22)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: parsed.isUrgent && !isCompleted
+                    ? '1.5px solid rgba(220, 38, 38, 0.65)'
+                    : '1.5px solid rgba(230, 185, 75, 0.5)',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  boxShadow: '0 8px 24px 0 rgba(0, 0, 0, 0.08)',
+                }}
               >
-                <div className="space-y-1.5 min-w-0 flex-1 relative">
-                  {isCompleted && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteRequest(req.id);
-                      }}
-                      className="absolute top-0 right-0 sm:hidden flex items-center gap-1 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-full shadow-2xs cursor-pointer z-10"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      <span className="text-[10px] font-bold">Sil</span>
-                    </button>
-                  )}
-                  <div className="flex flex-wrap items-center gap-2 pr-14 sm:pr-0">
-                    <span className="golden-pill-badge px-2.5 py-1 rounded-full text-[#2C1E0F] font-mono font-bold text-xs">
+                {/* =========================================================
+                    A) ÜST BİLGİ SATIRI (HEADER)
+                    Sol: Oda/Birim Rozeti & Departman Rozeti
+                    Sağ: Talep Saati & Çöp Kutusu İkonu
+                ========================================================= */}
+                <div className="flex items-center justify-between w-full gap-2 pb-2.5 border-b border-amber-700/20">
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+                    <span className="golden-pill-badge px-2.5 py-1 rounded-lg text-[#2C1E0F] font-mono font-bold text-xs leading-none">
                       Birim {req.roomNumber}
                     </span>
-                    {req.hotelName && (
-                      <span className="golden-pill-badge px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-semibold text-[11px]">
-                        {req.hotelName}
-                      </span>
-                    )}
-                    <strong className="text-sm font-bold text-zinc-900 dark:text-slate-100">{req.serviceTitle}</strong>
-                    
-                    {req.priority === 'acil' && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold border border-red-200 flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-red-600" /> ACİL
-                      </span>
-                    )}
-                    {req.department && (
-                      <span className="golden-pill-badge text-[10px] px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-semibold">
-                        {req.department}
-                      </span>
-                    )}
-                    {req.paymentStatus === 'paid_online' && (
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold flex items-center gap-1 shadow-2xs">
-                        <CreditCard className="w-3 h-3 text-emerald-700" />
-                        ONLİNE ÖDENDİ
-                        {req.paymentAmount ? ` · ${req.paymentAmount.toLocaleString('tr-TR')} ${req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}` : ''}
-                        {req.paymentReference ? ` (#${req.paymentReference})` : ''}
-                      </span>
-                    )}
-                    {req.paymentStatus !== 'paid_online' && req.paymentAmount && req.paymentAmount > 0 && (
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1">
-                        BİRİM FOLYOSU · {req.paymentAmount.toLocaleString('tr-TR')} {req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}
+                    <span className="px-2.5 py-1 rounded-lg bg-white/70 border border-amber-600/35 text-[#2C1E0F] font-semibold text-[11px] leading-none">
+                      {parsed.deptBadge}
+                    </span>
+                    {parsed.isUrgent && (
+                      <span className="px-2 py-0.5 rounded-lg bg-red-100 text-red-800 font-bold text-[10px] border border-red-300 inline-flex items-center gap-1 leading-none">
+                        <AlertTriangle className="w-3 h-3 text-red-600 shrink-0" />
+                        <span>ACİL</span>
                       </span>
                     )}
                   </div>
 
-                  {req.notes && (
-                    <p className="text-xs text-zinc-700 leading-relaxed pl-1">
-                      {req.notes}
-                    </p>
-                  )}
-
-                  <div className="text-[10px] text-zinc-500 dark:text-slate-400 flex items-center gap-2 pl-1 font-mono">
-                    <span>Talep Zamanı: {new Date(req.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-[#3A2A18] bg-white/60 px-2 py-1 rounded-lg border border-amber-600/25">
+                      <Clock className="w-3 h-3 text-amber-800 shrink-0" />
+                      <span>{parsed.timeLabel}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteRequest(req.id)}
+                      title="Talebi Sil"
+                      aria-label="Talebi Sil"
+                      className="p-1.5 rounded-lg bg-red-50/90 hover:bg-red-100 text-red-700 border border-red-200/90 transition cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
 
-                {/* Status Action Buttons */}
-                <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+                {/* =========================================================
+                    B) TALEP VE DETAY ALANI (BODY)
+                    - Ana Başlık: Tek başına kalın (bold) satırda
+                    - Detaylar: 2 sütunlu kompakt grid / alt alta
+                ========================================================= */}
+                <div className="flex flex-col gap-2.5 w-full min-w-0">
+                  {/* Ana Başlık */}
+                  <h2 className="text-[15px] sm:text-base font-bold text-[#1A1A1A] leading-snug whitespace-normal break-words">
+                    {parsed.mainTitle}
+                  </h2>
+
+                  {/* Detaylar Grid (2 Sütunlu Kompakt Mimari) */}
+                  <div className="grid grid-cols-2 gap-2 w-full">
+                    {/* Kategori / Departman */}
+                    <div className="p-2.5 rounded-xl bg-white/55 border border-amber-600/25 min-w-0">
+                      <span className="block text-[10px] font-semibold uppercase tracking-wider text-[#6E5638]">
+                        Kategori / Departman
+                      </span>
+                      <span className="block text-xs font-bold text-[#1F1912] mt-0.5 whitespace-normal break-words">
+                        {parsed.categoryDeptLine}
+                      </span>
+                    </div>
+
+                    {/* Aciliyet Derecesi */}
+                    <div className="p-2.5 rounded-xl bg-white/55 border border-amber-600/25 min-w-0">
+                      <span className="block text-[10px] font-semibold uppercase tracking-wider text-[#6E5638]">
+                        Aciliyet Derecesi
+                      </span>
+                      <span
+                        className={`block text-xs font-bold mt-0.5 whitespace-normal break-words ${
+                          parsed.isUrgent ? 'text-red-700' : 'text-[#1F1912]'
+                        }`}
+                      >
+                        {parsed.urgencyLine}
+                      </span>
+                    </div>
+
+                    {/* Ek Modül Detayları (Varsa: Başlangıç/Varış, Yolcu, Adet, Durum vb.) */}
+                    {parsed.extraDetails.map((item, idx) => (
+                      <div
+                        key={`${item.label}-${idx}`}
+                        className="p-2.5 rounded-xl bg-white/55 border border-amber-600/25 min-w-0"
+                      >
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider text-[#6E5638] whitespace-normal break-words">
+                          {item.label}
+                        </span>
+                        <span className="block text-xs font-bold text-[#1F1912] mt-0.5 whitespace-normal break-words">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+
+                    {/* Sorun Açıklaması / Misafir Notu (Tam Genişlik) */}
+                    {parsed.noteLine && (
+                      <div className="col-span-2 p-2.5 rounded-xl bg-white/65 border border-amber-600/30 min-w-0">
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider text-[#6E5638]">
+                          Sorun Açıklaması / Misafir Notu
+                        </span>
+                        <p className="text-xs font-medium text-[#1F1912] mt-0.5 leading-relaxed whitespace-normal break-words">
+                          {parsed.noteLine}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Tutar / Folyo Bilgisi (Tam Genişlik) */}
+                    {parsed.folioLine && (
+                      <div
+                        className={`col-span-2 p-2.5 rounded-xl border flex items-center justify-between gap-2 min-w-0 ${
+                          parsed.isPaidOnline
+                            ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950'
+                            : 'bg-amber-100/75 border-amber-400/70 text-[#2C1E0F]'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 shrink-0" />
+                          <span>Tutar / Folyo Bilgisi</span>
+                        </span>
+                        <span className="text-xs font-bold font-mono whitespace-normal break-words text-right">
+                          {parsed.folioLine}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* =========================================================
+                    C) EYLEM BUTONLARI SATIRI (FOOTER)
+                    Esnek (flex-wrap: wrap; gap: 8px;), sağa/tam genişliğe hizalı
+                ========================================================= */}
+                <div className="pt-2.5 border-t border-amber-700/20 flex flex-wrap items-center justify-end gap-2 w-full">
                   {req.status === 'pending' && (
                     <button
                       type="button"
                       onClick={() => handleUpdateStatus(req.id, 'in_progress')}
-                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition cursor-pointer"
+                      className="flex-1 sm:flex-initial px-3.5 py-2 bg-white/85 hover:bg-white text-[#2C1E0F] border border-amber-600/40 rounded-xl text-xs font-bold transition cursor-pointer text-center"
                     >
                       İşleme Al
                     </button>
                   )}
 
-                  {req.status !== 'completed' && (
+                  {req.status !== 'completed' ? (
                     <button
                       type="button"
                       onClick={() => handleUpdateStatus(req.id, 'completed')}
-                      className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
+                      className="flex-1 sm:flex-initial px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center justify-center gap-1.5"
                     >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Çözüldü</span>
+                      <Check className="w-3.5 h-3.5 shrink-0" />
+                      <span>Tamamlandı</span>
                     </button>
-                  )}
-
-                  {req.status === 'completed' && (
-                    <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <span className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-emerald-50/95 text-emerald-800 font-bold text-xs border border-emerald-300 inline-flex items-center justify-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>Tamamlandı</span>
                     </span>
                   )}
@@ -258,41 +617,18 @@ export default function HotelLiveRequestsPage() {
                   <button
                     type="button"
                     onClick={() => handleDeleteRequest(req.id)}
-                    className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-red-50/95 hover:bg-red-100 text-red-700 border border-red-200 font-bold text-xs inline-flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5 shrink-0" />
                     <span>Sil</span>
                   </button>
                 </div>
-              </div>
+              </article>
             );
-
-            if (isCompleted) {
-              return (
-                <div key={req.id} className="relative rounded-2xl overflow-hidden group border border-zinc-200">
-                  <div className="flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {cardContent}
-                    
-                    {/* Delete Button Area (snap-end) */}
-                    <button
-                      type="button"
-                      className="w-24 shrink-0 snap-end flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors cursor-pointer"
-                      onClick={() => handleDeleteRequest(req.id)}
-                    >
-                      <div className="flex flex-col items-center justify-center text-white gap-1">
-                        <Trash2 className="w-5 h-5" />
-                        <span className="text-[10px] font-bold tracking-wider">SİL</span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              );
-            }
-
-            return <div key={req.id}>{cardContent}</div>;
           })
         )}
       </div>
     </div>
   );
 }
+
