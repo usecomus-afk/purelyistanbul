@@ -192,6 +192,28 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
+      const urlPartnerId =
+        urlParams.get('partner_id') ||
+        urlParams.get('property_id') ||
+        urlParams.get('hotelId');
+      const urlUnitId =
+        urlParams.get('unit_id') ||
+        urlParams.get('roomId') ||
+        urlParams.get('room');
+      if (urlPartnerId && urlUnitId) {
+        setActiveHotelId(urlPartnerId);
+        setActiveRoomNumber(urlUnitId);
+        XeniosStore.setActiveHotelSession(urlPartnerId, urlUnitId);
+      } else {
+        if (urlPartnerId) {
+          setActiveHotelId(urlPartnerId);
+          XeniosStore.setActiveHotelId(urlPartnerId);
+        }
+        if (urlUnitId) {
+          setActiveRoomNumber(urlUnitId);
+          XeniosStore.setActiveRoomId(urlUnitId);
+        }
+      }
       const tabParam = urlParams.get('tab');
       if (tabParam && ['services', 'experiences', 'categories', 'ai', 'practical', 'invest'].includes(tabParam)) {
         closeAllModals();

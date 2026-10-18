@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Hotel, Language } from '@/lib/types';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Hotel, InRoomServiceItem, Language } from '@/lib/types';
 import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
 import { ChatMessage } from '@/lib/gemini';
@@ -32,27 +32,136 @@ export interface ParsedComusAction {
   raw: string;
   actionType: string; // 'explore_category' | 'in_stay'
   targetKind: 'id' | 'service';
-  targetValue: string; // 'bosphorus' | 'transfer' | 'breakfast' | 'support' | 'laundry' | etc.
+  targetValue: string; // 'bosphorus' | 'transfer' | 'breakfast' | 'cleaning' | 'maintenance' | 'support' | 'laundry' | etc.
+  unitName?: string;
   label: string;
   sublabel: string;
 }
 
-export const TURKISH_ONBOARDING_MESSAGE = `İstanbul’a hoş geldiniz! Ben Comus. 🕌
+export function inferClientPropertyType(
+  rawType?: string,
+  propertyName?: string
+): 'hotel' | 'apartment' {
+  const combined = `${rawType || ''} ${propertyName || ''}`.toLowerCase();
+  if (rawType === 'apartment' || rawType === 'short_term_rental') return 'apartment';
+  if (rawType === 'hotel') return 'hotel';
+  if (
+    /apart|rezidans|residence|daire|pmc|kısa dönem|short-term|short term|loft|villa|home|flat/i.test(
+      combined
+    )
+  ) {
+    return 'apartment';
+  }
+  if (/suite|süit/i.test(combined) && !/hotel|otel|konak|palace|saray/i.test(combined)) {
+    return 'apartment';
+  }
+  return 'hotel';
+}
 
-Ben bu şehirde sıradan bir turist gibi kaybolmamanız, dolandırıcılardan ve fahiş fiyat tuzaklarından korunarak İstanbul’u gerçek bir misafir gibi güvenle yaşamanız için geliştirildim.
+export function formatClientUnitName(
+  rawUnitId: string,
+  propertyType: 'hotel' | 'apartment',
+  roomTypeLabel?: string
+): string {
+  const trimmed = String(rawUnitId || '101').trim();
+  const shortUnit = trimmed.includes('·')
+    ? trimmed.split('·').pop()!.trim()
+    : trimmed;
 
-Kaldığınız bu odada ve şehrin sokaklarında sizin için yapabileceklerim:
+  if (/^(suite|süit|daire|oda|room|birim|unit|apt|penthouse|loft)\b/i.test(shortUnit)) {
+    if (propertyType === 'apartment' && /^oda\s+/i.test(shortUnit)) {
+      return shortUnit.replace(/^oda\s+/i, 'Suite ');
+    }
+    return shortUnit;
+  }
 
-• Sizi Turist Tuzaklarından Korurum: Bindiğiniz taksinin ücretinden gittiğiniz restorandaki adisyona kadar şüphelendiğiniz her şeyi bana sorabilirsiniz; rayiç fiyatları söyler, kazıklanmanızı engellerim.
-• Oda İçi İhtiyaçlarınızı Çözerim: Wi-Fi bağlantısı, klima/teknik arızalar, ekstra temizlik talepleri ya da sabah kapınıza gelecek taze bir kahvaltı sepeti için doğrudan mülk yönetim ekibinizle iletişim kurarım.
-• Şehrin Gerçek Yüzünü Gösteririm: Turist kalabalıklarına boğulmadan en otantik lezzet duraklarını, gün batımı rotalarını, gizli hanları ve güvenilir Boğaz turlarını sizin zevkinize göre anlık olarak planlarım.
-• Kendi Dilinizde Yanınızdayım: İstanbul’u adım adım gezerken aklınıza takılan her şeyi ana dilinizde bana sorabilirsiniz; 7/24 cebinizdeki yerel dostunuzum.
+  if (propertyType === 'apartment') {
+    if (roomTypeLabel && /daire/i.test(roomTypeLabel)) {
+      return `Daire ${shortUnit}`;
+    }
+    return `Suite ${shortUnit}`;
+  }
 
-Şu an sizin için ne yapmamı istersiniz?`;
+  if (roomTypeLabel && /suite|süit/i.test(roomTypeLabel)) {
+    return `Suite ${shortUnit}`;
+  }
+  return `Oda ${shortUnit}`;
+}
+
+/**
+ * Generates the first opening message dynamically according to the property type ("hotel" vs "apartment"),
+ * propertyName, and guest's auto-detected browser language.
+ */
+export function buildDynamicWelcomeMessage(
+  lang: Language = 'tr',
+  propertyName: string = 'Old City Heritage Hotel Istanbul',
+  propertyType: 'hotel' | 'apartment' = 'hotel'
+): string {
+  const isApt = propertyType === 'apartment';
+
+  switch (lang) {
+    case 'tr':
+      if (isApt) {
+        return `İstanbul’a ve ${propertyName}’deki süitinize hoş geldiniz! Ben Comus. 🕌
+Bu özel dairede kendinizi evinizde hissetmeniz ve İstanbul'u bir turist gibi değil, gerçek bir misafir gibi güvenle yaşamanız için buradayım. Daire içi ihtiyaçlarınızdan (kapıya kahvaltı, temizlik, teknik destek) şehirdeki taksi ve rota rehberliğine kadar 7/24 hizmetinizdeyim. Bugün nasıl yardımcı olabilirim?`;
+      }
+      return `İstanbul’a ve ${propertyName}’e hoş geldiniz! Ben Comus. 🕌
+Kaldığınız süre boyunca hem otel içi konforunuz hem de şehrin sokaklarında güvenliğiniz için buradayım. Resepsiyon ve oda içi hizmetlerden şehirdeki gizli lezzet duraklarına kadar her an yanınızdayım. Bugün sizin için ne yapabilirim?`;
+
+    case 'en':
+      if (isApt) {
+        return `Welcome to Istanbul and to your suite at ${propertyName}! I am Comus. 🕌
+I am here so you feel right at home in this private apartment and experience Istanbul safely—not like a tourist, but like a true guest. From your in-suite needs (doorstep breakfast, housekeeping, technical support) to city taxi fares and route guidance, I am at your service 24/7. How may I help you today?`;
+      }
+      return `Welcome to Istanbul and ${propertyName}! I am Comus. 🕌
+Throughout your stay, I am here for both your in-hotel comfort and your safety on the streets of the city. From reception and in-room services to hidden culinary gems across the city, I am by your side at every moment. What can I do for you today?`;
+
+    case 'ar':
+      if (isApt) {
+        return `أهلاً بك في إسطنبول وفي جناحك الخاص في ${propertyName}! أنا Comus. 🕌
+أنا هنا لتشعر وكأنك في منزلك داخل هذه الشقة الخاصة ولتعيش إسطنبول بأمان كضيف حقيقي وليس كسائح. من احتياجات شقتك (إفطار عند الباب، تنظيف، دعم فني) إلى أسعار التاكسي ومسارات المدينة، أنا في خدمتك 24/7. كيف يمكنني مساعدتك اليوم؟`;
+      }
+      return `أهلاً بك في إسطنبول وفي ${propertyName}! أنا Comus. 🕌
+طوال فترة إقامتك، أنا هنا من أجل راحتك داخل الفندق وأمانك في شوارع المدينة. من الاستقبال وخدمات الغرف إلى الوجهات المحلية المخفية، أنا بجانبك في كل لحظة. ماذا يمكنني أن أفعل من أجلك اليوم؟`;
+
+    case 'ru':
+      if (isApt) {
+        return `Добро пожаловать в Стамбул и в ваши апартаменты в ${propertyName}! Я Comus. 🕌
+Я здесь, чтобы в этих частных апартаментах вы чувствовали себя как дома и прожили Стамбул безопасно — не как турист, а как дорогой гость. От ваших потребностей в апартаментах (завтрак к двери, уборка, техподдержка) до расчета такси и маршрутов по городу — я к вашим услугам 24/7. Чем я могу помочь вам сегодня?`;
+      }
+      return `Добро пожаловать в Стамбул и в ${propertyName}! Я Comus. 🕌
+На протяжении всего вашего пребывания я забочусь о вашем комфорте в отеле и вашей безопасности на улицах города. От ресепшена и обслуживания в номере до скрытых гастрономических мест — я рядом в любой момент. Что я могу сделать для вас сегодня?`;
+
+    case 'de':
+      if (isApt) {
+        return `Willkommen in Istanbul und in Ihrer Suite im ${propertyName}! Ich bin Comus. 🕌
+Ich bin hier, damit Sie sich in diesem privaten Apartment wie zu Hause fühlen und Istanbul sicher wie ein echter Gast erleben. Von Ihren Wünschen im Apartment (Frühstück an die Tür, Reinigung, technischer Support) bis zu Taxitarifen und Routenführung in der Stadt bin ich 24/7 für Sie da. Wie kann ich Ihnen heute helfen?`;
+      }
+      return `Willkommen in Istanbul und im ${propertyName}! Ich bin Comus. 🕌
+Während Ihres gesamten Aufenthalts bin ich sowohl für Ihren Komfort im Hotel als auch für Ihre Sicherheit auf den Straßen der Stadt da. Von der Rezeption und dem Zimmerservice bis zu versteckten kulinarischen Orten stehe ich Ihnen jederzeit zur Seite. Was kann ich heute für Sie tun?`;
+
+    case 'fr':
+      if (isApt) {
+        return `Bienvenue à Istanbul et dans votre suite au ${propertyName} ! Je suis Comus. 🕌
+Je suis là pour que vous vous sentiez comme chez vous dans cet appartement privé et que vous viviez Istanbul en toute sécurité, non pas comme un touriste, mais comme un véritable invité. De vos besoins en suite (petit-déjeuner à la porte, ménage, assistance technique) aux tarifs de taxi et itinéraires en ville, je suis à votre service 24h/24 et 7j/7. Comment puis-je vous aider aujourd’hui ?`;
+      }
+      return `Bienvenue à Istanbul et au ${propertyName} ! Je suis Comus. 🕌
+Tout au long de votre séjour, je veille aussi bien à votre confort au sein de l’hôtel qu’à votre sécurité dans les rues de la ville. De la réception et des services en chambre jusqu’aux adresses secrètes de la ville, je suis à vos côtés à chaque instant. Que puis-je faire pour vous aujourd’hui ?`;
+
+    default:
+      return `Welcome to Istanbul and ${propertyName}! I am Comus. 🕌`;
+  }
+}
+
+export const TURKISH_ONBOARDING_MESSAGE = buildDynamicWelcomeMessage(
+  'tr',
+  'Old City Heritage Hotel Istanbul',
+  'hotel'
+);
 
 export const TURKISH_QUICK_ACTION_CHIPS = [
   '🛡️ Beni İstanbul’daki yaygın tuzaklara karşı uyar',
-  '🥐 Odam için hizmet/kahvaltı talep et',
+  '🥐 Konaklamam için hizmet/kahvaltı talep et',
   '📍 Bana buraya en yakın otantik yerleri öner',
   '🗺️ Bugün için bana özel bir rota çiz',
 ] as const;
@@ -60,9 +169,12 @@ export const TURKISH_QUICK_ACTION_CHIPS = [
 export const OFFLINE_FALLBACK_MESSAGE_TR =
   'Comus ile bağlantı kurulamadı. Lütfen Wi-Fi bağlantınızı kontrol edin.';
 
-// Matches both single tags like [action:in_stay, service:breakfast]
-// and compound slash tags like [action:in_stay, service:support/breakfast/laundry]
-const ACTION_TAG_REGEX = /\[action:(\w+),\s*(id|service):([\w/]+)\]/g;
+// Matches tags with or without unit parameter:
+// e.g. [action:in_stay, service:breakfast, unit:Suite 302]
+// or   [action:in_stay, service:breakfast]
+// or   [action:explore_category, id:bosphorus]
+const ACTION_TAG_REGEX =
+  /\[action:(\w+),\s*(id|service):([\w/-]+)(?:,\s*unit:([^\]]+))?\]/g;
 
 const ACTION_METADATA: Record<
   string,
@@ -70,10 +182,18 @@ const ACTION_METADATA: Record<
 > = {
   'service:breakfast': {
     label: '🥐 Order Doorstep Breakfast Basket',
-    sublabel: 'Fresh artisanal Turkish spread delivered to your room door',
+    sublabel: 'Fresh artisanal Turkish spread delivered to your door',
+  },
+  'service:cleaning': {
+    label: '🧹 Request Housekeeping & Fresh Towels',
+    sublabel: 'Dispatched immediately to your property housekeeping team',
+  },
+  'service:maintenance': {
+    label: '🛠️ Open Technical & Maintenance Support Ticket',
+    sublabel: 'Direct priority dispatch for Wi-Fi, AC, or plumbing',
   },
   'service:support': {
-    label: '🛎️ Open Urgent Room & Technical Ticket',
+    label: '🛎️ Open Urgent In-Stay & Technical Ticket',
     sublabel: 'Direct WhatsApp dispatch to your property management team',
   },
   'service:laundry': {
@@ -117,7 +237,8 @@ const COMUS_I18N: Record<
   {
     headerTitle: string;
     statusBadge: string;
-    suiteLabel: string;
+    suiteLabelHotel: string;
+    suiteLabelApartment: string;
     resetBtn: string;
     historyCleared: string;
     offlineMsg: string;
@@ -126,33 +247,52 @@ const COMUS_I18N: Record<
     typingText: string;
     inputPlaceholder: string;
     justNow: string;
-    chips: string[];
-    welcomeText: string;
+    chipsHotel: string[];
+    chipsApartment: string[];
     actions: Record<string, { label: string; sublabel: string }>;
   }
 > = {
   tr: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'Çevrimiçi • Yerel Dostunuz',
-    suiteLabel: 'Oda',
+    suiteLabelHotel: 'Oda',
+    suiteLabelApartment: 'Süit',
     resetBtn: 'Sıfırla',
     historyCleared: 'Sohbet geçmişi temizlendi.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'Doğrulanmış Comus İşlemi',
     typingText: 'Comus yanıtınızı hazırlıyor...',
-    inputPlaceholder: 'Comus’a dilediğiniz dilde sorun (taksi, adisyon, oda talebi, rota)...',
+    inputPlaceholder: 'Comus’a dilediğiniz dilde sorun (taksi, adisyon, konaklama talebi, rota)...',
     justNow: 'Az önce',
-    chips: [...TURKISH_QUICK_ACTION_CHIPS],
-    welcomeText: TURKISH_ONBOARDING_MESSAGE,
+    chipsHotel: [
+      '🛡️ Beni İstanbul’daki yaygın tuzaklara karşı uyar',
+      '🥐 Odam için hizmet/kahvaltı talep et',
+      '📍 Bana buraya en yakın otantik yerleri öner',
+      '🗺️ Bugün için bana özel bir rota çiz',
+    ],
+    chipsApartment: [
+      '🛡️ Beni İstanbul’daki yaygın tuzaklara karşı uyar',
+      '🥐 Dairem için hizmet/kahvaltı talep et',
+      '📍 Bana buraya en yakın otantik yerleri öner',
+      '🗺️ Bugün için bana özel bir rota çiz',
+    ],
     actions: {
       'service:breakfast': {
         label: '🥐 Kapıya Taze Kahvaltı Sepeti İste',
-        sublabel: 'Odanızın kapısına taze geleneksel Türk kahvaltısı teslimatı',
+        sublabel: 'Kapınıza taze geleneksel Türk kahvaltısı teslimatı',
+      },
+      'service:cleaning': {
+        label: '🧹 Temizlik & Taze Havlu Talebi Oluştur',
+        sublabel: 'Konaklama yönetim ekibinize anında iletilir',
+      },
+      'service:maintenance': {
+        label: '🛠️ Teknik Destek Talebi Aç (Klima / Wi-Fi / Tesisat)',
+        sublabel: 'Yönetim ekibinizin WhatsApp ve operasyon ekranına anında düşer',
       },
       'service:support': {
-        label: '🛎️ Oda İçi Teknik / Temizlik Talebi Aç',
-        sublabel: 'Mülk yönetim ekibinizin WhatsApp hattına anında iletilir',
+        label: '🛎️ Konaklama İçi Teknik / Temizlik Talebi Aç',
+        sublabel: 'Yönetim ekibinizin WhatsApp hattına anında iletilir',
       },
       'service:laundry': {
         label: '👔 Ekspres Çamaşır & Ütü Hizmeti İste',
@@ -187,35 +327,32 @@ const COMUS_I18N: Record<
   en: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'Online • Local Guardian',
-    suiteLabel: 'Suite',
+    suiteLabelHotel: 'Room',
+    suiteLabelApartment: 'Suite',
     resetBtn: 'Reset',
     historyCleared: 'Conversation history cleared.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'Verified Comus Action',
     typingText: 'Comus is preparing your local guidance...',
-    inputPlaceholder: 'Ask Comus in any language (taxi fare, bill check, room request, route)...',
+    inputPlaceholder: 'Ask Comus in any language (taxi fare, bill check, stay request, route)...',
     justNow: 'Just now',
-    chips: [
+    chipsHotel: [
       '🛡️ Warn me about common tourist traps in Istanbul',
       '🥐 Request room service or a fresh breakfast basket',
       '📍 Recommend the nearest authentic local spots',
       '🗺️ Plan a custom crowd-free itinerary for today',
     ],
-    welcomeText: `Welcome to Istanbul! I am Comus. 🕌
-
-I was created so you never feel lost like an ordinary tourist in this city—protecting you from scams and overpricing so you can experience Istanbul safely like a true local guest.
-
-Here is what I can do for you in your room and out on the streets of the city:
-
-• I Protect You from Tourist Traps: From your taxi fare to the bill at a restaurant, you can ask me about anything you suspect; I will tell you the fair local rates and stop you from being overcharged.
-• I Solve Your In-Room Needs: For Wi-Fi connection, AC/technical issues, extra housekeeping requests, or a fresh breakfast basket delivered to your door in the morning, I communicate directly with your property management team.
-• I Show You the Real Face of the City: Without getting lost in tourist crowds, I instantly plan the most authentic culinary stops, sunset routes, hidden historic courtyards (hans), and trusted Bosphorus cruises tailored to your taste.
-• I Am by Your Side in Your Own Language: As you explore Istanbul step by step, you can ask me anything in your native language; I am your 24/7 local friend in your pocket.
-
-What would you like me to do for you right now?`,
+    chipsApartment: [
+      '🛡️ Warn me about common tourist traps in Istanbul',
+      '🥐 Request in-suite service or a fresh breakfast basket',
+      '📍 Recommend the nearest authentic local spots',
+      '🗺️ Plan a custom crowd-free itinerary for today',
+    ],
     actions: {
       'service:breakfast': ACTION_METADATA['service:breakfast'],
+      'service:cleaning': ACTION_METADATA['service:cleaning'],
+      'service:maintenance': ACTION_METADATA['service:maintenance'],
       'service:support': ACTION_METADATA['service:support'],
       'service:laundry': ACTION_METADATA['service:laundry'],
       'id:transfer': ACTION_METADATA['id:transfer'],
@@ -229,45 +366,48 @@ What would you like me to do for you right now?`,
   ar: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'متصل • حارسك المحلي',
-    suiteLabel: 'غرفة',
+    suiteLabelHotel: 'غرفة',
+    suiteLabelApartment: 'جناح',
     resetBtn: 'إعادة تعيين',
     historyCleared: 'تم مسح سجل المحادثة.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'إجراء موثق من Comus',
     typingText: 'يقوم Comus بإعداد إرشاداتك المحلية...',
-    inputPlaceholder: 'اسأل Comus بأي لغة (أسعار التاكسي، طلبات الغرفة، الأماكن الأصيلة)...',
+    inputPlaceholder: 'اسأل Comus بأي لغة (أسعار التاكسي، طلبات الإقامة، الأماكن الأصيلة)...',
     justNow: 'الآن',
-    chips: [
+    chipsHotel: [
       '🛡️ حذرني من الفخاخ السياحية الشائعة في إسطنبول',
       '🥐 اطلب خدمة الغرف أو سلة إفطار طازجة',
       '📍 اقترح أقرب الأماكن المحلية الأصيلة من هنا',
       '🗺️ خطط لي مساراً خاصاً لهذا اليوم',
     ],
-    welcomeText: `أهلاً بك في إسطنبول! أنا Comus. 🕌
-
-لقد تم تطويري لكي لا تضيع كسائح عادي في هذه المدينة، ولحمايتك من الاحتيال والأسعار المبالغ فيها لتعيش إسطنبول بأمان كضيف حقيقي.
-
-إليك ما يمكنني القيام به من أجلك في غرفتك وفي شوارع المدينة:
-
-• أحميك من فخاخ السياح: من أجرة التاكسي إلى فاتورة المطعم، يمكنك سؤالي عن أي شيء تشك فيه؛ سأخبرك بالأسعار الحقيقية وأمنع استغلالك.
-• أحل احتياجاتك داخل الغرفة: لاتصال Wi-Fi، أعطال التكييف، طلبات التنظيف الإضافية أو سلة إفطار طازجة تصل لباب غرفتك صباحاً، أتواصل مباشرة مع فريق إدارة مكان إقامتك.
-• أريك الوجه الحقيقي للمدينة: بعيداً عن ازدحام السياح، أخطط لك فوراً أصدق محطات التذوق، مسارات الغروب، الخانات التاريخية المخفية وجولات البوسفور الموثوقة حسب ذوقك.
-• بجانبك بلغتك الأم: أثناء تجولك في إسطنبول خطوة بخطوة، يمكنك سؤالي عن أي شيء بلغتك على مدار الساعة؛ أنا صديقك المحلي في جيبك 24/7.
-
-ماذا تود أن أفعل من أجلك الآن؟`,
+    chipsApartment: [
+      '🛡️ حذرني من الفخاخ السياحية الشائعة في إسطنبول',
+      '🥐 اطلب خدمة الجناح أو سلة إفطار طازجة',
+      '📍 اقترح أقرب الأماكن المحلية الأصيلة من هنا',
+      '🗺️ خطط لي مساراً خاصاً لهذا اليوم',
+    ],
     actions: {
       'service:breakfast': {
-        label: '🥐 اطلب سلة الإفطار إلى باب الغرفة',
-        sublabel: 'تشكيلة إفطار تركي طازج توصل مباشرة إلى غرفتك',
+        label: '🥐 اطلب سلة الإفطار إلى الباب',
+        sublabel: 'تشكيلة إفطار تركي طازج توصل مباشرة إليك',
+      },
+      'service:cleaning': {
+        label: '🧹 طلب تنظيف ومناشف نظيفة',
+        sublabel: 'يتم إرسال الطلب فوراً إلى فريق التدبير المنزلي',
+      },
+      'service:maintenance': {
+        label: '🛠️ طلب دعم فني أو صيانة',
+        sublabel: 'إرسال فوري لفريق الإدارة (الواي فاي، التكييف، السباكة)',
       },
       'service:support': {
-        label: '🛎️ فتح طلب صيانة أو خدمة للغرفة',
+        label: '🛎️ فتح طلب صيانة أو خدمة للإقامة',
         sublabel: 'إرسال فوري عبر واتساب إلى فريق إدارة العقار',
       },
       'service:laundry': {
         label: '👔 طلب غسيل وكي الملابس السريع',
-        sublabel: 'استلام من باب الغرفة وتسليم خلال 24 ساعة',
+        sublabel: 'استلام من الباب وتسليم خلال 24 ساعة',
       },
       'id:transfer': {
         label: '🚐 حجز سيارة VIP مع سائق بسعر ثابت',
@@ -298,40 +438,43 @@ What would you like me to do for you right now?`,
   ru: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'Онлайн • Ваш защитник и гид',
-    suiteLabel: 'Номер',
+    suiteLabelHotel: 'Номер',
+    suiteLabelApartment: 'Апартаменты',
     resetBtn: 'Сброс',
     historyCleared: 'История чата очищена.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'Проверенное действие Comus',
     typingText: 'Comus готовит ответ...',
-    inputPlaceholder: 'Спросите Comus на любом языке (такси, счет, услуги в номере, маршрут)...',
+    inputPlaceholder: 'Спросите Comus на любом языке (такси, счет, услуги, маршрут)...',
     justNow: 'Только что',
-    chips: [
+    chipsHotel: [
       '🛡️ Предупреди меня о частых ловушках для туристов',
       '🥐 Заказать услугу в номер или корзину с завтраком',
       '📍 Посоветуй ближайшие аутентичные места',
       '🗺️ Составь для меня персональный маршрут на сегодня',
     ],
-    welcomeText: `Добро пожаловать в Стамбул! Я Comus. 🕌
-
-Я создан для того, чтобы вы не потерялись в этом городе как обычный турист, были защищены от мошенников и завышенных цен и могли безопасно прожить Стамбул как настоящий дорогой гость.
-
-Вот что я могу сделать для вас в этом номере и на улицах города:
-
-• Защищу от туристических ловушек: От стоимости поездки на такси до счета в ресторане — спрашивайте меня обо всем, что вызывает сомнения; я назову честные местные цены и не дам вас обмануть.
-• Решу вопросы в номере: Подключение к Wi-Fi, кондиционер/технические неполадки, дополнительная уборка или свежая корзина с завтраком утром прямо к вашей двери — я напрямую свяжусь с управляющей командой вашего отеля.
-• Покажу настоящее лицо города: Без туристических толп мгновенно спланирую под ваш вкус самые аутентичные гастро-точки, маршруты на закате, тайные исторические ханы и проверенные прогулки по Босфору.
-• Рядом на вашем родном языке: Гуляя по Стамбулу шаг за шагом, вы можете спрашивать меня о чем угодно на своем языке; я ваш местный друг в кармане 24/7.
-
-Что бы вы хотели, чтобы я сделал для вас прямо сейчас?`,
+    chipsApartment: [
+      '🛡️ Предупреди меня о частых ловушках для туристов',
+      '🥐 Заказать услугу в апартаменты или корзину с завтраком',
+      '📍 Посоветуй ближайшие аутентичные места',
+      '🗺️ Составь для меня персональный маршрут на сегодня',
+    ],
     actions: {
       'service:breakfast': {
         label: '🥐 Заказать корзину с завтраком к двери',
-        sublabel: 'Свежий турецкий завтрак с доставкой прямо в ваш номер',
+        sublabel: 'Свежий турецкий завтрак с доставкой прямо к вашей двери',
+      },
+      'service:cleaning': {
+        label: '🧹 Заказать уборку и свежие полотенца',
+        sublabel: 'Мгновенная передача запроса службе хаускипинга',
+      },
+      'service:maintenance': {
+        label: '🛠️ Открыть заявку на техподдержку',
+        sublabel: 'Приоритетное уведомление (Wi-Fi, кондиционер, сантехника)',
       },
       'service:support': {
-        label: '🛎️ Открыть заявку по номеру / техподдержке',
+        label: '🛎️ Открыть заявку по проживанию / техподдержке',
         sublabel: 'Мгновенное уведомление управляющему в WhatsApp',
       },
       'service:laundry': {
@@ -367,45 +510,48 @@ What would you like me to do for you right now?`,
   de: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'Online • Lokaler Beschützer',
-    suiteLabel: 'Zimmer',
+    suiteLabelHotel: 'Zimmer',
+    suiteLabelApartment: 'Suite',
     resetBtn: 'Reset',
     historyCleared: 'Gesprächsverlauf gelöscht.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'Verifizierte Comus-Aktion',
     typingText: 'Comus bereitet Ihre Antwort vor...',
-    inputPlaceholder: 'Fragen Sie Comus in Ihrer Sprache (Taxipreis, Zimmerwunsch, Route)...',
+    inputPlaceholder: 'Fragen Sie Comus in Ihrer Sprache (Taxipreis, Servicewunsch, Route)...',
     justNow: 'Gerade eben',
-    chips: [
+    chipsHotel: [
       '🛡️ Warne mich vor häufigen Touristenfallen in Istanbul',
       '🥐 Zimmerservice oder frischen Frühstückskorb anfordern',
       '📍 Empfiehl mir die nächsten authentischen Orte',
       '🗺️ Plane eine individuelle Route für heute',
     ],
-    welcomeText: `Willkommen in Istanbul! Ich bin Comus. 🕌
-
-Ich wurde entwickelt, damit Sie sich in dieser Stadt nicht wie ein gewöhnlicher Tourist verlieren, sondern vor Betrügern und überhöhten Preisen geschützt sind und Istanbul sicher wie ein echter Gast erleben.
-
-Das kann ich in Ihrem Zimmer und auf den Straßen der Stadt für Sie tun:
-
-• Ich schütze Sie vor Touristenfallen: Vom Taxitarif bis zur Restaurantrechnung können Sie mich alles fragen, was Ihnen verdächtig vorkommt; ich nenne Ihnen die fairen Ortspreise und verhindere Abzocke.
-• Ich löse Ihre Anliegen im Zimmer: Für WLAN-Verbindung, Klimaanlage/technische Störungen, zusätzliche Reinigungswünsche oder einen frischen Frühstückskorb morgens an Ihre Tür kontaktiere ich direkt Ihr Hausmanagement-Team.
-• Ich zeige Ihnen das wahre Gesicht der Stadt: Abseits der Touristenmassen plane ich sofort die authentischsten Genuss-Stopps, Sonnenuntergangsrouten, versteckten historischen Innenhöfe (Hans) und seriöse Bosporus-Touren nach Ihrem Geschmack.
-• Ich bin in Ihrer Sprache an Ihrer Seite: Während Sie Istanbul Schritt für Schritt entdecken, können Sie mich rund um die Uhr in Ihrer Muttersprache fragen; ich bin Ihr 24/7 lokaler Freund in der Tasche.
-
-Was darf ich jetzt gerade für Sie tun?`,
+    chipsApartment: [
+      '🛡️ Warne mich vor häufigen Touristenfallen in Istanbul',
+      '🥐 Apartment-Service oder frischen Frühstückskorb anfordern',
+      '📍 Empfiehl mir die nächsten authentischen Orte',
+      '🗺️ Plane eine individuelle Route für heute',
+    ],
     actions: {
       'service:breakfast': {
-        label: '🥐 Frühstückskorb an die Zimmertür bestellen',
-        sublabel: 'Frisches türkisches Frühstück direkt an Ihre Zimmertür geliefert',
+        label: '🥐 Frühstückskorb an die Tür bestellen',
+        sublabel: 'Frisches türkisches Frühstück direkt an Ihre Tür geliefert',
+      },
+      'service:cleaning': {
+        label: '🧹 Reinigung & frische Handtücher anfordern',
+        sublabel: 'Sofortige Weiterleitung an das Housekeeping-Team',
+      },
+      'service:maintenance': {
+        label: '🛠️ Technisches Support-Ticket öffnen',
+        sublabel: 'Direkte Weiterleitung für WLAN, Klimaanlage oder Sanitär',
       },
       'service:support': {
-        label: '🛎️ Dringendes Zimmer- & Technik-Ticket öffnen',
+        label: '🛎️ Dringendes Service- & Technik-Ticket öffnen',
         sublabel: 'Direkte WhatsApp-Weiterleitung an Ihr Hausmanagement',
       },
       'service:laundry': {
         label: '👔 Express-Wäsche & Bügelservice anfordern',
-        sublabel: 'Abholung an der Zimmertür & gebügelte Lieferung in 24 Stunden',
+        sublabel: 'Abholung an der Tür & gebügelte Lieferung in 24 Stunden',
       },
       'id:transfer': {
         label: '🚐 VIP-Chauffeur zum Festpreis buchen',
@@ -436,40 +582,43 @@ Was darf ich jetzt gerade für Sie tun?`,
   fr: {
     headerTitle: 'Comus • Local Guardian & Concierge',
     statusBadge: 'En ligne • Gardien & Concierge',
-    suiteLabel: 'Chambre',
+    suiteLabelHotel: 'Chambre',
+    suiteLabelApartment: 'Suite',
     resetBtn: 'Réinitialiser',
     historyCleared: 'Historique de conversation effacé.',
     offlineMsg: OFFLINE_FALLBACK_MESSAGE_TR,
     connInterrupted: OFFLINE_FALLBACK_MESSAGE_TR,
     verifiedActionBadge: 'Action Vérifiée Comus',
     typingText: 'Comus prépare votre réponse...',
-    inputPlaceholder: 'Posez votre question à Comus (tarif taxi, service chambre, itinéraire)...',
+    inputPlaceholder: 'Posez votre question à Comus (tarif taxi, service, itinéraire)...',
     justNow: 'À l’instant',
-    chips: [
+    chipsHotel: [
       '🛡️ Avertis-moi des pièges à touristes courants à Istanbul',
       '🥐 Demander un service en chambre ou un panier petit-déjeuner',
       '📍 Recommande-moi les adresses authentiques les plus proches',
       '🗺️ Trace-moi un itinéraire sur mesure pour aujourd’hui',
     ],
-    welcomeText: `Bienvenue à Istanbul ! Je suis Comus. 🕌
-
-J’ai été conçu pour que vous ne vous perdiez pas dans cette ville comme un touriste ordinaire, mais pour vous protéger des arnaques et des tarifs abusifs afin de vivre Istanbul en toute sécurité comme un véritable invité de marque.
-
-Voici ce que je peux faire pour vous dans votre chambre et dans les rues de la ville :
-
-• Je vous protège des pièges à touristes : Du tarif de votre taxi à l’addition du restaurant, vous pouvez m’interroger sur tout ce qui vous semble suspect ; je vous indique les vrais prix locaux et vous évite toute surfacturation.
-• Je résous vos besoins en chambre : Connexion Wi-Fi, climatisation/pannes techniques, demandes de ménage supplémentaire ou panier petit-déjeuner frais livré à votre porte le matin — je communique directement avec l’équipe de gestion de votre établissement.
-• Je vous montre le vrai visage de la ville : Loin de la foule touristique, je planifie instantanément selon vos goûts les haltes gourmandes les plus authentiques, les itinéraires au coucher du soleil, les caravansérails (hans) secrets et les croisières vérifiées sur le Bosphore.
-• Je suis à vos côtés dans votre langue : En explorant Istanbul pas à pas, posez-moi toutes vos questions dans votre langue maternelle ; je suis votre ami local de poche 24h/24 et 7j/7.
-
-Que souhaitez-vous que je fasse pour vous dès maintenant ?`,
+    chipsApartment: [
+      '🛡️ Avertis-moi des pièges à touristes courants à Istanbul',
+      '🥐 Demander un service en suite ou un panier petit-déjeuner',
+      '📍 Recommande-moi les adresses authentiques les plus proches',
+      '🗺️ Trace-moi un itinéraire sur mesure pour aujourd’hui',
+    ],
     actions: {
       'service:breakfast': {
         label: '🥐 Commander un Panier Petit-Déjeuner',
         sublabel: 'Assortiment turc artisanal livré directement devant votre porte',
       },
+      'service:cleaning': {
+        label: '🧹 Demander le Ménage & Serviettes Propres',
+        sublabel: 'Transmis immédiatement à l’équipe d’entretien',
+      },
+      'service:maintenance': {
+        label: '🛠️ Ouvrir un Ticket d’Assistance Technique',
+        sublabel: 'Intervention rapide (Wi-Fi, climatisation, plomberie)',
+      },
       'service:support': {
-        label: '🛎️ Ouvrir un Ticket Chambre & Maintenance',
+        label: '🛎️ Ouvrir un Ticket Conciergerie & Maintenance',
         sublabel: 'Transmission immédiate sur le WhatsApp de votre gestionnaire',
       },
       'service:laundry': {
@@ -506,7 +655,8 @@ Que souhaitez-vous que je fasse pour vous dès maintenant ?`,
 
 export function parseMessageAndActions(
   rawText: string,
-  lang: Language = 'tr'
+  lang: Language = 'tr',
+  disabledServiceIds: string[] = []
 ): {
   cleanText: string;
   parsedActions: ParsedComusAction[];
@@ -514,17 +664,28 @@ export function parseMessageAndActions(
   const parsedActions: ParsedComusAction[] = [];
   const seen = new Set<string>();
   const langDict = COMUS_I18N[lang] || COMUS_I18N.tr;
+  const disabledSet = new Set(disabledServiceIds.map((s) => s.toLowerCase()));
 
   const regex = new RegExp(ACTION_TAG_REGEX.source, 'g');
   let match: RegExpExecArray | null;
   while ((match = regex.exec(rawText)) !== null) {
-    const [raw, actionType, targetKind, rawTargetValues] = match;
+    const [raw, actionType, targetKind, rawTargetValues, unitParam] = match;
     const subValues = rawTargetValues
       .split('/')
       .map((s) => s.trim())
       .filter(Boolean);
 
     for (const targetValue of subValues) {
+      // Do not render an in-stay action card if the service is disabled in real-time inventory
+      if (
+        targetKind === 'service' &&
+        (disabledSet.has(targetValue.toLowerCase()) ||
+          (targetValue === 'maintenance' && disabledSet.has('technical')) ||
+          (targetValue === 'laundry' && disabledSet.has('dry_cleaning')))
+      ) {
+        continue;
+      }
+
       const lookupKey = `${targetKind}:${targetValue}`;
       if (!seen.has(lookupKey)) {
         seen.add(lookupKey);
@@ -541,8 +702,11 @@ export function parseMessageAndActions(
           actionType,
           targetKind: targetKind as 'id' | 'service',
           targetValue,
+          unitName: unitParam?.trim(),
           label: meta.label,
-          sublabel: meta.sublabel,
+          sublabel: unitParam?.trim()
+            ? `${meta.sublabel} · ${unitParam.trim()}`
+            : meta.sublabel,
         });
       }
     }
@@ -630,17 +794,143 @@ export function ComusGlowingAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
   );
 }
 
+/**
+ * Extracts `partner_id` (`property_id`) and `unit_id` from PWA URL parameters (`/stay/[hotelId]/[roomId]` or query params)
+ */
+function resolvePwaUrlSessionParams(
+  fallbackPartnerId: string,
+  fallbackUnitId: string
+): { partnerId: string; unitId: string } {
+  if (typeof window === 'undefined') {
+    return { partnerId: fallbackPartnerId, unitId: fallbackUnitId };
+  }
+  try {
+    const pathname = window.location.pathname || '';
+    const stayMatch = pathname.match(/^\/stay\/([^/]+)\/([^/]+)/);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    const urlPartnerId =
+      searchParams.get('partner_id') ||
+      searchParams.get('property_id') ||
+      searchParams.get('hotelId') ||
+      (stayMatch?.[1] ? decodeURIComponent(stayMatch[1]) : '');
+
+    const urlUnitId =
+      searchParams.get('unit_id') ||
+      searchParams.get('roomId') ||
+      searchParams.get('room') ||
+      (stayMatch?.[2] ? decodeURIComponent(stayMatch[2]) : '');
+
+    return {
+      partnerId: urlPartnerId || fallbackPartnerId,
+      unitId: urlUnitId || fallbackUnitId,
+    };
+  } catch {
+    return { partnerId: fallbackPartnerId, unitId: fallbackUnitId };
+  }
+}
+
 export function AiChatDrawer({
   hotel,
-  roomNumber = '304',
+  roomNumber = '101',
   lang = 'tr',
   isOpen,
   onClose,
   onExploreCategory,
 }: AiChatDrawerProps) {
-  const resolvedHotelName = hotel?.name || 'Purely Istanbul Partner Suite';
-  const resolvedHotelId = hotel?.id || 'hotel-1';
+  const [liveHotels, setLiveHotels] = useState<Hotel[]>(() => XeniosStore.getHotels());
+  const [inRoomServices, setInRoomServices] = useState<InRoomServiceItem[]>(() =>
+    XeniosStore.getInRoomServices()
+  );
+
+  // Sync live hotel and active/passive service toggles whenever updated in Management Portal or Firestore
+  useEffect(() => {
+    const syncInventory = () => {
+      setLiveHotels(XeniosStore.getHotels());
+      setInRoomServices(XeniosStore.getInRoomServices());
+    };
+    syncInventory();
+    window.addEventListener('xenios_hotels_updated', syncInventory);
+    window.addEventListener('xenios_in_room_services_updated', syncInventory);
+    window.addEventListener('xenios_module_settings_updated', syncInventory);
+    window.addEventListener('storage', syncInventory);
+    return () => {
+      window.removeEventListener('xenios_hotels_updated', syncInventory);
+      window.removeEventListener('xenios_in_room_services_updated', syncInventory);
+      window.removeEventListener('xenios_module_settings_updated', syncInventory);
+      window.removeEventListener('storage', syncInventory);
+    };
+  }, []);
+
+  const { partnerId: resolvedPartnerId, unitId: resolvedRawUnitId } = useMemo(
+    () =>
+      resolvePwaUrlSessionParams(
+        hotel?.id || XeniosStore.getActiveHotelId() || 'hotel-heritage-1',
+        roomNumber || XeniosStore.getActiveRoomId() || '101'
+      ),
+    [hotel?.id, roomNumber]
+  );
+
+  const activeProperty = useMemo(
+    () =>
+      liveHotels.find((h) => h.id === resolvedPartnerId) ||
+      hotel ||
+      liveHotels[0],
+    [liveHotels, resolvedPartnerId, hotel]
+  );
+
+  const resolvedPropertyName =
+    activeProperty?.name || hotel?.name || 'Old City Heritage Hotel Istanbul';
+  const propertyType = useMemo(
+    () => inferClientPropertyType(activeProperty?.type, resolvedPropertyName),
+    [activeProperty?.type, resolvedPropertyName]
+  );
+
+  const matchedRoom = useMemo(
+    () =>
+      activeProperty?.rooms?.find(
+        (r) => String(r.id) === String(resolvedRawUnitId) || String(r.number) === String(resolvedRawUnitId)
+      ),
+    [activeProperty?.rooms, resolvedRawUnitId]
+  );
+
+  const formattedUnitName = useMemo(
+    () => formatClientUnitName(resolvedRawUnitId, propertyType, matchedRoom?.type),
+    [resolvedRawUnitId, propertyType, matchedRoom?.type]
+  );
+
   const ui = COMUS_I18N[lang] || COMUS_I18N.tr;
+  const dynamicSuiteLabel =
+    propertyType === 'apartment' ? ui.suiteLabelApartment : ui.suiteLabelHotel;
+  const dynamicChips =
+    propertyType === 'apartment' ? ui.chipsApartment : ui.chipsHotel;
+
+  const dynamicWelcomeText = useMemo(
+    () => buildDynamicWelcomeMessage(lang, resolvedPropertyName, propertyType),
+    [lang, resolvedPropertyName, propertyType]
+  );
+
+  const disabledServiceIds = useMemo(() => {
+    const disabled: string[] = [];
+    const bfItem = inRoomServices.find((s) => s.key === 'breakfast');
+    const rsItem = inRoomServices.find((s) => s.key === 'roomservice');
+    const bfActive =
+      (bfItem && bfItem.enabled !== false && !bfItem.hidden) ||
+      (rsItem && rsItem.enabled !== false && !rsItem.hidden);
+    if (!bfActive) {
+      disabled.push('breakfast', 'roomservice');
+    }
+    for (const s of inRoomServices) {
+      if (s.key === 'breakfast' || s.key === 'roomservice') continue;
+      if (s.enabled === false || s.hidden || s.explicitlyHidden) {
+        disabled.push(s.key);
+        if (s.key === 'technical') disabled.push('maintenance', 'support');
+        if (s.key === 'laundry') disabled.push('dry_cleaning');
+        if (s.key === 'cleaning') disabled.push('extra_cleaning');
+      }
+    }
+    return disabled;
+  }, [inRoomServices]);
 
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -649,7 +939,7 @@ export function AiChatDrawer({
 
   // Interactive Sub-Modals triggered by Action Cards
   const [activeActionModal, setActiveActionModal] = useState<
-    null | 'breakfast' | 'support' | 'transfer' | 'laundry'
+    null | 'breakfast' | 'cleaning' | 'maintenance' | 'support' | 'transfer' | 'laundry'
   >(null);
 
   // Sub-modal states
@@ -659,8 +949,12 @@ export function AiChatDrawer({
   const [breakfastTime, setBreakfastTime] = useState('08:30 AM');
   const [breakfastNotes, setBreakfastNotes] = useState('');
 
+  const [cleaningUrgency, setCleaningUrgency] = useState('Standart Temizlik & Havlu Değişimi');
+  const [cleaningUnitState, setCleaningUnitState] = useState('Boş');
+  const [cleaningNotes, setCleaningNotes] = useState('');
+
   const [supportIssueType, setSupportIssueType] = useState('Wi-Fi & Internet Connectivity');
-  const [supportNotes, setSupportNotes] = useState('Need immediate assistance in room.');
+  const [supportNotes, setSupportNotes] = useState('Need immediate assistance.');
 
   const [transferAirport, setTransferAirport] = useState(
     'Istanbul Airport (IST) — €65 Fixed Rate'
@@ -675,9 +969,9 @@ export function AiChatDrawer({
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const freshWelcome: ChatMessage = {
-      id: 'comus-welcome-v3',
+      id: 'comus-welcome-v4',
       sender: 'assistant',
-      text: ui.welcomeText,
+      text: dynamicWelcomeText,
       time: ui.justNow,
     };
     const saved = XeniosStore.getAiChatMessages();
@@ -686,7 +980,6 @@ export function AiChatDrawer({
         XeniosStore.saveAiChatMessages([freshWelcome]);
         return [freshWelcome];
       }
-      // Ensure first message is always the updated Comus v3 onboarding message
       const normalized = saved.map((m, i) =>
         i === 0 && m.sender === 'assistant'
           ? freshWelcome
@@ -698,13 +991,14 @@ export function AiChatDrawer({
     return [freshWelcome];
   });
 
+  // Always keep the opening welcome message synchronized with current language, propertyName & propertyType
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length >= 1 && prev[0]?.sender === 'assistant') {
         const updatedFirst: ChatMessage = {
           ...prev[0],
-          id: 'comus-welcome-v3',
-          text: ui.welcomeText,
+          id: 'comus-welcome-v4',
+          text: dynamicWelcomeText,
           time: ui.justNow,
         };
         const next = [updatedFirst, ...prev.slice(1)];
@@ -713,7 +1007,7 @@ export function AiChatDrawer({
       }
       return prev;
     });
-  }, [lang, ui.welcomeText, ui.justNow]);
+  }, [dynamicWelcomeText, ui.justNow]);
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -762,15 +1056,15 @@ export function AiChatDrawer({
     setIsStreaming(false);
     setIsWaitingForFirstToken(false);
     const fresh: ChatMessage = {
-      id: 'comus-welcome-v3',
+      id: 'comus-welcome-v4',
       sender: 'assistant',
-      text: ui.welcomeText,
+      text: dynamicWelcomeText,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setMessages([fresh]);
     XeniosStore.saveAiChatMessages([fresh]);
     toast.success(ui.historyCleared);
-  }, [ui.welcomeText, ui.historyCleared]);
+  }, [dynamicWelcomeText, ui.historyCleared]);
 
   const handleSend = async (customPrompt?: string) => {
     const queryText = (customPrompt ?? input).trim();
@@ -816,16 +1110,30 @@ export function AiChatDrawer({
         content: m.text,
       }));
 
+      // Pass unit_id and partner_id from PWA URL parameters + live property context snapshot
       const res = await fetch('/api/comus/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: queryText,
           messages: historyPayload,
-          hotelId: resolvedHotelId,
-          hotelName: resolvedHotelName,
-          roomNumber,
-          unitId: `${resolvedHotelName} · ${ui.suiteLabel} ${roomNumber}`,
+          partner_id: resolvedPartnerId,
+          property_id: resolvedPartnerId,
+          unit_id: resolvedRawUnitId,
+          hotelId: resolvedPartnerId,
+          hotelName: resolvedPropertyName,
+          roomNumber: resolvedRawUnitId,
+          unitId: formattedUnitName,
+          lang,
+          clientLiveContext: {
+            propertyName: resolvedPropertyName,
+            propertyType,
+            rawPropertyType: activeProperty?.type,
+            unitName: formattedUnitName,
+            district: activeProperty?.district || 'Sultanahmet / Fatih',
+            breakfastHours: activeProperty?.breakfastHours || '08:00 - 11:30',
+            inRoomServices,
+          },
         }),
         signal: controller.signal,
       });
@@ -935,6 +1243,14 @@ export function AiChatDrawer({
         setActiveActionModal('breakfast');
         return;
       }
+      if (act.targetValue === 'cleaning') {
+        setActiveActionModal('cleaning');
+        return;
+      }
+      if (act.targetValue === 'maintenance' || act.targetValue === 'technical') {
+        setActiveActionModal('maintenance');
+        return;
+      }
       if (act.targetValue === 'support') {
         setActiveActionModal('support');
         return;
@@ -985,9 +1301,9 @@ export function AiChatDrawer({
   ) => {
     try {
       await FirestoreService.addRequest({
-        hotelId: resolvedHotelId,
-        hotelName: resolvedHotelName,
-        roomNumber,
+        hotelId: resolvedPartnerId,
+        hotelName: resolvedPropertyName,
+        roomNumber: resolvedRawUnitId,
         serviceKey,
         serviceTitle,
         notes,
@@ -1002,12 +1318,14 @@ export function AiChatDrawer({
 
     const confirmText =
       serviceKey === 'breakfast'
-        ? `✅ **Doorstep Breakfast Basket Confirmed:** Your *${breakfastBoxType}* is scheduled for **${breakfastTime}** to ${ui.suiteLabel} **${roomNumber}**.${breakfastNotes ? ` Note: "${breakfastNotes}"` : ''}`
-        : serviceKey === 'support'
-          ? `🛎️ **Urgent Room Ticket Dispatched:** Your property manager's WhatsApp desk has been alerted for **${supportIssueType}** in ${ui.suiteLabel} **${roomNumber}** (Priority: **URGENT**).`
-          : serviceKey === 'laundry'
-            ? `👔 **Express Garment Pickup Scheduled:** Valet pickup (**${laundryPickupTime}**) for *${laundryPackage}* from ${ui.suiteLabel} **${roomNumber}** is confirmed.`
-            : `🚐 **VIP Chauffeur Transfer Reserved:** Your licensed Mercedes-Benz Vito for **${transferAirport}** (${transferPickupTime}${transferFlightNo ? ` · Flight ${transferFlightNo}` : ''}) is confirmed.`;
+        ? `✅ **Kahvaltı Talebiniz Alındı:** *${breakfastBoxType}* siparişiniz **${breakfastTime}** saati için **${formattedUnitName}** birimine planlandı.${breakfastNotes ? ` Not: "${breakfastNotes}"` : ''}`
+        : serviceKey === 'cleaning'
+          ? `🧹 **Temizlik Talebiniz İletildi:** **${formattedUnitName}** birimi için *${cleaningUrgency}* (Durum: ${cleaningUnitState}) talebiniz kat hizmetleri ekibine iletildi.`
+          : serviceKey === 'technical' || serviceKey === 'support'
+            ? `🛠️ **Teknik Destek Kaydınız Açıldı:** **${formattedUnitName}** birimi için **${supportIssueType}** talebiniz yönetim ekibine **ACİL** koduyla iletildi.`
+            : serviceKey === 'laundry'
+              ? `👔 **Çamaşır & Ütü Talebiniz Alındı:** **${formattedUnitName}** biriminden (**${laundryPickupTime}**) *${laundryPackage}* teslim alımı planlandı.`
+              : `🚐 **VIP Transfer Rezervasyonunuz Alındı:** **${transferAirport}** (${transferPickupTime}${transferFlightNo ? ` · Uçuş ${transferFlightNo}` : ''}) transfer talebiniz onaylandı.`;
 
     const confirmMsg: ChatMessage = {
       id: `act-confirm-${Date.now()}`,
@@ -1023,7 +1341,7 @@ export function AiChatDrawer({
     });
 
     setActiveActionModal(null);
-    toast.success(`${serviceTitle} (${ui.suiteLabel} ${roomNumber})`);
+    toast.success(`${serviceTitle} (${formattedUnitName})`);
   };
 
   if (!isOpen) return null;
@@ -1062,7 +1380,7 @@ export function AiChatDrawer({
                   {ui.statusBadge}
                 </span>
                 <span className="text-[11px] text-[#5C4938] truncate hidden xs:inline">
-                  {ui.suiteLabel} {roomNumber}
+                  {resolvedPropertyName} · {formattedUnitName}
                 </span>
               </div>
             </div>
@@ -1105,7 +1423,7 @@ export function AiChatDrawer({
             const isUser = msg.sender === 'user';
             const { cleanText, parsedActions } = isUser
               ? { cleanText: msg.text, parsedActions: [] }
-              : parseMessageAndActions(msg.text, lang);
+              : parseMessageAndActions(msg.text, lang, disabledServiceIds);
 
             return (
               <div
@@ -1149,7 +1467,7 @@ export function AiChatDrawer({
                 {/* 4 QUICK ACTION CHIPS DIRECTLY BELOW THE FIRST MESSAGE */}
                 {!isUser && msgIndex === 0 && (
                   <div className="pl-10 w-full max-w-[92%] grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
-                    {ui.chips.map((chip) => (
+                    {dynamicChips.map((chip) => (
                       <button
                         key={chip}
                         type="button"
@@ -1235,10 +1553,12 @@ export function AiChatDrawer({
               <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B6220]">
-                    Purely Istanbul · {ui.suiteLabel} {roomNumber}
+                    {resolvedPropertyName} · {formattedUnitName}
                   </span>
                   <h3 className="font-luxury-serif text-base font-bold text-[#221F1C] mt-0.5">
                     {activeActionModal === 'breakfast' && ui.actions['service:breakfast'].label}
+                    {activeActionModal === 'cleaning' && ui.actions['service:cleaning'].label}
+                    {activeActionModal === 'maintenance' && ui.actions['service:maintenance'].label}
                     {activeActionModal === 'support' && ui.actions['service:support'].label}
                     {activeActionModal === 'transfer' && ui.actions['id:transfer'].label}
                     {activeActionModal === 'laundry' && ui.actions['service:laundry'].label}
@@ -1257,7 +1577,7 @@ export function AiChatDrawer({
                 <div className="space-y-3 text-xs">
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Select Artisanal Breakfast Basket
+                      Kahvaltı Seçimi / Breakfast Basket
                     </label>
                     <select
                       value={breakfastBoxType}
@@ -1271,7 +1591,7 @@ export function AiChatDrawer({
                   </div>
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Preferred Doorstep Delivery Time
+                      Teslimat Saati / Delivery Time
                     </label>
                     <select
                       value={breakfastTime}
@@ -1287,13 +1607,13 @@ export function AiChatDrawer({
                   </div>
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Dietary Preferences or Tea/Coffee Note
+                      Özel İstekler / Dietary Note
                     </label>
                     <input
                       type="text"
                       value={breakfastNotes}
                       onChange={(e) => setBreakfastNotes(e.target.value)}
-                      placeholder="e.g., Fresh brewed Turkish tea, no nuts..."
+                      placeholder="Örn: Taze demlenmiş çay, laktozsuz süt..."
                       className="w-full rounded-xl border border-[#C4B8A4] px-3 py-2 bg-[#FFFDF9] text-[#221F1C]"
                     />
                   </div>
@@ -1302,32 +1622,91 @@ export function AiChatDrawer({
                     onClick={() =>
                       submitInStayRequest(
                         'breakfast',
-                        'Doorstep Breakfast Basket',
-                        `${breakfastBoxType} · Delivery: ${breakfastTime}${breakfastNotes ? ` · ${breakfastNotes}` : ''}`,
+                        'Kahvaltı & Yeme-İçme Talebi',
+                        `${breakfastBoxType} · Teslimat: ${breakfastTime}${breakfastNotes ? ` · ${breakfastNotes}` : ''}`,
                         'standart'
                       )
                     }
                     className="w-full py-3 rounded-xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8B6933] hover:to-[#694D20] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Confirm Doorstep Breakfast Delivery</span>
+                    <span>Kahvaltı Talebini Onayla ({formattedUnitName})</span>
                   </button>
                 </div>
               )}
 
-              {activeActionModal === 'support' && (
+              {activeActionModal === 'cleaning' && (
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-semibold text-[#5C4938] mb-1">
+                      Temizlik Türü / Housekeeping Type
+                    </label>
+                    <select
+                      value={cleaningUrgency}
+                      onChange={(e) => setCleaningUrgency(e.target.value)}
+                      className="w-full rounded-xl border border-[#C4B8A4] px-3 py-2.5 bg-[#FFFDF9] text-[#221F1C] font-medium"
+                    >
+                      <option>Standart Temizlik &amp; Havlu Değişimi</option>
+                      <option>Kahvaltı Sonrası Toparlama</option>
+                      <option>Acil Temizlik / Ekstra Havlu &amp; Çarşaf</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-[#5C4938] mb-1">
+                      Durum / Current Status
+                    </label>
+                    <select
+                      value={cleaningUnitState}
+                      onChange={(e) => setCleaningUnitState(e.target.value)}
+                      className="w-full rounded-xl border border-[#C4B8A4] px-3 py-2.5 bg-[#FFFDF9] text-[#221F1C] font-medium"
+                    >
+                      <option value="Boş">Boş</option>
+                      <option value="Dolu (Misafir İçeride)">Dolu (Misafir İçeride)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-[#5C4938] mb-1">
+                      Özel Not / Special Note
+                    </label>
+                    <input
+                      type="text"
+                      value={cleaningNotes}
+                      onChange={(e) => setCleaningNotes(e.target.value)}
+                      placeholder="Örn: Ekstra banyo havlusu rica ederim..."
+                      className="w-full rounded-xl border border-[#C4B8A4] px-3 py-2 bg-[#FFFDF9] text-[#221F1C]"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      submitInStayRequest(
+                        'cleaning',
+                        'Temizlik Talebi',
+                        `${cleaningUrgency} · Durum: ${cleaningUnitState}${cleaningNotes ? ` · ${cleaningNotes}` : ''}`,
+                        cleaningUrgency.includes('Acil') ? 'acil' : 'standart'
+                      )
+                    }
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8B6933] hover:to-[#694D20] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Temizlik Talebini İlet ({formattedUnitName})</span>
+                  </button>
+                </div>
+              )}
+
+              {(activeActionModal === 'maintenance' || activeActionModal === 'support') && (
                 <div className="space-y-3 text-xs">
                   <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
                     <span className="font-semibold">
-                      Unit: {resolvedHotelName} · {ui.suiteLabel} {roomNumber}
+                      {resolvedPropertyName} · {formattedUnitName}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase">
-                      Urgent Priority
+                      Acil / Urgent
                     </span>
                   </div>
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Issue Category
+                      Konu / Issue Category
                     </label>
                     <select
                       value={supportIssueType}
@@ -1337,13 +1716,13 @@ export function AiChatDrawer({
                       <option>Wi-Fi &amp; Internet Connectivity</option>
                       <option>Air Conditioning / Heating Climate Control</option>
                       <option>Hot Water / Bathroom Plumbing</option>
-                      <option>Fresh Towels / Housekeeping Refill</option>
-                      <option>Smart Lock / Keycard Access</option>
+                      <option>Electricity / Lighting</option>
+                      <option>Smart Lock / Access Assistance</option>
                     </select>
                   </div>
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Details for Property Manager
+                      Detay / Details for Management
                     </label>
                     <textarea
                       rows={2}
@@ -1356,8 +1735,8 @@ export function AiChatDrawer({
                     type="button"
                     onClick={() =>
                       submitInStayRequest(
-                        'support',
-                        `Urgent Support: ${supportIssueType}`,
+                        'technical',
+                        `Teknik Destek: ${supportIssueType}`,
                         `${supportIssueType} · ${supportNotes}`,
                         'acil'
                       )
@@ -1365,7 +1744,7 @@ export function AiChatDrawer({
                     className="w-full py-3 rounded-xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8B6933] hover:to-[#694D20] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Dispatch Urgent Maintenance Ticket</span>
+                    <span>Teknik Destek Talebini İlet ({formattedUnitName})</span>
                   </button>
                 </div>
               )}
@@ -1453,7 +1832,7 @@ export function AiChatDrawer({
                   </div>
                   <div>
                     <label className="block font-semibold text-[#5C4938] mb-1">
-                      Suite Doorstep Pickup Window
+                      Doorstep Pickup Window ({dynamicSuiteLabel})
                     </label>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#8B6220]" />
@@ -1478,7 +1857,7 @@ export function AiChatDrawer({
                     className="w-full py-3 rounded-xl bg-gradient-to-r from-[#9E7B42] to-[#7D5E2A] hover:from-[#8B6933] hover:to-[#694D20] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Schedule Doorstep Valet Pickup</span>
+                    <span>Schedule Doorstep Valet Pickup ({formattedUnitName})</span>
                   </button>
                 </div>
               )}
