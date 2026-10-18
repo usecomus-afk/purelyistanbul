@@ -78,29 +78,32 @@ export default function UsePurelyDashboardLayout({
               background: var(--green-light);
               color: var(--green);
               font-size: 0.72rem;
-              font-weight: 500;
-              letter-spacing: 0.08em;
-              padding: 0.3rem 0.85rem;
-              border-radius: 100px;
+              font-weight: 600;
+              letter-spacing: 0.06em;
+              line-height: 1.25;
+              padding: 0.38rem 0.75rem;
+              border-radius: 8px;
               border: 1px solid var(--green-border);
               text-transform: uppercase;
             }
             [data-comus-dashboard] .comus-badge-dot {
               width: 6px;
               height: 6px;
-              border-radius: 50%;
+              border-radius: 2px;
               background: var(--green-mid);
+              flex-shrink: 0;
             }
             [data-comus-dashboard] .comus-btn-primary {
               background: var(--green);
               color: #ffffff;
               border: 1px solid var(--green);
-              padding: 0.65rem 1.35rem;
-              border-radius: 100px;
+              padding: 0.6rem 1.15rem;
+              border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
-              font-size: 0.84rem;
-              font-weight: 400;
-              letter-spacing: 0.02em;
+              font-size: 0.82rem;
+              font-weight: 500;
+              line-height: 1.3;
+              letter-spacing: 0.01em;
               cursor: pointer;
               transition: all 0.2s ease;
               display: inline-flex;
@@ -116,12 +119,13 @@ export default function UsePurelyDashboardLayout({
               background: var(--terracotta);
               color: #ffffff;
               border: 1px solid var(--terracotta);
-              padding: 0.65rem 1.35rem;
-              border-radius: 100px;
+              padding: 0.6rem 1.15rem;
+              border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
-              font-size: 0.84rem;
-              font-weight: 400;
-              letter-spacing: 0.02em;
+              font-size: 0.82rem;
+              font-weight: 500;
+              line-height: 1.3;
+              letter-spacing: 0.01em;
               cursor: pointer;
               transition: all 0.2s ease;
               display: inline-flex;
@@ -137,11 +141,12 @@ export default function UsePurelyDashboardLayout({
               background: var(--surface);
               color: var(--text);
               border: 1px solid var(--border);
-              padding: 0.6rem 1.25rem;
-              border-radius: 100px;
+              padding: 0.58rem 1.1rem;
+              border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
               font-size: 0.82rem;
-              font-weight: 400;
+              font-weight: 500;
+              line-height: 1.3;
               cursor: pointer;
               transition: all 0.2s ease;
               display: inline-flex;
@@ -157,16 +162,21 @@ export default function UsePurelyDashboardLayout({
             [data-comus-dashboard] .comus-card {
               background: var(--surface);
               border: 1px solid var(--border);
-              border-radius: 16px;
-              padding: 1.5rem;
+              border-radius: 12px;
+              padding: 1.25rem;
               box-shadow: 0 4px 20px rgba(44, 44, 26, 0.04);
+            }
+            @media (min-width: 640px) {
+              [data-comus-dashboard] .comus-card {
+                padding: 1.5rem;
+              }
             }
             [data-comus-dashboard] .comus-hairline-grid {
               display: grid;
               gap: 1px;
               background: var(--border);
               border: 1px solid var(--border);
-              border-radius: 16px;
+              border-radius: 12px;
               overflow: hidden;
             }
             [data-comus-dashboard] .comus-hairline-cell {
@@ -182,13 +192,16 @@ export default function UsePurelyDashboardLayout({
               font-size: 0.875rem;
               font-weight: 400;
               border: 1px solid var(--border);
-              border-radius: 10px;
+              border-radius: 8px;
               padding: 0.6rem 0.85rem;
               color: var(--text);
               background: var(--surface);
               width: 100%;
               outline: none;
               transition: border-color 0.2s ease;
+            }
+            [data-comus-dashboard] .comus-input.pl-10 {
+              padding-left: 2.5rem;
             }
             [data-comus-dashboard] .comus-input:focus {
               border-color: var(--green);
@@ -201,6 +214,9 @@ export default function UsePurelyDashboardLayout({
               text-transform: uppercase;
               color: var(--text-muted);
               margin-bottom: 0.35rem;
+            }
+            [data-comus-dashboard] .rounded-full:not(.animate-spin) {
+              border-radius: 8px !important;
             }
           `,
         }}

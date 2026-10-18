@@ -53,18 +53,24 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div
+      id="app"
       className={
         appMode
-          ? 'h-[100dvh] max-h-[100dvh] overflow-hidden text-slate-900 w-full antialiased relative overscroll-none'
-          : 'w-full min-h-screen antialiased'
+          ? 'w-full max-w-[100vw] min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y text-slate-900 antialiased relative box-border'
+          : 'w-full max-w-[100vw] min-h-screen overflow-x-hidden antialiased box-border'
       }
     >
       <div
         id={appMode ? 'guest-scroll-container' : undefined}
         className={
           appMode
-            ? 'w-full h-full overflow-y-auto overscroll-none pb-[calc(4.5rem+env(safe-area-inset-bottom))]'
-            : 'w-full'
+            ? 'w-full max-w-full min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y box-border'
+            : 'w-full max-w-full box-border'
+        }
+        style={
+          appMode
+            ? { paddingBottom: 'calc(75px + env(safe-area-inset-bottom, 20px))' }
+            : undefined
         }
       >
         {children}

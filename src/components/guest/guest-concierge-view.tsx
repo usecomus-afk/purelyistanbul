@@ -282,29 +282,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     };
   }, [activeRoomNumber, lang]);
 
-  // Lock vertical movement when on the Otel ('services') page without clipping document.body safe-area bleed
-  useEffect(() => {
-    const container = document.getElementById('guest-scroll-container');
-    if (activeTab === 'services') {
-      document.body.style.overscrollBehavior = 'none';
-      if (container) {
-        container.style.overflowY = 'hidden';
-        container.scrollTop = 0;
-      }
-    } else {
-      document.body.style.overscrollBehavior = '';
-      if (container) {
-        container.style.overflowY = 'auto';
-      }
-    }
-    return () => {
-      document.body.style.overscrollBehavior = '';
-      if (container) {
-        container.style.overflowY = 'auto';
-      }
-    };
-  }, [activeTab]);
-
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
   const t = getT(lang);
 
@@ -417,7 +394,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className={`w-full text-[#221F1C] ${activeTab === 'services' ? 'fixed inset-0 h-[100dvh] w-screen overscroll-none' : 'min-h-[100dvh]'} relative`}>
+    <div className="w-full max-w-[100vw] min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y box-border text-[#221F1C] relative">
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
       <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
         <Image 
@@ -432,32 +409,35 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
       </div>
 
-      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none' : 'h-full pb-[calc(88px+env(safe-area-inset-bottom,24px))] overflow-y-auto'}`}>
+      <div
+        className="relative z-10 w-full max-w-full min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y box-border"
+        style={{ paddingBottom: 'calc(75px + env(safe-area-inset-bottom, 20px))' }}
+      >
         {/* Hotel Header & Credentials */}
-      <HotelHeader
-        hotel={currentHotel}
-        roomNumber={activeRoomNumber}
-        lang={lang}
-        onLanguageChange={handleLanguageChange}
-        activeRequestsCount={activePendingRequests.length}
-        onOpenRequests={() => setShowRequestsModal(true)}
-        onOpenAuth={() => setShowAuthModal(true)}
-        activeTab={activeTab}
-      />
+        <HotelHeader
+          hotel={currentHotel}
+          roomNumber={activeRoomNumber}
+          lang={lang}
+          onLanguageChange={handleLanguageChange}
+          activeRequestsCount={activePendingRequests.length}
+          onOpenRequests={() => setShowRequestsModal(true)}
+          onOpenAuth={() => setShowAuthModal(true)}
+          activeTab={activeTab}
+        />
 
-      {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-0.5 pb-[calc(86px+env(safe-area-inset-bottom,24px))] overflow-hidden' : 'pt-1 pb-[28px] space-y-4'}`}>
-        
-        {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
-        {activeTab === 'services' && (
-          <div className="flex-1 min-h-0 h-full w-full flex flex-col">
-            <InRoomServices
-              hotel={currentHotel}
-              roomNumber={activeRoomNumber}
-              lang={lang}
-            />
-          </div>
-        )}
+        {/* Main Content Area */}
+        <main className="max-w-4xl mx-auto px-3.5 sm:px-4 w-full max-w-full box-border pt-1 space-y-4">
+          
+          {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
+          {activeTab === 'services' && (
+            <div className="w-full max-w-full box-border">
+              <InRoomServices
+                hotel={currentHotel}
+                roomNumber={activeRoomNumber}
+                lang={lang}
+              />
+            </div>
+          )}
 
         {/* TAB 2: Experiences & Tours Grid (Tüm İlanlar) */}
         {activeTab === 'experiences' && (
@@ -542,7 +522,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
         {/* TAB 3: Category Catalog View — Identical Luxury Visual Style to Hotel Services Page */}
         {activeTab === 'categories' && (
-          <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1.5 sm:p-4 -mx-1 sm:mx-0">
+          <div className="relative z-10 w-full max-w-full box-border grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1 sm:p-4 mx-0">
             {categoryShowcase.map((cat, idx) => (
               <button
                 key={idx}

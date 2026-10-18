@@ -295,21 +295,12 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   };
 
   const activeServices = services.filter((item) => !item.hidden && item.enabled !== false);
-  const isScrollableGrid = activeServices.length > 8;
 
   return (
-    <div
-      className={`h-full flex flex-col flex-1 min-h-0 ${
-        isScrollableGrid ? 'overflow-y-auto touch-pan-y overscroll-contain no-scrollbar' : ''
-      }`}
-    >
-      {/* 2x4 (or scrollable multi-row) Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
+    <div className="w-full max-w-full box-border touch-pan-y">
+      {/* 2x4 (or multi-row) Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
       <div
-        className={`relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-4 px-1.5 pt-0.5 sm:p-4 -mx-1 sm:mx-0 items-stretch ${
-          isScrollableGrid
-            ? 'pb-6 auto-rows-[minmax(122px,1fr)] sm:auto-rows-[minmax(150px,1fr)]'
-            : 'pb-2.5 flex-1 min-h-0 grid-rows-4 sm:grid-rows-none sm:auto-rows-fr h-full'
-        }`}
+        className="relative z-10 w-full max-w-full box-border grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-4 px-0.5 pt-0.5 pb-2 sm:p-4 mx-0 items-stretch auto-rows-[minmax(122px,1fr)] sm:auto-rows-[minmax(150px,1fr)]"
       >
         {activeServices.map((item) => {
           const isEnabled = true;

@@ -97,13 +97,13 @@ export function HotelHeader({
   };
 
   return (
-    <header className="pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.35rem))] pb-1 px-3.5 sm:px-4 w-full relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
-      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-2">
+    <header className="pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.35rem))] pb-1 px-3.5 sm:px-4 w-full max-w-full box-border relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
+      <div className="max-w-4xl mx-auto w-full max-w-full box-border flex flex-col items-center justify-center gap-2">
         
         {/* Centered Logo/Name — Hotel Name ONLY on Hotel page; PURELY ISTANBUL on all other pages */}
         <h1
           translate="no"
-          className="notranslate font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5"
+          className="notranslate font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5 max-w-full"
         >
           {isHotelServices ? (
             hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
@@ -121,7 +121,7 @@ export function HotelHeader({
         </h1>
 
         {/* Clean Neomorphic Top Bar Pill */}
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 max-w-full box-border rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
           
           {/* 1. Notification Bell Icon */}
           <button

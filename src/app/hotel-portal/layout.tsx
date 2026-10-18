@@ -82,7 +82,7 @@ export default function HotelPortalLayout({
 
   return (
     <HotelAuthGuard>
-      <div className={`${isSubPage ? 'min-h-[100dvh]' : 'fixed inset-0 h-[100dvh] w-screen overscroll-none'} text-[#221F1C] flex flex-col relative`}>
+      <div className={`${isSubPage ? 'min-h-[100dvh]' : 'fixed inset-0 h-[100dvh]'} w-full max-w-[100vw] overflow-x-hidden overscroll-x-none touch-pan-y box-border text-[#221F1C] flex flex-col relative`}>
         {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
         <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
           <Image
@@ -98,11 +98,11 @@ export default function HotelPortalLayout({
         </div>
 
         {/* Luxury Header Matching Hotel Page 1:1 */}
-        <header className="pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+0.5rem))] pb-2 px-3.5 sm:px-4 w-full relative z-40">
-          <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
+        <header className="pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+0.5rem))] pb-2 px-3.5 sm:px-4 w-full max-w-full box-border relative z-40">
+          <div className="max-w-4xl mx-auto w-full max-w-full box-border flex flex-col items-center justify-center gap-3">
             {/* Centered Two-Line European Luxury Serif Title */}
-            <Link href="/hotel-portal" className="group text-center select-none mt-0.5">
-              <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28]">
+            <Link href="/hotel-portal" className="group text-center select-none mt-0.5 max-w-full">
+              <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] max-w-full">
                 {hotelNameUpper.endsWith(' ISTANBUL') ? (
                   <>
                     {currentHotel.name.slice(0, -9)}
@@ -116,7 +116,7 @@ export default function HotelPortalLayout({
             </Link>
 
             {/* Clean Neomorphic Top Bar Pill */}
-            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 max-w-full box-border rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] relative z-50">
               {/* Back Button on Sub-pages */}
               {isSubPage && (
                 <>

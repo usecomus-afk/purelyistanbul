@@ -1305,20 +1305,21 @@ export default function UsePurelyDashboardPage() {
         className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto"
       >
         {/* Top Sticky Header */}
-        <header className="sticky top-0 z-30 bg-[#F6F1E8]/90 backdrop-blur-md border-b border-[#C8C4B0] px-4 md:px-10 py-3.5 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 bg-[#F6F1E8]/95 backdrop-blur-md border-b border-[#C8C4B0] px-4 md:px-10 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setMobileNavOpen(true)}
-              className="md:hidden p-2 rounded-xl bg-[#FFFCFA] border border-[#C8C4B0] text-[#2C2C1A]"
+              className="md:hidden p-2 rounded-lg bg-[#FFFCFA] border border-[#C8C4B0] text-[#2C2C1A] shrink-0"
               aria-label="Menü"
             >
               <Menu className="w-4 h-4" />
             </button>
-            <div className="comus-badge">
+            <div className="comus-badge whitespace-nowrap">
               <span className="comus-badge-dot" />
-              <span>Canlı Senkronizasyon Aktif</span>
+              <span className="sm:hidden">Canlı Senkron Aktif</span>
+              <span className="hidden sm:inline">Canlı Senkronizasyon Aktif</span>
             </div>
-            <span className="hidden lg:inline text-xs text-[#6B6B55]">
+            <span className="hidden lg:inline text-xs text-[#6B6B55] truncate">
               Yaptığınız her değişiklik anında{" "}
               <strong className="font-medium text-[#2C2C1A]">
                 purelyistanbul.com
@@ -1329,11 +1330,12 @@ export default function UsePurelyDashboardPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleCloudSync}
               disabled={isSyncing}
-              className="comus-btn-ghost text-xs py-1.5 px-3.5"
+              className="comus-btn-ghost text-xs py-2 px-3 whitespace-nowrap"
+              title="Tüm Kanalları Eşitle"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 text-[#3B6D11] ${
@@ -1342,9 +1344,13 @@ export default function UsePurelyDashboardPage() {
               />
               <span className="hidden sm:inline">Tüm Kanalları Eşitle</span>
             </button>
-            <Link href="/" target="_blank" className="comus-btn-primary text-xs py-1.5 px-4">
-              <Globe className="w-3.5 h-3.5" />
-              <span>Web Vitrini Gör ↗</span>
+            <Link
+              href="/"
+              target="_blank"
+              className="comus-btn-primary text-xs py-2 px-3 sm:px-4 whitespace-nowrap"
+            >
+              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <span>Web Vitrini ↗</span>
             </Link>
           </div>
         </header>
@@ -2444,17 +2450,17 @@ export default function UsePurelyDashboardPage() {
 
                 <button
                   onClick={() => setShowAddListingModal(true)}
-                  className="comus-btn-primary"
+                  className="comus-btn-primary w-full md:w-auto py-2.5"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>+ Yeni İlan Girişi Yap</span>
+                  <Plus className="w-4 h-4 shrink-0" />
+                  <span>Yeni İlan Girişi Yap</span>
                 </button>
               </div>
 
               {/* Search & Filter Bar */}
               <div className="comus-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-4">
                 <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-[#6B6B55] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-[#6B6B55] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     value={listingSearch}
@@ -2466,7 +2472,7 @@ export default function UsePurelyDashboardPage() {
                 <select
                   value={listingFilterCategory}
                   onChange={(e) => setListingFilterCategory(e.target.value)}
-                  className="comus-input w-auto text-xs py-2 px-3"
+                  className="comus-input sm:w-auto text-xs py-2.5 px-3"
                 >
                   <option value="all">Tüm Kategoriler</option>
                   {categoryConfigs.map((cat) => (
@@ -2476,7 +2482,7 @@ export default function UsePurelyDashboardPage() {
                     </option>
                   ))}
                 </select>
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-3 sm:flex items-center gap-2 w-full sm:w-auto">
                   {(
                     [
                       { id: "all", label: `Tümü (${experiences.length})` },
@@ -2492,8 +2498,8 @@ export default function UsePurelyDashboardPage() {
                       onClick={() => setListingFilterChannel(f.id)}
                       className={
                         listingFilterChannel === f.id
-                          ? "comus-btn-primary text-xs py-2 px-3.5"
-                          : "comus-btn-ghost text-xs py-2 px-3.5"
+                          ? "comus-btn-primary text-xs py-2.5 px-2.5 sm:px-3.5 whitespace-nowrap"
+                          : "comus-btn-ghost text-xs py-2.5 px-2.5 sm:px-3.5 whitespace-nowrap"
                       }
                     >
                       {f.label}
