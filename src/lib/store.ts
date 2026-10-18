@@ -313,16 +313,29 @@ export const XeniosStore = {
   },
 
   getHotelManagerProfile(hotelId?: string) {
-    const key = `xenios_manager_profile_${hotelId || this.getActiveHotelId()}`;
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const key = `xenios_manager_profile_${targetHotelId}`;
+    const hotel = this.getHotelById(targetHotelId);
     try {
       const stored = safeGet(key);
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.managerPhone === '+90 532 555 44 33') {
+          parsed.managerPhone = hotel?.whatsappPhone || hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60';
+        }
+        if (!parsed.whatsappPhone || parsed.whatsappPhone === '+90 532 555 44 33') {
+          parsed.whatsappPhone =
+            hotel?.whatsappPhone || parsed.managerPhone || '+90 532 163 55 20, +90 533 203 62 60';
+        }
+        return parsed;
+      }
     } catch (e) {}
     return {
-      managerName: 'Ahmet Yılmaz',
+      managerName: hotel?.managerName || 'Ahmet Yılmaz',
       managerTitle: 'Genel Müdür / Ön Büro Direktörü',
-      managerPhone: '+90 532 555 44 33',
-      contactEmail: 'heritage@xenios.istanbul',
+      managerPhone: hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60',
+      whatsappPhone: hotel?.whatsappPhone || hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60',
+      contactEmail: hotel?.contactEmail || 'heritage@xenios.istanbul',
       notificationEmail: 'concierge@heritagehotel.com',
       notifyOnNewBooking: true,
       notifyOnRoomRequest: true

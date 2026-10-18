@@ -36,6 +36,8 @@ export interface Hotel {
   commissionRate?: number;
   contactEmail?: string;
   managerName?: string;
+  managerPhone?: string;
+  whatsappPhone?: string;
   publishToWeb?: boolean;
   publishToMobile?: boolean;
   updatedAt?: string;

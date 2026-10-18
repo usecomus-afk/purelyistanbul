@@ -805,39 +805,63 @@ export const FirestoreService = {
       }
     };
 
-    // Fire server-side APNs (.p8 HTTP/2) + FCM + Web Push (RFC 8030 VAPID) immediately so partner devices
-    // receive native audible alerts when their phone is locked or the app is closed.
-    if (typeof window !== 'undefined') {
-      const isUrgent = local.priority === 'acil';
-      const pushTitle = isUrgent ? '🚨 Acil Misafir Talebi! 🛎️' : 'Yeni Misafir Talebi! 🛎️';
-      const cleanNotes = local.notes ? local.notes.replace(/\s+/g, ' ').trim() : '';
-      const unitNum = String(local.roomNumber || '101').trim();
-      const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(unitNum) ? unitNum : `Daire ${unitNum}`;
-      const pushBody = `${unitPrefix} - ${local.serviceTitle}${cleanNotes ? ` (${cleanNotes})` : ''} Siparişi Verildi.`;
+    // Fire server-side 0850 WhatsApp + APNs + FCM + Web Push immediately so partner devices
+    // receive instant WhatsApp messages and push notifications when a guest submits an order or request.
+    const notifyApiPromise = (async () => {
+      if (typeof window === 'undefined') return;
+      try {
+        const isUrgent = local.priority === 'acil';
+        const pushTitle = isUrgent ? '🚨 Acil Misafir Talebi! 🛎️' : 'Yeni Misafir Talebi! 🛎️';
+        const cleanNotes = local.notes ? local.notes.replace(/\s+/g, ' ').trim() : '';
+        const unitNum = String(local.roomNumber || '101').trim();
+        const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(unitNum) ? unitNum : `Birim ${unitNum}`;
+        const pushBody = `${unitPrefix} - ${local.serviceTitle}${cleanNotes ? ` (${cleanNotes})` : ''} Siparişi Verildi.`;
 
-      fetch('/api/requests', {
-        method: 'POST',
-        keepalive: true,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: local.id,
-          persistToFirestore: false,
-          hotelId: local.hotelId || 'hotel-heritage-1',
-          hotelName: local.hotelName || 'Purely Istanbul',
-          roomNumber: unitNum,
-          serviceKey: local.serviceKey,
-          serviceTitle: local.serviceTitle,
-          notes: local.notes || '',
-          priority: local.priority || 'standart',
-          title: pushTitle,
-          body: pushBody,
-        }),
-      }).catch(() => {});
-    }
+        const targetHotelId = local.hotelId || 'hotel-heritage-1';
+        const hotelObj = XeniosStore.getHotelById(targetHotelId);
+        const managerProf = XeniosStore.getHotelManagerProfile(targetHotelId);
+        const whatsappPhone =
+          hotelObj?.whatsappPhone ||
+          managerProf?.whatsappPhone ||
+          hotelObj?.managerPhone ||
+          managerProf?.managerPhone ||
+          '';
+
+        await fetch('/api/requests', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: local.id,
+            persistToFirestore: false,
+            hotelId: targetHotelId,
+            hotelName: local.hotelName || hotelObj?.name || 'Purely Istanbul',
+            roomNumber: unitNum,
+            serviceKey: local.serviceKey,
+            serviceTitle: local.serviceTitle,
+            notes: local.notes || '',
+            department: local.department || 'Housekeeping',
+            stage: local.stage || 'pending',
+            priority: local.priority || 'standart',
+            createdAt: local.createdAt,
+            paymentMethod: local.paymentMethod,
+            paymentStatus: local.paymentStatus,
+            paymentAmount: local.paymentAmount,
+            paymentCurrency: local.paymentCurrency,
+            paymentReference: local.paymentReference,
+            whatsappPhone,
+            title: pushTitle,
+            body: pushBody,
+          }),
+        });
+      } catch {
+        // Ignore network errors
+      }
+    })();
 
     // Fire REST PATCH (with keepalive: true) immediately in parallel with Firebase SDK setDoc
-    // so orders from a Home Screen QR PWA reach Firestore in <150ms even if the user switches apps immediately.
-    const restPromise = saveViaRest();
+    // so orders from a Home Screen QR PWA reach Firestore and WhatsApp in <150ms.
+    const restPromise = Promise.all([saveViaRest(), notifyApiPromise]);
 
     if (!db || !isFirebaseConfigured) {
       await restPromise;
@@ -847,7 +871,7 @@ export const FirestoreService = {
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
       await Promise.race([
-        setDoc(doc(colRef, local.id), payload),
+        Promise.all([setDoc(doc(colRef, local.id), payload), notifyApiPromise]),
         restPromise,
         new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 2500)),
       ]);

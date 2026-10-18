@@ -46,3 +46,29 @@ env:
     value: xenios-prod-c55cd
     availability:
       - RUNTIME
+  - variable: WHATSAPP_CLOUD_API_TOKEN
+    value: EAAQL7lziK8wBSqJWGlNoDwz1fAepnwZBVDzNB3sMN2X3qGqS2SzoaZBZACwBfCP3ah8uzSrKBDR8gIfCfdl3YRq5M6uZBah95bUm32mjlDxxJ3TzSWKW9L7465fcBcy71hJLl2dzV6yIadLI5Y7JO6VZCpEKYrjclkxoZBa37ZBdPqVzw2ZCJIyLzZAuVOzEUuwZDZD
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_API_TOKEN
+    value: EAAQL7lziK8wBSqJWGlNoDwz1fAepnwZBVDzNB3sMN2X3qGqS2SzoaZBZACwBfCP3ah8uzSrKBDR8gIfCfdl3YRq5M6uZBah95bUm32mjlDxxJ3TzSWKW9L7465fcBcy71hJLl2dzV6yIadLI5Y7JO6VZCpEKYrjclkxoZBa37ZBdPqVzw2ZCJIyLzZAuVOzEUuwZDZD
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_PHONE_NUMBER_ID
+    value: "1384418771423280"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_SENDER_NUMBER
+    value: "+90 850 308 59 06"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_DEFAULT_RECIPIENT_PHONES
+    value: "+905332036260,+905321635520"
+    availability:
+      - BUILD
+      - RUNTIME
+

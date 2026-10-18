@@ -1,9 +1,52 @@
 import { NextResponse } from 'next/server';
 import { NotificationDispatcher } from '@/services/notificationDispatcher';
 import { FcmPushService } from '@/services/fcmPushService';
+import { WhatsAppService } from '@/services/whatsappService';
 
 const FIRESTORE_REQUESTS_BASE_URL =
   'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests';
+
+const FIRESTORE_HOTELS_BASE_URL =
+  'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/hotels';
+
+async function resolveHotelWhatsAppRecipients(
+  hotelId: string,
+  explicitPhones?: string | string[]
+): Promise<string[]> {
+  const candidates: string[] = [];
+
+  if (explicitPhones) {
+    if (Array.isArray(explicitPhones)) {
+      candidates.push(...explicitPhones);
+    } else {
+      candidates.push(String(explicitPhones));
+    }
+  }
+
+  try {
+    const res = await fetch(`${FIRESTORE_HOTELS_BASE_URL}/${encodeURIComponent(hotelId)}`, {
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const docData = await res.json();
+      const fields = docData?.fields || {};
+      if (fields.whatsappPhone?.stringValue) {
+        candidates.push(fields.whatsappPhone.stringValue);
+      }
+      if (fields.managerPhone?.stringValue) {
+        candidates.push(fields.managerPhone.stringValue);
+      }
+    }
+  } catch {
+    // Ignore Firestore lookup error and fall back to env/default
+  }
+
+  const defaultEnv =
+    process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905332036260,+905321635520';
+  candidates.push(defaultEnv);
+
+  return WhatsAppService.parseRecipientPhones(candidates.join(','));
+}
 
 export async function POST(req: Request) {
   try {
@@ -64,10 +107,10 @@ export async function POST(req: Request) {
       }).catch(() => {});
     }
 
-    // 2. Build APNs & FCM Push Notification Alert
+    // 2. Build APNs, FCM & 0850 WhatsApp Alert
     const isUrgent = priority === 'acil';
     const alertTitle = isUrgent ? '🚨 Acil Misafir Talebi! 🛎️' : 'Yeni Misafir Talebi! 🛎️';
-    const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(roomNumber) ? roomNumber : `Daire ${roomNumber}`;
+    const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(roomNumber) ? roomNumber : `Birim ${roomNumber}`;
     const cleanNotes = notes ? notes.replace(/\s+/g, ' ').trim() : '';
     const alertBody =
       body.body ||
@@ -85,28 +128,62 @@ export async function POST(req: Request) {
       },
     });
 
-    const pushResult = await NotificationDispatcher.dispatchSmartNotification({
-      targetRole: 'staff',
+    const originUrl = (() => {
+      try {
+        return new URL(req.url).origin;
+      } catch {
+        return 'https://xenios.usecomus.com';
+      }
+    })();
+
+    const recipientPhones = await resolveHotelWhatsAppRecipients(
       hotelId,
-      roomNumber,
-      requestId: id,
-      priority: isUrgent ? 'acil' : 'standart',
-      urgency: isUrgent ? 'HIGH' : 'NORMAL',
-      title: alertTitle,
-      subtitle: hotelName,
-      body: alertBody,
-      url: '/hotel-portal/requests',
-      dataPayload: {
+      body.whatsappPhone || body.managerPhone
+    );
+
+    const [whatsappResult, pushResult] = await Promise.all([
+      WhatsAppService.sendGuestRequestAlertWhatsApp(recipientPhones, {
         requestId: id,
         hotelId,
+        hotelName,
         roomNumber,
         serviceKey,
-      },
-    });
+        serviceTitle,
+        notes,
+        department,
+        priority,
+        createdAt,
+        paymentMethod: body.paymentMethod,
+        paymentStatus: body.paymentStatus,
+        paymentAmount: body.paymentAmount !== undefined ? Number(body.paymentAmount) : undefined,
+        paymentCurrency: body.paymentCurrency,
+        paymentReference: body.paymentReference,
+        baseUrl: originUrl.includes('localhost') ? 'https://xenios.usecomus.com' : originUrl,
+      }),
+      NotificationDispatcher.dispatchSmartNotification({
+        targetRole: 'staff',
+        hotelId,
+        roomNumber,
+        requestId: id,
+        priority: isUrgent ? 'acil' : 'standart',
+        urgency: isUrgent ? 'HIGH' : 'NORMAL',
+        title: alertTitle,
+        subtitle: hotelName,
+        body: alertBody,
+        url: '/hotel-portal/requests',
+        dataPayload: {
+          requestId: id,
+          hotelId,
+          roomNumber,
+          serviceKey,
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
       requestId: id,
+      whatsappResult,
       apnsPayload,
       pushResult,
     });
@@ -117,3 +194,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

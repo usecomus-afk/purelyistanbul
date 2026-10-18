@@ -55,7 +55,13 @@ export default function HotelProfileManagementPage() {
   // User / Manager Info State
   const [managerName, setManagerName] = useState('Ahmet Yılmaz');
   const [managerTitle, setManagerTitle] = useState('Genel Müdür / Ön Büro Direktörü');
-  const [managerPhone, setManagerPhone] = useState('+90 532 555 44 33');
+  const [managerPhone, setManagerPhone] = useState(
+    currentHotel.managerPhone || '+90 532 163 55 20, +90 533 203 62 60'
+  );
+  const [whatsappPhone, setWhatsappPhone] = useState(
+    currentHotel.whatsappPhone || currentHotel.managerPhone || '+90 532 163 55 20, +90 533 203 62 60'
+  );
+  const [isTestingWhatsApp, setIsTestingWhatsApp] = useState(false);
 
   // Email Info State
   const [contactEmail, setContactEmail] = useState('heritage@purelyistanbul.com');
@@ -77,11 +83,58 @@ export default function HotelProfileManagementPage() {
     if (profile) {
       setManagerName(profile.managerName || 'Ahmet Yılmaz');
       setManagerTitle(profile.managerTitle || 'Genel Müdür / Ön Büro Direktörü');
-      setManagerPhone(profile.managerPhone || '+90 532 555 44 33');
+      const resolvedPhone =
+        currentHotel.whatsappPhone ||
+        profile.whatsappPhone ||
+        profile.managerPhone ||
+        '+90 532 163 55 20, +90 533 203 62 60';
+      setManagerPhone(profile.managerPhone || resolvedPhone);
+      setWhatsappPhone(resolvedPhone);
       setContactEmail(profile.contactEmail || 'heritage@purelyistanbul.com');
       setNotificationEmail(profile.notificationEmail || 'concierge@heritagehotel.com');
     }
-  }, [currentHotel.id]);
+  }, [currentHotel.id, currentHotel.whatsappPhone]);
+
+  const handleTestWhatsAppAlert = async () => {
+    if (!whatsappPhone.trim()) {
+      toast.error('Lütfen önce bildirim alacak WhatsApp telefon numarasını girin.');
+      return;
+    }
+    setIsTestingWhatsApp(true);
+    try {
+      const res = await fetch('/api/notifications/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'TEST_ALERT',
+          phone: whatsappPhone.trim(),
+          requestAlert: {
+            requestId: `test-${Date.now()}`,
+            hotelId: currentHotel.id,
+            hotelName: hotelName.trim() || currentHotel.name,
+            roomNumber: '101',
+            serviceKey: 'whatsapp_test',
+            serviceTitle: 'WhatsApp 0850 Bildirim Test Siparişi',
+            notes: 'Comus +90 850 308 59 06 hattından misafir sipariş ve talep bildirimleri başarıyla iletildi.',
+            department: 'Resepsiyon & Concierge',
+            priority: 'standart',
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        toast.success('📲 0850 WhatsApp Test Mesajı Gönderildi!', {
+          description: `+90 850 308 59 06 hattından (${whatsappPhone}) numarasına mesaj iletildi.`,
+        });
+      } else {
+        toast.error('WhatsApp mesajı gönderilemedi. Numara formatını kontrol edin.');
+      }
+    } catch (e: any) {
+      toast.error('WhatsApp bağlantı hatası: ' + (e?.message || 'Bilinmeyen hata'));
+    } finally {
+      setIsTestingWhatsApp(false);
+    }
+  };
 
   const handleToggleSound = (enabled: boolean) => {
     HotelAudioNotification.savePreferences({ soundEnabled: enabled });
@@ -161,6 +214,10 @@ export default function HotelProfileManagementPage() {
         district: hotelDistrict.trim(),
         address: hotelAddress.trim() || `${hotelDistrict}, İstanbul`,
         phone: hotelPhone.trim(),
+        managerName: managerName.trim(),
+        managerPhone: managerPhone.trim(),
+        whatsappPhone: whatsappPhone.trim() || managerPhone.trim(),
+        contactEmail: contactEmail.trim().toLowerCase(),
         website: hotelWebsite.trim(),
         breakfastHours: breakfastHours.trim(),
         checkoutTime: checkoutTime.trim(),
@@ -175,6 +232,7 @@ export default function HotelProfileManagementPage() {
         managerName: managerName.trim(),
         managerTitle: managerTitle.trim(),
         managerPhone: managerPhone.trim(),
+        whatsappPhone: whatsappPhone.trim() || managerPhone.trim(),
         contactEmail: contactEmail.trim().toLowerCase(),
         notificationEmail: notificationEmail.trim().toLowerCase(),
         notifyOnNewBooking,
@@ -186,13 +244,17 @@ export default function HotelProfileManagementPage() {
 
       // 3. Save to Google Cloud Firestore
       if (typeof window !== 'undefined') {
+        const mergedHotel = XeniosStore.getHotelById(currentHotel.id);
+        if (mergedHotel) {
+          FirestoreService.upsertHotel(mergedHotel).catch(() => {});
+        }
         FirestoreService.syncAllLocalDataToFirestore().catch(e => console.warn('Firestore sync warning:', e));
       }
 
       setTimeout(() => {
         setIsSaving(false);
-        toast.success("İşletme ve Kullanıcı Profili Başarıyla Güncellendi!", {
-          description: `${hotelName} bilgileri canlı sisteme aktarıldı.`
+        toast.success("İşletme ve WhatsApp Bildirim Ayarları Güncellendi!", {
+          description: `${hotelName} bilgileri ve 0850 WhatsApp alıcı numaraları canlı sisteme aktarıldı.`
         });
       }, 400);
     } catch (err: any) {
@@ -490,7 +552,7 @@ export default function HotelProfileManagementPage() {
                 onChange={(e) => setNotifyOnRoomRequest(e.target.checked)}
                 className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
               />
-              <span>Misafir konaklama içi hizmet taleplerinde anlık e-posta bildirimi al</span>
+              <span>Misafir konaklama içi hizmet taleplerinde anlık e-posta ve WhatsApp bildirimi al</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -502,6 +564,65 @@ export default function HotelProfileManagementPage() {
               />
               <span>Yeni tur & deneyim rezervasyonlarında bilgilendir</span>
             </label>
+          </div>
+        </div>
+
+        {/* 3B. 0850 COMUS WHATSAPP SİPARİŞ & TALEP BİLDİRİM HATTI */}
+        <div className="luxury-service-card p-6 rounded-3xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[rgba(230,185,75,0.45)] pb-3 gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold">
+                <Phone className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">
+                    0850 WhatsApp Sipariş & Talep Bildirim Hattı
+                  </h2>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-mono font-bold text-[10px]">
+                    +90 850 308 59 06 • AKTİF
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-600 dark:text-slate-400">
+                  Misafirler birimlerinden sipariş veya hizmet talebi oluşturduğunda Comus 0850 kurumsal hattından doğrudan WhatsApp&apos;ınıza tek tık onaylı bildirim mesajı iletilir.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleTestWhatsAppAlert}
+                disabled={isTestingWhatsApp}
+                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                {isTestingWhatsApp ? 'Gönderiliyor...' : '📲 WhatsApp Test Bildirimi Gönder'}
+              </button>
+              <a
+                href="https://wa.me/908503085906?text=Merhaba%20Comus%20Bildirim%20Aktif"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 rounded-xl bg-amber-500/25 hover:bg-amber-500/40 border border-amber-500/50 text-zinc-900 dark:text-amber-200 font-bold text-xs transition"
+              >
+                💬 0850 Hattına Mesaj At (Aktifleştir)
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            <label className="font-bold text-zinc-700 dark:text-slate-200 block">
+              Sipariş & Talep Bildirimi Alacak WhatsApp Numaraları (Virgülle birden fazla numara ekleyebilirsiniz)
+            </label>
+            <input
+              type="text"
+              value={whatsappPhone}
+              onChange={(e) => setWhatsappPhone(e.target.value)}
+              placeholder="+90 532 163 55 20, +90 533 203 62 60"
+              className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/40 text-[16px] md:text-xs"
+            />
+            <p className="text-[11px] text-zinc-600 dark:text-slate-400 leading-relaxed">
+              💡 <strong>Önemli:</strong> Yeni eklediğiniz bir telefon numarasının WhatsApp mesajlarını kesintisiz alabilmesi için yukarıdaki <strong>&quot;💬 0850 Hattına Mesaj At (Aktifleştir)&quot;</strong> butonuna tıklayarak <strong>+90 850 308 59 06</strong> numarasına bir kez &quot;Merhaba&quot; mesajı göndermeniz yeterlidir.
+            </p>
           </div>
         </div>
 
