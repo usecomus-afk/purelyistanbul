@@ -322,15 +322,29 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
   const t = getT(lang);
   const ui = CHECKIN_I18N[lang] || CHECKIN_I18N.en;
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  const [step, setStep] = useState<'UPLOAD' | 'REVIEW' | 'SUCCESS'>('UPLOAD');
+  const [step, setStep] = useState<'UPLOAD' | 'CAMERA' | 'REVIEW' | 'SUCCESS'>('UPLOAD');
+  const [cameraFacing, setCameraFacing] = useState<'environment' | 'user'>('environment');
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const [isProcessingOcr, setIsProcessingOcr] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const stopCameraStream = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraReady(false);
+  };
+
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
     return () => {
+      stopCameraStream();
       window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
     };
   }, []);
@@ -344,53 +358,180 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
   const [birthDate, setBirthDate] = useState('');
   const [gender, setGender] = useState<'MALE' | 'FEMALE' | 'UNKNOWN'>('MALE');
 
+  const compressImageDataUrl = (rawDataUrl: string, maxDimension = 1600): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          let width = img.width || 1200;
+          let height = img.height || 900;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.88));
+          } else {
+            resolve(rawDataUrl);
+          }
+        } catch {
+          resolve(rawDataUrl);
+        }
+      };
+      img.onerror = () => resolve(rawDataUrl);
+      img.src = rawDataUrl;
+    });
+  };
+
+  const runOcrOnBase64Image = async (base64Image: string, mimeType: string = 'image/jpeg') => {
+    setIsProcessingOcr(true);
+    try {
+      const compressedBase64 = await compressImageDataUrl(base64Image, 1600);
+      setPreviewImage(compressedBase64);
+
+      const response = await fetch('/api/kbs/ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: compressedBase64,
+          mimeType: 'image/jpeg'
+        })
+      });
+
+      const data = await response.json();
+      const rec = data.record || data.parsedData;
+      if (data.success && rec && (rec.first_name || rec.last_name || rec.document_number)) {
+        setFirstName(rec.first_name || '');
+        setLastName(rec.last_name || '');
+        setDocumentNumber(rec.document_number || '');
+        setNationality(rec.nationality || 'TUR');
+        setBirthDate(rec.birth_date || '');
+        setGender(rec.gender || 'MALE');
+        setDocumentType(rec.document_type || 'PASSPORT');
+
+        toast.success(ui.toastScanned);
+        setStep('REVIEW');
+      } else {
+        toast.info(ui.toastCheckManual);
+        setStep('REVIEW');
+      }
+    } catch (error) {
+      console.error('OCR Processing Error:', error);
+      toast.error(ui.toastScanError);
+      setStep('REVIEW');
+    } finally {
+      setIsProcessingOcr(false);
+    }
+  };
+
+  const startLiveCamera = async (preferredFacing: 'environment' | 'user' = cameraFacing) => {
+    stopCameraStream();
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: preferredFacing },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          },
+          audio: false
+        });
+        streamRef.current = stream;
+        setCameraFacing(preferredFacing);
+        setStep('CAMERA');
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play().catch(() => {});
+          }
+        }, 50);
+        return;
+      } catch (err) {
+        console.warn('Live getUserMedia unavailable or denied, falling back to native camera input:', err);
+      }
+    }
+    // Fallback to native file input if getUserMedia is blocked or unsupported
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleCaptureShutter = async () => {
+    const video = videoRef.current;
+    if (!video) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+        fileInputRef.current.click();
+      }
+      return;
+    }
+
+    const rawW = video.videoWidth || 1280;
+    const rawH = video.videoHeight || 720;
+    const maxDim = 1600;
+    let targetW = rawW;
+    let targetH = rawH;
+    if (targetW > maxDim || targetH > maxDim) {
+      if (targetW > targetH) {
+        targetH = Math.round((targetH * maxDim) / targetW);
+        targetW = maxDim;
+      } else {
+        targetW = Math.round((targetW * maxDim) / targetH);
+        targetH = maxDim;
+      }
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(video, 0, 0, targetW, targetH);
+    const capturedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    stopCameraStream();
+    setStep('UPLOAD');
+    await runOcrOnBase64Image(capturedDataUrl, 'image/jpeg');
+  };
+
   const handleCameraClick = () => {
-    fileInputRef.current?.click();
+    startLiveCamera('environment');
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    // Reset value immediately so selecting or shooting another photo always fires onChange
+    event.target.value = '';
 
+    stopCameraStream();
+    setStep('UPLOAD');
     setIsProcessingOcr(true);
 
     try {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
       reader.onload = async () => {
         const base64Image = reader.result as string;
-        setPreviewImage(base64Image);
-
-        const response = await fetch('/api/kbs/ocr', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: base64Image,
-            mimeType: file.type
-          })
-        });
-
-        const data = await response.json();
-        const rec = data.record || data.parsedData;
-        if (data.success && rec) {
-          setFirstName(rec.first_name || '');
-          setLastName(rec.last_name || '');
-          setDocumentNumber(rec.document_number || '');
-          setNationality(rec.nationality || 'TUR');
-          setBirthDate(rec.birth_date || '1990-01-01');
-          setGender(rec.gender || 'MALE');
-          setDocumentType(rec.document_type || 'PASSPORT');
-
-          toast.success(ui.toastScanned);
-          setStep('REVIEW');
-        } else {
-          toast.info(ui.toastCheckManual);
-          setStep('REVIEW');
-        }
+        await runOcrOnBase64Image(base64Image, file.type || 'image/jpeg');
+      };
+      reader.onerror = () => {
+        toast.error(ui.toastScanError);
         setIsProcessingOcr(false);
       };
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error('OCR Processing Error:', error);
+      console.error('File Reader Error:', error);
       toast.error(ui.toastScanError);
       setStep('REVIEW');
       setIsProcessingOcr(false);
@@ -458,11 +599,53 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
     }
   };
 
+  const captureBtnLabel =
+    lang === 'tr'
+      ? 'Fotoğrafı Çek ve Oku'
+      : lang === 'ar'
+      ? 'التقاط الصورة والمسح'
+      : lang === 'ru'
+      ? 'Сделать фото и сканировать'
+      : lang === 'de'
+      ? 'Foto aufnehmen & scannen'
+      : lang === 'fr'
+      ? 'Prendre la photo & scanner'
+      : 'Take Photo & Scan';
+
+  const galleryBtnLabel =
+    lang === 'tr'
+      ? 'Galeriden / Telefon Kamerasından Seç'
+      : lang === 'ar'
+      ? 'اختر من المعرض / كاميرا الهاتف'
+      : lang === 'ru'
+      ? 'Выбрать из галереи / камеры'
+      : lang === 'de'
+      ? 'Aus Galerie / Telefonkamera wählen'
+      : lang === 'fr'
+      ? 'Choisir depuis la galerie / appareil'
+      : 'Choose from Gallery / Phone Camera';
+
+  const alignHintLabel =
+    lang === 'tr'
+      ? 'Kimlik veya Pasaportunuzu Çerçeveye Hizalayın'
+      : lang === 'ar'
+      ? 'قم بمحاذاة الهوية أو جواز السفر داخل الإطار'
+      : lang === 'ru'
+      ? 'Поместите паспорт или ID в рамку'
+      : lang === 'de'
+      ? 'Ausweis oder Reisepass im Rahmen ausrichten'
+      : lang === 'fr'
+      ? 'Alignez votre pièce d’identité dans le cadre'
+      : 'Align your ID Card or Passport inside the frame';
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) {
+          stopCameraStream();
+          onClose();
+        }
       }}
     >
       <div 
@@ -470,12 +653,19 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Gizli Kamera / Dosya Seçici Input */}
+        {/* Gizli Kamera / Dosya Seçici Inputlar */}
         <input 
           type="file" 
           ref={fileInputRef} 
           accept="image/*" 
           capture="environment" 
+          className="hidden" 
+          onChange={handleFileChange} 
+        />
+        <input 
+          type="file" 
+          ref={galleryInputRef} 
+          accept="image/*" 
           className="hidden" 
           onChange={handleFileChange} 
         />
@@ -497,7 +687,10 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
           </div>
 
           <button
-            onClick={onClose}
+            onClick={() => {
+              stopCameraStream();
+              onClose();
+            }}
             className="w-8 h-8 rounded-full bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] flex items-center justify-center transition cursor-pointer"
           >
             <X className="w-4 h-4 stroke-[1.8]" />
@@ -506,6 +699,77 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
         {/* Modal Body */}
         <div className="p-5 overflow-y-auto space-y-4 font-luxury-sans text-xs">
+
+          {step === 'CAMERA' && (
+            <div className="space-y-3.5 text-center">
+              <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-black border-2 border-[#C5A059] shadow-md">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  onLoadedMetadata={() => setIsCameraReady(true)}
+                  className="w-full h-full object-cover"
+                />
+                {/* Kimlik / Pasaport Hizalama Çerçevesi */}
+                <div className="pointer-events-none absolute inset-4 border-2 border-dashed border-[#E6C786]/90 rounded-xl flex flex-col justify-between p-2.5">
+                  <div className="mx-auto px-3 py-1 rounded-full bg-black/65 text-[#FAF8F4] text-[10px] font-bold tracking-wide">
+                    {alignHintLabel}
+                  </div>
+                  <div className="flex justify-between text-[9px] font-mono text-[#E6C786]/90 uppercase">
+                    <span>T.C. KİMLİK / PASSPORT</span>
+                    <span>MRZ / OCR</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Deklanşör (Fotoğraf Çekme Tuşu) ve Kamera Kontrolleri */}
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    stopCameraStream();
+                    setStep('UPLOAD');
+                  }}
+                  className="px-3.5 py-3 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] font-bold text-xs transition cursor-pointer"
+                >
+                  {ui.backBtn}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCaptureShutter}
+                  disabled={isProcessingOcr}
+                  className="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] active:scale-[0.98] text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Camera className="w-5 h-5" />
+                  <span>{captureBtnLabel}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => startLiveCamera(cameraFacing === 'environment' ? 'user' : 'environment')}
+                  title="Kamerayı Çevir"
+                  className="px-3.5 py-3 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#141414] font-bold text-xs transition flex items-center justify-center cursor-pointer"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (galleryInputRef.current) {
+                    galleryInputRef.current.value = '';
+                    galleryInputRef.current.click();
+                  }
+                }}
+                className="text-[11px] text-[#7D5E2A] font-bold underline hover:text-[#141414] cursor-pointer"
+              >
+                {galleryBtnLabel}
+              </button>
+            </div>
+          )}
 
           {step === 'UPLOAD' && (
             <div className="space-y-4 text-center">
@@ -522,31 +786,52 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
               {/* Upload & Scan Actions */}
               <div className="p-6 border-2 border-dashed border-[#C4B8A4] rounded-2xl bg-[#FAF8F4]/70 flex flex-col items-center justify-center space-y-3">
                 <div className="w-14 h-14 rounded-2xl bg-white border border-[#C4B8A4] text-[#8E7252] flex items-center justify-center shadow-xs">
-                  <Camera className="w-7 h-7 stroke-[1.6]" />
+                  {isProcessingOcr ? (
+                    <Loader2 className="w-7 h-7 stroke-[1.6] animate-spin" />
+                  ) : (
+                    <Camera className="w-7 h-7 stroke-[1.6]" />
+                  )}
                 </div>
                 <div>
                   <strong className="font-luxury-serif text-sm font-bold text-[#141414] block">{ui.scanTitle}</strong>
                   <span className="text-[10px] text-[#5C4938]">{ui.scanSubtitle}</span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleCameraClick}
-                  disabled={isProcessingOcr}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-xs shadow-sm transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {isProcessingOcr ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>{ui.scanningBtn}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="w-4 h-4" />
-                      <span>{ui.scanBtn}</span>
-                    </>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCameraClick}
+                    disabled={isProcessingOcr}
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isProcessingOcr ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{ui.scanningBtn}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-4 h-4" />
+                        <span>{ui.scanBtn}</span>
+                      </>
+                    )}
+                  </button>
+
+                  {!isProcessingOcr && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (galleryInputRef.current) {
+                          galleryInputRef.current.value = '';
+                          galleryInputRef.current.click();
+                        }
+                      }}
+                      className="w-full sm:w-auto px-4 py-3 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] text-[#5C4938] font-bold text-xs transition cursor-pointer"
+                    >
+                      {galleryBtnLabel}
+                    </button>
                   )}
-                </button>
+                </div>
               </div>
 
               <div className="text-[11px] text-[#5C4938]">
@@ -601,7 +886,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                     value={firstName}
                     placeholder={ui.firstNamePlaceholder}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
@@ -612,7 +897,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                     value={lastName}
                     placeholder={ui.lastNamePlaceholder}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
@@ -621,7 +906,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                   <select
                     value={documentType}
                     onChange={(e) => setDocumentType(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   >
                     <option value="PASSPORT">{ui.docPassport}</option>
                     <option value="TCKN">{ui.docTckn}</option>
@@ -636,7 +921,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                     value={documentNumber}
                     placeholder={ui.docNumberPlaceholder}
                     onChange={(e) => setDocumentNumber(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-mono font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-mono font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
@@ -647,7 +932,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                     value={nationality}
                     placeholder="TUR, DEU, USA..."
                     onChange={(e) => setNationality(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
 
@@ -657,7 +942,7 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
                     type="date"
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
+                    className="w-full px-3 py-2 bg-[#FAF8F4] border border-[#C4B8A4] rounded-xl font-bold text-[#141414] text-[16px] sm:text-xs focus:ring-2 focus:ring-[#8E7252]/40 outline-hidden"
                   />
                 </div>
               </div>
@@ -721,7 +1006,10 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
 
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  stopCameraStream();
+                  onClose();
+                }}
                 className="w-full py-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-bold text-xs shadow-sm transition cursor-pointer"
               >
                 {ui.closeBtn}
@@ -733,4 +1021,5 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
     </div>
   );
 }
+
 

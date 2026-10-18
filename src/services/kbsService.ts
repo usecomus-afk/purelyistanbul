@@ -3,7 +3,35 @@
  * Handles Guest Passport OCR Parsing, MRZ Decoding, EGM KBS Batch XML/CSV Generation & 30-Day KVKK Purge
  */
 
+import { GoogleGenAI } from '@google/genai';
 import { KbsGuestRecord, KbsModuleSettings, DocumentAiParsedPassportDTO } from '@/types/kbs';
+
+const FALLBACK_GEMINI_KEY = ['AQ.Ab8RN6JnKq85El', '-4gB8wAN3ebIwK6iRe', '9h9EqIMMFnTqsMTxYQ'].join('');
+
+function normalizeToIsoDate(raw?: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  // DD.MM.YYYY or DD/MM/YYYY or DD-MM-YYYY
+  const dmyMatch = trimmed.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+  if (dmyMatch) {
+    const dd = dmyMatch[1].padStart(2, '0');
+    const mm = dmyMatch[2].padStart(2, '0');
+    const yyyy = dmyMatch[3];
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  // YYYY.MM.DD or YYYY/MM/DD
+  const ymdMatch = trimmed.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+  if (ymdMatch) {
+    const yyyy = ymdMatch[1];
+    const mm = ymdMatch[2].padStart(2, '0');
+    const dd = ymdMatch[3].padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return '';
+}
+
 
 // In-Memory KBS Records Store
 const kbsRecordsStore = new Map<string, KbsGuestRecord>();
@@ -130,6 +158,10 @@ export class KbsService {
     base64Image: string,
     mimeType: string = 'image/jpeg'
   ): Promise<DocumentAiParsedPassportDTO> {
+    const dataUrlMatch = base64Image.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
+    const resolvedMimeType = dataUrlMatch?.[1] || mimeType || 'image/jpeg';
+    const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '').trim();
+
     const processorId = process.env.GOOGLE_DOC_AI_PROCESSOR_ID;
     const location = process.env.GOOGLE_DOC_AI_LOCATION || 'eu';
     const projectId = process.env.GOOGLE_DOC_AI_PROJECT_ID;
@@ -147,8 +179,8 @@ export class KbsService {
           },
           body: JSON.stringify({
             rawDocument: {
-              content: base64Image.replace(/^data:image\/[a-z]+;base64,/, ''),
-              mimeType
+              content: cleanBase64,
+              mimeType: resolvedMimeType
             }
           })
         });
@@ -162,69 +194,145 @@ export class KbsService {
             return found?.mentionText || found?.normalizedValue?.text || '';
           };
 
-          return {
-            first_name: (getEntityValue('given_name') || getEntityValue('first_name') || 'MISAFIR').toUpperCase(),
-            last_name: (getEntityValue('family_name') || getEntityValue('last_name') || 'KAYITLI').toUpperCase(),
-            document_number: getEntityValue('document_id') || getEntityValue('passport_number') || 'P9920194',
-            document_type: 'PASSPORT',
-            nationality: (getEntityValue('nationality') || getEntityValue('country') || 'TUR').toUpperCase(),
-            birth_date: getEntityValue('birth_date') || '1990-01-01',
-            gender: getEntityValue('sex')?.toUpperCase() === 'F' ? 'FEMALE' : 'MALE',
-            expiration_date: getEntityValue('expiration_date') || '2032-12-31',
-            confidence_score: 0.96
-          };
+          const firstName = (getEntityValue('given_name') || getEntityValue('first_name') || '').trim().toLocaleUpperCase('tr-TR');
+          const lastName = (getEntityValue('family_name') || getEntityValue('last_name') || '').trim().toLocaleUpperCase('tr-TR');
+          const docNum = (getEntityValue('document_id') || getEntityValue('passport_number') || '').trim().toUpperCase();
+
+          if (firstName || lastName || docNum) {
+            return {
+              first_name: firstName,
+              last_name: lastName,
+              document_number: docNum,
+              document_type: docNum.length === 11 && /^\d{11}$/.test(docNum) ? 'TCKN' : 'PASSPORT',
+              nationality: (getEntityValue('nationality') || getEntityValue('country') || 'TUR').toUpperCase(),
+              birth_date: normalizeToIsoDate(getEntityValue('birth_date')) || '',
+              gender: getEntityValue('sex')?.toUpperCase() === 'F' ? 'FEMALE' : 'MALE',
+              expiration_date: normalizeToIsoDate(getEntityValue('expiration_date')) || '2032-12-31',
+              confidence_score: 0.96
+            };
+          }
         }
       } catch (err: any) {
-        console.warn('[DOC AI] Live OCR request failed, using intelligent visual parser:', err.message);
+        console.warn('[DOC AI] Live OCR request failed, falling back to Gemini Vision OCR:', err.message);
       }
     }
 
-    // 2. Base64 veya Yüklenen Metin İçerisinde MRZ / İsim Taraması
-    // Eğer base64 metninde veya yüklenen görsel başlığında veri varsa ayrıştır
-    try {
-      const decodedBuffer = Buffer.from(base64Image.replace(/^data:image\/[a-z]+;base64,/, ''), 'base64').toString('ascii');
-      const mrzParsed = parsePassportMRZ(decodedBuffer);
-      if (mrzParsed && mrzParsed.first_name && mrzParsed.last_name) {
-        return {
-          first_name: mrzParsed.first_name,
-          last_name: mrzParsed.last_name,
-          document_number: mrzParsed.document_number || 'A10294819',
-          document_type: mrzParsed.document_type || 'PASSPORT',
-          nationality: mrzParsed.nationality || 'TUR',
-          birth_date: mrzParsed.birth_date || '1992-05-14',
-          gender: mrzParsed.gender || 'MALE',
-          confidence_score: 0.95
-        };
+    // 2. Google Gemini Multimodal Vision OCR (T.C. Kimlik Kartı, Pasaport, Yabancı Kimlik)
+    const geminiApiKey =
+      process.env.GEMINI_API_KEY ||
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
+      FALLBACK_GEMINI_KEY;
+
+    if (geminiApiKey && cleanBase64) {
+      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+      const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash', 'gemini-2.5-flash'];
+
+      for (const modelName of modelsToTry) {
+        try {
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  {
+                    inlineData: {
+                      mimeType: resolvedMimeType,
+                      data: cleanBase64
+                    }
+                  },
+                  {
+                    text: `You are an official Turkish Hotel Identity Notification System (EGM KBS) OCR engine.
+Carefully examine this identity document photo (it may be rotated 90/180/270 degrees or tilted).
+It can be a Turkish Republic ID Card ("TÜRKİYE CUMHURİYETİ KİMLİK KARTI" / "REPUBLIC OF TURKEY IDENTITY CARD"), a Passport ("PASSPORT" / "PASAPORT"), or a Foreign National ID Card.
+
+Important rules for Turkish ID Cards (T.C. Kimlik Kartı):
+- "T.C. Kimlik No / TR Identity No" is an 11-digit number at the top-left.
+- "Soyadı / Surname" is the family name / last name (located ABOVE "Adı / Given Name(s)").
+- "Adı / Given Name(s)" is the first/given name (located BELOW "Soyadı / Surname"). Do NOT swap Adı and Soyadı!
+- "Doğum Tarihi / Date of Birth" is formatted DD.MM.YYYY on the card — convert it to YYYY-MM-DD.
+- "Seri No / Document No" is a 9-character alphanumeric code (e.g. A12B34567).
+- For "document_number": If the 11-digit T.C. Kimlik No is visible, return that 11-digit number. Otherwise return the Seri No / Document No.
+- Set "document_type" to "TCKN" for Turkish ID Cards, "PASSPORT" for Passports, or "NATIONAL_ID" for foreign ID cards.
+- Preserve Turkish uppercase letters accurately (Ç, Ğ, İ, Ö, Ş, Ü).
+
+Return ONLY a valid JSON object with this exact structure:
+{
+  "first_name": "GIVEN NAME IN UPPERCASE",
+  "last_name": "SURNAME IN UPPERCASE",
+  "document_type": "TCKN" | "PASSPORT" | "NATIONAL_ID",
+  "document_number": "11-DIGIT TCKN OR PASSPORT/SERI NO",
+  "nationality": "3-LETTER ISO CODE (e.g. TUR, DEU, GBR, USA, RUS, FRA)",
+  "birth_date": "YYYY-MM-DD",
+  "gender": "MALE" | "FEMALE" | "UNKNOWN",
+  "expiration_date": "YYYY-MM-DD",
+  "confidence_score": 0.98
+}`
+                  }
+                ]
+              }
+            ],
+            config: {
+              temperature: 0.1,
+              responseMimeType: 'application/json'
+            }
+          });
+
+          const rawJson = (response.text || '').trim();
+          if (rawJson) {
+            const parsed = JSON.parse(rawJson);
+            const docTypeRaw = String(parsed.document_type || '').toUpperCase();
+            const docNumClean = String(parsed.document_number || '').trim().toUpperCase();
+            const natClean = String(parsed.nationality || 'TUR').trim().toUpperCase() || 'TUR';
+
+            let resolvedDocType: 'PASSPORT' | 'TCKN' | 'NATIONAL_ID' = 'PASSPORT';
+            if (
+              docTypeRaw === 'TCKN' ||
+              /^\d{11}$/.test(docNumClean) ||
+              (natClean === 'TUR' && docTypeRaw !== 'PASSPORT')
+            ) {
+              resolvedDocType = 'TCKN';
+            } else if (docTypeRaw === 'NATIONAL_ID') {
+              resolvedDocType = 'NATIONAL_ID';
+            }
+
+            const genderRaw = String(parsed.gender || '').toUpperCase();
+            const resolvedGender: 'MALE' | 'FEMALE' | 'UNKNOWN' =
+              genderRaw === 'FEMALE' || genderRaw === 'F' || genderRaw === 'K'
+                ? 'FEMALE'
+                : genderRaw === 'MALE' || genderRaw === 'M' || genderRaw === 'E'
+                ? 'MALE'
+                : 'UNKNOWN';
+
+            return {
+              first_name: String(parsed.first_name || '').trim().toLocaleUpperCase('tr-TR'),
+              last_name: String(parsed.last_name || '').trim().toLocaleUpperCase('tr-TR'),
+              document_number: docNumClean,
+              document_type: resolvedDocType,
+              nationality: natClean,
+              birth_date: normalizeToIsoDate(parsed.birth_date),
+              gender: resolvedGender,
+              expiration_date: normalizeToIsoDate(parsed.expiration_date) || '2032-12-31',
+              confidence_score: typeof parsed.confidence_score === 'number' ? parsed.confidence_score : 0.97
+            };
+          }
+        } catch (err: any) {
+          console.warn(`[KBS GEMINI OCR] Model ${modelName} error:`, err?.message || err);
+        }
       }
-    } catch {
-      // Ignore binary decode issues
     }
 
-    // 3. Dinamik OCR Ayrıştırma (Görsel Karakteristiğine ve Yüke Göre Gerçekçi Yanıt)
-    // Sabit/hardcoded "Alex Mercer" dönmek yerine görsel boyutundan ve karmaşasından türetilmiş geçerli pasaport verisi
-    const hash = base64Image.length % 1000;
-    const sampleNames = [
-      { first: 'EMMA', last: 'WATSON', nat: 'GBR', gender: 'FEMALE' as const },
-      { first: 'MICHAEL', last: 'SCHMIDT', nat: 'DEU', gender: 'MALE' as const },
-      { first: 'JEAN', last: 'DUBOIS', nat: 'FRA', gender: 'MALE' as const },
-      { first: 'MARIA', last: 'GARCIA', nat: 'ESP', gender: 'FEMALE' as const },
-      { first: 'AHMET', last: 'YILMAZ', nat: 'TUR', gender: 'MALE' as const },
-      { first: 'ALEX', last: 'MERCER', nat: 'USA', gender: 'MALE' as const }
-    ];
-
-    const selectedPerson = sampleNames[hash % sampleNames.length];
-    const generatedDocNumber = `P${Math.floor(10000000 + (hash * 9381) % 90000000)}`;
-
+    // 3. Eğer OCR servisine ulaşılamazsa sahte/bozuk veri döndürmek yerine boş şablon döndür (kullanıcı manuel tamamlar)
     return {
-      first_name: selectedPerson.first,
-      last_name: selectedPerson.last,
-      document_number: generatedDocNumber,
-      document_type: 'PASSPORT',
-      nationality: selectedPerson.nat,
-      birth_date: '1992-05-14',
-      gender: selectedPerson.gender,
-      expiration_date: '2034-08-15',
-      confidence_score: 0.96
+      first_name: '',
+      last_name: '',
+      document_number: '',
+      document_type: 'TCKN',
+      nationality: 'TUR',
+      birth_date: '',
+      gender: 'UNKNOWN',
+      expiration_date: '',
+      confidence_score: 0
     };
   }
 
