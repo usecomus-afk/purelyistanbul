@@ -1,4 +1,4 @@
-import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
+import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
 import { UserPreferences } from '@/types/comusAi';
 import { CategoryConfig, mergeCategoryConfigs } from '@/lib/marketplace/categories';
 import rawHotels from '@/data/hotels.json';
@@ -428,7 +428,9 @@ export const XeniosStore = {
         ? {
             status: r.status as RoomOccupancyStatus,
             guest: r.guest || '',
+            guestPhone: r.guestPhone || '',
             checkout: r.checkout || '',
+            whatsappConfirmedAt: r.whatsappConfirmedAt || '',
             updatedAt: r.updatedAt || '',
           }
         : undefined;
@@ -447,17 +449,17 @@ export const XeniosStore = {
       } else if (!hadStoredMap) {
         // Initial one-time seed only if this hotel has never had stored states
         if (idx % 3 === 0) {
-          chosen = { status: 'occupied', guest: 'John Miller', checkout: 'Çıkış: 12:00' };
+          chosen = { status: 'occupied', guest: 'John Miller', guestPhone: '', checkout: 'Çıkış: 12:00' };
         } else if (idx % 5 === 0) {
-          chosen = { status: 'cleaning', guest: '', checkout: '' };
+          chosen = { status: 'cleaning', guest: '', guestPhone: '', checkout: '' };
         } else if (idx % 7 === 0) {
-          chosen = { status: 'reserved', guest: 'Elena Rostova', checkout: 'Giriş: 14:00' };
+          chosen = { status: 'reserved', guest: 'Elena Rostova', guestPhone: '', checkout: 'Giriş: 14:00' };
         } else {
-          chosen = { status: 'clean', guest: '', checkout: '' };
+          chosen = { status: 'clean', guest: '', guestPhone: '', checkout: '' };
         }
         needsPersist = true;
       } else {
-        chosen = { status: 'clean', guest: '', checkout: '' };
+        chosen = { status: 'clean', guest: '', guestPhone: '', checkout: '' };
         needsPersist = true;
       }
 
@@ -465,7 +467,9 @@ export const XeniosStore = {
         chosen = {
           ...chosen,
           guest: '',
+          guestPhone: '',
           checkout: '',
+          whatsappConfirmedAt: '',
         };
       }
 
@@ -490,7 +494,9 @@ export const XeniosStore = {
     const sanitized: RoomStateInfo = {
       status: nextState.status,
       guest: isVacantOrCleaning ? '' : (nextState.guest || '').trim(),
+      guestPhone: isVacantOrCleaning ? '' : (nextState.guestPhone || '').trim(),
       checkout: isVacantOrCleaning ? '' : (nextState.checkout || '').trim(),
+      whatsappConfirmedAt: isVacantOrCleaning ? '' : (nextState.whatsappConfirmedAt || ''),
       updatedAt: now,
     };
 
@@ -510,7 +516,9 @@ export const XeniosStore = {
               ...r,
               status: sanitized.status,
               guest: sanitized.guest,
+              guestPhone: sanitized.guestPhone,
               checkout: sanitized.checkout,
+              whatsappConfirmedAt: sanitized.whatsappConfirmedAt,
               updatedAt: now,
             }
           : r
@@ -526,6 +534,134 @@ export const XeniosStore = {
 
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_room_states_updated'));
+    }
+  },
+
+  getHotelWhatsAppTemplates(hotelId?: string): HotelWhatsAppTemplate[] {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const storageKey = `xenios_whatsapp_templates_v1_${targetHotelId}`;
+
+    const defaultTemplates: HotelWhatsAppTemplate[] = [
+      {
+        id: 'tpl-standard-full',
+        title: '1. Standart Rezervasyon Teyit & Karşılama Paketi (Konum + Wi-Fi + Giriş/Çıkış + Purely Istanbul)',
+        isDefault: true,
+        body: [
+          '✨ *REZERVASYON ONAYI & HOŞ GELDİNİZ BİLGİLENDİRMESİ* ✨',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          'Sayın *{misafir_adi}*,',
+          '*{tesis_adi}* konaklama rezervasyonunuz onaylanmıştır. Sizi ağırlamaktan mutluluk duyacağız!',
+          '',
+          '📋 *Rezervasyon & Konaklama Bilgileriniz:*',
+          '🚪 *Birim / Oda:* Birim {birim_no} ({birim_tipi})',
+          '⏰ *Giriş / Çıkış Bilgisi:* {giris_cikis}',
+          '📶 *Wi-Fi Ağı:* {wifi_adi}',
+          '🔑 *Wi-Fi Şifresi:* {wifi_sifre}',
+          '',
+          '📍 *Tesis Konumu & Yol Tarifi:*',
+          '{konum_adresi}',
+          '🗺️ *Harita:* {harita_linki}',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          '🌟 *Purely Istanbul — Dijital Konaklama & Şehir Asistanınız:*',
+          'Konaklamanız boyunca birim içi tüm sipariş ve taleplerinizi (oda servisi, temizlik, teknik destek, taksi/VIP transfer) tek dokunuşla iletmek ve İstanbul’un seçkin Boğaz turları, gastronomi ve kültür deneyimlerini keşfetmek için biriminize özel bağlantınız:',
+          '👉 {purely_link}',
+          '',
+          'Keyifli bir konaklama dileriz!',
+          '📞 *Tesis İletişim:* {tesis_telefon}',
+        ].join('\n'),
+      },
+      {
+        id: 'tpl-checkin-wifi',
+        title: '2. Hızlı Check-In, Wi-Fi Şifresi & Konum Bilgisi',
+        isDefault: true,
+        body: [
+          '🏨 *{tesis_adi} — Hoş Geldiniz!*',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          'Sayın *{misafir_adi}*, *Birim {birim_no}* konaklamanız için hızlı erişim bilgileriniz aşağıdadır:',
+          '',
+          '📶 *Wi-Fi Ağı:* {wifi_adi}',
+          '🔑 *Wi-Fi Şifresi:* {wifi_sifre}',
+          '⏰ *Giriş / Çıkış:* {giris_cikis}',
+          '📍 *Konum & Yol Tarifi:* {harita_linki}',
+          '',
+          '🛎️ *7/24 Dijital Oda Servisi & Purely Istanbul Rehberi:*',
+          'Birim içi siparişlerinizi vermek ve İstanbul deneyimlerini incelemek için tıklayın:',
+          '👉 {purely_link}',
+        ].join('\n'),
+      },
+      {
+        id: 'tpl-purely-intro',
+        title: '3. Purely Istanbul Dijital Concierge & Şehir Rehberi Tanıtımı',
+        isDefault: true,
+        body: [
+          '✨ *PURELY ISTANBUL İLE AYRICALIKLI KONAKLAMA* ✨',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          'Sayın *{misafir_adi}*,',
+          '*{tesis_adi}* (Birim {birim_no}) konaklamanız süresince size özel dijital asistanınız *Purely Istanbul* hizmetinizdedir.',
+          '',
+          '• 🛎️ *Birim İçi Sipariş & Talepler:* Oda servisi, ekstra havlu/yastık, temizlik ve taksi çağırma işlemlerinizi resepsiyonu aramadan anında iletin.',
+          '• 🛥️ *Seçkin İstanbul Deneyimleri:* Özel Boğaz yat turları, tarihi hamam & spa, seçkin restoran rezervasyonları ve VIP transfer ayrıcalıklarına tek tıkla ulaşın.',
+          '',
+          '🔗 *Biriminize Özel Dijital Rehber Bağlantınız:*',
+          '{purely_link}',
+        ].join('\n'),
+      },
+      {
+        id: 'tpl-english-welcome',
+        title: '4. 🇬🇧 English — Reservation Confirmation & Digital Concierge Guide',
+        isDefault: true,
+        body: [
+          '✨ *RESERVATION CONFIRMATION & WELCOME GUIDE* ✨',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          'Dear *{misafir_adi}*,',
+          'Your reservation at *{tesis_adi}* (*Unit {birim_no} - {birim_tipi}*) is confirmed. We look forward to welcoming you!',
+          '',
+          '📋 *Stay & Check-In Details:*',
+          '⏰ *Check-In / Check-Out:* {giris_cikis}',
+          '📶 *Wi-Fi Network:* {wifi_adi}',
+          '🔑 *Wi-Fi Password:* {wifi_sifre}',
+          '📍 *Address:* {konum_adresi}',
+          '🗺️ *Google Maps:* {harita_linki}',
+          '━━━━━━━━━━━━━━━━━━━━━━',
+          '🌟 *Purely Istanbul — Your Personal Digital Concierge:*',
+          'Order in-room dining, housekeeping, or a taxi with one tap, and explore curated Bosphorus yacht cruises, fine dining, and cultural experiences in Istanbul via your personal unit link:',
+          '👉 {purely_link}',
+        ].join('\n'),
+      },
+    ];
+
+    try {
+      const raw = safeGet(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {}
+
+    const hotel = this.getHotelById(targetHotelId);
+    if (Array.isArray(hotel?.modules?.whatsappTemplates) && hotel!.modules!.whatsappTemplates.length > 0) {
+      safeSet(storageKey, JSON.stringify(hotel!.modules!.whatsappTemplates));
+      return hotel!.modules!.whatsappTemplates;
+    }
+
+    return defaultTemplates;
+  },
+
+  saveHotelWhatsAppTemplates(hotelId: string, templates: HotelWhatsAppTemplate[]) {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const storageKey = `xenios_whatsapp_templates_v1_${targetHotelId}`;
+    safeSet(storageKey, JSON.stringify(templates));
+
+    const hotel = this.getHotelById(targetHotelId);
+    if (hotel) {
+      this.updateHotel(targetHotelId, {
+        modules: {
+          ...(hotel.modules || {}),
+          whatsappTemplates: templates,
+        },
+      });
     }
   },
 

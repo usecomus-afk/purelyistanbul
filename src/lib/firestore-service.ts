@@ -421,11 +421,14 @@ export const FirestoreService = {
                 baseItem.rooms = baseItem.rooms.map((rm) => {
                   const locRm = localRoomMap.get(rm.number);
                   if (locRm && locRm.status && (!rm.status || (locRm.updatedAt || '') >= (rm.updatedAt || ''))) {
+                    const isVacant = locRm.status === 'clean' || locRm.status === 'cleaning';
                     return {
                       ...rm,
                       status: locRm.status,
-                      guest: locRm.status === 'clean' || locRm.status === 'cleaning' ? '' : locRm.guest,
-                      checkout: locRm.status === 'clean' || locRm.status === 'cleaning' ? '' : locRm.checkout,
+                      guest: isVacant ? '' : locRm.guest,
+                      guestPhone: isVacant ? '' : locRm.guestPhone,
+                      checkout: isVacant ? '' : locRm.checkout,
+                      whatsappConfirmedAt: isVacant ? '' : locRm.whatsappConfirmedAt,
                       updatedAt: locRm.updatedAt,
                     };
                   }

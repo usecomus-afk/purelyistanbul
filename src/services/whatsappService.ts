@@ -271,7 +271,11 @@ export class WhatsAppService {
   /**
    * Serbest metin WhatsApp yanıt mesajı gönderir (Webhook onay dönüşü vb. için)
    */
-  static async sendTextMessage(phone: string, body: string): Promise<WhatsAppSendResult> {
+  static async sendTextMessage(
+    phone: string,
+    body: string,
+    previewUrl: boolean = true
+  ): Promise<WhatsAppSendResult> {
     const formattedPhone = this.formatPhoneNumber(phone);
     const { token, phoneId, isLive, senderNumber } = this.getCredentials();
 
@@ -289,13 +293,13 @@ export class WhatsAppService {
             to: formattedPhone,
             type: 'text',
             text: {
-              preview_url: false,
+              preview_url: previewUrl,
               body,
             },
           }),
         });
+        const data = await response.json().catch(() => ({}));
         if (response.ok) {
-          const data = await response.json().catch(() => ({}));
           return {
             success: true,
             message_id: data.messages?.[0]?.id || `wamid_${Date.now()}`,
@@ -304,9 +308,26 @@ export class WhatsAppService {
             sender_number: senderNumber,
             details: data,
           };
+        } else {
+          return {
+            success: false,
+            message_id: '',
+            recipient_phone: formattedPhone,
+            status: 'FAILED',
+            sender_number: senderNumber,
+            details: data,
+          };
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn('[WHATSAPP TEXT API] Error:', err);
+        return {
+          success: false,
+          message_id: '',
+          recipient_phone: formattedPhone,
+          status: 'FAILED',
+          sender_number: senderNumber,
+          details: { error: err?.message },
+        };
       }
     }
 

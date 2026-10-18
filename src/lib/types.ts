@@ -5,7 +5,17 @@ export type RoomOccupancyStatus = 'occupied' | 'clean' | 'cleaning' | 'reserved'
 export interface RoomStateInfo {
   status: RoomOccupancyStatus;
   guest?: string;
+  guestPhone?: string;
   checkout?: string;
+  whatsappConfirmedAt?: string;
+  updatedAt?: string;
+}
+
+export interface HotelWhatsAppTemplate {
+  id: string;
+  title: string;
+  body: string;
+  isDefault?: boolean;
   updatedAt?: string;
 }
 
@@ -18,7 +28,9 @@ export interface Room {
   wifiPass: string;
   status?: RoomOccupancyStatus;
   guest?: string;
+  guestPhone?: string;
   checkout?: string;
+  whatsappConfirmedAt?: string;
   updatedAt?: string;
 }
 
