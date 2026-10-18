@@ -201,8 +201,8 @@ export function GuestTabBar({
   const t = getT(currentLang);
 
   const tabs: { id: TabId; label: string; iconType: 'hotel' | 'grid' | 'spiral' | 'guide' }[] = [
-    { id: 'services', label: t.tabs.services || 'Stay Essentials', iconType: 'hotel' },
-    { id: 'categories', label: t.tabs.categories || 'Categories', iconType: 'grid' },
+    { id: 'services', label: t.tabs.services || 'Stay', iconType: 'hotel' },
+    { id: 'categories', label: t.tabs.categories || 'İstanbul', iconType: 'grid' },
     { id: 'ai', label: t.tabs.aiGuide || 'Comus', iconType: 'spiral' },
     { id: 'practical', label: t.tabs.practical || 'Guide', iconType: 'guide' }
   ];
