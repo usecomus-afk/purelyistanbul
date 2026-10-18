@@ -191,18 +191,26 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
 
             {/* Clean Neomorphic Top Bar Pill */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F3EFE8]/92 backdrop-blur-md border border-white/90 shadow-[0_8px_22px_rgba(36,28,18,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)]">
-              <Link
-                href="/"
-                onClick={() => {
+              <a
+                href={`/stay/${encodeURIComponent(currentHotel?.id || 'hotel-1')}/TEST`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetHotelId = currentHotel?.id || 'hotel-1';
+                  XeniosStore.setActiveHotelSession(targetHotelId, 'TEST');
                   if (typeof window !== 'undefined') {
-                    localStorage.setItem('xenios_app_role', 'guest');
+                    try {
+                      localStorage.setItem('xenios_app_role', 'guest');
+                      sessionStorage.setItem('purely_splash_v6_played', 'true');
+                      sessionStorage.setItem('purely_splash_played', 'true');
+                    } catch {}
+                    window.location.href = `/stay/${encodeURIComponent(targetHotelId)}/TEST`;
                   }
                 }}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11.5px] font-medium text-[#2C2824] hover:bg-black/5 transition cursor-pointer"
               >
                 <DoorOpen className="w-3.5 h-3.5 text-[#8E7252]" />
                 <span>Misafir Ekranı</span>
-              </Link>
+              </a>
 
               <div className="w-[1px] h-3.5 bg-[#D5CBB8]" />
 
@@ -311,17 +319,25 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
             </form>
 
             <div className="pt-2.5 text-center border-t border-[#DFD6C7]">
-              <Link
-                href="/"
-                onClick={() => {
+              <a
+                href={`/stay/${encodeURIComponent(currentHotel?.id || 'hotel-1')}/TEST`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetHotelId = currentHotel?.id || 'hotel-1';
+                  XeniosStore.setActiveHotelSession(targetHotelId, 'TEST');
                   if (typeof window !== 'undefined') {
-                    localStorage.setItem('xenios_app_role', 'guest');
+                    try {
+                      localStorage.setItem('xenios_app_role', 'guest');
+                      sessionStorage.setItem('purely_splash_v6_played', 'true');
+                      sessionStorage.setItem('purely_splash_played', 'true');
+                    } catch {}
+                    window.location.href = `/stay/${encodeURIComponent(targetHotelId)}/TEST`;
                   }
                 }}
-                className="font-luxury-sans text-xs text-[#5C4938] hover:text-[#141414] font-semibold transition inline-flex items-center gap-1"
+                className="font-luxury-sans text-xs text-[#5C4938] hover:text-[#141414] font-semibold transition inline-flex items-center gap-1 cursor-pointer"
               >
                 <span>← Misafir Ekranına Geri Dön</span>
-              </Link>
+              </a>
             </div>
           </div>
         </main>

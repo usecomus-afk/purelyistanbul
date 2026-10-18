@@ -814,6 +814,46 @@ export const FirestoreService = {
     return local;
   },
 
+  subscribeToBookings(onUpdate: (bookings: Booking[]) => void): () => void {
+    const localList = XeniosStore.getBookings();
+    onUpdate(localList);
+
+    if (!db || !isFirebaseConfigured) {
+      const handler = () => onUpdate(XeniosStore.getBookings());
+      if (typeof window !== 'undefined') {
+        window.addEventListener('xenios_bookings_updated', handler);
+        return () => window.removeEventListener('xenios_bookings_updated', handler);
+      }
+      return () => {};
+    }
+
+    try {
+      const colRef = collection(db, COLLECTIONS.BOOKINGS);
+      const q = query(colRef, limit(200));
+      return onSnapshot(
+        q,
+        (snapshot) => {
+          const remote: Booking[] = [];
+          snapshot.forEach((d) => {
+            remote.push({ id: d.id, ...(d.data() as any) });
+          });
+          const mergedMap = new Map<string, Booking>();
+          for (const b of XeniosStore.getBookings()) mergedMap.set(b.id, b);
+          for (const b of remote) mergedMap.set(b.id, b);
+          const merged = Array.from(mergedMap.values()).sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          onUpdate(merged);
+        },
+        () => {
+          onUpdate(XeniosStore.getBookings());
+        }
+      );
+    } catch {
+      return () => {};
+    }
+  },
+
 
   // 🏢 INVESTMENT LEADS
   async addInvestmentLead(lead: any): Promise<any> {

@@ -182,11 +182,19 @@ export default function HotelPortalLayout({
               </Link>
 
               {/* Preview Guest Screen */}
-              <Link
-                href="/"
-                onClick={() => {
+              <a
+                href={`/stay/${encodeURIComponent(currentHotel.id || 'hotel-1')}/TEST`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetHotelId = currentHotel.id || 'hotel-1';
+                  XeniosStore.setActiveHotelSession(targetHotelId, 'TEST');
                   if (typeof window !== 'undefined') {
-                    localStorage.setItem('xenios_app_role', 'guest');
+                    try {
+                      localStorage.setItem('xenios_app_role', 'guest');
+                      sessionStorage.setItem('purely_splash_v6_played', 'true');
+                      sessionStorage.setItem('purely_splash_played', 'true');
+                    } catch {}
+                    window.location.href = `/stay/${encodeURIComponent(targetHotelId)}/TEST`;
                   }
                 }}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF8F4]/90 hover:bg-white text-[#221F1C] border border-[#D4C9B8]/80 text-[11px] font-luxury-sans font-medium shadow-2xs transition cursor-pointer whitespace-nowrap"
@@ -194,7 +202,7 @@ export default function HotelPortalLayout({
               >
                 <DoorOpen className="w-3.5 h-3.5 text-[#8E7252] stroke-[1.7]" />
                 <span>Misafir</span>
-              </Link>
+              </a>
 
               {/* Logout Button */}
               <button

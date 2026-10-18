@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { XeniosStore } from '@/lib/store';
-import { Hotel } from '@/lib/types';
+import { FirestoreService } from '@/lib/firestore-service';
+import { Hotel, ServiceRequest, Booking } from '@/lib/types';
 import {
   BarChart3,
   TrendingUp,
@@ -14,21 +15,74 @@ import {
   XCircle,
   Sparkles,
   Store,
-  PieChart as PieChartIcon,
   Clock,
   ArrowUpRight,
-  ArrowDownRight,
-  Building2
+  CreditCard,
+  Receipt,
+  DoorOpen,
+  CheckCircle2,
+  Search,
+  Filter,
+  Wallet
 } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface FolioItem {
+  id: string;
+  requestId?: string;
+  roomNumber: string;
+  hotelName: string;
+  title: string;
+  notes: string;
+  department: string;
+  amount: number;
+  currency: string;
+  paymentStatus: 'paid_online' | 'room_folio';
+  paymentReference?: string;
+  requestStatus: string;
+  createdAt: string;
+  source: 'request' | 'booking';
+}
+
+function formatFolioCurrency(amount: number, currency: string = 'TRY'): string {
+  const c = (currency || 'TRY').toUpperCase();
+  if (c === 'EUR' || c === '€') return `${amount.toLocaleString('tr-TR')} €`;
+  if (c === 'USD' || c === '$') return `${amount.toLocaleString('tr-TR')} $`;
+  return `${amount.toLocaleString('tr-TR')} ₺`;
+}
+
+function parseLegacyAmountFromRequest(req: ServiceRequest): { amount: number; currency: string } | null {
+  if (typeof req.paymentAmount === 'number' && req.paymentAmount > 0) {
+    return { amount: req.paymentAmount, currency: req.paymentCurrency || 'TRY' };
+  }
+  const text = `${req.notes || ''} ${JSON.stringify(req.details || {})}`;
+  // Match patterns like "Toplam: 850 ₺", "680 ₺", "45 €", "1.250 ₺"
+  const match = text.match(/(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?|\d+)\s*(₺|TRY|TL|€|EUR|\$|USD)/i);
+  if (match) {
+    const rawNum = match[1].replace(/\./g, '').replace(',', '.');
+    const val = Number(rawNum);
+    if (!Number.isNaN(val) && val > 0) {
+      const sym = match[2].toUpperCase();
+      const currency = sym === '€' || sym === 'EUR' ? 'EUR' : sym === '$' || sym === 'USD' ? 'USD' : 'TRY';
+      return { amount: val, currency };
+    }
+  }
+  return null;
+}
 
 export default function HotelReportsPage() {
   const [hotels, setHotels] = useState<Hotel[]>(() => XeniosStore.getHotels());
   const [activeHotelId, setActiveHotelId] = useState<string>(() => XeniosStore.getActiveHotelId());
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
 
-  const [bookings, setBookings] = useState(() => XeniosStore.getBookings());
+  const [bookings, setBookings] = useState<Booking[]>(() => XeniosStore.getBookings());
   const [experiences, setExperiences] = useState(() => XeniosStore.getExperiences());
-  const [requests, setRequests] = useState(() => XeniosStore.getRequests());
+  const [requests, setRequests] = useState<ServiceRequest[]>(() => XeniosStore.getRequests());
+
+  // Guest Folio Filters
+  const [selectedRoomFilter, setSelectedRoomFilter] = useState<string>('all');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid_online' | 'room_folio'>('all');
+  const [folioSearch, setFolioSearch] = useState<string>('');
 
   const refreshData = () => {
     setHotels(XeniosStore.getHotels());
@@ -40,16 +94,197 @@ export default function HotelReportsPage() {
 
   useEffect(() => {
     refreshData();
+    const unsubReqs = FirestoreService.subscribeToLiveRequests(null, (liveReqs) => {
+      setRequests(liveReqs);
+    });
+    const unsubBookings = FirestoreService.subscribeToBookings((liveBookings) => {
+      setBookings(liveBookings);
+    });
+
     window.addEventListener('xenios_bookings_updated', refreshData);
     window.addEventListener('xenios_requests_updated', refreshData);
     return () => {
+      unsubReqs();
+      unsubBookings();
       window.removeEventListener('xenios_bookings_updated', refreshData);
       window.removeEventListener('xenios_requests_updated', refreshData);
     };
   }, []);
 
+  // Build unified Guest Folio list from paid ServiceRequests + Bookings
+  const folioItems = useMemo<FolioItem[]>(() => {
+    const items: FolioItem[] = [];
+    const seenRefs = new Set<string>();
+
+    for (const req of requests) {
+      const parsed = parseLegacyAmountFromRequest(req);
+      if (!parsed || parsed.amount <= 0) continue;
+
+      const isOnlinePaid =
+        req.paymentStatus === 'paid_online' ||
+        req.paymentMethod === 'online_card' ||
+        /Online Ödendi|Paid Online/i.test(req.notes || '');
+
+      const refMatch = (req.notes || '').match(/#(PAY-\d+|EXP-\d+|BK-[A-Z0-9-]+)/i);
+      const paymentReference = req.paymentReference || (refMatch ? refMatch[1] : undefined);
+      if (paymentReference) seenRefs.add(paymentReference);
+
+      items.push({
+        id: `req_${req.id}`,
+        requestId: req.id,
+        roomNumber: String(req.roomNumber || '101'),
+        hotelName: req.hotelName || currentHotel.name,
+        title: req.serviceTitle,
+        notes: req.notes || '',
+        department: req.department || 'Oda Servisi',
+        amount: parsed.amount,
+        currency: parsed.currency,
+        paymentStatus: isOnlinePaid ? 'paid_online' : 'room_folio',
+        paymentReference,
+        requestStatus: req.status,
+        createdAt: req.createdAt,
+        source: 'request',
+      });
+    }
+
+    for (const bk of bookings) {
+      if (!bk.amount || bk.amount <= 0) continue;
+      if (bk.status === 'cancelled') continue;
+      // Avoid duplicating in-room bookings already recorded as a service_request
+      if (bk.experienceId?.startsWith('inroom_') || seenRefs.has(bk.id)) continue;
+
+      items.push({
+        id: `bk_${bk.id}`,
+        roomNumber: String(bk.roomNumber || '101'),
+        hotelName: bk.hotelName || currentHotel.name,
+        title: bk.experienceTitle,
+        notes: `${bk.guestName} (${bk.guestCount} Kişi) · ${bk.bookingDate} ${bk.bookingTime}`,
+        department: 'Concierge & Deneyim',
+        amount: bk.amount,
+        currency: bk.currency || 'EUR',
+        paymentStatus: 'paid_online',
+        paymentReference: bk.id,
+        requestStatus: bk.status === 'confirmed' || bk.status === 'payment_success' ? 'completed' : 'pending',
+        createdAt: bk.createdAt,
+        source: 'booking',
+      });
+    }
+
+    return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [requests, bookings, currentHotel.name]);
+
+  // Distinct room numbers in Folio
+  const roomSummaries = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        roomNumber: string;
+        count: number;
+        onlinePaidTRY: number;
+        onlinePaidEUR: number;
+        folioBalanceTRY: number;
+        folioBalanceEUR: number;
+        lastActivity: string;
+      }
+    >();
+
+    for (const item of folioItems) {
+      const key = item.roomNumber;
+      const existing = map.get(key) || {
+        roomNumber: key,
+        count: 0,
+        onlinePaidTRY: 0,
+        onlinePaidEUR: 0,
+        folioBalanceTRY: 0,
+        folioBalanceEUR: 0,
+        lastActivity: item.createdAt,
+      };
+      existing.count += 1;
+      const isEur = item.currency.toUpperCase() === 'EUR' || item.currency === '€';
+      if (item.paymentStatus === 'paid_online') {
+        if (isEur) existing.onlinePaidEUR += item.amount;
+        else existing.onlinePaidTRY += item.amount;
+      } else {
+        if (isEur) existing.folioBalanceEUR += item.amount;
+        else existing.folioBalanceTRY += item.amount;
+      }
+      if (new Date(item.createdAt) > new Date(existing.lastActivity)) {
+        existing.lastActivity = item.createdAt;
+      }
+      map.set(key, existing);
+    }
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.roomNumber.localeCompare(b.roomNumber, 'tr', { numeric: true })
+    );
+  }, [folioItems]);
+
+  // Filtered Folio Items
+  const filteredFolioItems = useMemo(() => {
+    return folioItems.filter((item) => {
+      if (selectedRoomFilter !== 'all' && item.roomNumber !== selectedRoomFilter) return false;
+      if (paymentFilter !== 'all' && item.paymentStatus !== paymentFilter) return false;
+      if (folioSearch.trim()) {
+        const q = folioSearch.toLowerCase();
+        const hay = `${item.roomNumber} ${item.title} ${item.notes} ${item.paymentReference || ''} ${item.department}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [folioItems, selectedRoomFilter, paymentFilter, folioSearch]);
+
+  // Folio Totals
+  const folioTotals = useMemo(() => {
+    let onlineCount = 0;
+    let folioCount = 0;
+    let onlineTRY = 0;
+    let onlineEUR = 0;
+    let folioTRY = 0;
+    let folioEUR = 0;
+
+    for (const item of folioItems) {
+      const isEur = item.currency.toUpperCase() === 'EUR' || item.currency === '€';
+      if (item.paymentStatus === 'paid_online') {
+        onlineCount += 1;
+        if (isEur) onlineEUR += item.amount;
+        else onlineTRY += item.amount;
+      } else {
+        folioCount += 1;
+        if (isEur) folioEUR += item.amount;
+        else folioTRY += item.amount;
+      }
+    }
+
+    return {
+      onlineCount,
+      folioCount,
+      onlineTRY,
+      onlineEUR,
+      folioTRY,
+      folioEUR,
+      totalTRY: onlineTRY + folioTRY,
+      totalEUR: onlineEUR + folioEUR,
+    };
+  }, [folioItems]);
+
+  const handleMarkAsPaidOnline = async (item: FolioItem) => {
+    if (!item.requestId) return;
+    const refCode = item.paymentReference || `PAY-${Math.floor(100000 + Math.random() * 900000)}`;
+    await FirestoreService.updateRequestPayment(item.requestId, {
+      paymentMethod: 'online_card',
+      paymentStatus: 'paid_online',
+      paymentAmount: item.amount,
+      paymentCurrency: item.currency,
+      paymentReference: refCode,
+    });
+    setRequests(XeniosStore.getRequests());
+    toast.success(`Oda ${item.roomNumber} folyo kalemi tahsil edildi olarak işaretlendi.`, {
+      description: `${item.title} · ${formatFolioCurrency(item.amount, item.currency)} (#${refCode})`,
+    });
+  };
+
   // Metrikler
-  const totalPurchases = bookings.filter(b => b.status === 'confirmed').length + 8;
+  const totalPurchases = folioTotals.onlineCount + bookings.filter(b => b.status === 'confirmed').length;
   const totalReservations = bookings.length + 12;
   const totalAppointments = 6;
   const totalInfoInquiries = 14;
@@ -57,9 +292,6 @@ export default function HotelReportsPage() {
   const activeThirdPartyListings = experiences.length;
 
   // Comus AI Kullanım Dağılımı (Pie Chart)
-  // 1. Otel İçi Hizmetler (%45)
-  // 2. Uygulama Hizmetleri / 3. Taraf (%38)
-  // 3. Diğer (%17)
   const aiDistribution = [
     { label: 'Otel İçi Hizmetler', percent: 45, color: '#f59e0b', count: 184, desc: 'Oda servisi, temizlik, minibar, havlu & resepsiyon' },
     { label: 'Uygulama Hizmetleri (3. Taraf)', percent: 38, color: '#3b82f6', count: 156, desc: 'Estetik/klinik, bosphorus turları, gurme mekanlar' },
@@ -76,17 +308,351 @@ export default function HotelReportsPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-amber-700" />
-            <span>Raporlar & Analitik Masası</span>
+            <span>Raporlar, Misafir Folyo & Analitik</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Misafir uygulama etkileşimi, işlem hacimleri ve Comus AI akıllı rehber kullanım analizleri.
+            Oda bazlı ücretli talep/sipariş folyosu, online ödemeler, işlem hacimleri ve Comus AI kullanım analizleri.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-amber-100/60 p-1.5 rounded-2xl border border-amber-200 text-xs font-bold text-amber-900">
+        <div className="flex items-center gap-2 bg-amber-100/60 p-1.5 px-3 rounded-2xl border border-amber-200 text-xs font-bold text-amber-900 self-start sm:self-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Canlı Güncellenen Veriler</span>
+          <span>Canlı Folyo & Veri Akışı</span>
         </div>
+      </div>
+
+      {/* ===================================================================== */}
+      {/* MİSAFİR FOLYO & ODA HESABI / ONLİNE ÖDEME TAKİP MASASI                */}
+      {/* ===================================================================== */}
+      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-amber-300/90 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-100 pb-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase tracking-wider">
+              <Receipt className="w-3.5 h-3.5 text-amber-700" />
+              <span>Misafir Folyo & Ödeme Takibi</span>
+            </div>
+            <h2 className="text-base sm:text-lg font-bold font-serif text-zinc-900 dark:text-slate-100">
+              Oda Bazlı Ücretli Siparişler, Hizmet Talepleri ve Online Ödemeler
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-slate-400">
+              Uygulama üzerinden iletilen tüm ücretli oda servisi siparişleri, konaklama içi talepler ve online kart ödemeleri oda numarasıyla birlikte anlık tutulur.
+            </p>
+          </div>
+        </div>
+
+        {/* 4 Guest Folio KPI Summary Boxes */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* 1. Toplam Folyo Hacmi */}
+          <div className="p-4 rounded-2xl bg-[#FAF8F4] border border-[#D8CBB8] space-y-1">
+            <div className="flex items-center justify-between text-xs text-zinc-600">
+              <span className="font-bold text-zinc-800">Toplam Ücretli İşlem</span>
+              <Wallet className="w-4 h-4 text-amber-700" />
+            </div>
+            <div className="text-lg sm:text-xl font-bold font-mono text-zinc-900">
+              {folioTotals.totalTRY > 0 ? `${folioTotals.totalTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
+              {folioTotals.totalEUR > 0 ? ` + ${folioTotals.totalEUR.toLocaleString('tr-TR')} €` : ''}
+            </div>
+            <span className="text-[10px] text-zinc-500 block">
+              Toplam {folioItems.length} ücretli sipariş & talep
+            </span>
+          </div>
+
+          {/* 2. Online Ödeme Yapanlar */}
+          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
+            <div className="flex items-center justify-between text-xs text-emerald-900">
+              <span className="font-bold">Online Ödeme Yapanlar</span>
+              <CreditCard className="w-4 h-4 text-emerald-700" />
+            </div>
+            <div className="text-lg sm:text-xl font-bold font-mono text-emerald-900">
+              {folioTotals.onlineTRY > 0 ? `${folioTotals.onlineTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
+              {folioTotals.onlineEUR > 0 ? ` + ${folioTotals.onlineEUR.toLocaleString('tr-TR')} €` : ''}
+            </div>
+            <span className="text-[10px] text-emerald-800 font-semibold block">
+              {folioTotals.onlineCount} işlem kredi kartı ile online ödendi
+            </span>
+          </div>
+
+          {/* 3. Oda Folyosunda Bekleyen */}
+          <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-1">
+            <div className="flex items-center justify-between text-xs text-amber-900">
+              <span className="font-bold">Oda Hesabı (Folyo)</span>
+              <Receipt className="w-4 h-4 text-amber-700" />
+            </div>
+            <div className="text-lg sm:text-xl font-bold font-mono text-amber-900">
+              {folioTotals.folioTRY > 0 ? `${folioTotals.folioTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
+              {folioTotals.folioEUR > 0 ? ` + ${folioTotals.folioEUR.toLocaleString('tr-TR')} €` : ''}
+            </div>
+            <span className="text-[10px] text-amber-800 font-semibold block">
+              {folioTotals.folioCount} işlem oda hesabına yansıtıldı
+            </span>
+          </div>
+
+          {/* 4. Aktif Folyo Odası */}
+          <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-1">
+            <div className="flex items-center justify-between text-xs text-sky-900">
+              <span className="font-bold">Folyo Açık Oda Sayısı</span>
+              <DoorOpen className="w-4 h-4 text-sky-700" />
+            </div>
+            <div className="text-lg sm:text-xl font-bold font-mono text-sky-900">
+              {roomSummaries.length} Oda
+            </div>
+            <span className="text-[10px] text-sky-800 block">
+              Ücretli sipariş/hizmet kaydı bulunan birimler
+            </span>
+          </div>
+        </div>
+
+        {/* Oda Bazlı Folyo Özet Kartları (Tıklanınca Odayı Filtreler) */}
+        {roomSummaries.length > 0 && (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                <DoorOpen className="w-4 h-4 text-amber-700" />
+                <span>Oda Bazlı Folyo Özeti (Detay için odaya tıklayın)</span>
+              </span>
+              {selectedRoomFilter !== 'all' && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedRoomFilter('all')}
+                  className="text-[11px] font-bold text-amber-800 hover:underline cursor-pointer"
+                >
+                  Tüm Odaları Göster
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+              {roomSummaries.map((rm) => {
+                const isSelected = selectedRoomFilter === rm.roomNumber;
+                return (
+                  <button
+                    key={rm.roomNumber}
+                    type="button"
+                    onClick={() =>
+                      setSelectedRoomFilter(isSelected ? 'all' : rm.roomNumber)
+                    }
+                    className={`p-3.5 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between gap-2 ${
+                      isSelected
+                        ? 'bg-amber-100/90 border-amber-600 ring-2 ring-amber-500/30 shadow-xs'
+                        : 'bg-[#FAF8F4] hover:bg-amber-50/60 border-[#D8CBB8]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-amber-900 text-white font-mono font-bold text-xs">
+                        Oda {rm.roomNumber}
+                      </span>
+                      <span className="text-[11px] font-semibold text-zinc-600">
+                        {rm.count} Ücretli İşlem
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1 border-t border-amber-200/60 text-[11px]">
+                      <div>
+                        <span className="text-[10px] text-emerald-700 font-bold block">💳 Online Ödenen</span>
+                        <strong className="font-mono text-emerald-900">
+                          {rm.onlinePaidTRY > 0 ? `${rm.onlinePaidTRY.toLocaleString('tr-TR')} ₺` : ''}
+                          {rm.onlinePaidTRY > 0 && rm.onlinePaidEUR > 0 ? ' + ' : ''}
+                          {rm.onlinePaidEUR > 0 ? `${rm.onlinePaidEUR.toLocaleString('tr-TR')} €` : ''}
+                          {rm.onlinePaidTRY === 0 && rm.onlinePaidEUR === 0 ? '0 ₺' : ''}
+                        </strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-amber-800 font-bold block">🏨 Oda Hesabı</span>
+                        <strong className="font-mono text-amber-950">
+                          {rm.folioBalanceTRY > 0 ? `${rm.folioBalanceTRY.toLocaleString('tr-TR')} ₺` : ''}
+                          {rm.folioBalanceTRY > 0 && rm.folioBalanceEUR > 0 ? ' + ' : ''}
+                          {rm.folioBalanceEUR > 0 ? `${rm.folioBalanceEUR.toLocaleString('tr-TR')} €` : ''}
+                          {rm.folioBalanceTRY === 0 && rm.folioBalanceEUR === 0 ? '0 ₺' : ''}
+                        </strong>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Filter Bar: Room Selector, Payment Method Filter, Search */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2 border-t border-zinc-100">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setPaymentFilter('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                paymentFilter === 'all'
+                  ? 'bg-zinc-900 text-white border-zinc-900'
+                  : 'bg-[#FAF8F4] text-zinc-700 border-[#D8CBB8] hover:bg-amber-50'
+              }`}
+            >
+              Tümü ({folioItems.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaymentFilter('paid_online')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                paymentFilter === 'paid_online'
+                  ? 'bg-emerald-700 text-white border-emerald-700'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Online Ödeme Yapanlar ({folioTotals.onlineCount})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaymentFilter('room_folio')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                paymentFilter === 'room_folio'
+                  ? 'bg-amber-700 text-white border-amber-700'
+                  : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
+              }`}
+            >
+              <Receipt className="w-3.5 h-3.5" />
+              <span>Oda Hesabı / Folyo ({folioTotals.folioCount})</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 sm:w-56">
+              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={folioSearch}
+                onChange={(e) => setFolioSearch(e.target.value)}
+                placeholder="Oda no, sipariş veya #kod ara..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-xs text-zinc-900 focus:outline-none focus:border-amber-600"
+              />
+            </div>
+
+            <select
+              value={selectedRoomFilter}
+              onChange={(e) => setSelectedRoomFilter(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-xs font-bold text-zinc-800 focus:outline-none"
+            >
+              <option value="all">Tüm Odalar</option>
+              {roomSummaries.map((r) => (
+                <option key={r.roomNumber} value={r.roomNumber}>
+                  Oda {r.roomNumber} ({r.count})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Detailed Guest Folio Ledger */}
+        {filteredFolioItems.length === 0 ? (
+          <div className="p-8 text-center rounded-2xl bg-[#FAF8F4] border border-dashed border-[#D8CBB8] text-zinc-500 space-y-1.5">
+            <Receipt className="w-7 h-7 mx-auto text-amber-700/60" />
+            <p className="text-xs font-semibold text-zinc-700">
+              Seçili filtreye uygun ücretli sipariş veya folyo kaydı bulunamadı.
+            </p>
+            <p className="text-[11px] text-zinc-500">
+              Misafirler PWA üzerinden ücretli sipariş veya online ödeme yaptığında oda numarasıyla birlikte anında burada listelenir.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
+            {filteredFolioItems.map((item) => {
+              const isOnline = item.paymentStatus === 'paid_online';
+              return (
+                <div
+                  key={item.id}
+                  className={`p-3.5 sm:p-4 rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    isOnline
+                      ? 'bg-emerald-50/35 border-emerald-200/90 hover:border-emerald-400'
+                      : 'bg-[#FAF8F4] border-[#D8CBB8] hover:border-amber-400'
+                  }`}
+                >
+                  <div className="space-y-1.5 min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-xl bg-amber-900 text-white font-mono font-bold text-xs">
+                        Oda {item.roomNumber}
+                      </span>
+
+                      <strong className="text-xs sm:text-sm font-bold text-zinc-900">
+                        {item.title}
+                      </strong>
+
+                      {isOnline ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10.5px] font-bold">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-700" />
+                          <span>ONLİNE ÖDENDİ</span>
+                          {item.paymentReference && (
+                            <span className="font-mono">· #{item.paymentReference}</span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10.5px] font-bold">
+                          <Receipt className="w-3 h-3 text-amber-800" />
+                          <span>ODA FOLYOSU (Oda Hesabı)</span>
+                        </span>
+                      )}
+
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 font-semibold">
+                        {item.department}
+                      </span>
+                    </div>
+
+                    {item.notes && (
+                      <p className="text-xs text-zinc-700 leading-relaxed">
+                        {item.notes}
+                      </p>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-3 text-[10.5px] text-zinc-500 font-mono">
+                      <span>
+                        Tarih/Saat:{' '}
+                        {new Date(item.createdAt).toLocaleString('tr-TR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                      <span>·</span>
+                      <span>
+                        Durum:{' '}
+                        {item.requestStatus === 'completed'
+                          ? 'Tamamlandı'
+                          : item.requestStatus === 'in_progress'
+                            ? 'Hazırlanıyor'
+                            : 'Bekliyor'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right Side: Amount + Quick Action */}
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-zinc-200/60">
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+                        {isOnline ? 'Tahsil Edilen Tutar' : 'Folyo Tutarı'}
+                      </span>
+                      <strong
+                        className={`text-base sm:text-lg font-mono font-bold ${
+                          isOnline ? 'text-emerald-800' : 'text-amber-900'
+                        }`}
+                      >
+                        {formatFolioCurrency(item.amount, item.currency)}
+                      </strong>
+                    </div>
+
+                    {!isOnline && item.requestId && (
+                      <button
+                        type="button"
+                        onClick={() => handleMarkAsPaidOnline(item)}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Tahsil Edildi İşaretle</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Misafir Uygulama Kullanımı - 3 KPI Cards */}
@@ -216,14 +782,12 @@ export default function HotelReportsPage() {
           <div className="md:col-span-5 flex flex-col items-center justify-center p-4 bg-amber-50/30 rounded-3xl border border-amber-100">
             <div className="relative w-48 h-48">
               <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                {/* Background Ring */}
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
                   stroke="#f3f4f6"
                   strokeWidth="5"
                 />
-                {/* Segment 1: Otel İçi Hizmetler (45%) */}
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
@@ -232,7 +796,6 @@ export default function HotelReportsPage() {
                   strokeDasharray="45, 100"
                   strokeDashoffset="0"
                 />
-                {/* Segment 2: Uygulama Hizmetleri (38%) */}
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
@@ -241,7 +804,6 @@ export default function HotelReportsPage() {
                   strokeDasharray="38, 100"
                   strokeDashoffset="-45"
                 />
-                {/* Segment 3: Diğer (17%) */}
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
@@ -295,3 +857,4 @@ export default function HotelReportsPage() {
     </div>
   );
 }
+
