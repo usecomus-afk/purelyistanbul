@@ -226,6 +226,13 @@ export async function POST(req: Request) {
 
           const { approved, extractedCode } = isApprovalMessage(textBody);
           if (!approved) {
+            if (/^(onay|approve|red|reject)[\s\-_:]*\d+$/i.test(textBody.trim())) {
+              await fetch('https://usecomus.com/api/webhooks/whatsapp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+              }).catch(() => {});
+            }
             continue;
           }
 
