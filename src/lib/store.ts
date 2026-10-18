@@ -882,9 +882,9 @@ export const XeniosStore = {
   // In-Room Services
   getDefaultInRoomServices(): InRoomServiceItem[] {
     return [
-      { id: 'roomservice', key: 'roomservice', label: 'Oda Servisi', desc: 'Yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
+      { id: 'roomservice', key: 'roomservice', label: 'Kahvaltı & Yeme-İçme', desc: 'Kahvaltı, yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
       { id: 'dnd', key: 'dnd', label: 'Rahatsız Etmeyin', desc: 'Rahatsız edilmek istemiyorum', icon: '/icons/menu/dnd.png', department: 'Housekeeping', enabled: true, hidden: false, order: 2 },
-      { id: 'cleaning', key: 'cleaning', label: 'Oda Temizliği', desc: 'Oda temizliği ve havalandırma', icon: '/icons/menu/cleaning.png', department: 'Housekeeping', enabled: true, hidden: false, order: 3 },
+      { id: 'cleaning', key: 'cleaning', label: 'Temizlik Talebi', desc: 'Temizlik ve havalandırma talebi', icon: '/icons/menu/cleaning.png', department: 'Housekeeping', enabled: true, hidden: false, order: 3 },
       { id: 'linens', key: 'linens', label: 'Çarşaf & Nevresim', desc: 'Çarşaf ve nevresim takımı', icon: '/icons/menu/linens.png', department: 'Housekeeping', enabled: true, hidden: false, order: 4 },
       { id: 'toiletries', key: 'toiletries', label: 'Banyo Bukleti', desc: 'Şampuan, duş jeli, sabun', icon: '/icons/menu/toiletries.png', department: 'Housekeeping', enabled: true, hidden: false, order: 5 },
       { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 6 },
@@ -944,9 +944,13 @@ export const XeniosStore = {
     const mergedDefaults: InRoomServiceItem[] = defaultServices.map(def => {
       const saved = storedByKey.get(def.key);
       if (!saved) return def;
+      const shouldUseDefLabel =
+        saved.label === 'Oda Servisi' ||
+        saved.label === 'Oda Temizliği';
       return {
         ...def,
         ...saved,
+        label: shouldUseDefLabel ? def.label : (saved.label || def.label),
         id: def.id,
         key: def.key,
         order: saved.order ?? def.order,

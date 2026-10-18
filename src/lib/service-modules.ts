@@ -96,7 +96,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
 
   cleaning: {
     key: 'cleaning',
-    title: 'Oda Temizliği',
+    title: 'Temizlik Talebi',
     department: 'Housekeeping',
     icon: '/icons/menu/cleaning.png',
     stages: [
@@ -221,7 +221,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
 
   roomservice: {
     key: 'roomservice',
-    title: 'Oda Servisi (Menü)',
+    title: 'Kahvaltı & Yeme-İçme',
     department: 'Mutfak (KDS) + Room Service',
     icon: '/icons/menu/roomservice.png',
     stages: [

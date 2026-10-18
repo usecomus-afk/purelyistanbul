@@ -28,7 +28,7 @@ export const translations = {
     "website": "Web Sitesi",
     "receptionExt": "Resepsiyon Dahili",
     "tabs": {
-      "services": "Otel",
+      "services": "Konaklama",
       "experiences": "Deneyimler",
       "categories": "Kategoriler",
       "aiGuide": "Comus",
@@ -40,8 +40,8 @@ export const translations = {
     "catalogTitle": "Boğaz Turları, Seçkin Restoranlar, Hamamlar & VIP Deneyimler",
     "catalogDesc": "İstanbul'un 72 seçkin ve doğrulanmış işletme ve restoran ilanını inceleyin; otelinizden ayrılmadan güvenle yerinizi ayırtın.",
     "exploreCatalogBtn": "Kataloğu Keşfet (72 İlan) →",
-    "servicesTitle": "Otel İçi Hizmetler",
-    "servicesSubtitle": "Odanızdan tek tıkla talep oluşturun, kat hizmetleri ve resepsiyon anında yönlendirilsin.",
+    "servicesTitle": "Konaklama İçi Hizmetler",
+    "servicesSubtitle": "Biriminizden tek tıkla talep oluşturun, ilgili ekip anında yönlendirilsin.",
     "servicesLabels": {
       "breakfast": {
         "title": "Kahvaltı Talebi",
@@ -52,8 +52,8 @@ export const translations = {
         "desc": "Odanız için rahatsız etmeyin modunu aktifleştirin"
       },
       "cleaning": {
-        "title": "Oda Temizliği",
-        "desc": "Kapsamlı oda temizliği ve düzenleme talebi"
+        "title": "Temizlik Talebi",
+        "desc": "Kapsamlı temizlik ve düzenleme talebi"
       },
       "towels": {
         "title": "Temiz Havlu",
@@ -76,7 +76,7 @@ export const translations = {
         "desc": "Diş seti, tıraş bıçağı ve kişisel bakım ürünleri"
       },
       "roomservice": {
-        "title": "Oda Servisi",
+        "title": "Kahvaltı & Yeme-İçme",
         "desc": "Günün 24 saati lezzetli sıcak yemek ve içecek servisi"
       },
       "minibar": {
@@ -323,7 +323,7 @@ export const translations = {
     "website": "Website",
     "receptionExt": "Reception Ext.",
     "tabs": {
-      "services": "Hotel",
+      "services": "Stay",
       "experiences": "Experiences",
       "categories": "Categories",
       "aiGuide": "Comus",
@@ -335,8 +335,8 @@ export const translations = {
     "catalogTitle": "Bosphorus Cruises, Fine Dining, Turkish Baths & VIP Tours",
     "catalogDesc": "Explore 72 verified premier tours and fine dining spots; reserve seamlessly from your room without leaving your hotel.",
     "exploreCatalogBtn": "Explore Catalog (72 Listings) →",
-    "servicesTitle": "In-Room Hotel Services",
-    "servicesSubtitle": "Make 1-tap requests from your room directly dispatched to housekeeping and reception.",
+    "servicesTitle": "In-Stay Services",
+    "servicesSubtitle": "Make 1-tap requests from your unit directly dispatched to housekeeping and reception.",
     "servicesLabels": {
       "breakfast": {
         "title": "Breakfast Request",
@@ -347,7 +347,7 @@ export const translations = {
         "desc": "Activate Do Not Disturb status for your room"
       },
       "cleaning": {
-        "title": "Room Cleaning",
+        "title": "Cleaning Request",
         "desc": "Full housekeeping cleaning and tidy-up service"
       },
       "towels": {
@@ -371,7 +371,7 @@ export const translations = {
         "desc": "Dental set, razor, and vanity care kit"
       },
       "roomservice": {
-        "title": "Room Service",
+        "title": "Breakfast & Dining",
         "desc": "24/7 warm dining, snacks, and beverage delivery"
       },
       "minibar": {

@@ -28,13 +28,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   categories: Record<string, string>;
 }> = {
   tr: {
-    title: 'Oda Servisi Menüsü',
+    title: 'Kahvaltı & Yeme-İçme Menüsü',
     min: 'dk',
     add: 'Ekle',
     empty: 'Bu kategoride ürün bulunmuyor.',
     placeOrder: 'Siparişi Ver',
     orderReceivedTitle: 'Siparişiniz Alındı!',
-    orderServiceLabel: 'Oda Servisi',
+    orderServiceLabel: 'Kahvaltı & Yeme-İçme',
     orderError: 'Sipariş iletilirken bir hata oluştu.',
     categories: {
       'Tümü': 'Tümü',
