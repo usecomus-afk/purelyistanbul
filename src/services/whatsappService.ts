@@ -166,9 +166,10 @@ export class WhatsAppService {
       paymentLine = `\n💳 *Tutar / Ödeme:* ${reqData.paymentAmount} ${curr} (${methodLabel})`;
     }
 
-    const baseUrl = (reqData.baseUrl || 'https://xenios.usecomus.com').replace(/\/$/, '');
-    const quickCompleteUrl = `${baseUrl}/api/requests/quick-action?id=${encodeURIComponent(reqData.requestId)}&action=complete`;
-    const portalUrl = `${baseUrl}/hotel-portal/requests`;
+    const shortCode = String(reqData.requestId || '')
+      .replace(/^req-/, '')
+      .slice(-6)
+      .toUpperCase();
 
     const messageBody = [
       headerTitle,
@@ -181,10 +182,10 @@ export class WhatsAppService {
       `⏰ *Tarih & Saat:* ${timeFormatted}`,
       cleanNotes ? `📝 *Detay / Not:* ${cleanNotes}` : '',
       paymentLine ? paymentLine.trim() : '',
+      shortCode ? `🔖 *Talep Kodu:* #${shortCode}` : '',
       '━━━━━━━━━━━━━━━━━━━━━━',
-      `✅ *TAMAMLANDI İŞARETLE (Tek Tık):*\n${quickCompleteUrl}`,
-      '',
-      `📲 *Canlı Talep Paneli:*\n${portalUrl}`,
+      '✅ *Talebi Onaylamak / Tamamlamak İçin:*',
+      'Bu mesaja yanıt olarak *OK* veya *TAMAM* yazmanız yeterlidir.',
     ]
       .filter((line) => line !== '')
       .join('\n');
@@ -264,6 +265,57 @@ export class WhatsAppService {
       success: results.some((r) => r.success),
       sender_number: senderNumber,
       dispatched: results,
+    };
+  }
+
+  /**
+   * Serbest metin WhatsApp yanıt mesajı gönderir (Webhook onay dönüşü vb. için)
+   */
+  static async sendTextMessage(phone: string, body: string): Promise<WhatsAppSendResult> {
+    const formattedPhone = this.formatPhoneNumber(phone);
+    const { token, phoneId, isLive, senderNumber } = this.getCredentials();
+
+    if (isLive && formattedPhone) {
+      try {
+        const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: formattedPhone,
+            type: 'text',
+            text: {
+              preview_url: false,
+              body,
+            },
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json().catch(() => ({}));
+          return {
+            success: true,
+            message_id: data.messages?.[0]?.id || `wamid_${Date.now()}`,
+            recipient_phone: formattedPhone,
+            status: 'SENT',
+            sender_number: senderNumber,
+            details: data,
+          };
+        }
+      } catch (err) {
+        console.warn('[WHATSAPP TEXT API] Error:', err);
+      }
+    }
+
+    return {
+      success: false,
+      message_id: '',
+      recipient_phone: formattedPhone,
+      status: 'FAILED',
+      sender_number: senderNumber,
     };
   }
 

@@ -185,6 +185,23 @@ export async function POST(req: Request) {
       }),
     ]);
 
+    const firstWamid = whatsappResult?.dispatched?.find((d) => d.message_id)?.message_id || '';
+    if (firstWamid) {
+      await fetch(
+        `${FIRESTORE_REQUESTS_BASE_URL}/${encodeURIComponent(id)}?updateMask.fieldPaths=whatsappMessageId&updateMask.fieldPaths=status`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              whatsappMessageId: { stringValue: firstWamid },
+              status: { stringValue: status },
+            },
+          }),
+        }
+      ).catch(() => {});
+    }
+
     return NextResponse.json({
       success: true,
       requestId: id,
