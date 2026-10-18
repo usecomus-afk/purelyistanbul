@@ -235,7 +235,7 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Map & Skyline */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end -mt-[84px] pt-[84px]">
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end -mt-[80px] pt-[80px]">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src="/images/marketplace-hero.webp"
@@ -253,7 +253,7 @@ export function MarketplaceHome() {
           <div className="absolute inset-x-0 bottom-0 h-12 bg-sand-bg" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none mt-12 sm:mt-4 pb-0">
+        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-6 sm:pt-8 pb-0">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Purely Istanbul — Nothing but Istanbul"

@@ -126,16 +126,16 @@ export function MarketplaceFooter() {
 
       <div className="border-t border-sand-border">
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-          <span className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 shrink-0">
-            <Image src="/logo-header.png" alt="Purely Istanbul" fill className="object-contain" />
+          <span className="relative h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 shrink-0 bg-transparent">
+            <Image src="/logo-header.png" alt="Purely Istanbul" fill unoptimized className="object-contain" />
           </span>
 
           <div className="flex flex-col items-center md:items-start gap-1.5">
             <p className="text-[12px] text-ink-muted/80 tracking-wide text-center md:text-left">
               © {new Date().getFullYear()} Purely Istanbul — Nothing but Istanbul.
             </p>
-            <span className="relative h-4 sm:h-5 w-16 sm:w-20 opacity-70">
-              <Image src="/comus-logo.png" alt="Powered by Comus" fill className="object-contain" />
+            <span className="relative h-4 sm:h-5 w-16 sm:w-20 opacity-70 bg-transparent">
+              <Image src="/comus-logo.png" alt="Powered by Comus" fill unoptimized className="object-contain" />
             </span>
           </div>
         </div>

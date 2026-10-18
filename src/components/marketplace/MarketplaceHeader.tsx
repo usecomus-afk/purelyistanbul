@@ -33,31 +33,36 @@ export function MarketplaceHeader() {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 pt-[max(0.2rem,env(safe-area-inset-top))] ${
-        scrolled ? "bg-sand-bg/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(11,25,44,0.08)]" : "bg-transparent"
+        scrolled
+          ? "bg-sand-bg/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(11,25,44,0.08)]"
+          : "bg-sand-bg/85 backdrop-blur-sm border-b border-sand-border/40"
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between pl-2 sm:pl-0 pr-2 sm:pr-5 md:pr-8 h-[84px] gap-2">
-        <BrandMark href="/" theme="light" />
+      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-12 h-[76px] sm:h-[80px] gap-4">
+        <BrandMark href="/" theme="light" className="shrink-0" />
 
-        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-1.5 shrink-0">
-          <Link
-            href="/our-philosophy"
-            className="hidden lg:inline-flex text-[13px] font-medium text-ink px-3.5 py-2 rounded-full hover:bg-white transition whitespace-nowrap"
-          >
-            Our Philosophy
-          </Link>
-          <Link
-            href="/marketplace/partner/extranet"
-            className="hidden xl:inline-flex text-[13px] font-medium text-ink px-3.5 py-2 rounded-full hover:bg-white transition whitespace-nowrap"
-          >
-            For Boutique Hotels
-          </Link>
-          <Link
-            href="/istanbul-tourist-guide"
-            className="hidden md:inline-flex text-[13px] font-medium text-ink px-3.5 py-2 rounded-full hover:bg-white transition whitespace-nowrap"
-          >
-            Istanbul Guide
-          </Link>
+        <nav className="ml-auto flex items-center justify-end gap-1 sm:gap-1.5 lg:gap-2 shrink-0">
+          <div className="hidden md:flex items-center gap-0.5 lg:gap-1 mr-1 lg:mr-2">
+            <Link
+              href="/our-philosophy"
+              className="hidden lg:inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+            >
+              Our Philosophy
+            </Link>
+            <Link
+              href="/marketplace/partner/extranet"
+              className="hidden xl:inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+            >
+              For Boutique Hotels
+            </Link>
+            <Link
+              href="/istanbul-tourist-guide"
+              className="inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+            >
+              Istanbul Guide
+            </Link>
+          </div>
+
           {hotelSession && (
             <Link
               href={`/stay/${hotelSession.hotelId}/${hotelSession.roomId}`}
@@ -71,7 +76,7 @@ export function MarketplaceHeader() {
           {profile?.roles.host && (
             <Link
               href="/marketplace/host/listings"
-              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-3.5 py-2 rounded-full hover:bg-white transition"
+              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
             >
               Partner Listings
             </Link>
@@ -81,7 +86,7 @@ export function MarketplaceHeader() {
             <Link
               href="/marketplace/favorites"
               aria-label="Saved Experiences"
-              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white transition text-ink"
+              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/80 transition text-ink"
             >
               <Heart className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </Link>
@@ -116,7 +121,7 @@ export function MarketplaceHeader() {
                         <span>Saved Experiences</span>
                       </Link>
                       <Link href="/our-philosophy" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-terracotta font-semibold hover:bg-sand-bg transition rounded-xl mx-1">
-                        <span>Our Ethical Charter & Guest Commitment</span>
+                        <span>Our Philosophy</span>
                       </Link>
                     </div>
 
@@ -160,22 +165,22 @@ export function MarketplaceHeader() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-0.5 sm:gap-1 ml-0.5 sm:ml-1 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 pl-1 sm:pl-2 border-l border-sand-border/60 shrink-0">
               <Link
                 href="/marketplace/account"
-                className="text-[11.5px] sm:text-[13px] font-medium text-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white transition whitespace-nowrap"
+                className="text-[12px] sm:text-[13px] font-medium text-ink px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white/80 transition whitespace-nowrap"
               >
                 Sign In
               </Link>
               <Link
                 href="/marketplace/account?mode=register"
-                className="text-[11.5px] sm:text-[13px] font-semibold text-white bg-ink px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
+                className="text-[12px] sm:text-[13px] font-semibold text-white bg-ink px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full hover:bg-terracotta transition whitespace-nowrap"
               >
                 Register
               </Link>
             </div>
           )}
-        </div>
+        </nav>
       </div>
     </header>
   );

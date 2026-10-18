@@ -24,9 +24,7 @@ export function BrandMark({
     <>
       {showIcon && (
         <div 
-          className={`relative overflow-hidden rounded-xl shadow-xs transition-transform group-hover:scale-105 shrink-0 ${
-            theme === 'dark' ? 'bg-zinc-800/80 ring-1 ring-amber-500/30' : 'bg-white   ring-1 ring-amber-200/70'
-          }`}
+          className="relative overflow-hidden transition-transform group-hover:scale-105 shrink-0 bg-transparent"
           style={{ width: size, height: size }}
         >
           <Image 
@@ -35,7 +33,7 @@ export function BrandMark({
             width={size} 
             height={size}
             unoptimized
-            className="object-cover w-full h-full rounded-xl"
+            className="object-contain w-full h-full"
             priority
           />
         </div>

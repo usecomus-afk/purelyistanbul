@@ -378,13 +378,13 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLa
 
         {/* Brand Header */}
         <div className="text-center space-y-1 mb-5">
-          <div className="w-12 h-12 mx-auto mb-2 rounded-2xl overflow-hidden shadow-sm border border-amber-200 p-0.5 bg-white  ">
+          <div className="w-12 h-12 mx-auto mb-2 overflow-hidden bg-transparent">
             <Image
               src="/logo.png"
               alt="purelyİstanbul"
               width={48}
               height={48}
-              className="object-contain w-full h-full rounded-xl"
+              className="object-contain w-full h-full"
             />
           </div>
           <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 block">
