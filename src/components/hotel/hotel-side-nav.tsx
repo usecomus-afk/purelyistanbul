@@ -60,15 +60,15 @@ export function HotelSideNav({ isOpen, onClose }: HotelSideNavProps) {
   };
 
   const navItems = [
-    { href: "/hotel-portal", label: "Otel Yönetim Paneli", icon: LayoutDashboard },
-    { href: "/hotel-portal/requests", label: "Canlı Oda Talepleri", icon: BellRing, badge: pendingReqCount > 0 ? `${pendingReqCount} Canlı` : undefined },
+    { href: "/hotel-portal", label: "Yönetim Paneli", icon: LayoutDashboard },
+    { href: "/hotel-portal/requests", label: "Canlı Misafir Talepleri", icon: BellRing, badge: pendingReqCount > 0 ? `${pendingReqCount} Canlı` : undefined },
     { href: "/hotel-portal/kbs", label: "Online Check-in & KBS", iconImage: "/icons/kbs-online-checkin.png" },
-    { href: "/hotel-portal/services", label: "Otel İçi Hizmetler & Menü", icon: LayoutGrid },
-    { href: "/hotel-portal/rooms", label: "Oda Durumları & Envanter", icon: DoorOpen },
+    { href: "/hotel-portal/services", label: "Konaklama İçi Hizmetler & Menü", icon: LayoutGrid },
+    { href: "/hotel-portal/rooms", label: "Doluluk & Birim Panosu", icon: DoorOpen },
     { href: "/hotel-portal/channels", label: "iCal & OTA Kanalları", icon: CalendarSync },
     { href: "/hotel-portal/bookings", label: "Misafir Rezervasyon & Gelir", icon: CreditCard },
-    { href: "/hotel-portal/qr-generator", label: "Oda QR Kodları", icon: QrCode },
-    { href: "/hotel-portal/profile", label: "Otel & Profil Ayarları", icon: UserCog },
+    { href: "/hotel-portal/qr-generator", label: "Birim QR Kodları", icon: QrCode },
+    { href: "/hotel-portal/profile", label: "İşletme & Profil Ayarları", icon: UserCog },
   ];
 
   const content = (

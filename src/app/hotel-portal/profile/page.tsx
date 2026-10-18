@@ -232,22 +232,22 @@ export default function HotelProfileManagementPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase font-bold tracking-widest text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-full border border-amber-300 font-mono">
-              OTEL & YÖNETİCİ PROFİLİ
+              İŞLETME & YÖNETİCİ PROFİLİ
             </span>
             <span className="text-xs text-zinc-600 dark:text-slate-400 font-medium">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100">
-            Profil & Kurumsal Tesis Bilgileri
+            İşletme & Profil Ayarları
           </h1>
           <p className="text-xs text-zinc-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-            Otel bilgileri, yönetici iletişim detayları, bildirim e-postaları ve portal giriş şifrenizi bu masadan yönetebilirsiniz.
+            İşletme bilgileri, yönetici iletişim detayları, bildirim e-postaları ve portal giriş şifrenizi bu masadan yönetebilirsiniz.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-2 bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2 rounded-2xl border border-amber-200 shadow-xs">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="text-xs font-bold text-zinc-800 dark:text-slate-200">Doğrulanmış Partner Otel</span>
+            <span className="text-xs font-bold text-zinc-800 dark:text-slate-200">Doğrulanmış Partner İşletme</span>
           </div>
         </div>
       </div>

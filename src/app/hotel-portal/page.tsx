@@ -53,8 +53,8 @@ export default function HotelPortalDashboard() {
   const modules: PortalModule[] = [
     {
       id: 'requests',
-      title: 'Canlı Oda Talepleri',
-      desc: 'Oda içi servisler, kat hizmetleri, mutfak ve resepsiyon talepleri masası',
+      title: 'Canlı Misafir Talepleri',
+      desc: 'Birim içi servisler, kat hizmetleri, mutfak ve resepsiyon talepleri masası',
       href: '/hotel-portal/requests',
       badge: hasUnread ? `${pendingRequests.length} Yeni Talep` : undefined,
       badgeType: hasUnread ? 'danger' : 'neutral',
@@ -62,16 +62,16 @@ export default function HotelPortalDashboard() {
     },
     {
       id: 'services',
-      title: 'Otel İçi Hizmetler & Menü Yönetimi',
-      desc: '16+ Otel içi servis kontrolü, F&B oda servisi menüsüne ürün, içerik ve fiyat ekleme',
+      title: 'Konaklama İçi Hizmetler & Menü',
+      desc: '16+ Konaklama içi servis kontrolü, F&B menüsüne ürün, içerik ve fiyat ekleme',
       href: '/hotel-portal/services',
     },
     {
       id: 'rooms',
-      title: 'Oda Panosu',
-      desc: 'Oda durumları, kat envanteri, anlık doluluk ve temizlik takibi',
+      title: 'Doluluk & Birim Panosu',
+      desc: 'Birim durumları, kat envanteri, anlık doluluk ve temizlik takibi',
       href: '/hotel-portal/rooms',
-      badge: currentHotel.rooms?.length ? `${currentHotel.rooms.length} Oda` : undefined,
+      badge: currentHotel.rooms?.length ? `${currentHotel.rooms.length} Birim` : undefined,
     },
     {
       id: 'channels',
@@ -81,14 +81,14 @@ export default function HotelPortalDashboard() {
     },
     {
       id: 'qr-generator',
-      title: 'Oda QR Kodları',
-      desc: 'Her odaya özel dijital concierge standee QR kodları ve .ics takvim adresleri',
+      title: 'Birim QR Kodları',
+      desc: 'Her birime özel dijital concierge standee QR kodları ve .ics takvim adresleri',
       href: '/hotel-portal/qr-generator',
     },
     {
       id: 'profile',
-      title: 'Otel & Profil Ayarları',
-      desc: 'Otel iletişim bilgileri, ön büro yöneticisi profili ve anlık bildirim tercihleri',
+      title: 'İşletme & Profil Ayarları',
+      desc: 'İşletme iletişim bilgileri, yönetici profili ve anlık bildirim tercihleri',
       href: '/hotel-portal/profile',
     },
     {

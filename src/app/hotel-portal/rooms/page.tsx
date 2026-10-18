@@ -59,10 +59,10 @@ export default function HotelRoomsPage() {
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
-            Oda Durumları & Envanter Masası
+            Doluluk & Birim Panosu
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Tüm odaların anlık doluluk, temizlik ve rezervasyon durumlarını canlı yönetin.
+            Tüm birimlerin anlık doluluk, temizlik ve rezervasyon durumlarını canlı yönetin.
           </p>
         </div>
 

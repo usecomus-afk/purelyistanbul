@@ -283,10 +283,10 @@ export default function HotelPortalServicesPage() {
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel?.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
-            Otel İçi Hizmetler &amp; Menü Yönetimi
+            Konaklama İçi Hizmetler &amp; Menü
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Oda servisi (F&amp;B) yiyecek-içecek menüsünü ve otel içi servislerin oda ekranındaki görünürlüğünü yönetin.
+            Yiyecek-içecek (F&amp;B) menüsünü ve konaklama içi servislerin misafir ekranındaki görünürlüğünü yönetin.
           </p>
         </div>
 

@@ -84,10 +84,10 @@ export default function HotelLiveRequestsPage() {
             <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
-            Canlı Oda Talepleri & Kat Hizmetleri Masası
+            Canlı Misafir Talepleri
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Misafir odalarından gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
+            Konaklama birimlerinden gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
         </div>
 

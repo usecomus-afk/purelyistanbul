@@ -132,10 +132,10 @@ export default function HotelPortalLayout({
                 </>
               )}
 
-              {/* Live Room Requests Bell */}
+              {/* Live Guest Requests Bell */}
               <Link
                 href="/hotel-portal/requests"
-                title="Canlı Oda Talepleri"
+                title="Canlı Misafir Talepleri"
                 className={`p-1.5 rounded-full transition relative cursor-pointer flex items-center gap-1 ${
                   pendingReqCount > 0
                     ? 'text-[#9E2A2B] bg-[#FDECEC] border border-[#E5B8B8]'

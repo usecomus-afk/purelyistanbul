@@ -74,9 +74,13 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
       const input = hotelEmailOrUser.trim().toLowerCase();
 
       // 1. Check Demo credentials
-      const isDemo = (input === 'hotel' || input === 'demo') && (password === 'hotel2026' || password === 'xenios2026' || password === '1234');
+      const passTrimmed = password.trim();
+      const passLower = passTrimmed.toLowerCase();
+      const isDemo =
+        (input === 'purely' || input === 'hotel' || input === 'demo') &&
+        (passLower === 'purelyistanbul' || passLower === 'hotel2026' || passLower === 'xenios2026' || passTrimmed === '1234');
 
-      // 2. Check Real Hotel Manager Email Login
+      // 2. Check Real Manager Email Login
       const isRealEmail = input.includes('@') && password.length >= 4;
       const isHeritageManager = input === 'heritage@xenios.istanbul' || input === 'manager@heritagehotel.com' || input === 'hotel@xenios.istanbul';
 
@@ -86,8 +90,8 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
           localStorage.setItem('xenios_app_role', 'hotel');
           if (rememberMe) {
             localStorage.setItem('xenios_hotel_remember_me', 'true');
-            localStorage.setItem('xenios_hotel_saved_user', input);
-            localStorage.setItem('xenios_hotel_saved_pass', password);
+            localStorage.setItem('xenios_hotel_saved_user', hotelEmailOrUser.trim());
+            localStorage.setItem('xenios_hotel_saved_pass', passTrimmed);
           } else {
             localStorage.removeItem('xenios_hotel_remember_me');
             localStorage.removeItem('xenios_hotel_saved_user');
@@ -95,11 +99,11 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
           }
         }
         toast.success(`${currentHotel.name} Yönetim Paneline giriş yapıldı!`, {
-          description: `Hoş geldiniz, ${input}`
+          description: `Hoş geldiniz, ${hotelEmailOrUser.trim()}`
         });
         setError('');
       } else {
-        setError("Hatalı otel e-postası veya şifre! Lütfen kontrol ediniz ya da 'Şifremi Unuttum' üzerinden sıfırlayınız.");
+        setError("Hatalı yönetici e-postası veya şifre! Lütfen kontrol ediniz ya da 'Şifremi Unuttum' üzerinden sıfırlayınız.");
         toast.error("Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.");
       }
       setIsLoading(false);
@@ -109,7 +113,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail.trim() || !forgotEmail.includes('@')) {
-      toast.error('Lütfen geçerli bir otel yöneticisi e-posta adresi girin.');
+      toast.error('Lütfen geçerli bir yönetici e-posta adresi girin.');
       return;
     }
 
@@ -121,17 +125,17 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
     await NotificationService.dispatch({
       type: 'room_service',
       recipient: 'hi@usecomus.com',
-      title: `Otel Yöneticisi Şifre Sıfırlama Talebi: ${currentHotel.name}`,
+      title: `Yönetici Şifre Sıfırlama Talebi: ${currentHotel.name}`,
       hotelName: currentHotel.name,
       roomNumber: 'YÖNETİM KOKPİTİ',
-      guestName: 'Otel Yöneticisi',
+      guestName: 'İşletme Yöneticisi',
       guestContact: forgotEmail.trim(),
       details: {
         hotelId: currentHotel.id,
         hotelName: currentHotel.name,
         managerEmail: forgotEmail.trim(),
         recoveryCode: code,
-        action: 'Otel Yöneticisi Şifre Sıfırlama Bağlantısı Gönderildi'
+        action: 'Yönetici Şifre Sıfırlama Bağlantısı Gönderildi'
       },
       timestamp: new Date().toISOString()
     });
@@ -216,7 +220,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
             <div className="text-center space-y-1.5 flex flex-col items-center">
               <LuxuryPortalIcon id="login-crest" className="w-16 h-16" />
               <h2 className="font-luxury-serif text-[19px] sm:text-[21px] font-semibold tracking-[0.08em] uppercase text-[#141414]">
-                OTEL YÖNETİM GİRİŞİ
+                YÖNETİM GİRİŞİ
               </h2>
               <p className="font-luxury-sans text-[12px] text-[#5C4938] font-medium">
                 {currentHotel.name}
@@ -232,7 +236,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
 
               <div className="space-y-1.5">
                 <label className="font-semibold text-[#2C251E] text-[12px] block">
-                  Otel Yöneticisi E-Posta / Kullanıcı Adı
+                  Yönetici E-Posta / Kullanıcı Adı
                 </label>
                 <div className="relative">
                   <input
@@ -240,7 +244,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     required
                     value={hotelEmailOrUser}
                     onChange={(e) => setHotelEmailOrUser(e.target.value)}
-                    placeholder="manager@hotel.com veya hotel"
+                    placeholder="manager@purelyistanbul.com veya Purely"
                     className="w-full p-3 pl-9 bg-[#FAF8F4]/95 border border-[#C4B8A4] rounded-xl font-medium text-[#1A1A1A] placeholder:text-[#8A7B69] focus:outline-none focus:border-[#8E7252] shadow-[inset_0_1px_2px_rgba(36,28,18,0.06)] text-xs transition"
                   />
                   <Mail className="w-4 h-4 text-[#8E7252] absolute left-3 top-3.5" />
@@ -286,14 +290,14 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     className="w-4 h-4 rounded accent-[#8E7252] cursor-pointer"
                   />
                   <span className="text-[11.5px] font-medium text-[#3D3226]">
-                    Beni Hatırla (Otel Masası Olarak Başlat)
+                    Beni Hatırla (Yönetim Masası Olarak Başlat)
                   </span>
                 </label>
               </div>
 
               <div className="p-2.5 px-3 bg-[#F3ECE0]/85 rounded-xl border border-[#C9AE82]/75 text-[11px] text-[#4A3A28] flex items-center justify-between">
                 <span className="font-medium">Hızlı Test Erişimi:</span>
-                <strong className="font-mono text-[#1A1A1A] tracking-tight">hotel / hotel2026</strong>
+                <strong className="font-mono text-[#1A1A1A] tracking-tight">Purely / Purelyistanbul</strong>
               </div>
 
               <button
@@ -302,7 +306,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                 className="w-full py-3.5 bg-[#1D2025] hover:bg-[#2C3038] text-[#F5EFE6] border border-[#8E7252]/45 font-luxury-sans font-semibold rounded-xl shadow-[0_8px_18px_rgba(29,32,37,0.20)] text-xs tracking-[0.02em] transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <Lock className="w-3.5 h-3.5 text-[#C9AE82]" />
-                <span>{isLoading ? 'Giriş Yapılıyor...' : 'Otel Yönetim Paneline Giriş Yap'}</span>
+                <span>{isLoading ? 'Giriş Yapılıyor...' : 'Yönetim Paneline Giriş Yap'}</span>
               </button>
             </form>
 
@@ -351,13 +355,13 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[#2C251E] block">Kayıtlı Otel E-Postası</label>
+                    <label className="font-semibold text-[#2C251E] block">Kayıtlı Yönetici E-Postası</label>
                     <input
                       type="email"
                       required
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      placeholder="manager@hotel.com"
+                      placeholder="manager@purelyistanbul.com"
                       className="w-full p-3 bg-[#FAF8F4]/95 border border-[#C4B8A4] rounded-xl text-[#1A1A1A] placeholder:text-[#8A7B69] focus:outline-none focus:border-[#8E7252] text-xs"
                     />
                   </div>
@@ -394,7 +398,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     type="button"
                     onClick={() => {
                       setShowForgotModal(false);
-                      setPassword('hotel2026');
+                      setPassword('Purelyistanbul');
                     }}
                     className="w-full py-2.5 bg-[#1D2025] hover:bg-[#2C3038] text-[#F5EFE6] border border-[#8E7252]/45 font-semibold rounded-xl text-xs transition cursor-pointer"
                   >

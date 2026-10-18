@@ -192,10 +192,10 @@ export default function HotelPortalQrPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <QrCode className="w-6 h-6 text-amber-700" />
-            <span>Oda QR Kodları & iCal Takvim Masası</span>
+            <span>Birim QR Kodları & iCal Takvim Masası</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Her odaya özel dijital concierge standee QR kodları ve OTA takvim senkronizasyon .ics bağlantıları
+            Her birime özel dijital concierge standee QR kodları ve OTA takvim senkronizasyon .ics bağlantıları
           </p>
         </div>
 
