@@ -1299,6 +1299,99 @@ export const XeniosStore = {
     } catch (e) {}
   },
 
+  // Misafir PWA Ön Kayıt & OCR (KBS) Modül Durumu (Kalıcı + Bulut Senkron)
+  getGuestSelfKbsEnabled(hotelId?: string): boolean {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    try {
+      const perHotel = safeGet(`xenios_enable_guest_self_kbs_${targetHotelId}`, '');
+      if (perHotel === '0' || perHotel === 'false') return false;
+      if (perHotel === '1' || perHotel === 'true') return true;
+
+      const globalVal = safeGet('xenios_enable_guest_self_kbs_global', '');
+      if (globalVal === '0' || globalVal === 'false') return false;
+      if (globalVal === '1' || globalVal === 'true') return true;
+
+      const hotel = this.getHotelById(targetHotelId);
+      if (typeof hotel?.modules?.enable_guest_self_kbs === 'boolean') {
+        return hotel.modules.enable_guest_self_kbs;
+      }
+    } catch {}
+    return true;
+  },
+
+  setGuestSelfKbsEnabled(hotelId: string, enabled: boolean) {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const now = new Date().toISOString();
+    const flag = enabled ? '1' : '0';
+
+    safeSet(`xenios_enable_guest_self_kbs_${targetHotelId}`, flag);
+    safeSet(`xenios_enable_guest_self_kbs_updated_at_${targetHotelId}`, now);
+    safeSet('xenios_enable_guest_self_kbs_global', flag);
+    safeSet('xenios_enable_guest_self_kbs_updated_at_global', now);
+
+    this.setModuleSetting('enable_guest_self_kbs', {
+      enabled,
+      hidden: !enabled,
+      explicitlyHidden: !enabled,
+    });
+
+    const hotels = this.getHotels();
+    const syncedHotels: Hotel[] = [];
+    const nextHotels = hotels.map((h) => {
+      if (h.id === targetHotelId || h.id === this.getActiveHotelId() || h.id === 'hotel-1' || h.id === 'hotel_1') {
+        const updatedHotel: Hotel = {
+          ...h,
+          updatedAt: now,
+          modules: {
+            ...(h.modules || {}),
+            enable_guest_self_kbs: enabled,
+          },
+        };
+        syncedHotels.push(updatedHotel);
+        return updatedHotel;
+      }
+      return h;
+    });
+
+    this.saveHotels(nextHotels);
+
+    import('./firestore-service')
+      .then(({ FirestoreService }) => {
+        syncedHotels.forEach((sh) => {
+          FirestoreService.upsertHotel(sh).catch(() => {});
+        });
+      })
+      .catch(() => {});
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_hotels_updated'));
+      window.dispatchEvent(new Event('xenios_module_settings_updated'));
+    }
+  },
+
+  syncGuestSelfKbsFromRemote(hotelId: string, enabled: boolean, remoteUpdatedAt?: string) {
+    try {
+      const localUpdatedAt =
+        safeGet(`xenios_enable_guest_self_kbs_updated_at_${hotelId}`, '') ||
+        safeGet('xenios_enable_guest_self_kbs_updated_at_global', '');
+      if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt < localUpdatedAt) {
+        return;
+      }
+      const flag = enabled ? '1' : '0';
+      safeSet(`xenios_enable_guest_self_kbs_${hotelId}`, flag);
+      safeSet('xenios_enable_guest_self_kbs_global', flag);
+      if (remoteUpdatedAt) {
+        safeSet(`xenios_enable_guest_self_kbs_updated_at_${hotelId}`, remoteUpdatedAt);
+        safeSet('xenios_enable_guest_self_kbs_updated_at_global', remoteUpdatedAt);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('xenios_hotels_updated'));
+        window.dispatchEvent(new Event('xenios_module_settings_updated'));
+      }
+    } catch {}
+  },
+
+
   // In-Room Services
   getDefaultInRoomServices(): InRoomServiceItem[] {
     return [

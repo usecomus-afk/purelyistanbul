@@ -454,6 +454,16 @@ export const FirestoreService = {
                 activeRemote.modules.inRoomServicesUpdatedAt
               );
             }
+            const kbsRemote =
+              remoteMap.get(activeHotelId) ||
+              Array.from(remoteMap.values()).find(h => typeof h.modules?.enable_guest_self_kbs === 'boolean');
+            if (kbsRemote && typeof kbsRemote.modules?.enable_guest_self_kbs === 'boolean') {
+              XeniosStore.syncGuestSelfKbsFromRemote(
+                kbsRemote.id,
+                kbsRemote.modules.enable_guest_self_kbs,
+                kbsRemote.updatedAt
+              );
+            }
           },
           () => {}
         )

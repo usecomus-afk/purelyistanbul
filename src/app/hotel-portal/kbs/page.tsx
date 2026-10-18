@@ -22,16 +22,16 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 
 export default function HotelKbsPage() {
-  const hotels = XeniosStore.getHotels();
-  const activeHotelId = XeniosStore.getActiveHotelId();
+  const [hotels, setHotels] = useState(() => XeniosStore.getHotels());
+  const [activeHotelId, setActiveHotelId] = useState(() => XeniosStore.getActiveHotelId());
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
 
   const [records, setRecords] = useState<KbsGuestRecord[]>([]);
-  const [settings, setSettings] = useState<KbsModuleSettings>({
-    enable_guest_self_kbs: true,
+  const [settings, setSettings] = useState<KbsModuleSettings>(() => ({
+    enable_guest_self_kbs: XeniosStore.getGuestSelfKbsEnabled(currentHotel?.id),
     facility_code: 'EGM_34_PERA',
     retention_days: 30
-  });
+  }));
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -51,21 +51,46 @@ export default function HotelKbsPage() {
   };
 
   useEffect(() => {
+    const syncState = () => {
+      const latestHotels = XeniosStore.getHotels();
+      const latestActiveId = XeniosStore.getActiveHotelId();
+      setHotels(latestHotels);
+      setActiveHotelId(latestActiveId);
+      const target = latestHotels.find(h => h.id === latestActiveId) || latestHotels[0];
+      setSettings(prev => ({
+        ...prev,
+        enable_guest_self_kbs: XeniosStore.getGuestSelfKbsEnabled(target?.id),
+      }));
+    };
+
+    syncState();
     fetchRecords();
-  }, [currentHotel.id]);
+
+    let unsubCatalog: (() => void) | undefined;
+    import('@/lib/firestore-service')
+      .then(({ FirestoreService }) => {
+        unsubCatalog = FirestoreService.subscribeToCatalogSync();
+      })
+      .catch(() => {});
+
+    window.addEventListener('xenios_hotels_updated', syncState);
+    window.addEventListener('xenios_module_settings_updated', syncState);
+    window.addEventListener('storage', syncState);
+
+    return () => {
+      if (unsubCatalog) unsubCatalog();
+      window.removeEventListener('xenios_hotels_updated', syncState);
+      window.removeEventListener('xenios_module_settings_updated', syncState);
+      window.removeEventListener('storage', syncState);
+    };
+  }, [currentHotel?.id]);
 
   const handleToggleGuestSelfKbs = () => {
     const nextState = !settings.enable_guest_self_kbs;
     setSettings(prev => ({ ...prev, enable_guest_self_kbs: nextState }));
 
-    // Update hotel module settings in XeniosStore
-    if (currentHotel.modules) {
-      currentHotel.modules.enable_guest_self_kbs = nextState;
-    } else {
-      currentHotel.modules = {
-        enable_guest_self_kbs: nextState
-      };
-    }
+    // Persist locally and sync to Firestore so Guest PWA reflects it immediately
+    XeniosStore.setGuestSelfKbsEnabled(currentHotel.id, nextState);
 
     toast.success(
       nextState 

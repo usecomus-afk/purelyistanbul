@@ -62,6 +62,9 @@ export function HotelHeader({
   const [showPwaModal, setShowPwaModal] = useState(false);
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [pwaPerm, setPwaPerm] = useState<NotificationPermission>('default');
+  const [isGuestSelfKbsEnabled, setIsGuestSelfKbsEnabled] = useState<boolean>(() =>
+    XeniosStore.getGuestSelfKbsEnabled(hotel?.id)
+  );
 
   useEffect(() => {
     setUser(XeniosStore.getUser());
@@ -69,12 +72,31 @@ export function HotelHeader({
       setPwaPerm(PwaNotificationManager.getPermission());
     }
 
+    const syncKbsState = () => {
+      const enabled = XeniosStore.getGuestSelfKbsEnabled(hotel?.id);
+      setIsGuestSelfKbsEnabled(enabled);
+      if (!enabled) {
+        setShowCheckinModal(false);
+      }
+    };
+
+    syncKbsState();
+
     const handleAuth = () => {
       setUser(XeniosStore.getUser());
     };
     window.addEventListener('xenios_auth_updated', handleAuth);
-    return () => window.removeEventListener('xenios_auth_updated', handleAuth);
-  }, []);
+    window.addEventListener('xenios_hotels_updated', syncKbsState);
+    window.addEventListener('xenios_module_settings_updated', syncKbsState);
+    window.addEventListener('storage', syncKbsState);
+    return () => {
+      window.removeEventListener('xenios_auth_updated', handleAuth);
+      window.removeEventListener('xenios_hotels_updated', syncKbsState);
+      window.removeEventListener('xenios_module_settings_updated', syncKbsState);
+      window.removeEventListener('storage', syncKbsState);
+    };
+  }, [hotel?.id, hotel?.modules?.enable_guest_self_kbs, showHotelModal]);
+
 
   const room = hotel.rooms?.find(r => r.number === roomNumber) || hotel.rooms?.[0] || {
     wifiPass: 'purely2026!',
@@ -295,7 +317,7 @@ export function HotelHeader({
 
             {/* Reception Direct Call & Online Check-in / Taleplerim */}
             <div className="space-y-2 pt-1">
-              <div className={hotel.modules?.enable_guest_self_kbs !== false ? "grid grid-cols-2 gap-2" : ""}>
+              <div className={isGuestSelfKbsEnabled ? "grid grid-cols-2 gap-2" : ""}>
                 {/* 50% Width Reception Extension Badge */}
                 <div className="p-3 rounded-2xl bg-[#FAF8F4]/90 border border-[#C4B8A4] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 min-w-0">
@@ -318,7 +340,7 @@ export function HotelHeader({
                 </div>
 
                 {/* 50% Width Online Check-in & KBS Button */}
-                {hotel.modules?.enable_guest_self_kbs !== false && (
+                {isGuestSelfKbsEnabled && (
                   <button
                     type="button"
                     onClick={() => {
@@ -376,7 +398,7 @@ export function HotelHeader({
       />
 
       {/* ONLINE CHECK-IN & KBS MODAL */}
-      {showCheckinModal && (
+      {showCheckinModal && isGuestSelfKbsEnabled && (
         <OnlineCheckinModal
           hotel={hotel}
           roomNumber={roomNumber}
