@@ -20,6 +20,7 @@
 import { cert, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
 
 let app: App | null | undefined;
 
@@ -72,5 +73,11 @@ export function getAdminAuthOrNull() {
 export function getAdminDbOrNull() {
   const a = initAdminApp();
   return a ? getFirestore(a) : null;
+}
+
+/** Sunucu tarafı Firebase Cloud Messaging (FCM v1 + APNs) erişimi. */
+export function getAdminMessagingOrNull() {
+  const a = initAdminApp();
+  return a ? getMessaging(a) : null;
 }
 

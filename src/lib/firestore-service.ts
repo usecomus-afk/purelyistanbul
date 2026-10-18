@@ -614,6 +614,7 @@ export const FirestoreService = {
     let isRestPolling = false;
     const pollViaRest = async () => {
       if (isRestPolling) return;
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
       isRestPolling = true;
       try {
         const res = await fetch(
@@ -804,31 +805,32 @@ export const FirestoreService = {
       }
     };
 
-    // Fire server-side Web Push (RFC 8030 VAPID) immediately so staff devices receive
-    // the notification even when their keypad/screen is locked or the app is in the background.
+    // Fire server-side APNs (.p8 HTTP/2) + FCM + Web Push (RFC 8030 VAPID) immediately so partner devices
+    // receive native audible alerts when their phone is locked or the app is closed.
     if (typeof window !== 'undefined') {
       const isUrgent = local.priority === 'acil';
-      const pushTitle = isUrgent
-        ? `🚨 ACİL TALEP: Birim ${local.roomNumber}`
-        : `🛎️ Yeni Sipariş / Talep: Birim ${local.roomNumber}`;
+      const pushTitle = isUrgent ? '🚨 Acil Misafir Talebi! 🛎️' : 'Yeni Misafir Talebi! 🛎️';
       const cleanNotes = local.notes ? local.notes.replace(/\s+/g, ' ').trim() : '';
-      const pushBody = `${local.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
+      const unitNum = String(local.roomNumber || '101').trim();
+      const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(unitNum) ? unitNum : `Daire ${unitNum}`;
+      const pushBody = `${unitPrefix} - ${local.serviceTitle}${cleanNotes ? ` (${cleanNotes})` : ''} Siparişi Verildi.`;
 
-      fetch('/api/notifications/push', {
+      fetch('/api/requests', {
         method: 'POST',
         keepalive: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          targetRole: 'staff',
+          id: local.id,
+          persistToFirestore: false,
           hotelId: local.hotelId || 'hotel-heritage-1',
-          roomNumber: local.roomNumber || '101',
-          requestId: local.id,
+          hotelName: local.hotelName || 'Purely Istanbul',
+          roomNumber: unitNum,
+          serviceKey: local.serviceKey,
+          serviceTitle: local.serviceTitle,
+          notes: local.notes || '',
           priority: local.priority || 'standart',
-          urgency: isUrgent ? 'HIGH' : 'NORMAL',
           title: pushTitle,
-          subtitle: local.hotelName || 'Purely Istanbul',
           body: pushBody,
-          url: '/hotel-portal/requests',
         }),
       }).catch(() => {});
     }

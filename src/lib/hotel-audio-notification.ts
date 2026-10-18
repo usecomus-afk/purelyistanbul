@@ -121,7 +121,82 @@ export function shouldShowInPageStaffBanner(pathname?: string): boolean {
 class HotelAudioNotificationService {
   private audioCtx: AudioContext | null = null;
   private notifiedRequestIds: Set<string> = new Set();
-  private keepAliveStarted = false;
+  private lifecycleBound = false;
+  private userAudioUnlocked = false;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.bindForegroundAudioLifecycle();
+    }
+  }
+
+  /**
+   * Explicitly clear navigator.mediaSession so notification chimes or splash media
+   * NEVER register as system media playback or trigger the iOS lock-screen "Now Playing" widget.
+   */
+  public clearMediaSession() {
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = 'none';
+      const actions: MediaSessionAction[] = [
+        'play',
+        'pause',
+        'stop',
+        'seekbackward',
+        'seekforward',
+        'previoustrack',
+        'nexttrack',
+      ];
+      for (const action of actions) {
+        try {
+          navigator.mediaSession.setActionHandler(action, null);
+        } catch {}
+      }
+    } catch {}
+  }
+
+  private bindForegroundAudioLifecycle() {
+    if (this.lifecycleBound || typeof window === 'undefined') return;
+    this.lifecycleBound = true;
+    this.clearMediaSession();
+
+    const unlockOnGesture = () => {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+      this.userAudioUnlocked = true;
+      this.clearMediaSession();
+    };
+
+    window.addEventListener('pointerdown', unlockOnGesture, { passive: true });
+    window.addEventListener('touchend', unlockOnGesture, { passive: true });
+    window.addEventListener('keydown', unlockOnGesture, { passive: true });
+    window.addEventListener('click', unlockOnGesture, { passive: true });
+
+    const suspendAudioOnBackground = () => {
+      this.clearMediaSession();
+      if (this.audioCtx && this.audioCtx.state === 'running') {
+        this.audioCtx.suspend().catch(() => {});
+      }
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        try {
+          this.syncNotifiedFromStorage();
+          navigator.serviceWorker.controller.postMessage({
+            type: 'SEED_NOTIFIED_IDS',
+            ids: Array.from(this.notifiedRequestIds).slice(-200),
+          });
+        } catch {}
+      }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') {
+        suspendAudioOnBackground();
+      } else {
+        this.clearMediaSession();
+      }
+    });
+    window.addEventListener('pagehide', suspendAudioOnBackground);
+  }
 
   private syncNotifiedFromStorage() {
     if (typeof window === 'undefined') return;
@@ -186,61 +261,13 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Coordinates background lock-screen watcher without letting WKWebView HTML5 audio
-   * hijack or deactivate the native iOS AppDelegate AVAudioSession when the screen locks.
+   * Replaces legacy background audio keep-alive with clean foreground lifecycle binding
+   * and MediaSession cleanup. Background/locked alerts are delivered strictly via Native Push (APNs/FCM/WebPush).
    */
   public startNativeWebViewKeepAlive() {
-    if (typeof window === 'undefined' || !shouldReceiveStaffRequestAlerts()) return;
-
-    const w = window as any;
-
-    // In the Native iOS App, let AppDelegate.swift own AVAudioSession (.playback) exclusively.
-    // Do NOT create an HTML5 <audio> loop inside WKWebView, because WebKit pauses HTML5 <audio>
-    // when the screen locks, which deactivates the shared iOS AVAudioSession and suspends the app!
-    if (isNativeHostApp()) {
-      if (w.webkit?.messageHandlers?.purelyNotify?.postMessage) {
-        try {
-          w.webkit.messageHandlers.purelyNotify.postMessage({ action: 'startKeepAlive' });
-        } catch {}
-      }
-      return;
-    }
-
-    // For Web / Home Screen PWA: notify Service Worker to watch Firestore when screen locks
-    const triggerServiceWorkerBackgroundWatch = () => {
-      try {
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          this.syncNotifiedFromStorage();
-          navigator.serviceWorker.controller.postMessage({
-            type: 'SEED_NOTIFIED_IDS',
-            ids: Array.from(this.notifiedRequestIds).slice(-200),
-          });
-          navigator.serviceWorker.controller.postMessage({
-            type: 'START_BACKGROUND_WATCH',
-            durationMs: 240000,
-          });
-        }
-      } catch {}
-    };
-
-    if (!this.keepAliveStarted) {
-      this.keepAliveStarted = true;
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden' && shouldReceiveStaffRequestAlerts()) {
-          triggerServiceWorkerBackgroundWatch();
-        }
-      });
-      window.addEventListener('pagehide', () => {
-        if (shouldReceiveStaffRequestAlerts()) {
-          triggerServiceWorkerBackgroundWatch();
-        }
-      });
-      window.addEventListener('blur', () => {
-        if (shouldReceiveStaffRequestAlerts()) {
-          triggerServiceWorkerBackgroundWatch();
-        }
-      });
-    }
+    if (typeof window === 'undefined') return;
+    this.bindForegroundAudioLifecycle();
+    this.clearMediaSession();
   }
 
   public getPreferences(): HotelAudioNotificationPrefs {
@@ -333,7 +360,8 @@ class HotelAudioNotificationService {
   }
 
   private getAudioContext(): AudioContext | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined' || typeof document === 'undefined') return null;
+    if (document.visibilityState !== 'visible' || !this.userAudioUnlocked) return null;
     try {
       const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioCtxClass) return null;
@@ -343,6 +371,7 @@ class HotelAudioNotificationService {
       if (this.audioCtx.state === 'suspended') {
         this.audioCtx.resume().catch(() => {});
       }
+      this.clearMediaSession();
       return this.audioCtx;
     } catch (e) {
       console.warn('AudioContext init warning:', e);
@@ -351,13 +380,20 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Synthesize and play authentic luxury hotel desk bell / concierge chime (foreground only)
+   * Synthesize and play authentic luxury hotel desk bell / concierge chime.
+   * Strictly executes ONLY when the app is actively in the FOREGROUND (visibilityState === 'visible')
+   * and after a prior user interaction has unlocked the Web Audio context.
    */
   public async play(soundType?: HotelSoundType, customVolume?: number): Promise<void> {
-    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
-      // Do not touch WebAudio / HTMLAudio while backgrounded or locked so OS notification sound plays cleanly
+    if (typeof document === 'undefined' || document.visibilityState !== 'visible') {
+      // Never touch WebAudio / HTMLAudio while backgrounded or locked so iOS never shows "Now Playing"
       return;
     }
+    if (!this.userAudioUnlocked) {
+      return;
+    }
+
+    this.clearMediaSession();
 
     const prefs = this.getPreferences();
     if (!prefs.soundEnabled && customVolume === undefined) return;
@@ -464,6 +500,7 @@ class HotelAudioNotificationService {
         osc.start(now);
         osc.stop(now + 0.95);
       }
+      this.clearMediaSession();
     } catch (e) {
       console.warn('Audio play error:', e);
     }
@@ -572,9 +609,10 @@ class HotelAudioNotificationService {
     const isUrgent = req.priority === 'acil';
     const prefs = this.getPreferences();
     const showStaffBanner = shouldShowInPageStaffBanner();
+    const isForeground = typeof document !== 'undefined' && document.visibilityState === 'visible';
 
-    // 1. Play sound chime (when visible in foreground)
-    if (prefs.soundEnabled && (showStaffBanner || isNativeHostApp())) {
+    // 1. Play WebAudio chime ONLY when actively in the foreground AND after user interaction unlocked audio
+    if (isForeground && this.userAudioUnlocked && prefs.soundEnabled && (showStaffBanner || isNativeHostApp())) {
       const soundType = isUrgent ? 'urgent_chime' : prefs.selectedSound;
       this.play(soundType);
     }
@@ -584,13 +622,14 @@ class HotelAudioNotificationService {
       window.dispatchEvent(new CustomEvent('xenios_hotel_live_request_popup', { detail: req }));
     }
 
-    // 3. Trigger Native iOS / PWA System Notification (Banner, Lock Screen, Sound)
+    // 3. Trigger Native iOS / PWA System Notification Banner
     if (prefs.systemNotificationEnabled !== false) {
       const title = isUrgent
-        ? `🚨 ACİL TALEP: Birim ${req.roomNumber}`
-        : `🛎️ Yeni Sipariş / Talep: Birim ${req.roomNumber}`;
+        ? `🚨 Acil Misafir Talebi! 🛎️`
+        : `Yeni Misafir Talebi! 🛎️`;
       const cleanNotes = req.notes ? req.notes.replace(/\s+/g, ' ').trim() : '';
-      const body = `${req.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
+      const unitLabel = String(req.roomNumber || '101').trim();
+      const body = `${unitLabel.match(/^(Birim|Daire|Suite)/i) ? unitLabel : `Birim ${unitLabel}`} - ${req.serviceTitle}${cleanNotes ? ` (${cleanNotes})` : ''} Siparişi Verildi.`;
       const subtitle = req.hotelName || 'Purely Istanbul';
 
       await this.scheduleSystemOrNativeNotification({

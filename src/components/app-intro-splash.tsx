@@ -66,6 +66,19 @@ export function AppIntroSplash() {
         sessionStorage.setItem("purely_splash_v6_played", "true");
         sessionStorage.setItem("purely_splash_played", "true");
       } catch {}
+      try {
+        if ("mediaSession" in navigator) {
+          navigator.mediaSession.metadata = null;
+          navigator.mediaSession.playbackState = "none";
+        }
+      } catch {}
+    }
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+        videoRef.current.removeAttribute("src");
+        videoRef.current.load();
+      } catch {}
     }
     setTimeout(() => {
       setVisible(false);

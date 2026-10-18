@@ -73,20 +73,19 @@ async function pollFirestoreRequestsOnce() {
 }
 
 async function showRequestNotification(reqId, fields) {
-  const roomNumber = (fields.roomNumber && fields.roomNumber.stringValue) || '101';
+  const roomNumber = ((fields.roomNumber && fields.roomNumber.stringValue) || '101').trim();
   const hotelName = (fields.hotelName && fields.hotelName.stringValue) || 'Purely Istanbul';
-  const serviceTitle = (fields.serviceTitle && fields.serviceTitle.stringValue) || 'Birim Hizmeti Talebi';
+  const serviceTitle = (fields.serviceTitle && fields.serviceTitle.stringValue) || 'Birim Hizmeti';
   const notes = ((fields.notes && fields.notes.stringValue) || '').replace(/\s+/g, ' ').trim();
   const priority = (fields.priority && fields.priority.stringValue) || 'standart';
   const isUrgent = priority === 'acil';
 
-  const title = isUrgent
-    ? `🚨 ACİL TALEP: Birim ${roomNumber}`
-    : `🛎️ Yeni Sipariş / Talep: Birim ${roomNumber}`;
-  const body = notes ? `${serviceTitle} · ${notes}` : serviceTitle;
+  const title = isUrgent ? '🚨 Acil Misafir Talebi! 🛎️' : 'Yeni Misafir Talebi! 🛎️';
+  const unitPrefix = /^(Daire|Birim|Suite|Oda)/i.test(roomNumber) ? roomNumber : `Daire ${roomNumber}`;
+  const body = `${unitPrefix} - ${serviceTitle}${notes ? ` (${notes})` : ''} Siparişi Verildi.`;
 
   await self.registration.showNotification(title, {
-    body: `${hotelName} — ${body}`,
+    body,
     icon: '/icons/icon-192x192.png',
     badge: '/icon.png',
     tag: reqId,
@@ -96,6 +95,7 @@ async function showRequestNotification(reqId, fields) {
     data: {
       url: '/hotel-portal/requests',
       requestId: reqId,
+      hotelName,
     },
   });
 }
@@ -113,10 +113,10 @@ self.addEventListener('push', (event) => {
     if (data.requestId) {
       notifiedIds.add(data.requestId);
     }
-    const title = data.title || 'purelyİstanbul';
+    const title = data.title || 'Yeni Misafir Talebi! 🛎️';
     const isUrgent = data.priority === 'acil' || data.urgency === 'HIGH';
     const options = {
-      body: data.body || 'Yeni bir bildiriminiz var.',
+      body: data.body || 'Yeni bir misafir talebiniz var.',
       icon: data.icon || '/icons/icon-192x192.png',
       badge: '/icon.png',
       tag: reqId,
@@ -137,7 +137,7 @@ self.addEventListener('push', (event) => {
   } catch (e) {
     const text = event.data.text();
     event.waitUntil(
-      self.registration.showNotification('purelyİstanbul', {
+      self.registration.showNotification('Yeni Misafir Talebi! 🛎️', {
         body: text,
         icon: '/icons/icon-192x192.png',
         badge: '/icon.png',
@@ -148,7 +148,7 @@ self.addEventListener('push', (event) => {
   }
 });
 
-// Client -> Service Worker Message Listener (Background Lock-Screen Watcher & Direct Notifications)
+// Client -> Service Worker Message Listener (Deduplication Sync)
 self.addEventListener('message', (event) => {
   const msg = event.data;
   if (!msg || typeof msg !== 'object') return;
@@ -165,27 +165,6 @@ self.addEventListener('message', (event) => {
     });
     seedCompleted = true;
     return;
-  }
-
-  if (msg.type === 'START_BACKGROUND_WATCH') {
-    if (watcherActive) return;
-    watcherActive = true;
-    const durationMs = Math.min(Number(msg.durationMs) || 180000, 300000);
-    const intervalMs = 3000;
-    const steps = Math.floor(durationMs / intervalMs);
-
-    event.waitUntil(
-      (async () => {
-        try {
-          for (let i = 0; i < steps; i++) {
-            await pollFirestoreRequestsOnce();
-            await new Promise((r) => setTimeout(r, intervalMs));
-          }
-        } finally {
-          watcherActive = false;
-        }
-      })()
-    );
   }
 });
 

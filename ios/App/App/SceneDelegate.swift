@@ -12,20 +12,20 @@ class PurelyNotifyScriptHandler: NSObject, WKScriptMessageHandler {
             if action == "requestPermissions" {
                 AppDelegate.requestNotificationPermissions()
                 if let appDel = UIApplication.shared.delegate as? AppDelegate {
-                    appDel.startSilentBackgroundKeepAlive()
+                    appDel.clearNowPlayingAndDisableBackgroundAudio()
                     appDel.pollFirestoreServiceRequests()
                 }
                 return
             }
             if action == "startKeepAlive" {
                 if let appDel = UIApplication.shared.delegate as? AppDelegate {
-                    appDel.startSilentBackgroundKeepAlive()
+                    appDel.clearNowPlayingAndDisableBackgroundAudio()
                     appDel.pollFirestoreServiceRequests()
                 }
                 return
             }
             let id = (bodyDict["id"] as? String) ?? UUID().uuidString
-            let title = (bodyDict["title"] as? String) ?? "purelyİstanbul"
+            let title = (bodyDict["title"] as? String) ?? "Yeni Misafir Talebi! 🛎️"
             let subtitle = bodyDict["subtitle"] as? String
             let body = (bodyDict["body"] as? String) ?? "Yeni bir bildiriminiz var."
             if !id.isEmpty && !AppDelegate.markIfNew(id) {
@@ -94,8 +94,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
             bridgeVC.webView?.evaluateJavaScript(scriptSource, completionHandler: nil)
 
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try? AVAudioSession.sharedInstance().setActive(true)
+            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
 
             let container = UIView(frame: win.bounds)
             container.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -184,7 +183,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             container.removeFromSuperview()
             self?.splashContainer = nil
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.startSilentBackgroundKeepAlive()
+                appDelegate.clearNowPlayingAndDisableBackgroundAudio()
                 appDelegate.pollFirestoreServiceRequests()
             }
         }

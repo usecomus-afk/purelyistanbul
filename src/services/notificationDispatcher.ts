@@ -34,6 +34,7 @@ export interface WebPushSubscriptionJSON {
 
 export interface UserDeviceDTO {
   deviceToken: string;
+  apnsToken?: string;
   platform: 'ios' | 'android' | 'web';
   userId?: string;
   role: 'guest' | 'staff' | 'admin';
@@ -63,7 +64,7 @@ export interface SmartNotificationRequest {
 
 export interface SmartNotificationResult {
   success: boolean;
-  deliveredChannel: 'WEB_PUSH' | 'FCM_NATIVE' | 'FCM_TOPIC' | 'WHATSAPP' | 'SMS' | 'SIMULATED_OMNI';
+  deliveredChannel: 'APNS_FCM_AND_WEB_PUSH' | 'WEB_PUSH' | 'FCM_NATIVE' | 'FCM_TOPIC' | 'WHATSAPP' | 'SMS' | 'SIMULATED_OMNI';
   messageId: string;
   recipient: string;
   timestamp: string;
@@ -137,10 +138,11 @@ export class NotificationDispatcher {
   static async registerDevice(device: UserDeviceDTO): Promise<{ success: boolean; deviceCount: number }> {
     await loadRegistryFromFirestore();
 
-    const key = device.webPushSubscription?.endpoint || device.deviceToken;
+    const key = device.webPushSubscription?.endpoint || device.apnsToken || device.deviceToken;
     registeredDevices.set(key, {
       ...device,
       deviceToken: key,
+      apnsToken: device.apnsToken || (!device.webPushSubscription ? key : undefined),
       lastActive: new Date().toISOString(),
     });
 
@@ -154,6 +156,7 @@ export class NotificationDispatcher {
 
   /**
    * 2. Akıllı Bildirim Yönlendiricisi (dispatchSmartNotification)
+   * Hem Native iOS/Android (APNs .p8 / FCM HTTP v1) hem de Web Push (RFC 8030 VAPID) kanallarına aynı anda gönderim yapar.
    */
   static async dispatchSmartNotification(
     req: SmartNotificationRequest
@@ -179,8 +182,21 @@ export class NotificationDispatcher {
     } = req;
     const now = new Date().toISOString();
 
-    // A. Web Push (RFC 8030 + VAPID) — Delivers to locked screen on iOS 16.4+ PWA & Android/Desktop
+    const canonicalApnsPayload = FcmPushService.buildApnsPayload({
+      title,
+      body,
+      subtitle,
+      badgeCount: 1,
+      dataPayload: {
+        ...dataPayload,
+        ...(requestId ? { requestId } : {}),
+        ...(url ? { url } : {}),
+      },
+    });
+
     const allDevices = Array.from(registeredDevices.values());
+
+    // A. Web Push (RFC 8030 + VAPID) — Delivers to locked screen on iOS 16.4+ PWA & Android/Desktop
     const webPushTargets = allDevices.filter((dev) => {
       if (!dev.webPushSubscription?.endpoint || !dev.webPushSubscription?.keys?.p256dh) return false;
       if (targetRole === 'staff') {
@@ -198,6 +214,7 @@ export class NotificationDispatcher {
       return true;
     });
 
+    let webPushDeliveredCount = 0;
     if (webPushTargets.length > 0) {
       const pushPayload = JSON.stringify({
         title,
@@ -213,7 +230,6 @@ export class NotificationDispatcher {
         ...dataPayload,
       });
 
-      let deliveredCount = 0;
       let staleRemoved = false;
 
       await Promise.all(
@@ -224,7 +240,7 @@ export class NotificationDispatcher {
               TTL: 86400,
               urgency: 'high',
             });
-            deliveredCount++;
+            webPushDeliveredCount++;
           } catch (err: any) {
             const statusCode = err?.statusCode;
             if (statusCode === 404 || statusCode === 410) {
@@ -240,75 +256,89 @@ export class NotificationDispatcher {
       if (staleRemoved) {
         saveRegistryToFirestore().catch(() => {});
       }
-
-      if (deliveredCount > 0) {
-        return {
-          success: true,
-          deliveredChannel: 'WEB_PUSH',
-          messageId: `webpush_${Date.now()}_${deliveredCount}`,
-          recipient: `${deliveredCount}_devices`,
-          timestamp: now,
-          details: { deliveredCount, targetRole },
-        };
-      }
     }
 
-    // B. Konu (Topic) Bazlı Yayın Bildirimi
-    if (topic) {
-      const topicResult = await FcmPushService.sendTopicPushNotification({
-        topic,
+    // B. Kayıtlı Tüm Native Mobil Cihazlara Gönderim (iOS APNs .p8 / FCM HTTP v1)
+    const nativeTargets = allDevices.filter((dev) => {
+      if (dev.webPushSubscription) return false;
+      if (!dev.deviceToken && !dev.apnsToken) return false;
+      if (targetRole === 'staff') {
+        return dev.role === 'staff' || dev.role === 'admin';
+      }
+      if (userId && dev.userId === userId) return true;
+      if (hotelId && roomNumber && dev.hotelId === hotelId && dev.roomNumber === roomNumber) return true;
+      if (phone && dev.phone === phone) return true;
+      return targetRole === 'all';
+    });
+
+    let nativeDeliveredCount = 0;
+    const nativeResults: any[] = [];
+
+    if (nativeTargets.length > 0) {
+      await Promise.all(
+        nativeTargets.map(async (target) => {
+          const token = target.apnsToken || target.deviceToken;
+          if (!token) return;
+          const pushRes = await FcmPushService.sendNativePushNotification({
+            deviceToken: token,
+            title,
+            body,
+            subtitle,
+            badgeCount: 1,
+            dataPayload: {
+              ...dataPayload,
+              ...(requestId ? { requestId } : {}),
+              ...(url ? { url } : {}),
+            },
+          });
+          if (pushRes.success) {
+            nativeDeliveredCount++;
+            nativeResults.push(pushRes);
+          }
+        })
+      );
+    }
+
+    // C. Konu (Topic) Bazlı Yayın Bildirimi (FCM / APNs Topic)
+    const effectiveTopic = topic || (targetRole === 'staff' ? `hotel_${hotelId || 'all'}_staff` : undefined);
+    let topicResult: any = null;
+    if (effectiveTopic) {
+      topicResult = await FcmPushService.sendTopicPushNotification({
+        topic: effectiveTopic,
         title,
         body,
-        dataPayload,
+        subtitle,
+        dataPayload: {
+          ...dataPayload,
+          ...(requestId ? { requestId } : {}),
+          ...(url ? { url } : {}),
+        },
       });
-
-      return {
-        success: topicResult.success,
-        deliveredChannel: 'FCM_TOPIC',
-        messageId: topicResult.messageId,
-        recipient: `/topics/${topic}`,
-        timestamp: now,
-      };
     }
 
-    // C. Kayıtlı Native Mobil Cihaz Arama (FCM / APNs)
-    let targetDevice: UserDeviceDTO | undefined;
-
-    for (const dev of allDevices) {
-      if (dev.webPushSubscription) continue;
-      if (targetRole === 'staff' && (dev.role === 'staff' || dev.role === 'admin')) {
-        targetDevice = dev;
-        break;
-      }
-      if (userId && dev.userId === userId) {
-        targetDevice = dev;
-        break;
-      }
-      if (hotelId && roomNumber && dev.hotelId === hotelId && dev.roomNumber === roomNumber) {
-        targetDevice = dev;
-        break;
-      }
-      if (phone && dev.phone === phone) {
-        targetDevice = dev;
-        break;
-      }
-    }
-
-    if (targetDevice?.deviceToken) {
-      const pushRes = await FcmPushService.sendNativePushNotification({
-        deviceToken: targetDevice.deviceToken,
-        title,
-        body,
-        dataPayload,
-      });
+    if (webPushDeliveredCount > 0 || nativeDeliveredCount > 0 || topicResult?.success) {
+      const channel =
+        webPushDeliveredCount > 0 && nativeDeliveredCount > 0
+          ? 'APNS_FCM_AND_WEB_PUSH'
+          : nativeDeliveredCount > 0
+          ? 'FCM_NATIVE'
+          : webPushDeliveredCount > 0
+          ? 'WEB_PUSH'
+          : 'FCM_TOPIC';
 
       return {
-        success: pushRes.success,
-        deliveredChannel: 'FCM_NATIVE',
-        messageId: pushRes.messageId,
-        recipient: targetDevice.deviceToken,
+        success: true,
+        deliveredChannel: channel,
+        messageId: `push_${Date.now()}_w${webPushDeliveredCount}_n${nativeDeliveredCount}`,
+        recipient: `${webPushDeliveredCount + nativeDeliveredCount}_devices`,
         timestamp: now,
-        details: { platform: targetDevice.platform },
+        details: {
+          webPushDeliveredCount,
+          nativeDeliveredCount,
+          topic: effectiveTopic,
+          targetRole,
+          apnsPayload: canonicalApnsPayload,
+        },
       };
     }
 
@@ -336,6 +366,7 @@ export class NotificationDispatcher {
         messageId: waRes.message_id,
         recipient: phone,
         timestamp: now,
+        details: { apnsPayload: canonicalApnsPayload },
       };
     }
 
@@ -347,6 +378,7 @@ export class NotificationDispatcher {
       messageId: fallbackMsgId,
       recipient: phone || 'Anonymous',
       timestamp: now,
+      details: { apnsPayload: canonicalApnsPayload },
     };
   }
 

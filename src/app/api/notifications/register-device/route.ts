@@ -5,20 +5,21 @@ import { VAPID_PUBLIC_KEY } from '@/lib/vapid-keys';
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Partial<UserDeviceDTO>;
-    const token = body.webPushSubscription?.endpoint || body.deviceToken;
+    const token = body.webPushSubscription?.endpoint || body.apnsToken || body.deviceToken;
 
     if (!token || !body.platform) {
       return NextResponse.json(
-        { success: false, error: 'deviceToken (veya webPushSubscription) ve platform parametreleri zorunludur.' },
+        { success: false, error: 'deviceToken (veya apnsToken / webPushSubscription) ve platform parametreleri zorunludur.' },
         { status: 400 }
       );
     }
 
     const result = await NotificationDispatcher.registerDevice({
       deviceToken: token,
+      apnsToken: body.apnsToken || (!body.webPushSubscription && body.platform === 'ios' ? token : undefined),
       platform: body.platform,
       userId: body.userId,
-      role: body.role || 'guest',
+      role: body.role || 'staff',
       hotelId: body.hotelId,
       roomNumber: body.roomNumber,
       phone: body.phone,

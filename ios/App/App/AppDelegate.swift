@@ -2,19 +2,18 @@ import UIKit
 import Capacitor
 import UserNotifications
 import AVFoundation
+import MediaPlayer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
-    private var silentAudioPlayer: AVAudioPlayer?
     private var requestPollTimer: Timer?
-    private var gcdPollTimer: DispatchSourceTimer?
-    private var bgTask: UIBackgroundTaskIdentifier = .invalid
     private var isPolling = false
 
     private static let notifiedStorageKey = "xenios_ios_native_notified_ids_v3"
     private static let notifiedInitKey = "xenios_ios_native_notified_init_v3"
+    private static let apnsTokenStorageKey = "xenios_ios_apns_device_token"
     private static let lockQueue = DispatchQueue(label: "com.usecomus.olympus.notifiedIds")
 
     static var notifiedRequestIds: Set<String> = {
@@ -58,156 +57,67 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         }
+        if let savedToken = UserDefaults.standard.string(forKey: apnsTokenStorageKey), !savedToken.isEmpty {
+            syncApnsTokenWithBackend(tokenHex: savedToken)
+        }
+    }
+
+    static func syncApnsTokenWithBackend(tokenHex: String, hotelId: String? = nil) {
+        guard !tokenHex.isEmpty,
+              let url = URL(string: "https://purelyistanbul.com/api/notifications/register-device") else {
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10.0
+
+        var payload: [String: Any] = [
+            "deviceToken": tokenHex,
+            "apnsToken": tokenHex,
+            "platform": "ios",
+            "role": "staff"
+        ]
+        if let hotelId = hotelId, !hotelId.isEmpty {
+            payload["hotelId"] = hotelId
+        }
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload, options: [])
+        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+    }
+
+    func clearNowPlayingAndDisableBackgroundAudio() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        UIApplication.shared.endReceivingRemoteControlEvents()
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.isEnabled = false
+        commandCenter.pauseCommand.isEnabled = false
+        commandCenter.stopCommand.isEnabled = false
+        commandCenter.togglePlayPauseCommand.isEnabled = false
+        commandCenter.nextTrackCommand.isEnabled = false
+        commandCenter.previousTrackCommand.isEnabled = false
+        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
+        try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().delegate = self
 
+        clearNowPlayingAndDisableBackgroundAudio()
         AppDelegate.requestNotificationPermissions()
-        setupAudioSessionObservers()
-
-        // Start silent background keep-alive and live Firestore request watcher
-        // so room service & hotel menu orders notify even when the screen/keypad is locked
-        startSilentBackgroundKeepAlive()
         startFirestoreRequestWatcher()
 
         return true
     }
 
-    private func setupAudioSessionObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleAudioSessionInterruption(_:)),
-            name: AVAudioSession.interruptionNotification,
-            object: AVAudioSession.sharedInstance()
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleMediaServicesReset(_:)),
-            name: AVAudioSession.mediaServicesWereResetNotification,
-            object: AVAudioSession.sharedInstance()
-        )
-    }
-
-    @objc private func handleAudioSessionInterruption(_ notification: Notification) {
-        // When WKWebView suspends on screen lock, it can interrupt AVAudioSession.
-        // Immediately re-activate our playback session and resume silent audio keep-alive.
-        DispatchQueue.main.async { [weak self] in
-            self?.startSilentBackgroundKeepAlive()
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.startSilentBackgroundKeepAlive()
-        }
-    }
-
-    @objc private func handleMediaServicesReset(_ notification: Notification) {
-        DispatchQueue.main.async { [weak self] in
-            self?.silentAudioPlayer = nil
-            self?.startSilentBackgroundKeepAlive()
-        }
-    }
-
-    private func buildSilentWavData() -> Data {
-        let sampleRate: UInt32 = 8000
-        let numChannels: UInt16 = 1
-        let bitsPerSample: UInt16 = 16
-        let numSamples: UInt32 = sampleRate * 20 // 20 seconds continuous low-energy carrier
-        let dataSize: UInt32 = numSamples * UInt32(numChannels) * UInt32(bitsPerSample / 8)
-        let chunkSize: UInt32 = 36 + dataSize
-        let byteRate: UInt32 = sampleRate * UInt32(numChannels) * UInt32(bitsPerSample / 8)
-        let blockAlign: UInt16 = numChannels * (bitsPerSample / 8)
-
-        var data = Data()
-        data.append("RIFF".data(using: .ascii)!)
-        withUnsafeBytes(of: chunkSize.littleEndian) { data.append(contentsOf: $0) }
-        data.append("WAVE".data(using: .ascii)!)
-        data.append("fmt ".data(using: .ascii)!)
-        let subchunk1Size: UInt32 = 16
-        let audioFormat: UInt16 = 1
-        withUnsafeBytes(of: subchunk1Size.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: audioFormat.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: numChannels.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: sampleRate.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: byteRate.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: blockAlign.littleEndian) { data.append(contentsOf: $0) }
-        withUnsafeBytes(of: bitsPerSample.littleEndian) { data.append(contentsOf: $0) }
-        data.append("data".data(using: .ascii)!)
-        withUnsafeBytes(of: dataSize.littleEndian) { data.append(contentsOf: $0) }
-        var pcm = Data(capacity: Int(dataSize))
-        for i in 0..<Int(numSamples) {
-            let sample: Int16 = (i % 4 < 2) ? 8 : -8
-            withUnsafeBytes(of: sample.littleEndian) { pcm.append(contentsOf: $0) }
-        }
-        data.append(pcm)
-        return data
-    }
-
-    func startSilentBackgroundKeepAlive() {
-        do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try session.setActive(true)
-
-            if silentAudioPlayer == nil {
-                let wavData = buildSilentWavData()
-                let player = try AVAudioPlayer(data: wavData, fileTypeHint: AVFileType.wav.rawValue)
-                player.numberOfLoops = -1
-                player.volume = 0.02
-                player.prepareToPlay()
-                player.play()
-                self.silentAudioPlayer = player
-            } else if silentAudioPlayer?.isPlaying == false {
-                silentAudioPlayer?.prepareToPlay()
-                silentAudioPlayer?.play()
-            }
-        } catch {
-            print("Silent background keep-alive note: \(error.localizedDescription)")
-        }
-    }
-
-    private func renewBackgroundTask() {
-        let app = UIApplication.shared
-        let oldTask = self.bgTask
-        self.bgTask = app.beginBackgroundTask(withName: "PurelyIstanbulLiveRequestWatcher") { [weak self] in
-            guard let self = self else { return }
-            self.startSilentBackgroundKeepAlive()
-            if self.bgTask != .invalid {
-                let expiring = self.bgTask
-                self.bgTask = .invalid
-                app.endBackgroundTask(expiring)
-            }
-        }
-        if oldTask != .invalid {
-            app.endBackgroundTask(oldTask)
-        }
-    }
-
     func startFirestoreRequestWatcher() {
         requestPollTimer?.invalidate()
-        let timer = Timer(timeInterval: 2.5, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 3.5, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            if self.silentAudioPlayer?.isPlaying != true {
-                self.startSilentBackgroundKeepAlive()
-            }
+            guard UIApplication.shared.applicationState == .active else { return }
             self.pollFirestoreServiceRequests()
         }
         RunLoop.main.add(timer, forMode: .common)
         self.requestPollTimer = timer
-
-        gcdPollTimer?.cancel()
-        let gcdTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
-        gcdTimer.schedule(deadline: .now() + 2.5, repeating: 2.5)
-        gcdTimer.setEventHandler { [weak self] in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                if self.silentAudioPlayer?.isPlaying != true {
-                    self.startSilentBackgroundKeepAlive()
-                }
-            }
-            self.pollFirestoreServiceRequests()
-        }
-        gcdTimer.resume()
-        self.gcdPollTimer = gcdTimer
 
         pollFirestoreServiceRequests()
     }
@@ -280,18 +190,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let isRecentOnFirstBoot = ageSeconds > -300.0 && ageSeconds < 180.0
                     if AppDelegate.markIfNew(reqId) && isRecentOnFirstBoot && isActiveStatus {
                         let isUrgent = priority == "acil"
-                        let title = isUrgent ? "🚨 ACİL TALEP: Birim \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Birim \(roomNumber)"
+                        let title = isUrgent ? "🚨 Acil Misafir Talebi! 🛎️" : "Yeni Misafir Talebi! 🛎️"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
-                        let body = cleanNotes.isEmpty ? serviceTitle : "\(serviceTitle) · \(cleanNotes)"
+                        let body = cleanNotes.isEmpty ? "Birim \(roomNumber) - \(serviceTitle) Siparişi Verildi." : "Birim \(roomNumber) - \(serviceTitle) (\(cleanNotes)) Siparişi Verildi."
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)
                     }
                 } else {
                     let isWithinActiveWindow = ageSeconds > -300.0 && ageSeconds < 1800.0
                     if AppDelegate.markIfNew(reqId) && isWithinActiveWindow && isActiveStatus {
                         let isUrgent = priority == "acil"
-                        let title = isUrgent ? "🚨 ACİL TALEP: Birim \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Birim \(roomNumber)"
+                        let title = isUrgent ? "🚨 Acil Misafir Talebi! 🛎️" : "Yeni Misafir Talebi! 🛎️"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
-                        let body = cleanNotes.isEmpty ? serviceTitle : "\(serviceTitle) · \(cleanNotes)"
+                        let body = cleanNotes.isEmpty ? "Birim \(roomNumber) - \(serviceTitle) Siparişi Verildi." : "Birim \(roomNumber) - \(serviceTitle) (\(cleanNotes)) Siparişi Verildi."
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)
                     }
                 }
@@ -309,7 +219,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.sound = UNNotificationSound.default
         content.badge = 1
 
-        // trigger: nil delivers the notification immediately even when locked/backgrounded
         let request = UNNotificationRequest(identifier: id.isEmpty ? UUID().uuidString : id, content: content, trigger: nil)
 
         UNUserNotificationCenter.current().add(request) { error in
@@ -318,6 +227,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenHex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        UserDefaults.standard.set(tokenHex, forKey: AppDelegate.apnsTokenStorageKey)
+        AppDelegate.syncApnsTokenWithBackend(tokenHex: tokenHex)
         NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
     }
 
@@ -325,8 +237,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         print("Remote notification registration note: \(error.localizedDescription)")
     }
 
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if let reqId = userInfo["requestId"] as? String, !reqId.isEmpty {
+            _ = AppDelegate.markIfNew(reqId)
+        }
+        completionHandler(.newData)
+    }
+
     // Display banner and play sound even when the app is open in foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let reqId = notification.request.identifier
+        if !reqId.isEmpty {
+            _ = AppDelegate.markIfNew(reqId)
+        }
         if #available(iOS 14.0, *) {
             completionHandler([.banner, .sound, .badge, .list])
         } else {
@@ -345,40 +270,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        startSilentBackgroundKeepAlive()
-        renewBackgroundTask()
+        clearNowPlayingAndDisableBackgroundAudio()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        startSilentBackgroundKeepAlive()
-        renewBackgroundTask()
-        pollFirestoreServiceRequests()
-
-        // Re-assert keep-alive after WKWebView finishes suspending its media session on screen lock
-        for delay in [0.3, 1.0, 2.5, 5.0] {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                self?.startSilentBackgroundKeepAlive()
-                self?.pollFirestoreServiceRequests()
-            }
-        }
+        clearNowPlayingAndDisableBackgroundAudio()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        if bgTask != .invalid {
-            application.endBackgroundTask(bgTask)
-            bgTask = .invalid
-        }
-        startSilentBackgroundKeepAlive()
+        clearNowPlayingAndDisableBackgroundAudio()
         pollFirestoreServiceRequests()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         UIApplication.shared.applicationIconBadgeNumber = 0
-        startSilentBackgroundKeepAlive()
+        clearNowPlayingAndDisableBackgroundAudio()
         pollFirestoreServiceRequests()
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {}
+    func applicationWillTerminate(_ application: UIApplication) {
+        clearNowPlayingAndDisableBackgroundAudio()
+    }
 
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
