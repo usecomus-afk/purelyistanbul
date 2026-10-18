@@ -5,7 +5,7 @@ export const translations = {
     "appTitle": "purelyİstanbul",
     "appSubtitle": "İstanbul Dijital Misafir Rehberi & Concierge",
     "welcome": "Hoş Geldiniz",
-    "room": "Oda",
+    "room": "Birim",
     "wifiTitle": "Otel Wi-Fi Bilgileri",
     "wifiNetwork": "Ağ",
     "wifiPassword": "Şifre",
@@ -15,7 +15,7 @@ export const translations = {
     "breakfast": "Kahvaltı",
     "checkout": "Çıkış Saati",
     "myRequests": "Taleplerim",
-    "activeRequests": "Oda Taleplerim & İstek Durumu",
+    "activeRequests": "Birim Taleplerim & İstek Durumu",
     "noActiveRequests": "Henüz bekleyen bir talep bulunmuyor.",
     "loginRegister": "Giriş Yap / Kaydol",
     "myAccount": "Hesabım",
@@ -45,11 +45,11 @@ export const translations = {
     "servicesLabels": {
       "breakfast": {
         "title": "Kahvaltı Talebi",
-        "desc": "Zengin açık büfe veya odada kahvaltı siparişi"
+        "desc": "Zengin açık büfe veya birimde kahvaltı siparişi"
       },
       "dnd": {
         "title": "Rahatsız Etmeyin",
-        "desc": "Odanız için rahatsız etmeyin modunu aktifleştirin"
+        "desc": "Biriminiz için rahatsız etmeyin modunu aktifleştirin"
       },
       "cleaning": {
         "title": "Temizlik Talebi",
@@ -85,7 +85,7 @@ export const translations = {
       },
       "safe": {
         "title": "Kasa & Güvenlik",
-        "desc": "Oda kasası kullanımı ve güvenlik desteği"
+        "desc": "Birim kasası kullanımı ve güvenlik desteği"
       },
       "technical": {
         "title": "Teknik Destek",
@@ -287,7 +287,7 @@ export const translations = {
     "bathrooms": "Banyo",
     "grossArea": "Brüt Alan",
     "district": "Semt",
-    "liveRequests": "Canlı Oda Talepleri",
+    "liveRequests": "Canlı Birim Talepleri",
     "noRequests": "Henüz bekleyen bir talep bulunmuyor.",
     "requestStatus": {
       "pending": "Bekliyor",
@@ -300,7 +300,7 @@ export const translations = {
     "appTitle": "purelyİstanbul",
     "appSubtitle": "Istanbul Digital Guest Directory & Concierge",
     "welcome": "Welcome",
-    "room": "Room",
+    "room": "Unit",
     "wifiTitle": "Hotel Wi-Fi Credentials",
     "wifiNetwork": "Network",
     "wifiPassword": "Password",
@@ -310,7 +310,7 @@ export const translations = {
     "breakfast": "Breakfast",
     "checkout": "Check-out Time",
     "myRequests": "My Requests",
-    "activeRequests": "In-Room Requests & Status",
+    "activeRequests": "Unit Requests & Status",
     "noActiveRequests": "No pending requests at the moment.",
     "loginRegister": "Sign In / Register",
     "myAccount": "My Account",
