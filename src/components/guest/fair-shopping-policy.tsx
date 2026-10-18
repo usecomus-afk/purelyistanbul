@@ -37,17 +37,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "T.C. Kültür ve Turizm Bakanlığı'na bağlı tarihi müze ve saraylarda sıra beklemeden giriş sağlayan resmi müze kartı.",
     museumPassCta: "Resmi Müze Biletleri",
     charterHeading: "Şeffaf, Misafirperver ve Samimi Yerel Deneyim",
-    charterQuote: "“Purely İstanbul olarak her misafirimizin İstanbul’u bir turist gibi değil, baş tacı edilen bir ‘Tanrı Misafiri’ olarak deneyimlemesi gerektiğine inanıyoruz. Radikal şeffaflık, denetlenmiş yerel iş ortakları ve doğrudan sorumluluk ilkesiyle endişenin yerine güveni koyuyoruz.”",
+    charterQuote: "“Purely İstanbul olarak her misafirimizin İstanbul’u baş tacı edilen bir ‘Tanrı Misafiri’ olarak deneyimlemesi için özenle seçilmiş yerel deneyimler ve dijital rehberlik sunuyoruz.”",
     pillars: [
       {
         number: "01",
-        title: "Radikal Şeffaflık",
-        desc: "Gerçek yerel fiyatlar, sıfır turist komisyonu, sıfır gizli ücret ve güvenli ödeme altyapısı.",
+        title: "Şeffaf Deneyim",
+        desc: "Açık deneyim bilgileri, yerel rehberlik ve kolay dijital rezervasyon altyapısı.",
       },
       {
         number: "02",
         title: "Gerçek Misafirperverlik",
-        desc: "Köklü Türk misafirperverliği dijitale taşındı. Bir deneyim doğrulanmış standartlarımızı karşılamazsa, özel misafir ilişkileri ekibimiz empati ve hızla çözüm üretir.",
+        desc: "Köklü Türk misafirperverliği dijitale taşındı; konaklamanız boyunca özenli misafir desteği yanınızda.",
       },
       {
         number: "03",
@@ -74,17 +74,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "Skip-the-line official entrance pass valid at historic museums and palaces under the Ministry of Culture and Tourism.",
     museumPassCta: "Official Museum Tickets",
     charterHeading: "Transparent, Hospitable, and Sincerely Local",
-    charterQuote: "“At Purely Istanbul, we believe every traveler should experience Istanbul not as a walking wallet, but as an honored guest. We replace anxiety with authenticity through radical transparency, pre-vetted local partners, and direct accountability.”",
+    charterQuote: "“At Purely Istanbul, we believe every traveler should experience Istanbul as an honored guest with authentic local guidance and curated city experiences.”",
     pillars: [
       {
         number: "01",
-        title: "Radical Transparency",
-        desc: "Real local rates, zero tourist markups, zero hidden backroom commissions, secure Stripe processing.",
+        title: "Clear & Direct",
+        desc: "Clear experience details, local context, and straightforward digital booking across Istanbul.",
       },
       {
         number: "02",
         title: "Genuine Hospitality",
-        desc: "The timeless hosting tradition digitized. If an experience doesn't match our verified standards, our dedicated guest care resolves it with empathy and speed.",
+        desc: "Inspired by the timeless hosting tradition, with attentive guest support throughout your stay.",
       },
       {
         number: "03",
@@ -111,17 +111,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "بطاقة الدخول الرسمية لتخطي الطوابير والصالحة في المتاحف والقصور التاريخية التابعة لوزارة الثقافة والسياحة.",
     museumPassCta: "تذاكر المتاحف الرسمية",
     charterHeading: "شفافية وضيافة أصيلة",
-    charterQuote: "«في Purely إسطنبول، نؤمن بأن كل مسافر يجب أن يعيش تجربة إسطنبول كضيف مكرّم. نستبدل القلق بالأصالة من خلال الشفافية الكاملة والشركاء المحليين المعتمدين والمسؤولية المباشرة.»",
+    charterQuote: "«في Purely إسطنبول، نقدم تجارب محلية مختارة وإرشاداً رقمياً ليعيش كل مسافر تجربة إسطنبول كضيف مكرّم.»",
     pillars: [
       {
         number: "01",
-        title: "شفافية تامة",
-        desc: "أسعار محلية حقيقية، بدون زيادات سياحية أو عمولات خفية، ومعالجة دفع آمنة.",
+        title: "وضوح وبساطة",
+        desc: "تفاصيل واضحة للتجارب وإرشاد محلي وحجز رقمي سهل في إسطنبول.",
       },
       {
         number: "02",
         title: "ضيافة صادقة",
-        desc: "تقاليد الضيافة العريقة في قالب رقمي. إذا لم تتطابق أي تجربة مع معاييرنا المعتمدة، فإن فريق رعاية الضيوف لدينا يحلها بتعاطف وسرعة.",
+        desc: "تقاليد الضيافة العريقة في قالب رقمي مع دعم متواصل للضيوف طوال فترة الإقامة.",
       },
       {
         number: "03",
@@ -148,17 +148,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "Официальный абонемент для прохода без очереди в исторические музеи и дворцы Министерства культуры и туризма.",
     museumPassCta: "Официальные билеты в музеи",
     charterHeading: "Прозрачность, гостеприимство и искренность",
-    charterQuote: "«В Purely Istanbul мы убеждены, что каждый путешественник должен чувствовать себя в Стамбуле дорогим и почетным гостем. Мы заменяем тревогу уверенностью благодаря полной прозрачности, проверенным партнерам и прямой ответственности.»",
+    charterQuote: "«В Purely Istanbul мы предлагаем избранные городские впечатления и цифровую поддержку, чтобы каждый путешественник чувствовал себя в Стамбуле дорогим гостем.»",
     pillars: [
       {
         number: "01",
-        title: "Радикальная прозрачность",
-        desc: "Честные местные цены, никаких туристических наценок и скрытых комиссий, безопасная оплата.",
+        title: "Ясность и удобство",
+        desc: "Понятная информация о впечатлениях, местный контекст и удобное цифровое бронирование.",
       },
       {
         number: "02",
         title: "Истинное гостеприимство",
-        desc: "Вековые традиции гостеприимства в цифровом формате. Если впечатление не соответствует нашим стандартам, служба заботы о гостях оперативно решит вопрос.",
+        desc: "Традиции гостеприимства в цифровом формате и внимательная поддержка гостей на протяжении всего пребывания.",
       },
       {
         number: "03",
@@ -185,17 +185,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "Offizieller Skip-the-Line-Eintrittspass für historische Museen und Paläste des Ministeriums für Kultur und Tourismus.",
     museumPassCta: "Offizielle Museumstickets",
     charterHeading: "Transparent, Gastfreundlich und Echt Lokal",
-    charterQuote: "„Bei Purely Istanbul glauben wir, dass jeder Reisende Istanbul als geehrter Gast erleben sollte. Wir ersetzen Unsicherheit durch Authentizität – mit radikaler Transparenz, geprüften lokalen Partnern und direkter Verantwortung.“",
+    charterQuote: "„Bei Purely Istanbul bieten wir kuratierte Stadterlebnisse und digitale Begleitung, damit jeder Reisende Istanbul als geschätzter Gast erlebt.“",
     pillars: [
       {
         number: "01",
-        title: "Radikale Transparenz",
-        desc: "Echte lokale Preise, null Touristenaufschläge, null versteckte Provisionen und sichere Zahlungsabwicklung.",
+        title: "Klar & Direkt",
+        desc: "Klare Erlebnisdetails, lokaler Kontext und unkomplizierte digitale Buchung in Istanbul.",
       },
       {
         number: "02",
         title: "Echte Gastfreundschaft",
-        desc: "Zeitlose Gastfreundschaft digitalisiert. Wenn ein Erlebnis nicht unseren geprüften Standards entspricht, löst unser Gästeservice das Anliegen schnell und kulant.",
+        desc: "Zeitlose Gastfreundschaft digitalisiert mit aufmerksamer Gästebetreuung während Ihres Aufenthalts.",
       },
       {
         number: "03",
@@ -222,17 +222,17 @@ const GUIDE_I18N: Record<Language, {
     museumPassDesc: "Pass officiel coupe-file valable dans les musées et palais historiques relevant du Ministère de la Culture et du Tourisme.",
     museumPassCta: "Billets Officiels des Musées",
     charterHeading: "Transparent, Hospitalier et Authentiquement Local",
-    charterQuote: "« Chez Purely Istanbul, nous croyons que chaque voyageur doit vivre Istanbul comme un hôte d’honneur. Nous remplaçons l’incertitude par l’authenticité grâce à une transparence totale, des partenaires locaux vérifiés et une responsabilité directe. »",
+    charterQuote: "« Chez Purely Istanbul, nous proposons des expériences locales sélectionnées et un accompagnement numérique pour vivre Istanbul comme un hôte d’honneur. »",
     pillars: [
       {
         number: "01",
-        title: "Transparence Totale",
-        desc: "De vrais tarifs locaux, zéro majoration touristique, zéro commission cachée et paiement sécurisé.",
+        title: "Clair & Direct",
+        desc: "Informations claires sur les expériences, conseils locaux et réservation numérique simple à Istanbul.",
       },
       {
         number: "02",
         title: "Hospitalité Sincère",
-        desc: "La tradition d’accueil intemporelle digitalisée. Si une expérience ne correspond pas à nos standards vérifiés, notre service client la résout avec empathie et rapidité.",
+        desc: "La tradition d’accueil intemporelle digitalisée avec une assistance attentive tout au long de votre séjour.",
       },
       {
         number: "03",

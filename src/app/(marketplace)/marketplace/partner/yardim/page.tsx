@@ -17,21 +17,14 @@ export default function OrtaklarYardimPage() {
       <section>
         <h2>Guest Care &amp; Quality Standards</h2>
         <p>
-          Every verified partner commits to our guiding pillars: Radical Transparency (real local rates, zero tourist markups), Genuine Hospitality, and Sincere Local Expertise.
+          Our platform focuses on authentic local experiences, clear information, and attentive hospitality across Istanbul.
         </p>
       </section>
 
       <section>
-        <h2>In-Room Smart QR Stand &amp; ComusAI Integration</h2>
+        <h2>In-Room Smart QR &amp; Comus Integration</h2>
         <p>
-          Boutique Hotels &amp; Professional Property Managers receive custom in-room acrylic QR stands with zero software fees. Guests scan the stand for instant Wi-Fi access, 1-tap housekeeping, ComusAI native-language guidance, and vetted city experiences.
-        </p>
-      </section>
-
-      <section>
-        <h2>Transparent Weekly Payouts &amp; Stripe Settlement</h2>
-        <p>
-          All partner payouts and property ancillary revenue commissions are settled transparently on a weekly schedule with full digital invoicing.
+          Boutique Hotels &amp; Professional Property Managers can integrate room-specific QR access so guests enjoy instant Wi-Fi connection, 1-tap housekeeping, Comus native-language guidance, and curated city experiences.
         </p>
       </section>
     </LegalPageShell>

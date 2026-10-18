@@ -36,14 +36,14 @@ export default function ExtranetGirisiPage() {
 
             <div className="rounded-2xl border border-terracotta/30 bg-white p-6 shadow-[0_6px_28px_rgba(11,25,44,0.05)] space-y-3">
               <h2 className="font-luxury-serif text-xl sm:text-2xl font-semibold text-terracotta">
-                Zero Software Fees, Zero Extra Work.
+                Digital In-Room Concierge &amp; Guest Experience
               </h2>
               <p className="text-[15px] leading-relaxed text-ink">
-                Enhance your guest satisfaction with a branded in-room PWA, automate Wi-Fi &amp; housekeeping requests, and earn passive ancillary revenue on every city experience booked by your guests.
+                Enhance your guest experience with a branded in-room PWA, streamline Wi-Fi &amp; housekeeping requests, and connect your guests with curated city experiences across Istanbul.
               </p>
               <p className="text-[14px] font-semibold text-ink flex items-center gap-2 pt-1">
                 <CheckCircle2 className="w-4 h-4 text-terracotta shrink-0" />
-                Custom in-room acrylic stands provided to verified partners with zero upfront friction.
+                Seamless room-level QR integration for partner properties.
               </p>
             </div>
 
@@ -60,10 +60,10 @@ export default function ExtranetGirisiPage() {
               <div className="rounded-2xl border border-sand-border bg-white p-5">
                 <Sparkles className="w-5 h-5 text-terracotta mb-2.5" strokeWidth={1.75} />
                 <h3 className="font-luxury-serif text-base font-semibold text-ink mb-1">
-                  ComusAI &amp; Passive Ancillary Revenue
+                  Comus &amp; Curated City Concierge
                 </h3>
                 <p className="text-[13px] text-ink-muted leading-relaxed">
-                  Your guests receive 24/7 native-language concierge care and book pre-vetted Bosphorus cruises, hammams, and licensed VIP transfers — generating automated commission for your property.
+                  Your guests receive 24/7 native-language concierge assistance and discover Bosphorus cruises, hammams, and private airport transfers.
                 </p>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function ExtranetGirisiPage() {
               Boutique Hotel &amp; Partner Sign In
             </h2>
             <p className="text-[13.5px] text-ink-muted leading-relaxed mb-6">
-              Manage your property&apos;s room QR codes, live housekeeping requests, certified experience inventory, and transparent weekly payouts.
+              Manage your property&apos;s room QR codes, live housekeeping requests, and experience listings.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">

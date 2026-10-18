@@ -59,15 +59,15 @@ export function MarketplaceFooter() {
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-14 grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-10">
         <div>
           <h3 className="text-[13px] font-semibold text-ink mb-4 uppercase tracking-wider">
-            Guest Commitment & Support
+            Guest Care &amp; Support
           </h3>
           <ul className="space-y-2.5">
             <li>
               <Link
-                href="/guest-commitment"
+                href="/our-philosophy"
                 className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
               >
-                Tanrı Misafiri Guest Standards
+                Our Philosophy
               </Link>
             </li>
             <li>

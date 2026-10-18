@@ -4,16 +4,16 @@ import { ShieldCheck, HeartHandshake, Compass, ArrowRight } from "lucide-react";
 export const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Radical Transparency (Şeffaf)",
+    title: "Clear & Direct (Şeffaf)",
     description:
-      "Real local rates, zero tourist markups, zero hidden backroom commissions, secure Stripe processing.",
+      "Clear experience details, local context, and straightforward digital booking across Istanbul.",
     icon: ShieldCheck,
   },
   {
     number: "02",
     title: "Genuine Hospitality (Misafirperver)",
     description:
-      "The timeless Turkish hosting tradition digitized. If an experience doesn't match our verified standards, our dedicated guest care resolves it with empathy and speed.",
+      "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
     icon: HeartHandshake,
   },
   {
@@ -39,18 +39,16 @@ export function EthicalCharterContent() {
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-ink leading-relaxed max-w-3xl font-medium">
-          &ldquo;At Purely Istanbul, we believe every traveler should experience Istanbul not as a walking wallet,
-          but as an honored guest (&lsquo;Tanrı Misafiri&rsquo;). We replace anxiety with authenticity through
-          radical transparency, pre-vetted local partners, and direct accountability.&rdquo;
+          &ldquo;At <span translate="no" className="notranslate">Purely Istanbul</span>, we believe every traveler should experience Istanbul as an honored guest (&lsquo;Tanrı Misafiri&rsquo;) with authentic local guidance and curated city experiences.&rdquo;
         </p>
       </div>
 
       {/* Guiding Pillars */}
       <section className="mt-14">
         <div className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Guiding Pillars</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Our Philosophy</p>
           <h2 className="mt-1.5 font-luxury-serif text-2xl sm:text-3xl font-semibold text-ink">
-            Our Promise to Every Traveler &amp; Local Artisan
+            Our Approach to Istanbul Hospitality
           </h2>
         </div>
 

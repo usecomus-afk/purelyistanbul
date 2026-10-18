@@ -42,11 +42,7 @@ export default function BecomeAHostPage() {
     return (
       <>
         <div className="max-w-md mx-auto p-8 space-y-2">
-          <p className="text-sm font-semibold text-emerald-700">Your Verified Partner account is active.</p>
-          <p className="text-xs text-ink-muted">
-            Agreed fee structure: {Math.round(profile.hostProfile!.commissionRate.hostRate * 100)}% partner payout /{" "}
-            {Math.round(profile.hostProfile!.commissionRate.platformRate * 100)}% platform technology fee.
-          </p>
+          <p className="text-sm font-semibold text-emerald-700">Your Partner account is active.</p>
         </div>
         <MarketplaceFooter />
       </>
@@ -57,7 +53,7 @@ export default function BecomeAHostPage() {
     return (
       <>
         <div className="max-w-md mx-auto p-8 text-sm text-ink-muted">
-          Your partner application has been received and is currently under review by our verification team. You will be notified once approved.
+          Your partner application has been received and is currently under review by our team. You will be notified once approved.
         </div>
         <MarketplaceFooter />
       </>
@@ -75,7 +71,7 @@ export default function BecomeAHostPage() {
         taxId: taxId || undefined,
         about,
       });
-      toast.success("Partner application submitted. Our verification team will review your credentials.");
+      toast.success("Partner application submitted. Our team will review your information.");
       router.push("/marketplace/account");
     } catch (err: any) {
       toast.error(err?.message || "Could not submit application.");
@@ -88,13 +84,13 @@ export default function BecomeAHostPage() {
     <>
       <div className="max-w-lg mx-auto px-5 py-14">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-terracotta mb-1">
-          Verified Partner Onboarding
+          Partner Onboarding
         </p>
         <h1 className="font-luxury-serif text-2xl sm:text-3xl font-semibold text-ink mb-2">
-          Apply as a Verified Partner
+          Apply as a Partner
         </h1>
         <p className="text-xs sm:text-sm text-ink-muted mb-6 leading-relaxed">
-          For Boutique Hotels &amp; Professional Property Managers, licensed TÜRSAB Group A agencies, and certified local artisans. While global platforms take 25–30%, our platform charges a fair 10–12% technology fee.
+          Submit your business or property details below to apply to the Purely Istanbul partner network.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

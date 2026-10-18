@@ -54,16 +54,16 @@ const DURATION_OPTIONS: { key: DurationBucket; label: string }[] = [
 const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Radical Transparency (Şeffaf)",
+    title: "Clear & Direct (Şeffaf)",
     description:
-      "Real local rates, zero tourist markups, zero hidden backroom commissions, secure Stripe processing.",
+      "Clear experience details, local context, and straightforward digital booking across Istanbul.",
     icon: ShieldCheck,
   },
   {
     number: "02",
     title: "Genuine Hospitality (Misafirperver)",
     description:
-      "The timeless Turkish hosting tradition digitized. If an experience doesn't match our verified standards, our dedicated guest care resolves it with empathy and speed.",
+      "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
     icon: HeartHandshake,
   },
   {

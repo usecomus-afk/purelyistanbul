@@ -46,27 +46,27 @@ export default function IstirakOlunPage() {
           For Boutique Hotels &amp; Property Managers
         </p>
         <h1 className="mt-2 font-luxury-serif text-2xl md:text-[34px] font-semibold tracking-tight text-ink">
-          Hospitality SaaS &amp; Curated Marketplace Partnership
+          Hospitality &amp; Marketplace Partnership
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
-          An ancillary revenue-sharing ecosystem built for Boutique Hotels &amp; Professional Property Managers, luxury travel advisors, and cultural publications dedicated to Istanbul.
+          A digital hospitality and guest concierge ecosystem built for Boutique Hotels, Professional Property Managers, and local partners dedicated to Istanbul.
         </p>
 
         <section className="mt-10">
           <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">
-            Zero Software Fees, Shared Ancillary Revenue
+            In-Room Digital Concierge &amp; Curated Experiences
           </h2>
           <p className="text-[14.5px] leading-relaxed text-ink-muted">
-            Provide your guests with a branded in-room QR operating system powered by ComusAI, and earn passive ancillary revenue on every verified experience booked across our 10 curated categories.
+            Provide your guests with a branded in-room QR operating system powered by Comus, connecting them seamlessly to housekeeping services and curated local experiences across Istanbul.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">Partner Benefits</h2>
+          <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">Platform Capabilities</h2>
           <ul className="space-y-2 text-[14.5px] text-ink-muted [&_li]:pl-5 [&_li]:relative [&_li]:before:content-['—'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-terracotta">
-            <li>Custom in-room acrylic stands provided to verified partners with zero upfront friction.</li>
-            <li>Automated Wi-Fi onboarding, housekeeping requests, and real-time room attribution.</li>
-            <li>Transparent revenue dashboard tracking every excursion, hammam ritual, and airport transfer booked by your guests.</li>
+            <li>Room-specific QR access for instant guest onboarding without downloading an app.</li>
+            <li>Automated Wi-Fi connection, housekeeping requests, and real-time room management.</li>
+            <li>Centralized management panel for guest requests and curated Istanbul experiences.</li>
           </ul>
         </section>
 
