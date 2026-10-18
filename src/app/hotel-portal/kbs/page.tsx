@@ -244,7 +244,7 @@ export default function HotelKbsPage() {
             <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3" />
             <input
               type="text"
-              placeholder="Misafir adı, oda veya belge no..."
+              placeholder="Misafir adı, birim veya belge no..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-hidden font-medium"
@@ -256,7 +256,7 @@ export default function HotelKbsPage() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-zinc-200 bg-zinc-50/70 text-zinc-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-wider">
-                <th className="py-3 px-3">Oda</th>
+                <th className="py-3 px-3">Birim</th>
                 <th className="py-3 px-3">Misafir Adı Soyadı</th>
                 <th className="py-3 px-3">Belge Türü & No</th>
                 <th className="py-3 px-3">Uyruk</th>

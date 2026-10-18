@@ -39,9 +39,9 @@ export default function HotelProfileManagementPage() {
   // Audio Notification Settings State
   const [audioPrefs, setAudioPrefs] = useState<HotelAudioNotificationPrefs>(() => HotelAudioNotification.getPreferences());
 
-  // Hotel Info State
+  // Property Info State
   const [hotelName, setHotelName] = useState(currentHotel.name || '');
-  const [hotelType, setHotelType] = useState(currentHotel.type || 'Butik Otel & Konak');
+  const [hotelType, setHotelType] = useState(currentHotel.type || 'Butik Konaklama & Konak');
   const [hotelDistrict, setHotelDistrict] = useState(currentHotel.district || 'Sultanahmet / Fatih');
   const [hotelAddress, setHotelAddress] = useState(currentHotel.address || '');
   const [hotelPhone, setHotelPhone] = useState(currentHotel.phone || '+90 212 514 00 00');
@@ -191,7 +191,7 @@ export default function HotelProfileManagementPage() {
 
       setTimeout(() => {
         setIsSaving(false);
-        toast.success("Otel ve Kullanıcı Profili Başarıyla Güncellendi!", {
+        toast.success("İşletme ve Kullanıcı Profili Başarıyla Güncellendi!", {
           description: `${hotelName} bilgileri canlı sisteme aktarıldı.`
         });
       }, 400);
@@ -253,42 +253,44 @@ export default function HotelProfileManagementPage() {
       </div>
 
       <form onSubmit={handleSaveHotelAndManager} className="space-y-6">
-        {/* 1. OTEL BİLGİLERİ */}
+        {/* 1. İŞLETME BİLGİLERİ */}
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Otel Adı & Tesis Bilgileri</h2>
-              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafirlerin dijital concierge ekranında gördüğü otel detayları.</p>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">İşletme Adı & Tesis Bilgileri</h2>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafirlerin dijital concierge ekranında gördüğü işletme detayları.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="font-bold text-zinc-700 block">Otel / Tesis Adı</label>
+              <label className="font-bold text-zinc-700 block">İşletme / Tesis Adı</label>
               <input
                 type="text"
                 required
                 value={hotelName}
                 onChange={(e) => setHotelName(e.target.value)}
-                placeholder="Ör: Old City Heritage Hotel Istanbul"
+                placeholder="Ör: Galata Port Suites Istanbul"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-zinc-700 block">Tesis Tipi</label>
+              <label className="font-bold text-zinc-700 block">İşletme Tipi</label>
               <select
                 value={hotelType}
                 onChange={(e) => setHotelType(e.target.value)}
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs font-medium"
               >
-                <option value="Butik Otel & Konak">Butik Otel & Konak</option>
-                <option value="5 Yıldızlı Lüks Otel">5 Yıldızlı Lüks Otel</option>
-                <option value="Tarihi Yalı / Saray">Tarihi Yalı / Saray</option>
                 <option value="Apart & Rezidans">Apart & Rezidans</option>
+                <option value="Kısa Dönem Mülk Yönetimi (PMC)">Kısa Dönem Mülk Yönetimi (PMC)</option>
+                <option value="Butik Konaklama & Konak">Butik Konaklama & Konak</option>
+                <option value="Tarihi Yalı / Saray">Tarihi Yalı / Saray</option>
+                <option value="Butik Otel & Konak">Butik Konaklama (Tarihi)</option>
+                <option value="5 Yıldızlı Lüks Otel">Lüks Konaklama Tesisi</option>
               </select>
             </div>
 
@@ -315,7 +317,7 @@ export default function HotelProfileManagementPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-zinc-700 block">Otel Sabit Telefonu</label>
+              <label className="font-bold text-zinc-700 block">İşletme Sabit Telefonu</label>
               <input
                 type="text"
                 value={hotelPhone}
@@ -331,13 +333,13 @@ export default function HotelProfileManagementPage() {
                 type="text"
                 value={hotelWebsite}
                 onChange={(e) => setHotelWebsite(e.target.value)}
-                placeholder="https://heritagehotel.com"
+                placeholder="https://purelyistanbul.com"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-zinc-700 block">Resepsiyon Dahili No</label>
+              <label className="font-bold text-zinc-700 block">Danışma / Resepsiyon Dahili No</label>
               <input
                 type="text"
                 value={receptionExt}
@@ -375,7 +377,7 @@ export default function HotelProfileManagementPage() {
                 type="text"
                 value={wifiSsid}
                 onChange={(e) => setWifiSsid(e.target.value)}
-                placeholder="Hotel_Guest"
+                placeholder="Purely_Guest"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
@@ -386,7 +388,7 @@ export default function HotelProfileManagementPage() {
                 type="text"
                 value={wifiPass}
                 onChange={(e) => setWifiPass(e.target.value)}
-                placeholder="Xenios2026!"
+                placeholder="purely2026!"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
@@ -400,8 +402,8 @@ export default function HotelProfileManagementPage() {
               <User className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Kullanıcı & Otel Yetkilisi Bilgileri</h2>
-              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Xenios operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Kullanıcı & İşletme Yetkilisi Bilgileri</h2>
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Purelyİstanbul operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
             </div>
           </div>
 
@@ -424,7 +426,7 @@ export default function HotelProfileManagementPage() {
                 type="text"
                 value={managerTitle}
                 onChange={(e) => setManagerTitle(e.target.value)}
-                placeholder="Genel Müdür / Ön Büro Müdürü"
+                placeholder="İşletme Yöneticisi / Operasyon Direktörü"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
@@ -462,7 +464,7 @@ export default function HotelProfileManagementPage() {
                 required
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                placeholder="heritage@xenios.istanbul"
+                placeholder="yonetim@purelyistanbul.com"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
@@ -474,7 +476,7 @@ export default function HotelProfileManagementPage() {
                 required
                 value={notificationEmail}
                 onChange={(e) => setNotificationEmail(e.target.value)}
-                placeholder="concierge@heritagehotel.com"
+                placeholder="operasyon@purelyistanbul.com"
                 className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 text-xs"
               />
             </div>
@@ -488,7 +490,7 @@ export default function HotelProfileManagementPage() {
                 onChange={(e) => setNotifyOnRoomRequest(e.target.checked)}
                 className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
               />
-              <span>Misafir oda içi hizmet taleplerinde anlık e-posta bildirimi al</span>
+              <span>Misafir konaklama içi hizmet taleplerinde anlık e-posta bildirimi al</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -512,7 +514,7 @@ export default function HotelProfileManagementPage() {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Sesli Bildirim & Canlı Talep Uyarı Ayarları</h2>
-                <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafir odalarından gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
+                <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafir birimlerinden gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
               </div>
             </div>
 
@@ -609,7 +611,7 @@ export default function HotelProfileManagementPage() {
                   />
                 </label>
                 <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
-                  Yeni bir misafir talebi geldiğinde ekranın sağ üst köşesinde oda numarası ve notunu içeren canlı kart belirir.
+                  Yeni bir misafir talebi geldiğinde ekranın sağ üst köşesinde birim numarası ve notunu içeren canlı kart belirir.
                 </p>
               </div>
 
@@ -636,14 +638,14 @@ export default function HotelProfileManagementPage() {
                 </div>
 
                 <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
-                  Uygulama arka plandayken veya kilit ekranındayken misafir taleplerini telefon bildirimi olarak alın. İzin verildiğinde iPhone <strong>Ayarlar &gt; Bildirimler &gt; Xenios</strong> altında listelenir.
+                  Uygulama arka plandayken veya kilit ekranındayken misafir taleplerini telefon bildirimi olarak alın. İzin verildiğinde iPhone <strong>Ayarlar &gt; Bildirimler &gt; purelyİstanbul</strong> altında listelenir.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* SAVE HOTEL & MANAGER BUTTON */}
+        {/* SAVE PROPERTY & MANAGER BUTTON */}
         <div className="flex justify-end">
           <button
             type="submit"
@@ -651,7 +653,7 @@ export default function HotelProfileManagementPage() {
             className="px-6 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-zinc-950 font-bold rounded-2xl shadow-md text-xs transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{isSaving ? 'Kaydediliyor...' : 'Otel & Yönetici Profilini Kaydet'}</span>
+            <span>{isSaving ? 'Kaydediliyor...' : 'İşletme & Yönetici Profilini Kaydet'}</span>
           </button>
         </div>
       </form>
@@ -664,7 +666,7 @@ export default function HotelProfileManagementPage() {
           </div>
           <div>
             <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Güvenlik & Şifre Değişikliği</h2>
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">Partner otel yönetim paneli giriş şifrenizi yenileyin.</p>
+            <p className="text-[11px] text-zinc-500 dark:text-slate-400">Partner işletme yönetim paneli giriş şifrenizi yenileyin.</p>
           </div>
         </div>
 

@@ -65,7 +65,7 @@ export default function HotelChannelsPage() {
     setIsSyncing(true);
     setTimeout(() => {
       setIsSyncing(false);
-      toast.success(`Tüm OTA kanalları ve ${rooms.length} oda takvimi 2 yönlü eşitlendi.`);
+      toast.success(`Tüm OTA kanalları ve ${rooms.length} birim takvimi 2 yönlü eşitlendi.`);
     }, 1200);
   };
 
@@ -114,7 +114,7 @@ export default function HotelChannelsPage() {
       lastSync: 'Şimdi',
       active: true
     });
-    toast.success(`Oda ${roomNumber} için dış iCal adresi kaydedildi.`);
+    toast.success(`Birim ${roomNumber} için dış iCal adresi kaydedildi.`);
     refreshData();
   };
 
@@ -130,7 +130,7 @@ export default function HotelChannelsPage() {
             iCal & OTA Kanal Entegrasyon Masası
           </h1>
           <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
-            Airbnb, Booking.com, VRBO ve Expedia takvimlerini purelyİstanbul oda envanteri ile 2 yönlü canlı senkronize edin.
+            Airbnb, Booking.com, VRBO ve Expedia takvimlerini purelyİstanbul birim envanteri ile 2 yönlü canlı senkronize edin.
           </p>
         </div>
 
@@ -162,7 +162,7 @@ export default function HotelChannelsPage() {
               <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-100 text-[11px] space-y-1">
                 <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
                   <span>Kapsam:</span>
-                  <strong className="text-zinc-900 dark:text-slate-100">{ch.roomNumber === 'all' ? 'Tüm Odalar' : `Oda ${ch.roomNumber}`}</strong>
+                  <strong className="text-zinc-900 dark:text-slate-100">{ch.roomNumber === 'all' ? 'Tüm Birimler' : `Birim ${ch.roomNumber}`}</strong>
                 </div>
                 <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
                   <span>Son Eşitleme:</span>
@@ -212,16 +212,16 @@ export default function HotelChannelsPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-zinc-700 block">Oda Seçimi</label>
+            <label className="text-xs font-bold text-zinc-700 block">Birim Seçimi</label>
             <select
               value={newChanRoom}
               onChange={(e) => setNewChanRoom(e.target.value)}
               className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-bold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer"
             >
-              <option value="all">Tüm Odalar (Genel Otel Akışı)</option>
+              <option value="all">Tüm Birimler (Genel İşletme Akışı)</option>
               {rooms.map((r) => (
                 <option key={r.number} value={r.number}>
-                  Oda {r.number} ({r.type || 'Standart'})
+                  Birim {r.number} ({r.type || 'Standart'})
                 </option>
               ))}
             </select>
@@ -249,13 +249,13 @@ export default function HotelChannelsPage() {
         </form>
       </div>
 
-      {/* Room-by-Room iCal Export & Import Table */}
+      {/* Unit-by-Unit iCal Export & Import Table */}
       <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
               <DoorOpen className="w-4 h-4 text-amber-700" />
-              <span>Odalara Özel iCal Dışa Aktarma (.ics) ve İçe Aktarma Masası</span>
+              <span>Birimlere Özel iCal Dışa Aktarma (.ics) ve İçe Aktarma Masası</span>
             </h2>
             <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
               Bu bağlantıları Airbnb veya Booking.com portalındaki "Takvimi İçe Aktar" alanına yapıştırınız.
@@ -273,13 +273,13 @@ export default function HotelChannelsPage() {
                 key={room.number}
                 className="btn-3d p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs"
               >
-                {/* Room Info */}
+                {/* Unit Info */}
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center font-mono font-bold text-amber-900">
                     {room.number}
                   </div>
                   <div>
-                    <h3 className="font-bold text-zinc-900 dark:text-slate-100">Oda {room.number}</h3>
+                    <h3 className="font-bold text-zinc-900 dark:text-slate-100">Birim {room.number}</h3>
                     <span className="text-[10px] text-zinc-500 dark:text-slate-400">{room.type || 'Standart Delüks'} • {room.floor || '2. Kat'}</span>
                   </div>
                 </div>

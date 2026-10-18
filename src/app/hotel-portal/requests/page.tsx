@@ -112,7 +112,7 @@ export default function HotelLiveRequestsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Oda no, hizmet adı veya not ara..."
+            placeholder="Birim no, hizmet adı veya not ara..."
             className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
@@ -125,8 +125,8 @@ export default function HotelLiveRequestsPage() {
           >
             <option value="all">Tüm Departmanlar</option>
             <option value="Housekeeping">Housekeeping</option>
-            <option value="Mutfak">Room Service / Mutfak</option>
-            <option value="Resepsiyon">Resepsiyon</option>
+            <option value="Mutfak">Kahvaltı & Yeme-İçme / Mutfak</option>
+            <option value="Resepsiyon">Danışma / Resepsiyon</option>
             <option value="Teknik">Teknik Servis</option>
             <option value="Concierge">Concierge & Taksi</option>
           </select>
@@ -180,7 +180,7 @@ export default function HotelLiveRequestsPage() {
                   )}
                   <div className="flex flex-wrap items-center gap-2 pr-14 sm:pr-0">
                     <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
-                      Oda / Birim {req.roomNumber}
+                      Birim {req.roomNumber}
                     </span>
                     {req.hotelName && (
                       <span className="px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-800 font-semibold text-[11px] border border-amber-200">
@@ -209,7 +209,7 @@ export default function HotelLiveRequestsPage() {
                     )}
                     {req.paymentStatus !== 'paid_online' && req.paymentAmount && req.paymentAmount > 0 && (
                       <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1">
-                        ODA FOLYOSU · {req.paymentAmount.toLocaleString('tr-TR')} {req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}
+                        BİRİM FOLYOSU · {req.paymentAmount.toLocaleString('tr-TR')} {req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}
                       </span>
                     )}
                   </div>

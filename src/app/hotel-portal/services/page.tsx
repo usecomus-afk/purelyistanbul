@@ -239,7 +239,7 @@ export default function HotelPortalServicesPage() {
   };
 
   const handleDeleteMenuItem = (id: string, name: string) => {
-    if (confirm(`"${name}" ürününü oda servisi menüsünden silmek istediğinize emin misiniz?`)) {
+    if (confirm(`"${name}" ürününü kahvaltı & yeme-içme menüsünden silmek istediğinize emin misiniz?`)) {
       XeniosStore.deleteRoomServiceMenuItem(currentHotel.id, id);
       toast.success(`"${name}" menüden silindi.`);
       refreshData();
@@ -301,7 +301,7 @@ export default function HotelPortalServicesPage() {
             }`}
           >
             <ChefHat className="w-3.5 h-3.5" />
-            <span>Oda Servisi Menüsü ({menuItems.length})</span>
+            <span>Kahvaltı &amp; Yeme-İçme Menüsü ({menuItems.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('services')}
@@ -317,7 +317,7 @@ export default function HotelPortalServicesPage() {
         </div>
       </div>
 
-      {/* ── TAB 1: Oda Servisi Menü Yönetimi ── */}
+      {/* ── TAB 1: Kahvaltı & Yeme-İçme Menü Yönetimi ── */}
       {activeTab === 'menu' && (
         <div className="space-y-5">
           {/* Controls */}
@@ -505,9 +505,9 @@ export default function HotelPortalServicesPage() {
                 </div>
                 <div>
                   <h2 className="text-sm sm:text-base font-bold font-serif text-zinc-900 dark:text-slate-100">
-                    {editingItem ? 'Ürünü Düzenle' : 'Yeni Oda Servisi Ürünü Ekle'}
+                    {editingItem ? 'Ürünü Düzenle' : 'Yeni Menü Ürünü Ekle'}
                   </h2>
-                  <p className="text-[10px] text-zinc-500 dark:text-slate-400">Misafir PWA oda servisi kataloğunda anında canlı yayınlanır</p>
+                  <p className="text-[10px] text-zinc-500 dark:text-slate-400">Misafir PWA kahvaltı &amp; yeme-içme kataloğunda anında canlı yayınlanır</p>
                 </div>
               </div>
               <button

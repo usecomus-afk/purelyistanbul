@@ -908,21 +908,21 @@ export const XeniosStore = {
   // In-Room Services
   getDefaultInRoomServices(): InRoomServiceItem[] {
     return [
-      { id: 'roomservice', key: 'roomservice', label: 'Kahvaltı & Yeme-İçme', desc: 'Kahvaltı, yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
+      { id: 'roomservice', key: 'roomservice', label: 'Kahvaltı & Yeme-İçme', desc: 'Kahvaltı, yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Mutfak & Yeme-İçme', enabled: true, hidden: false, order: 1 },
       { id: 'dnd', key: 'dnd', label: 'Rahatsız Etmeyin', desc: 'Rahatsız edilmek istemiyorum', icon: '/icons/menu/dnd.png', department: 'Housekeeping', enabled: true, hidden: false, order: 2 },
       { id: 'cleaning', key: 'cleaning', label: 'Temizlik Talebi', desc: 'Temizlik ve havalandırma talebi', icon: '/icons/menu/cleaning.png', department: 'Housekeeping', enabled: true, hidden: false, order: 3 },
       { id: 'linens', key: 'linens', label: 'Çarşaf & Nevresim', desc: 'Çarşaf ve nevresim takımı', icon: '/icons/menu/linens.png', department: 'Housekeeping', enabled: true, hidden: false, order: 4 },
       { id: 'toiletries', key: 'toiletries', label: 'Banyo Bukleti', desc: 'Şampuan, duş jeli, sabun', icon: '/icons/menu/toiletries.png', department: 'Housekeeping', enabled: true, hidden: false, order: 5 },
       { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 6 },
-      { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / Ön Büro', enabled: true, hidden: false, order: 7 },
-      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: true, hidden: false, order: 8 },
+      { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Danışma / Ön Büro', enabled: true, hidden: false, order: 7 },
+      { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Danışma / Rezervasyon', enabled: true, hidden: false, order: 8 },
       { id: 'towels', key: 'towels', label: 'Temiz Havlu', desc: 'Banyo & el havluları değişimi', icon: '/icons/menu/towels.png', department: 'Housekeeping', enabled: false, hidden: false, order: 9 },
       { id: 'pillows', key: 'pillows', label: 'Ekstra Yastık', desc: 'Ortopedik / ekstra yastık', icon: '/icons/menu/pillows.png', department: 'Housekeeping', enabled: false, hidden: false, order: 10 },
       { id: 'hygiene', key: 'hygiene', label: 'Hijyen & Bakım Seti', desc: 'Diş & tıraş seti, terlik', icon: '/icons/menu/hygiene.png', department: 'Housekeeping', enabled: false, hidden: false, order: 11 },
       { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: false, hidden: false, order: 12 },
-      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: false, hidden: false, order: 13 },
+      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Danışma & Güvenlik', enabled: false, hidden: false, order: 13 },
       { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: false, hidden: false, order: 14 },
-      { id: 'breakfast', key: 'breakfast', label: 'Kahvaltı Talebi', desc: 'Odaya veya açık büfe kahvaltı', icon: '/icons/menu/breakfast.png', department: 'Room Service (Mutfak KDS)', enabled: false, hidden: false, order: 15 },
+      { id: 'breakfast', key: 'breakfast', label: 'Kahvaltı Talebi', desc: 'Birime veya açık büfe kahvaltı', icon: '/icons/menu/breakfast.png', department: 'Mutfak & Yeme-İçme', enabled: false, hidden: false, order: 15 },
       { id: 'taxi', key: 'taxi', label: 'Taksi & Ulaşım', desc: 'Taksi ve VIP transfer çağrısı', icon: '/icons/menu/taksi.png', department: 'Concierge & Ulaşım', enabled: false, hidden: false, order: 16 }
     ];
   },
@@ -977,6 +977,8 @@ export const XeniosStore = {
         ...def,
         ...saved,
         label: shouldUseDefLabel ? def.label : (saved.label || def.label),
+        desc: def.desc,
+        department: def.department,
         id: def.id,
         key: def.key,
         order: saved.order ?? def.order,

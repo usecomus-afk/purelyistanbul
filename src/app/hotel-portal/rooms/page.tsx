@@ -32,7 +32,7 @@ export default function HotelRoomsPage() {
       ...prev,
       [roomNum]: { ...prev[roomNum], status: nextStatus }
     }));
-    toast.success(`Oda ${roomNum} durumu güncellendi.`);
+    toast.success(`Birim ${roomNum} durumu güncellendi.`);
   };
 
   const filteredRooms = currentHotel.rooms.filter(r => {
@@ -78,23 +78,23 @@ export default function HotelRoomsPage() {
       {/* KPI Status Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-red-50 border border-red-200 shadow-xs">
-          <span className="text-[10px] text-red-700 font-bold uppercase block">Dolu Odalar</span>
-          <div className="text-xl font-bold text-red-800 mt-1 font-mono">{counts.occupied} Oda</div>
+          <span className="text-[10px] text-red-700 font-bold uppercase block">Dolu Birimler</span>
+          <div className="text-xl font-bold text-red-800 mt-1 font-mono">{counts.occupied} Birim</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-xs">
           <span className="text-[10px] text-emerald-700 font-bold uppercase block">Boş & Temiz</span>
-          <div className="text-xl font-bold text-emerald-800 mt-1 font-mono">{counts.clean} Oda</div>
+          <div className="text-xl font-bold text-emerald-800 mt-1 font-mono">{counts.clean} Birim</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 shadow-xs">
           <span className="text-[10px] text-amber-700 font-bold uppercase block">Temizleniyor / Kirli</span>
-          <div className="text-xl font-bold text-amber-800 mt-1 font-mono">{counts.cleaning} Oda</div>
+          <div className="text-xl font-bold text-amber-800 mt-1 font-mono">{counts.cleaning} Birim</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 shadow-xs">
           <span className="text-[10px] text-blue-700 font-bold uppercase block">Rezerve</span>
-          <div className="text-xl font-bold text-blue-800 mt-1 font-mono">{counts.reserved} Oda</div>
+          <div className="text-xl font-bold text-blue-800 mt-1 font-mono">{counts.reserved} Birim</div>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function HotelRoomsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Oda no veya misafir adı ara..."
+            placeholder="Birim no veya misafir adı ara..."
             className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
@@ -186,9 +186,9 @@ export default function HotelRoomsPage() {
                 </select>
 
                 <Link
-                  href={`/qr-generator?hotelId=${currentHotel.id}&room=${room.number}`}
+                  href={`/hotel-portal/qr-generator?hotelId=${currentHotel.id}&room=${room.number}`}
                   className="p-1 text-zinc-500 dark:text-slate-400 hover:text-amber-700"
-                  title="Oda QR"
+                  title="Birim QR"
                 >
                   <QrCode className="w-3.5 h-3.5" />
                 </Link>

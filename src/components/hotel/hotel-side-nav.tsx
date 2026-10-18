@@ -78,7 +78,7 @@ export function HotelSideNav({ isOpen, onClose }: HotelSideNavProps) {
         <div>
           <BrandMark size={34} showText={true} theme="light" href="/hotel-portal" />
           <p className="text-[10px] text-amber-800 font-mono tracking-wider mt-1 uppercase font-bold">
-            Partner Otel Yönetim Portalı
+            Partner İşletme Yönetim Portalı
           </p>
         </div>
         {onClose && (
@@ -91,10 +91,10 @@ export function HotelSideNav({ isOpen, onClose }: HotelSideNavProps) {
         )}
       </div>
 
-      {/* Hotel Switcher Selector */}
+      {/* Property Switcher Selector */}
       <div className="p-3 border-b border-amber-100 bg-amber-50/50">
         <label className="text-[10px] font-bold text-amber-900 uppercase tracking-wide flex items-center gap-1 mb-1.5">
-          <Building2 className="w-3 h-3 text-amber-700" /> Aktif Yönetilen Otel
+          <Building2 className="w-3 h-3 text-amber-700" /> Aktif Yönetilen İşletme
         </label>
         <div className="relative">
           <select
@@ -111,7 +111,7 @@ export function HotelSideNav({ isOpen, onClose }: HotelSideNavProps) {
           <ChevronDown className="w-3.5 h-3.5 text-amber-700 absolute right-2.5 top-2.5 pointer-events-none" />
         </div>
         <div className="flex items-center justify-between text-[10px] text-zinc-500 dark:text-slate-400 mt-1.5 px-0.5">
-          <span>{activeHotel.rooms.length} Tanımlı Oda</span>
+          <span>{activeHotel.rooms.length} Tanımlı Birim</span>
           <span className="text-emerald-700 font-mono font-bold">● Canlı Bağlantı</span>
         </div>
       </div>

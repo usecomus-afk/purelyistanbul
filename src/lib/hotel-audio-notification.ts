@@ -467,8 +467,8 @@ class HotelAudioNotificationService {
     if (prefs.systemNotificationEnabled !== false) {
       try {
         const title = isUrgent
-          ? `🚨 ACİL TALEP: Oda ${req.roomNumber}`
-          : `🛎️ Yeni Sipariş / Talep: Oda ${req.roomNumber}`;
+          ? `🚨 ACİL TALEP: Birim ${req.roomNumber}`
+          : `🛎️ Yeni Sipariş / Talep: Birim ${req.roomNumber}`;
         const cleanNotes = req.notes ? req.notes.replace(/\s+/g, ' ').trim() : '';
         const body = `${req.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
         const subtitle = req.hotelName || 'Purely Istanbul';

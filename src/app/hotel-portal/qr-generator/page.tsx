@@ -52,7 +52,7 @@ function QrCodeCardImage({ url, roomNumber }: { url: string; roomNumber: string 
   return (
     <img
       src={dataUrl}
-      alt={`QR Kod - Oda ${roomNumber}`}
+      alt={`QR Kod - Birim ${roomNumber}`}
       className="w-[150px] h-[150px] object-contain rounded-xl"
     />
   );
@@ -113,7 +113,7 @@ export default function HotelPortalQrPage() {
   const handleSaveRoom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalRoomNumber.trim()) {
-      toast.error("Lütfen oda numarasını giriniz.");
+      toast.error("Lütfen birim numarasını giriniz.");
       return;
     }
 
@@ -124,7 +124,7 @@ export default function HotelPortalQrPage() {
         type: modalRoomType,
         floor: modalFloor
       });
-      toast.success(`Oda ${modalRoomNumber} güncellendi.`);
+      toast.success(`Birim ${modalRoomNumber} güncellendi.`);
     } else {
       // Add Room
       const newRoom: Room = {
@@ -136,7 +136,7 @@ export default function HotelPortalQrPage() {
         wifiPass: ''
       };
       XeniosStore.addRoomToHotel(currentHotel.id, newRoom);
-      toast.success(`Oda ${modalRoomNumber} otele eklendi.`);
+      toast.success(`Birim ${modalRoomNumber} işletmeye eklendi.`);
     }
 
     setIsRoomModalOpen(false);
@@ -144,9 +144,9 @@ export default function HotelPortalQrPage() {
   };
 
   const handleDeleteRoom = (roomNumber: string) => {
-    if (confirm(`Oda ${roomNumber} kaydını ve QR kodunu silmek istediğinize emin misiniz?`)) {
+    if (confirm(`Birim ${roomNumber} kaydını ve QR kodunu silmek istediğinize emin misiniz?`)) {
       XeniosStore.deleteRoomFromHotel(currentHotel.id, roomNumber);
-      toast.success(`Oda ${roomNumber} silindi.`);
+      toast.success(`Birim ${roomNumber} silindi.`);
       refresh();
     }
   };
@@ -210,14 +210,14 @@ export default function HotelPortalQrPage() {
         </div>
       </div>
 
-      {/* Hotel & Room Selector Control Bar */}
+      {/* Property & Unit Selector Control Bar */}
       <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-end">
-          {/* 1. Otel Seçimi */}
+          {/* 1. İşletme Seçimi */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-zinc-700 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-amber-700" />
-              <span>Otel Seçimi:</span>
+              <span>İşletme Seçimi:</span>
             </label>
             <div className="relative">
               <select
@@ -238,11 +238,11 @@ export default function HotelPortalQrPage() {
             </div>
           </div>
 
-          {/* 2. Oda Filtrele */}
+          {/* 2. Birim Filtrele */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-zinc-700 flex items-center gap-1.5">
               <DoorOpen className="w-3.5 h-3.5 text-amber-700" />
-              <span>Oda Filtrele:</span>
+              <span>Birim Filtrele:</span>
             </label>
             <div className="relative">
               <select
@@ -250,10 +250,10 @@ export default function HotelPortalQrPage() {
                 onChange={(e) => setSelectedRoomNumber(e.target.value)}
                 className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer appearance-none pr-8"
               >
-                <option value="all">Tüm Odalar ({rooms.length} Oda)</option>
+                <option value="all">Tüm Birimler ({rooms.length} Birim)</option>
                 {rooms.map((r) => (
                   <option key={r.number} value={r.number}>
-                    Oda {r.number} - {r.type} ({r.floor})
+                    Birim {r.number} - {r.type} ({r.floor})
                   </option>
                 ))}
               </select>
@@ -261,20 +261,20 @@ export default function HotelPortalQrPage() {
             </div>
           </div>
 
-          {/* 3. Oda Ekle Butonu */}
+          {/* 3. Birim Ekle Butonu */}
           <div>
             <button
               onClick={handleOpenAddRoom}
               className="w-full p-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Yeni Oda Ekle</span>
+              <span>Yeni Birim Ekle</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Generated Room QR Cards Grid */}
+      {/* Generated Unit QR Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayRooms.map((room) => {
           const qrUrl = `${origin}/stay/${encodeURIComponent(currentHotel?.id || 'hotel-1')}/${encodeURIComponent(room.number)}`;
@@ -286,13 +286,13 @@ export default function HotelPortalQrPage() {
               key={room.number}
               className="btn-3d p-6 flex flex-col items-center justify-between text-center space-y-4 relative overflow-hidden group"
             >
-              {/* Hotel & Room Header Badge */}
+              {/* Property & Unit Header Badge */}
               <div className="space-y-1 w-full border-b border-amber-100 pb-3">
                 <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
-                  {currentHotel?.name || 'purelyİstanbul Partner Hotel'}
+                  {currentHotel?.name || 'purelyİstanbul Partner İşletme'}
                 </div>
                 <div className="text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100">
-                  ODA {room.number}
+                  BİRİM {room.number}
                 </div>
                 <div className="text-[11px] text-zinc-500 dark:text-slate-400 font-medium">
                   {room.type} • {room.floor}
@@ -305,7 +305,7 @@ export default function HotelPortalQrPage() {
               </div>
 
               <p className="text-[11px] text-zinc-600 dark:text-slate-400 font-medium px-2 leading-relaxed">
-                Kameranızı QR koda doğrultarak oda içi hizmet menüsüne ve dijital concierge rehberine anında bağlanın.
+                Kameranızı QR koda doğrultarak konaklama içi hizmet menüsüne ve dijital concierge rehberine anında bağlanın.
               </p>
 
               {/* iCal .ics Takvim Bağlantısı Kutusu */}
@@ -338,14 +338,14 @@ export default function HotelPortalQrPage() {
                       <button
                         onClick={() => handleOpenEditRoom(room)}
                         className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition cursor-pointer"
-                        title="Odayı Düzenle"
+                        title="Birimi Düzenle"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteRoom(room.number)}
                         className="p-1.5 text-zinc-500 dark:text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                        title="Odayı Sil"
+                        title="Birimi Sil"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -368,13 +368,13 @@ export default function HotelPortalQrPage() {
         })}
       </div>
 
-      {/* Room Add / Edit Modal */}
+      {/* Unit Add / Edit Modal */}
       {isRoomModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-amber-100 pb-3">
               <h3 className="text-sm font-bold font-serif text-zinc-900 dark:text-slate-100">
-                {editingRoom ? `Oda ${editingRoom.number} Düzenle` : `Yeni Oda Ekle (${currentHotel?.name})`}
+                {editingRoom ? `Birim ${editingRoom.number} Düzenle` : `Yeni Birim Ekle (${currentHotel?.name})`}
               </h3>
               <button
                 onClick={() => setIsRoomModalOpen(false)}
@@ -386,19 +386,19 @@ export default function HotelPortalQrPage() {
 
             <form onSubmit={handleSaveRoom} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-zinc-700 block">Oda Numarası</label>
+                <label className="font-bold text-zinc-700 block">Birim Numarası / Adı</label>
                 <input
                   type="text"
                   required
                   value={modalRoomNumber}
                   onChange={(e) => setModalRoomNumber(e.target.value)}
-                  placeholder="Örn: 204"
+                  placeholder="Örn: 204 veya Daire 4"
                   className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl font-mono text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-zinc-700 block">Oda Tipi</label>
+                <label className="font-bold text-zinc-700 block">Birim Tipi</label>
                 <select
                   value={modalRoomType}
                   onChange={(e) => setModalRoomType(e.target.value)}
@@ -408,7 +408,8 @@ export default function HotelPortalQrPage() {
                   <option value="Junior Suite">Junior Suite</option>
                   <option value="Executive Boğaz Manzaralı">Executive Boğaz Manzaralı</option>
                   <option value="Presidential Suite">Presidential Suite</option>
-                  <option value="Aile Odası">Aile Odası</option>
+                  <option value="Aile Süiti / Daire">Aile Süiti / Daire</option>
+                  <option value="Rezidans Daire">Rezidans Daire</option>
                 </select>
               </div>
 

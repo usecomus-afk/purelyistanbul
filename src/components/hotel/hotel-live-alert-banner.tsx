@@ -96,14 +96,14 @@ export function HotelLiveAlertBanner() {
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                   isUrgent ? 'bg-red-800 text-red-100 border border-red-400' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                 }`}>
-                  {isUrgent ? 'ACİL ODA TALEBİ' : 'YENİ MİSAFİR TALEBİ'}
+                  {isUrgent ? 'ACİL BİRİM TALEBİ' : 'YENİ MİSAFİR TALEBİ'}
                 </span>
                 <span className="text-[10px] text-zinc-400 font-mono">
                   {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
               <h4 className="text-sm font-bold text-white truncate mt-0.5">
-                Oda / Birim {activeAlert.roomNumber} · {activeAlert.serviceTitle}
+                Birim {activeAlert.roomNumber} · {activeAlert.serviceTitle}
               </h4>
               {activeAlert.hotelName && (
                 <p className="text-[11px] text-amber-300/90 font-medium truncate">
