@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { RoomServiceMenuItem, Hotel, Language } from '@/lib/types';
 import { LuxuryServiceIcon } from './luxury-service-icon';
-import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed } from 'lucide-react';
+import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed, MessageSquareText } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
 import { getT } from '@/lib/i18n';
@@ -22,6 +22,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   add: string;
   empty: string;
   placeOrder: string;
+  noteLabel: string;
+  notePlaceholder: string;
   orderReceivedTitle: string;
   orderServiceLabel: string;
   orderError: string;
@@ -33,6 +35,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'Ekle',
     empty: 'Bu kategoride ürün bulunmuyor.',
     placeOrder: 'Siparişi Ver',
+    noteLabel: 'Sipariş Notunuz',
+    notePlaceholder: 'Özel isteğiniz, pişirme derecesi veya alerji notunuzu yazabilirsiniz...',
     orderReceivedTitle: 'Siparişiniz Alındı!',
     orderServiceLabel: 'Kahvaltı & Yeme-İçme',
     orderError: 'Sipariş iletilirken bir hata oluştu.',
@@ -51,6 +55,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'Add',
     empty: 'No items available in this category.',
     placeOrder: 'Place Order',
+    noteLabel: 'Order Note',
+    notePlaceholder: 'Add any special requests, cooking preferences, or allergy notes...',
     orderReceivedTitle: 'Order Received!',
     orderServiceLabel: 'In-Room Dining',
     orderError: 'An error occurred while submitting your order.',
@@ -69,6 +75,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'إضافة',
     empty: 'لا توجد عناصر متاحة في هذه الفئة.',
     placeOrder: 'إتمام الطلب',
+    noteLabel: 'ملاحظة الطلب',
+    notePlaceholder: 'أضف أي طلبات خاصة أو تفضيلات الطهي أو ملاحظات الحساسية...',
     orderReceivedTitle: 'تم استلام طلبك!',
     orderServiceLabel: 'خدمة الغرف',
     orderError: 'حدث خطأ أثناء إرسال طلبك.',
@@ -87,6 +95,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'Добавить',
     empty: 'В этой категории нет блюд.',
     placeOrder: 'Оформить заказ',
+    noteLabel: 'Примечание к заказу',
+    notePlaceholder: 'Укажите особые пожелания, степень прожарки или аллергии...',
     orderReceivedTitle: 'Ваш заказ принят!',
     orderServiceLabel: 'Обслуживание в номере',
     orderError: 'Произошла ошибка при отправке заказа.',
@@ -105,6 +115,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'Hinzufügen',
     empty: 'Keine Artikel in dieser Kategorie verfügbar.',
     placeOrder: 'Bestellung aufgeben',
+    noteLabel: 'Bestellnotiz',
+    notePlaceholder: 'Besondere Wünsche, Garstufe oder Allergiehinweise hinzufügen...',
     orderReceivedTitle: 'Bestellung eingegangen!',
     orderServiceLabel: 'Zimmerservice',
     orderError: 'Beim Senden Ihrer Bestellung ist ein Fehler aufgetreten.',
@@ -123,6 +135,8 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
     add: 'Ajouter',
     empty: 'Aucun article disponible dans cette catégorie.',
     placeOrder: 'Passer la commande',
+    noteLabel: 'Note de commande',
+    notePlaceholder: 'Ajoutez vos demandes spéciales, cuisson souhaitée ou allergies...',
     orderReceivedTitle: 'Commande reçue !',
     orderServiceLabel: 'Service d’Étage',
     orderError: 'Une erreur est survenue lors de l’envoi de votre commande.',
@@ -281,6 +295,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   
   // Cart state: itemId -> quantity
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [orderNote, setOrderNote] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -348,7 +363,13 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       return item ? `${qty}x ${item.name} (${item.price * qty} ${item.currency})` : '';
     }).filter(Boolean);
 
-    const summary = orderDetails.join('\n') + `\n\nToplam: ${cartTotal} EUR`;
+    const cleanNote = orderNote.trim();
+    const summaryParts = [
+      orderDetails.join('\n'),
+      cleanNote ? `Not: ${cleanNote}` : '',
+      `Toplam: ${cartTotal} EUR`,
+    ].filter(Boolean);
+    const summary = summaryParts.join('\n\n');
 
     try {
       await FirestoreService.addRequest({
@@ -362,7 +383,11 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         department: 'Room Service (Mutfak KDS)',
         stage: 'order_received',
         priority: 'standart',
-        details: { items: orderDetails, total: cartTotal }
+        details: {
+          items: orderDetails,
+          total: cartTotal,
+          ...(cleanNote ? { note: cleanNote } : {}),
+        }
       });
 
       toast.success(ui.orderReceivedTitle, {
@@ -376,7 +401,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   };
 
   return (
-    <div className="flex flex-col h-[85vh] bg-[#F7F3EA] rounded-t-[24px] sm:rounded-[24px] border-[1.5px] border-[#C4B8A4] overflow-hidden relative shadow-2xl text-[#141414]">
+    <div className="flex flex-col h-[84vh] bg-[#F7F3EA] rounded-[24px] border-[1.5px] border-[#C4B8A4] overflow-hidden relative shadow-2xl text-[#141414]">
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[#C4B8A4] z-10 shrink-0">
         <div className="flex items-center gap-3">
@@ -411,7 +436,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Item List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 pb-44">
+      <div className={`flex-1 overflow-y-auto p-4 space-y-3.5 ${cartCount > 0 ? 'pb-60' : 'pb-12'}`}>
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
           const itemName = getLocalizedItemName(item);
@@ -482,13 +507,27 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         )}
       </div>
 
-      {/* Floating Cart Footer */}
+      {/* Floating Cart Footer with Guest Note Input */}
       {cartCount > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#F7F3EA] via-[#F7F3EA]/95 to-transparent pt-10 pb-8 sm:pb-6 z-30">
+        <div className="absolute bottom-0 left-0 right-0 px-3.5 pt-3 pb-4 sm:p-4 bg-[#F7F3EA]/98 backdrop-blur-md border-t border-[#D8CBB8] shadow-[0_-10px_28px_rgba(28,22,14,0.12)] z-30 space-y-2.5">
+          <div className="bg-[#FAF8F4] border border-[#C4B8A4] rounded-2xl px-3 py-2 shadow-2xs">
+            <label className="flex items-center gap-1.5 font-luxury-sans text-[11px] font-bold text-[#5C4938] mb-1">
+              <MessageSquareText className="w-3.5 h-3.5 text-[#8E7252]" />
+              <span>{ui.noteLabel}</span>
+            </label>
+            <textarea
+              value={orderNote}
+              onChange={(e) => setOrderNote(e.target.value)}
+              rows={2}
+              placeholder={ui.notePlaceholder}
+              className="w-full bg-transparent font-luxury-sans text-[16px] sm:text-xs leading-snug text-[#141414] placeholder:text-[#8C7B68] focus:outline-none resize-none"
+            />
+          </div>
+
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="font-luxury-sans w-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-2xl p-4 flex items-center justify-between shadow-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait cursor-pointer"
+            className="font-luxury-sans w-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
