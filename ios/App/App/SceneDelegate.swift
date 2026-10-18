@@ -89,7 +89,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
         if let win = self.window, let videoURL = videoURL {
-            let scriptSource = "try { sessionStorage.setItem('purely_splash_v6_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V6__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
+            let scriptSource = "try { sessionStorage.setItem('purely_splash_v7_played', 'true'); sessionStorage.setItem('purely_splash_v6_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V7__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH_V6__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
             let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
             bridgeVC.webView?.evaluateJavaScript(scriptSource, completionHandler: nil)
@@ -138,11 +138,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             player.playImmediately(atRate: 1.0)
 
-            UIView.animate(withDuration: 10.2, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
+            UIView.animate(withDuration: 9.0, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
                 progressFill.frame.size.width = container.bounds.width
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10.5) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 9.4) { [weak self] in
                 self?.dismissSplash()
             }
         }
