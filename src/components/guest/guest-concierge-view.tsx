@@ -394,7 +394,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className="w-full max-w-[100vw] min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y box-border text-[#221F1C] relative">
+    <div className="w-full max-w-[100vw] overflow-x-clip overscroll-x-none touch-pan-y box-border text-[#221F1C] relative">
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
       <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
         <Image 
@@ -409,10 +409,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
       </div>
 
-      <div
-        className="relative z-10 w-full max-w-full min-h-[100dvh] overflow-x-hidden overscroll-x-none touch-pan-y box-border"
-        style={{ paddingBottom: 'calc(75px + env(safe-area-inset-bottom, 20px))' }}
-      >
+      <div className="relative z-10 w-full max-w-full overflow-x-clip overscroll-x-none touch-pan-y box-border">
         {/* Hotel Header & Credentials */}
         <HotelHeader
           hotel={currentHotel}

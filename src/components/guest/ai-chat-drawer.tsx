@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Hotel, InRoomServiceItem, Language } from '@/lib/types';
 import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
@@ -1010,11 +1011,16 @@ export function AiChatDrawer({
   }, [dynamicWelcomeText, ui.justNow]);
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isWaitingForFirstToken, isStreaming]);
+    if (!isOpen) return;
+    const el = messagesContainerRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }
+  }, [isOpen, messages, isWaitingForFirstToken, isStreaming]);
 
   // Offline / Wi-Fi Disconnection Detector
   useEffect(() => {
@@ -1040,7 +1046,32 @@ export function AiChatDrawer({
   useEffect(() => {
     if (isOpen && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+
+      const htmlEl = document.documentElement;
+      const bodyEl = document.body;
+      const guestScrollEl = document.getElementById('guest-scroll-container');
+
+      const prevHtmlOverflow = htmlEl.style.overflow;
+      const prevBodyOverflow = bodyEl.style.overflow;
+      const prevBodyOverscroll = bodyEl.style.overscrollBehavior;
+      const prevGuestOverflow = guestScrollEl ? guestScrollEl.style.overflow : '';
+
+      window.scrollTo(0, 0);
+      if (guestScrollEl) {
+        guestScrollEl.scrollTop = 0;
+        guestScrollEl.style.overflow = 'hidden';
+      }
+      htmlEl.style.overflow = 'hidden';
+      bodyEl.style.overflow = 'hidden';
+      bodyEl.style.overscrollBehavior = 'none';
+
       return () => {
+        htmlEl.style.overflow = prevHtmlOverflow;
+        bodyEl.style.overflow = prevBodyOverflow;
+        bodyEl.style.overscrollBehavior = prevBodyOverscroll;
+        if (guestScrollEl) {
+          guestScrollEl.style.overflow = prevGuestOverflow;
+        }
         window.dispatchEvent(
           new CustomEvent('xenios_modal_state', { detail: { isOpen: false } })
         );
@@ -1346,22 +1377,33 @@ export function AiChatDrawer({
 
   if (!isOpen) return null;
 
-  return (
+  const drawerContent = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={ui.headerTitle}
-      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#221F1C]/45 backdrop-blur-sm overflow-hidden overscroll-contain animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#221F1C]/45 backdrop-blur-sm overflow-hidden overscroll-none touch-none animate-in fade-in duration-200"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100dvh',
+        maxHeight: '100dvh',
+        zIndex: 100000,
+      }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="w-full sm:max-w-lg h-[100dvh] sm:h-[85vh] max-h-[100dvh] sm:max-h-[760px] bg-[#FAF8F4] rounded-none sm:rounded-3xl shadow-[0_24px_70px_rgba(34,31,28,0.35)] border-0 sm:border sm:border-[#D8CBB8] flex flex-col overflow-hidden overscroll-contain relative text-[#221F1C]"
+        className="w-full sm:max-w-lg h-full sm:h-[85vh] max-h-full sm:max-h-[760px] bg-[#FAF8F4] rounded-none sm:rounded-3xl shadow-[0_24px_70px_rgba(34,31,28,0.35)] border-0 sm:border sm:border-[#D8CBB8] flex flex-col overflow-hidden overscroll-none relative text-[#221F1C]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. HEADER: Minimalist title "Comus • Local Guardian & Concierge" with online green indicator */}
-        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b border-[#D8CBB8]">
+        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b border-[#D8CBB8] touch-none">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <ComusGlowingAvatar size="md" />
             <div className="min-w-0 flex-1">
@@ -1411,14 +1453,18 @@ export function AiChatDrawer({
 
         {/* OFFLINE DETECTOR BANNER */}
         {isOffline && (
-          <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-2 shrink-0">
+          <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-2 shrink-0 touch-none">
             <WifiOff className="w-4 h-4 text-[#9E7B42] shrink-0" />
             <span>{OFFLINE_FALLBACK_MESSAGE_TR}</span>
           </div>
         )}
 
         {/* 2. MESSAGE BUBBLES, QUICK ACTION CHIPS BELOW FIRST MESSAGE & INTERACTIVE ACTION CARDS */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-[#FAF8F4] overscroll-contain">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 bg-[#FAF8F4] overscroll-contain touch-pan-y"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {messages.map((msg, msgIndex) => {
             const isUser = msg.sender === 'user';
             const { cleanText, parsedActions } = isUser
@@ -1871,7 +1917,7 @@ export function AiChatDrawer({
             e.preventDefault();
             handleSend();
           }}
-          className="p-3 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom)))] bg-[#FAF8F4] border-t border-[#DFD5C5] flex items-center gap-2 shrink-0"
+          className="p-3 pb-[max(0.85rem,calc(0.5rem+env(safe-area-inset-bottom,20px)))] bg-[#FAF8F4] border-t border-[#DFD5C5] flex items-center gap-2 shrink-0 touch-none"
         >
           <input
             type="text"
@@ -1892,4 +1938,10 @@ export function AiChatDrawer({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(drawerContent, document.body);
+  }
+
+  return drawerContent;
 }

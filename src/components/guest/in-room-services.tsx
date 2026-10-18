@@ -94,7 +94,12 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   }, [hotel?.id]);
 
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: !!selectedService } }));
+    if (selectedService) {
+      window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
+      return () => {
+        window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: false } }));
+      };
+    }
   }, [selectedService]);
 
   const getLocalizedTitle = (item: InRoomServiceItem) => {
