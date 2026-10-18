@@ -253,7 +253,7 @@ export function MarketplaceHome() {
           <div className="absolute inset-x-0 bottom-0 h-12 bg-sand-bg" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-2 sm:pt-4 pb-0">
+        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-2 sm:pt-4 pb-2">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Purely Istanbul — Nothing but Istanbul"
@@ -262,18 +262,6 @@ export function MarketplaceHome() {
             preload={true}
             className="w-full h-auto object-contain brightness-0 opacity-100 drop-shadow-2xl"
           />
-        </div>
-
-        <div className="relative z-10 max-w-3xl mx-auto px-5 text-center pt-1 pb-2">
-          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-terracotta mb-1.5">
-            Curated Istanbul Experiences &amp; Authentic Local Marketplace
-          </p>
-          <h1 className="font-luxury-serif text-xl sm:text-2xl md:text-3xl font-semibold text-ink tracking-tight">
-            <span translate="no" className="notranslate">Purely Istanbul</span> — Nothing but Istanbul.
-          </h1>
-          <p className="text-xs sm:text-sm text-ink-muted max-w-2xl mx-auto mt-1.5 leading-relaxed">
-            Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul.
-          </p>
         </div>
       </section>
 
@@ -627,17 +615,11 @@ export function MarketplaceHome() {
       {/* SECTION: About Us & Brand Story */}
       <section className="max-w-6xl mx-auto px-5 md:px-8 py-8">
         <div className="rounded-3xl bg-[#0B192C] text-white p-6 sm:p-10 md:p-12 shadow-[0_16px_48px_rgba(11,25,44,0.16)] relative overflow-hidden">
-          <div className="relative z-10 max-w-3xl mb-10">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D47A43] mb-4">
+          <div className="relative z-10 max-w-3xl mb-6">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D47A43]">
               <Globe2 className="w-3.5 h-3.5" />
               About Us &amp; Brand Story
             </span>
-            <h2 className="font-luxury-serif text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
-              <span translate="no" className="notranslate">Purely Istanbul</span> — Nothing but Istanbul.
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-white/80 leading-relaxed">
-              Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul&apos;s finest neighborhoods.
-            </p>
           </div>
 
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
