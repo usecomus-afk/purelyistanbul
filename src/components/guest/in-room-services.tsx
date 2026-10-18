@@ -42,6 +42,8 @@ const BUILTIN_LUXURY_KEYS = new Set([
   'minibar',
   'safe',
   'laundry',
+  'breakfast',
+  'taxi',
 ]);
 
 export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps) {
@@ -65,11 +67,15 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     refresh();
     window.addEventListener('xenios_in_room_services_updated', refresh);
     window.addEventListener('xenios_module_settings_updated', refresh);
+    window.addEventListener('xenios_hotels_updated', refresh);
+    window.addEventListener('storage', refresh);
     return () => {
       window.removeEventListener('xenios_in_room_services_updated', refresh);
       window.removeEventListener('xenios_module_settings_updated', refresh);
+      window.removeEventListener('xenios_hotels_updated', refresh);
+      window.removeEventListener('storage', refresh);
     };
-  }, []);
+  }, [hotel?.id]);
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: !!selectedService } }));
@@ -181,58 +187,65 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     );
   };
 
+  const activeServices = services.filter((item) => !item.hidden && item.enabled !== false);
+  const isScrollableGrid = activeServices.length > 8;
+
   return (
-    <div className="h-full flex flex-col flex-1 min-h-0">
-      {/* 2x4 Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
-      <div className="relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-4 px-1.5 pt-0.5 pb-2.5 sm:p-4 -mx-1 sm:mx-0 flex-1 min-h-0 grid-rows-4 h-full items-stretch">
-        {services
-          .filter((item) => {
-            const settings = moduleSettings[item.key];
-            if (item.hidden || (settings && settings.hidden)) return false;
-            return settings ? settings.enabled : item.enabled !== false;
-          })
-          .map((item) => {
-            const isEnabled = true;
-            const serviceTitle = getLocalizedTitle(item);
+    <div
+      className={`h-full flex flex-col flex-1 min-h-0 ${
+        isScrollableGrid ? 'overflow-y-auto touch-pan-y overscroll-contain no-scrollbar' : ''
+      }`}
+    >
+      {/* 2x4 (or scrollable multi-row) Grid of Softly Rounded Luxury Neomorphic / Glassmorphic Cards */}
+      <div
+        className={`relative z-10 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-4 px-1.5 pt-0.5 sm:p-4 -mx-1 sm:mx-0 items-stretch ${
+          isScrollableGrid
+            ? 'pb-6 auto-rows-[minmax(122px,1fr)] sm:auto-rows-[minmax(150px,1fr)]'
+            : 'pb-2.5 flex-1 min-h-0 grid-rows-4 sm:grid-rows-none sm:auto-rows-fr h-full'
+        }`}
+      >
+        {activeServices.map((item) => {
+          const isEnabled = true;
+          const serviceTitle = getLocalizedTitle(item);
 
-            return (
-              <button
-                key={item.id || item.key}
-                type="button"
-                disabled={!isEnabled}
-                onClick={() => {
-                  if (!isEnabled) return;
-                  setSelectedService(item);
-                  if (item.options && item.options.length > 0) {
-                    setCustomOption(item.options[0]);
-                  }
-                }}
-                className={`luxury-service-card px-3 py-2 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative ${
-                  isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50 grayscale'
-                }`}
-              >
-                {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
-                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
-                  {renderServiceVisual(item, "w-[78px] h-[78px] sm:w-24 sm:h-24")}
-                </div>
+          return (
+            <button
+              key={item.id || item.key}
+              type="button"
+              disabled={!isEnabled}
+              onClick={() => {
+                if (!isEnabled) return;
+                setSelectedService(item);
+                if (item.options && item.options.length > 0) {
+                  setCustomOption(item.options[0]);
+                }
+              }}
+              className={`luxury-service-card px-3 py-2 flex flex-col items-center text-center justify-center gap-1.5 h-full min-h-0 group relative ${
+                isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50 grayscale'
+              }`}
+            >
+              {/* Fine Line-Art 3D Metallic Gold/Bronze & Dark Charcoal Icon */}
+              <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
+                {renderServiceVisual(item, "w-[78px] h-[78px] sm:w-24 sm:h-24")}
+              </div>
 
-                {/* Clean Bold Modern Sans-Serif Card Label */}
-                <div className="w-full px-1">
-                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block">
-                    {serviceTitle === 'Late Check-out Request' ? (
-                      <>
-                        Late Check-out
-                        <br />
-                        Request
-                      </>
-                    ) : (
-                      serviceTitle
-                    )}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+              {/* Clean Bold Modern Sans-Serif Card Label */}
+              <div className="w-full px-1">
+                <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block">
+                  {serviceTitle === 'Late Check-out Request' ? (
+                    <>
+                      Late Check-out
+                      <br />
+                      Request
+                    </>
+                  ) : (
+                    serviceTitle
+                  )}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Modal for In-Room Request Confirmation */}

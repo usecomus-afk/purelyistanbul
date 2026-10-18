@@ -355,7 +355,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
       </div>
 
-      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none touch-none' : 'h-full pb-[calc(88px+env(safe-area-inset-bottom,24px))] overflow-y-auto'}`}>
+      <div id="guest-scroll-container" className={`relative z-10 w-full ${activeTab === 'services' ? 'h-full overflow-hidden flex flex-col justify-start overscroll-none' : 'h-full pb-[calc(88px+env(safe-area-inset-bottom,24px))] overflow-y-auto'}`}>
         {/* Hotel Header & Credentials */}
       <HotelHeader
         hotel={currentHotel}
@@ -369,11 +369,11 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       />
 
       {/* Main Content Area */}
-      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-0.5 pb-[calc(86px+env(safe-area-inset-bottom,24px))] overflow-hidden touch-none' : 'pt-1 pb-[28px] space-y-4'}`}>
+      <main className={`max-w-4xl mx-auto px-3.5 sm:px-4 w-full ${activeTab === 'services' ? 'flex-1 min-h-0 h-full flex flex-col pt-0.5 pb-[calc(86px+env(safe-area-inset-bottom,24px))] overflow-hidden' : 'pt-1 pb-[28px] space-y-4'}`}>
         
         {/* TAB 1: In-Room Services (Otel İçi Hizmetler) */}
         {activeTab === 'services' && (
-          <div className="flex-1 h-full w-full flex flex-col">
+          <div className="flex-1 min-h-0 h-full w-full flex flex-col">
             <InRoomServices
               hotel={currentHotel}
               roomNumber={activeRoomNumber}

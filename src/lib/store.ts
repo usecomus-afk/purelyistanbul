@@ -867,8 +867,8 @@ export const XeniosStore = {
   },
 
   // In-Room Services
-  getInRoomServices(): InRoomServiceItem[] {
-    const defaultServices: InRoomServiceItem[] = [
+  getDefaultInRoomServices(): InRoomServiceItem[] {
+    return [
       { id: 'roomservice', key: 'roomservice', label: 'Oda Servisi', desc: 'Yiyecek & içecek menüsü', icon: '/icons/menu/roomservice.png', department: 'Room Service (Mutfak KDS)', enabled: true, hidden: false, order: 1 },
       { id: 'dnd', key: 'dnd', label: 'Rahatsız Etmeyin', desc: 'Rahatsız edilmek istemiyorum', icon: '/icons/menu/dnd.png', department: 'Housekeeping', enabled: true, hidden: false, order: 2 },
       { id: 'cleaning', key: 'cleaning', label: 'Oda Temizliği', desc: 'Oda temizliği ve havalandırma', icon: '/icons/menu/cleaning.png', department: 'Housekeeping', enabled: true, hidden: false, order: 3 },
@@ -877,13 +877,19 @@ export const XeniosStore = {
       { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve aydınlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: true, hidden: false, order: 6 },
       { id: 'lateCheckout', key: 'lateCheckout', label: 'Geç Çıkış Talebi', desc: "Saat 14:00'e kadar geç çıkış", icon: '/icons/menu/lateCheckout.png', department: 'Resepsiyon / Ön Büro', enabled: true, hidden: false, order: 7 },
       { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama süresini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: true, hidden: false, order: 8 },
-      { id: 'towels', key: 'towels', label: 'Temiz Havlu', desc: 'Banyo & el havluları değişimi', icon: '/icons/menu/towels.png', department: 'Housekeeping', enabled: false, hidden: true, order: 9 },
-      { id: 'pillows', key: 'pillows', label: 'Ekstra Yastık', desc: 'Ortopedik / ekstra yastık', icon: '/icons/menu/pillows.png', department: 'Housekeeping', enabled: false, hidden: true, order: 10 },
-      { id: 'hygiene', key: 'hygiene', label: 'Hijyen & Bakım Seti', desc: 'Diş & tıraş seti, terlik', icon: '/icons/menu/hygiene.png', department: 'Housekeeping', enabled: false, hidden: true, order: 11 },
-      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: false, hidden: true, order: 12 },
-      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: false, hidden: true, order: 13 },
-      { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: false, hidden: true, order: 14 }
+      { id: 'towels', key: 'towels', label: 'Temiz Havlu', desc: 'Banyo & el havluları değişimi', icon: '/icons/menu/towels.png', department: 'Housekeeping', enabled: false, hidden: false, order: 9 },
+      { id: 'pillows', key: 'pillows', label: 'Ekstra Yastık', desc: 'Ortopedik / ekstra yastık', icon: '/icons/menu/pillows.png', department: 'Housekeeping', enabled: false, hidden: false, order: 10 },
+      { id: 'hygiene', key: 'hygiene', label: 'Hijyen & Bakım Seti', desc: 'Diş & tıraş seti, terlik', icon: '/icons/menu/hygiene.png', department: 'Housekeeping', enabled: false, hidden: false, order: 11 },
+      { id: 'minibar', key: 'minibar', label: 'Mini Bar Dolumu', desc: 'Mini bar dolumu ve su', icon: '/icons/menu/minibar.png', department: 'Housekeeping', enabled: false, hidden: false, order: 12 },
+      { id: 'safe', key: 'safe', label: 'Kasa & Güvenlik', desc: 'Kasa kullanımı & güvenlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & Güvenlik', enabled: false, hidden: false, order: 13 },
+      { id: 'laundry', key: 'laundry', label: 'Çamaşırhane & Ütü', desc: 'Kuru temizleme ve ütü', icon: '/icons/menu/laundry.png', department: 'Housekeeping (Çamaşırhane)', enabled: false, hidden: false, order: 14 },
+      { id: 'breakfast', key: 'breakfast', label: 'Kahvaltı Talebi', desc: 'Odaya veya açık büfe kahvaltı', icon: '/icons/menu/breakfast.png', department: 'Room Service (Mutfak KDS)', enabled: false, hidden: false, order: 15 },
+      { id: 'taxi', key: 'taxi', label: 'Taksi & Ulaşım', desc: 'Taksi ve VIP transfer çağrısı', icon: '/icons/menu/taksi.png', department: 'Concierge & Ulaşım', enabled: false, hidden: false, order: 16 }
     ];
+  },
+
+  getInRoomServices(): InRoomServiceItem[] {
+    const defaultServices = this.getDefaultInRoomServices();
     const _legacyUnused: InRoomServiceItem[] = [
       { id: 'safe', key: 'safe', label: 'Kasa & G�venlik', desc: 'Kasa kullan�m� & g�venlik', icon: '/icons/menu/safe.png', department: 'Resepsiyon & G�venlik', enabled: false, hidden: true, order: 10 },
       { id: 'technical', key: 'technical', label: 'Teknik Destek', desc: 'Klima, TV, priz ve ayd�nlatma', icon: '/icons/menu/technical.png', department: 'Teknik Servis', enabled: false, hidden: true, order: 11 },
@@ -892,50 +898,161 @@ export const XeniosStore = {
       { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama s�resini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: false, hidden: true, order: 14 }
     ];
 
-    let items: InRoomServiceItem[] = defaultServices;
+    const defaultMap = new Map<string, InRoomServiceItem>(defaultServices.map(s => [s.key, s]));
+
+    let storedList: InRoomServiceItem[] = [];
     try {
       const stored = safeGet(STORAGE_KEYS.IN_ROOM_SERVICES);
       if (stored) {
-        const parsed = JSON.parse(stored) as InRoomServiceItem[];
-        items = parsed.filter(i => i.key !== 'breakfast' && i.key !== 'taxi');
-        
-        // Ensure roomservice is at the top if it exists
-        const rsIndex = items.findIndex(i => i.key === 'roomservice');
-        if (rsIndex > 0) {
-          const rs = items.splice(rsIndex, 1)[0];
-          items.unshift(rs);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          storedList = parsed;
+        }
+      } else {
+        const activeHotel = this.getHotelById(this.getActiveHotelId());
+        if (Array.isArray(activeHotel?.modules?.inRoomServices)) {
+          storedList = activeHotel!.modules!.inRoomServices;
         }
       }
     } catch (e) {}
 
+    const storedByKey = new Map<string, InRoomServiceItem>();
+    const customItems: InRoomServiceItem[] = [];
+
+    for (const item of storedList) {
+      if (!item || !item.key) continue;
+      if (defaultMap.has(item.key)) {
+        storedByKey.set(item.key, item);
+      } else if (item.isCustom) {
+        customItems.push(item);
+      }
+    }
+
+    const mergedDefaults: InRoomServiceItem[] = defaultServices.map(def => {
+      const saved = storedByKey.get(def.key);
+      if (!saved) return def;
+      return {
+        ...def,
+        ...saved,
+        id: def.id,
+        key: def.key,
+        order: saved.order ?? def.order,
+      };
+    });
+
+    const items = [...mergedDefaults, ...customItems];
     const moduleSettings = this.getModuleSettings();
+
     return items.map(item => {
       const ms = moduleSettings[item.key];
+      const enabled = ms?.enabled !== undefined ? ms.enabled : item.enabled;
+      const explicitlyHidden =
+        ms?.explicitlyHidden !== undefined
+          ? ms.explicitlyHidden
+          : item.explicitlyHidden === true;
+      // Whenever a module is enabled (active), it is visible on the guest hotel page.
+      // Legacy `hidden: true` from older defaults is automatically cleared unless explicitlyHidden is set.
+      const hidden = enabled ? false : explicitlyHidden ? true : false;
+
       return {
         ...item,
-        enabled: ms?.enabled !== undefined ? ms.enabled : item.enabled,
-        hidden: ms?.hidden !== undefined ? ms.hidden : item.hidden
+        enabled,
+        hidden,
+        explicitlyHidden,
       };
     }).sort((a, b) => (a.order || 99) - (b.order || 99));
   },
 
+  syncInRoomServicesToActiveHotel(list: InRoomServiceItem[]) {
+    try {
+      const updatedAt = new Date().toISOString();
+      safeSet('xenios_in_room_services_updated_at', updatedAt);
+      const activeId = this.getActiveHotelId();
+      const hotels = this.getHotels();
+      let targetHotel: Hotel | undefined;
+      const nextHotels = hotels.map(h => {
+        if (h.id === activeId) {
+          targetHotel = {
+            ...h,
+            modules: {
+              ...(h.modules || {}),
+              inRoomServices: list,
+              inRoomServicesUpdatedAt: updatedAt,
+            },
+          };
+          return targetHotel;
+        }
+        return h;
+      });
+      if (targetHotel) {
+        this.saveHotels(nextHotels);
+        const synced = targetHotel;
+        import('./firestore-service').then(({ FirestoreService }) => {
+          FirestoreService.upsertHotel(synced).catch(() => {});
+        }).catch(() => {});
+      }
+    } catch (e) {}
+  },
+
+  syncInRoomServicesFromRemote(remoteList: InRoomServiceItem[], remoteUpdatedAt?: string) {
+    try {
+      if (!Array.isArray(remoteList) || remoteList.length === 0) return;
+      const localUpdatedAt = safeGet('xenios_in_room_services_updated_at', '');
+      if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt <= localUpdatedAt) {
+        return;
+      }
+      safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(remoteList));
+      if (remoteUpdatedAt) {
+        safeSet('xenios_in_room_services_updated_at', remoteUpdatedAt);
+      }
+      const allSettings = this.getModuleSettings();
+      remoteList.forEach(item => {
+        if (!item?.key) return;
+        const enabled = item.enabled !== false;
+        const explicitlyHidden = enabled ? false : item.explicitlyHidden === true;
+        allSettings[item.key] = {
+          ...(allSettings[item.key] || {}),
+          enabled,
+          hidden: enabled ? false : explicitlyHidden,
+          explicitlyHidden,
+        };
+      });
+      safeSet(STORAGE_KEYS.MODULE_SETTINGS, JSON.stringify(allSettings));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('xenios_in_room_services_updated'));
+        window.dispatchEvent(new Event('xenios_module_settings_updated'));
+      }
+    } catch (e) {}
+  },
+
   saveInRoomService(item: InRoomServiceItem) {
     const list = this.getInRoomServices();
-    const idx = list.findIndex(s => s.id === item.id || s.key === item.key);
+    const enabled = item.enabled !== false;
+    const explicitlyHidden = enabled ? false : item.explicitlyHidden === true;
+    const normalizedItem: InRoomServiceItem = {
+      ...item,
+      enabled,
+      hidden: enabled ? false : explicitlyHidden,
+      explicitlyHidden,
+    };
+
+    const idx = list.findIndex(s => s.id === normalizedItem.id || s.key === normalizedItem.key);
     if (idx >= 0) {
-      list[idx] = { ...list[idx], ...item };
+      list[idx] = { ...list[idx], ...normalizedItem };
     } else {
-      list.push({ ...item, isCustom: true, order: list.length + 1 });
+      list.push({ ...normalizedItem, isCustom: true, order: list.length + 1 });
     }
 
     try {
       safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(list));
-      this.setModuleSetting(item.key, {
-        enabled: item.enabled,
-        hidden: item.hidden,
-        pricing: item.pricingDefaults,
-        fieldOptions: item.fieldOptions
+      this.setModuleSetting(normalizedItem.key, {
+        enabled: normalizedItem.enabled,
+        hidden: normalizedItem.hidden,
+        explicitlyHidden: normalizedItem.explicitlyHidden,
+        pricing: normalizedItem.pricingDefaults,
+        fieldOptions: normalizedItem.fieldOptions
       });
+      this.syncInRoomServicesToActiveHotel(list);
       if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_in_room_services_updated'));
     } catch (e) {}
   },
@@ -946,13 +1063,20 @@ export const XeniosStore = {
     if (item?.isCustom) {
       list = list.filter(s => s.id !== idOrKey && s.key !== idOrKey);
     } else if (item) {
+      item.enabled = false;
       item.hidden = true;
+      item.explicitlyHidden = true;
     }
     try {
       safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(list));
       if (item) {
-        this.setModuleSetting(item.key, { enabled: item.enabled, hidden: true });
+        this.setModuleSetting(item.key, {
+          enabled: false,
+          hidden: true,
+          explicitlyHidden: true,
+        });
       }
+      this.syncInRoomServicesToActiveHotel(list);
       if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_in_room_services_updated'));
     } catch (e) {}
   },
@@ -963,6 +1087,8 @@ export const XeniosStore = {
         localStorage.removeItem(STORAGE_KEYS.IN_ROOM_SERVICES);
         localStorage.removeItem(STORAGE_KEYS.MODULE_SETTINGS);
       }
+      const defaults = this.getDefaultInRoomServices();
+      this.syncInRoomServicesToActiveHotel(defaults);
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('xenios_in_room_services_updated'));
         window.dispatchEvent(new Event('xenios_module_settings_updated'));

@@ -275,6 +275,15 @@ export const FirestoreService = {
               if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
             });
             XeniosStore.saveHotels(Array.from(mergedMap.values()));
+
+            const activeHotelId = XeniosStore.getActiveHotelId();
+            const activeRemote = remoteMap.get(activeHotelId) || Array.from(remoteMap.values()).find(h => Array.isArray(h.modules?.inRoomServices));
+            if (activeRemote?.modules?.inRoomServices) {
+              XeniosStore.syncInRoomServicesFromRemote(
+                activeRemote.modules.inRoomServices,
+                activeRemote.modules.inRoomServicesUpdatedAt
+              );
+            }
           },
           () => {}
         )

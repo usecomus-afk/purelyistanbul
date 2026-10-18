@@ -368,8 +368,7 @@ export function LuxuryServiceIcon({
         );
 
       case 'linens':
-      case 'towels':
-        // Isometric 3D Stack of 3 Neatly Folded Linens / Towels
+        // Isometric 3D Stack of 3 Neatly Folded Linens / Bedsheets
         return (
           <g
             filter={`url(#${shadowFilterId})`}
@@ -439,8 +438,144 @@ export function LuxuryServiceIcon({
           </g>
         );
 
+      case 'towels':
+        // Plush Rolled Spa Towels & Folded Bath Towel Stack with Gold Band
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 33) scale(1.15) translate(-32 -33)"
+          >
+            {/* Bottom Folded Bath Towel */}
+            <rect
+              x="12"
+              y="40"
+              width="40"
+              height="11.5"
+              rx="5.5"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+            />
+            <path
+              d="M17 45.8H47"
+              stroke="#231707"
+              strokeWidth="1.85"
+              strokeLinecap="round"
+            />
+
+            {/* Middle Folded Bath Towel */}
+            <rect
+              x="14.5"
+              y="29.5"
+              width="35"
+              height="10.8"
+              rx="5.2"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+            />
+            <path
+              d="M19.5 34.8H44.5"
+              stroke={`url(#${bronzeGradId})`}
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+
+            {/* Top Rolled Spa Hand Towel with Spiral End */}
+            <rect
+              x="19"
+              y="17.5"
+              width="26"
+              height="12"
+              rx="6"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+            />
+            <circle
+              cx="39"
+              cy="23.5"
+              r="6"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.1"
+            />
+            <path
+              d="M39 20.8C40.5 20.8 41.7 22 41.7 23.5C41.7 25 40.2 26 38.8 25.5C37.6 25 37.2 23.6 38 22.6"
+              stroke="#231707"
+              strokeWidth="1.85"
+              strokeLinecap="round"
+            />
+            {/* Specular Highlight */}
+            <path
+              d="M23 20.2H33"
+              stroke="#FFFFFF"
+              strokeOpacity="0.95"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
+      case 'pillows':
+        // Two Plush Quilted 3D Luxury Hotel Pillows with Piped Gold Trim
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 33) scale(1.15) translate(-32 -33)"
+          >
+            {/* Back Tilted Luxury Pillow */}
+            <rect
+              x="16"
+              y="14"
+              width="34"
+              height="21"
+              rx="7"
+              transform="rotate(-7 33 24.5)"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.15"
+            />
+            {/* Front Plush Pillow */}
+            <rect
+              x="12"
+              y="26.5"
+              width="40"
+              height="24"
+              rx="8"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.25"
+            />
+            {/* Inner Piped Satin Border */}
+            <rect
+              x="15.8"
+              y="30"
+              width="32.4"
+              height="17"
+              rx="5.2"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${bronzeGradId})`}
+              strokeWidth="1.75"
+            />
+            {/* Plush Tuft Creases & Specular Highlight */}
+            <path
+              d="M19 32.5H44"
+              stroke="#FFFFFF"
+              strokeOpacity="0.92"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+            <path
+              d="M26 38.5C29.5 40.2 34.5 40.2 38 38.5"
+              stroke="#231707"
+              strokeWidth="1.95"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
       case 'toiletries':
-      case 'hygiene':
         // Left: Pump Dispenser Bottle; Front-center: Embossed Soap Bar; Right: Tumbler with Toothbrush & Lotion Tube
         return (
           <g
@@ -577,6 +712,360 @@ export function LuxuryServiceIcon({
               stroke={`url(#${strokeGradId})`}
               strokeWidth="1.75"
             />
+          </g>
+        );
+
+      case 'hygiene':
+        // Luxury Personal Care & Grooming Kit: Sculpted Vanity Case, Comb, and Shaving Razor
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 33) scale(1.14) translate(-32 -33)"
+          >
+            {/* Comb Rising Behind Kit */}
+            <rect
+              x="16"
+              y="13"
+              width="18"
+              height="15"
+              rx="2.5"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.05"
+            />
+            <path
+              d="M19.5 13V20M22.5 13V20M25.5 13V20M28.5 13V20M31.5 13V20"
+              stroke="#231707"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+            />
+
+            {/* Classic Safety Razor Rising on Right */}
+            <rect
+              x="38"
+              y="12"
+              width="12"
+              height="5.5"
+              rx="1.8"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.05"
+            />
+            <path
+              d="M44 17.5V28"
+              stroke="#231707"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+            />
+
+            {/* Sculpted 3D Leather/Gold Amenity Pouch */}
+            <path
+              d="M12 31C12 27.6863 14.6863 25 18 25H46C49.3137 25 52 27.6863 52 31V47C52 50.3137 49.3137 53 46 53H18C14.6863 53 12 50.3137 12 47V31Z"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.25"
+            />
+            {/* Gold Zipper Band & Center Crest */}
+            <path
+              d="M12.5 34.5H51.5"
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.1"
+            />
+            <rect
+              x="27"
+              y="31"
+              width="10"
+              height="7"
+              rx="2"
+              fill={`url(#${handleFillId})`}
+              stroke="#231707"
+              strokeWidth="2"
+            />
+            <path
+              d="M16 28.2H48"
+              stroke="#FFFFFF"
+              strokeOpacity="0.92"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
+      case 'minibar':
+        // 3D Luxury Mini Bar Chiller with Champagne Bottle & Crystal Stemware Glass
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 32.5) scale(1.14) translate(-32 -32.5)"
+          >
+            {/* Mini Bar Chiller Cabinet */}
+            <rect
+              x="12"
+              y="14"
+              width="28"
+              height="38"
+              rx="4.5"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.25"
+            />
+            {/* Inner Glass Window */}
+            <rect
+              x="15.8"
+              y="18"
+              width="20.4"
+              height="27"
+              rx="2.5"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${bronzeGradId})`}
+              strokeWidth="1.8"
+            />
+            {/* Bottle Inside Chiller */}
+            <path
+              d="M23.5 21H26.5V25L28.5 27.5V41H21.5V27.5L23.5 25V21Z"
+              fill={`url(#${handleFillId})`}
+              stroke="#231707"
+              strokeWidth="1.85"
+              strokeLinejoin="round"
+            />
+            {/* Chiller Handle */}
+            <path
+              d="M37.5 27V35"
+              stroke="#231707"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
+
+            {/* Foreground Stemmed Crystal Wine/Champagne Flute on Right */}
+            <path
+              d="M41 25H53L51.5 34.5C51.1 37.5 48.8 39.5 47 39.5C45.2 39.5 42.9 37.5 42.5 34.5L41 25Z"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.15"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M47 39.5V51M42.5 51H51.5"
+              stroke="#231707"
+              strokeWidth="2.25"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
+      case 'safe':
+        // Sculpted 3D Digital Hotel Safe Vault with Rotary Dial & Keypad
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 32.5) scale(1.15) translate(-32 -32.5)"
+          >
+            {/* Outer Vault Frame */}
+            <rect
+              x="11.5"
+              y="15"
+              width="41"
+              height="34"
+              rx="5"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.3"
+            />
+            {/* Inner Vault Door */}
+            <rect
+              x="15.5"
+              y="19"
+              width="33"
+              height="26"
+              rx="3"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2"
+            />
+            {/* Vault Hinges on Right */}
+            <rect x="46.5" y="22" width="4" height="5" rx="1" fill="#231707" />
+            <rect x="46.5" y="37" width="4" height="5" rx="1" fill="#231707" />
+
+            {/* Rotary Combination Wheel on Left */}
+            <circle
+              cx="26"
+              cy="32"
+              r="7.2"
+              fill={`url(#${handleFillId})`}
+              stroke="#231707"
+              strokeWidth="2.15"
+            />
+            <circle cx="26" cy="32" r="2.6" fill="#231707" />
+            <path
+              d="M26 24.8V27.2M26 36.8V39.2M18.8 32H21.2M30.8 32H33.2"
+              stroke="#231707"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+            />
+
+            {/* Digital Keypad Screen & Buttons on Right */}
+            <rect
+              x="36.5"
+              y="24"
+              width="8.5"
+              height="5"
+              rx="1"
+              fill={`url(#${handleFillId})`}
+              stroke="#231707"
+              strokeWidth="1.8"
+            />
+            <circle cx="38.5" cy="33" r="1.3" fill="#231707" />
+            <circle cx="42.5" cy="33" r="1.3" fill="#231707" />
+            <circle cx="38.5" cy="37" r="1.3" fill="#231707" />
+            <circle cx="42.5" cy="37" r="1.3" fill="#231707" />
+
+            {/* Bottom Feet */}
+            <path
+              d="M16 49V52.5M48 49V52.5"
+              stroke="#231707"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
+      case 'laundry':
+        // Sculpted Valet Coat Hanger with Tailored Jacket & Luxury Steam Iron
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 32.5) scale(1.14) translate(-32 -32.5)"
+          >
+            {/* Coat Hanger Hook */}
+            <path
+              d="M28.5 16.5C28.5 14.3 30.3 12.5 32.5 12.5C34.7 12.5 36.5 14.3 36.5 16.5C36.5 18.2 35.2 19.4 32.5 20.6V23"
+              stroke="#231707"
+              strokeWidth="2.3"
+              strokeLinecap="round"
+            />
+            {/* Valet Hanger Shoulders */}
+            <path
+              d="M12.5 32L32.5 22.5L52.5 32C53.8 32.6 53.4 34.8 51.8 34.8H13.2C11.6 34.8 11.2 32.6 12.5 32Z"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+            />
+            {/* Folded Crisp Garment / Shirt on Hanger */}
+            <path
+              d="M18.5 34.8H46.5V50.5C46.5 52.2 45.2 53.5 43.5 53.5H21.5C19.8 53.5 18.5 52.2 18.5 50.5V34.8Z"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.15"
+            />
+            {/* Suit Lapel V-Neck Detail */}
+            <path
+              d="M26.5 34.8L32.5 43.5L38.5 34.8M32.5 43.5V53"
+              stroke="#231707"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+        );
+
+      case 'breakfast':
+        // Morning Breakfast Service: Porcelain Teacup & Warm Croissant on Luxury Tray
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 33) scale(1.15) translate(-32 -33)"
+          >
+            {/* Serving Tray Base */}
+            <rect
+              x="10.5"
+              y="44.5"
+              width="43"
+              height="5.5"
+              rx="2.7"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+            />
+            {/* Porcelain Cup */}
+            <path
+              d="M16 28H34V37C34 41.4 30.4 44.5 25 44.5C19.6 44.5 16 41.4 16 37V28Z"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+            />
+            {/* Cup Handle */}
+            <path
+              d="M34 30.5H37.5C39.7 30.5 41 32 41 34.2C41 36.4 39.7 38 37.5 38H33.8"
+              stroke="#231707"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            />
+            {/* Warm Steam Waves */}
+            <path
+              d="M21.5 23C21.5 20.5 23 19.5 23 17M27.5 23C27.5 20.5 29 19.5 29 17"
+              stroke="#231707"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            {/* Golden Croissant on Right */}
+            <path
+              d="M37 42.5C36 37 40 32.5 45.5 32.5C50 32.5 53 36 52 42.5C49 40.5 41 40.5 37 42.5Z"
+              fill={`url(#${handleFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.1"
+              strokeLinejoin="round"
+            />
+          </g>
+        );
+
+      case 'taxi':
+        // Sculpted 3D Luxury Taxi / Chauffeur Sedan with Roof Beacon
+        return (
+          <g
+            filter={`url(#${shadowFilterId})`}
+            transform="translate(32 33.5) scale(1.15) translate(-32 -33.5)"
+          >
+            {/* Taxi Roof Sign */}
+            <rect
+              x="26.5"
+              y="16.5"
+              width="11"
+              height="4.8"
+              rx="1.8"
+              fill={`url(#${handleFillId})`}
+              stroke="#231707"
+              strokeWidth="2"
+            />
+            {/* Upper Cabin */}
+            <path
+              d="M17.5 31L22 21.5H42L46.5 31H17.5Z"
+              fill={`url(#${dialFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+            />
+            <path d="M32 21.8V31" stroke="#231707" strokeWidth="1.9" />
+            {/* Lower Car Body */}
+            <rect
+              x="11.5"
+              y="31"
+              width="41"
+              height="13.5"
+              rx="4.5"
+              fill={`url(#${champagneFillId})`}
+              stroke={`url(#${strokeGradId})`}
+              strokeWidth="2.25"
+            />
+            {/* Headlights & Grille */}
+            <rect x="14.5" y="35" width="5" height="3.8" rx="1.2" fill={`url(#${handleFillId})`} stroke="#231707" strokeWidth="1.7" />
+            <rect x="44.5" y="35" width="5" height="3.8" rx="1.2" fill={`url(#${handleFillId})`} stroke="#231707" strokeWidth="1.7" />
+            <path d="M24 37H40" stroke="#231707" strokeWidth="2.1" strokeLinecap="round" />
+            {/* Wheels */}
+            <circle cx="19" cy="46.5" r="4.2" fill="#231707" />
+            <circle cx="19" cy="46.5" r="1.8" fill={`url(#${handleFillId})`} />
+            <circle cx="45" cy="46.5" r="4.2" fill="#231707" />
+            <circle cx="45" cy="46.5" r="1.8" fill={`url(#${handleFillId})`} />
           </g>
         );
 

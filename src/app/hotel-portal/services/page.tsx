@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { XeniosStore } from '@/lib/store';
+import { FirestoreService } from '@/lib/firestore-service';
 import { Hotel, InRoomServiceItem, RoomServiceMenuItem } from '@/lib/types';
+import { LuxuryServiceIcon } from '@/components/guest/luxury-service-icon';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {
@@ -88,11 +90,17 @@ export default function HotelPortalServicesPage() {
 
   useEffect(() => {
     refreshData();
+    const unsubCatalog = FirestoreService.subscribeToCatalogSync();
     window.addEventListener('xenios_room_service_menu_updated', refreshData);
     window.addEventListener('xenios_in_room_services_updated',  refreshData);
+    window.addEventListener('xenios_module_settings_updated',  refreshData);
+    window.addEventListener('storage', refreshData);
     return () => {
+      unsubCatalog();
       window.removeEventListener('xenios_room_service_menu_updated', refreshData);
       window.removeEventListener('xenios_in_room_services_updated',  refreshData);
+      window.removeEventListener('xenios_module_settings_updated',  refreshData);
+      window.removeEventListener('storage', refreshData);
     };
   }, [activeHotelId]);
 
@@ -245,8 +253,14 @@ export default function HotelPortalServicesPage() {
   };
 
   const handleToggleService = (service: InRoomServiceItem) => {
-    XeniosStore.saveInRoomService({ ...service, enabled: !service.enabled });
-    toast.success(`"${service.label}" ${!service.enabled ? 'aktif edildi' : 'kapatıldı'}.`);
+    const nextEnabled = !service.enabled;
+    XeniosStore.saveInRoomService({
+      ...service,
+      enabled: nextEnabled,
+      hidden: false,
+      explicitlyHidden: false,
+    });
+    toast.success(`"${service.label}" ${nextEnabled ? 'aktif edildi ve misafir ekranında yayına alındı' : 'kapatıldı'}.`);
     refreshData();
   };
 
@@ -298,7 +312,7 @@ export default function HotelPortalServicesPage() {
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            <span>Genel Hizmet Modülleri (16)</span>
+            <span>Genel Hizmet Modülleri ({inRoomServices.filter(s => s.enabled && !s.hidden).length}/{inRoomServices.length})</span>
           </button>
         </div>
       </div>
@@ -445,8 +459,12 @@ export default function HotelPortalServicesPage() {
             {inRoomServices.map(srv => (
               <div key={srv.id} className="btn-3d p-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50/80 border border-amber-200 p-1.5 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-                    <img src={srv.icon} alt={srv.label} className="w-full h-full object-contain" />
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50/80 border border-amber-200 p-1 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+                    {!srv.isCustom || !srv.icon || srv.icon.startsWith('/icons/menu/') ? (
+                      <LuxuryServiceIcon serviceKey={srv.key} className="w-10 h-10" />
+                    ) : (
+                      <img src={srv.icon} alt={srv.label} className="w-full h-full object-contain" />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-slate-100 truncate">{srv.label}</h3>

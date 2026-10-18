@@ -4,7 +4,9 @@ import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { XeniosStore } from '@/lib/store';
+import { FirestoreService } from '@/lib/firestore-service';
 import { ServiceRequest, InRoomServiceItem, ModuleAdminSettings } from '@/lib/types';
+import { LuxuryServiceIcon } from '@/components/guest/luxury-service-icon';
 import {
   SERVICE_MODULES,
   ServiceField,
@@ -99,13 +101,17 @@ export default function ModuleSettingsPage() {
 
   useEffect(() => {
     refresh();
+    const unsubCatalog = FirestoreService.subscribeToCatalogSync();
     window.addEventListener('xenios_in_room_services_updated', refresh);
     window.addEventListener('xenios_module_settings_updated', refresh);
     window.addEventListener('xenios_requests_updated', refresh);
+    window.addEventListener('storage', refresh);
     return () => {
+      unsubCatalog();
       window.removeEventListener('xenios_in_room_services_updated', refresh);
       window.removeEventListener('xenios_module_settings_updated', refresh);
       window.removeEventListener('xenios_requests_updated', refresh);
+      window.removeEventListener('storage', refresh);
     };
   }, []);
 
@@ -168,6 +174,7 @@ export default function ModuleSettingsPage() {
         icon: formIcon,
         enabled: true,
         hidden: false,
+        explicitlyHidden: false,
         isCustom: true,
         price: formPrice ? Number(formPrice) : undefined,
         currency: 'TRY',
@@ -192,15 +199,25 @@ export default function ModuleSettingsPage() {
 
   const handleToggleEnabled = (item: InRoomServiceItem) => {
     const nextState = !item.enabled;
-    XeniosStore.saveInRoomService({ ...item, enabled: nextState });
-    toast.success(`"${item.label}" ${nextState ? 'aktif edildi' : 'kullanım dışı bırakıldı'}.`);
+    XeniosStore.saveInRoomService({
+      ...item,
+      enabled: nextState,
+      hidden: false,
+      explicitlyHidden: false,
+    });
+    toast.success(`"${item.label}" ${nextState ? 'aktif edildi ve misafir ekranında yayına alındı' : 'kullanım dışı bırakıldı'}.`);
     refresh();
   };
 
   const handleToggleHidden = (item: InRoomServiceItem) => {
-    const nextState = !item.hidden;
-    XeniosStore.saveInRoomService({ ...item, hidden: nextState });
-    toast.success(`"${item.label}" ${nextState ? 'misafirden gizlendi' : 'misafirde görünür yapıldı'}.`);
+    const nextHidden = !item.hidden;
+    XeniosStore.saveInRoomService({
+      ...item,
+      enabled: !nextHidden,
+      hidden: nextHidden,
+      explicitlyHidden: nextHidden,
+    });
+    toast.success(`"${item.label}" ${nextHidden ? 'misafirden gizlendi' : 'misafirde görünür ve aktif yapıldı'}.`);
     refresh();
   };
 
@@ -379,12 +396,16 @@ export default function ModuleSettingsPage() {
                 {/* Main Row Bar */}
                 <div className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50/40 border border-amber-200/80 p-1.5 flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
-                      <img
-                        src={item.icon}
-                        alt={item.label}
-                        className={`object-contain w-full h-full ${!item.enabled || item.hidden ? 'grayscale opacity-50' : ''}`}
-                      />
+                    <div className={`w-12 h-12 rounded-2xl bg-amber-50/40 border border-amber-200/80 p-1 flex items-center justify-center shrink-0 shadow-inner overflow-hidden ${!item.enabled || item.hidden ? 'grayscale opacity-50' : ''}`}>
+                      {!item.isCustom || !item.icon || item.icon.startsWith('/icons/menu/') ? (
+                        <LuxuryServiceIcon serviceKey={item.key} className="w-10 h-10" />
+                      ) : (
+                        <img
+                          src={item.icon}
+                          alt={item.label}
+                          className="object-contain w-full h-full"
+                        />
+                      )}
                     </div>
 
                     <div className="min-w-0">

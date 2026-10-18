@@ -314,6 +314,7 @@ export interface InRoomServiceItem {
   department: string;
   enabled: boolean;
   hidden: boolean;
+  explicitlyHidden?: boolean;
   isCustom?: boolean;
   price?: number;
   currency?: string;
@@ -326,6 +327,7 @@ export interface InRoomServiceItem {
 export interface ModuleAdminSettings {
   enabled: boolean;
   hidden: boolean;
+  explicitlyHidden?: boolean;
   pricing?: Record<string, number>;
   fieldOptions?: Record<string, string[]>;
 }
