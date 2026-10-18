@@ -99,10 +99,22 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
 
   const totalAmount = experience.price * guestCount;
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setIsProcessing(true);
 
-    setTimeout(() => {
+    try {
+      await fetch('/api/checkout/split-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          currency: experience.currency || 'EUR',
+          vendorAccountId: experience.provider || 'vendor_default',
+          hotelAccountId: hotel.id,
+          bookingReference: `EXP-${Date.now()}`,
+        }),
+      }).catch(() => {});
+
       const booking = XeniosStore.addBooking({
         hotelId: hotel.id,
         hotelName: hotel.name,
@@ -130,12 +142,31 @@ export function VirtualPosModal({ experience, hotel, roomNumber, lang, onClose }
       });
 
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
-      FirestoreService.addBooking(booking);
+      FirestoreService.addBooking(booking).catch(() => {});
+      FirestoreService.addRequest({
+        hotelId: hotel.id,
+        hotelName: hotel.name,
+        roomNumber: roomNumber,
+        serviceKey: 'experience_booking',
+        serviceTitle: `Deneyim Rezervasyonu: ${locExp.title}`,
+        notes: `${guestName} (${guestCount} Kişi) · ${bookingDate} ${bookingTime} · [Online Ödendi · ${formatPrice(totalAmount, experience.currency)} · #${booking.id}]`,
+        status: 'pending',
+        department: 'Resepsiyon',
+        stage: 'pending',
+        priority: 'standart',
+        paymentMethod: 'online_card',
+        paymentStatus: 'paid_online',
+        paymentAmount: totalAmount,
+        paymentCurrency: experience.currency,
+        paymentReference: booking.id,
+      }).catch(() => {});
       NotificationService.notifyBookingCreated(booking);
       setCreatedBooking(booking);
       setIsProcessing(false);
       toast.success(t.posSuccess);
-    }, 1200);
+    } catch {
+      setIsProcessing(false);
+    }
   };
 
   return (

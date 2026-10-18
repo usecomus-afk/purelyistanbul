@@ -141,6 +141,11 @@ export interface ServiceRequest {
   priority?: ServicePriority;
   stage?: string;
   isDemo?: boolean;
+  paymentMethod?: 'online_card' | 'room_charge' | 'complimentary';
+  paymentStatus?: 'paid_online' | 'room_folio' | 'room_charge' | 'unpaid';
+  paymentAmount?: number;
+  paymentCurrency?: string;
+  paymentReference?: string;
 }
 
 export type BookingStatus = 'payment_success' | 'provider_pending' | 'confirmed' | 'cancelled';

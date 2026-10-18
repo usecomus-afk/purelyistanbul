@@ -487,6 +487,7 @@ export const FirestoreService = {
           const fallbackId = docName.split('/').pop() || '';
           const id = fields.id?.stringValue || fallbackId;
           if (!id) continue;
+          const rawAmt = fields.paymentAmount?.doubleValue ?? fields.paymentAmount?.integerValue;
           parsed.push({
             id,
             hotelId: fields.hotelId?.stringValue || 'hotel-heritage-1',
@@ -501,6 +502,11 @@ export const FirestoreService = {
             priority: (fields.priority?.stringValue as ServiceRequest['priority']) || 'standart',
             createdAt: fields.createdAt?.stringValue || new Date().toISOString(),
             updatedAt: fields.updatedAt?.stringValue || fields.createdAt?.stringValue || new Date().toISOString(),
+            paymentMethod: (fields.paymentMethod?.stringValue as ServiceRequest['paymentMethod']) || undefined,
+            paymentStatus: (fields.paymentStatus?.stringValue as ServiceRequest['paymentStatus']) || undefined,
+            paymentAmount: rawAmt !== undefined ? Number(rawAmt) : undefined,
+            paymentCurrency: fields.paymentCurrency?.stringValue || undefined,
+            paymentReference: fields.paymentReference?.stringValue || undefined,
           });
         }
         processRawList(parsed);
@@ -597,29 +603,44 @@ export const FirestoreService = {
 
     const saveViaRest = async () => {
       try {
+        const restFields: Record<string, any> = {
+          id: { stringValue: String(local.id) },
+          hotelId: { stringValue: String(local.hotelId || 'hotel-heritage-1') },
+          hotelName: { stringValue: String(local.hotelName || 'Purely Istanbul Partner Hotel') },
+          roomNumber: { stringValue: String(local.roomNumber || '101') },
+          serviceKey: { stringValue: String(local.serviceKey || 'service') },
+          serviceTitle: { stringValue: String(local.serviceTitle || 'Oda Hizmeti') },
+          notes: { stringValue: String(local.notes || '') },
+          status: { stringValue: String(local.status || 'pending') },
+          department: { stringValue: String(local.department || 'Housekeeping') },
+          stage: { stringValue: String(local.stage || 'pending') },
+          priority: { stringValue: String(local.priority || 'standart') },
+          createdAt: { stringValue: String(local.createdAt) },
+          updatedAt: { stringValue: nowIso },
+        };
+        if (local.paymentMethod) {
+          restFields.paymentMethod = { stringValue: String(local.paymentMethod) };
+        }
+        if (local.paymentStatus) {
+          restFields.paymentStatus = { stringValue: String(local.paymentStatus) };
+        }
+        if (local.paymentAmount !== undefined) {
+          restFields.paymentAmount = { doubleValue: Number(local.paymentAmount) };
+        }
+        if (local.paymentCurrency) {
+          restFields.paymentCurrency = { stringValue: String(local.paymentCurrency) };
+        }
+        if (local.paymentReference) {
+          restFields.paymentReference = { stringValue: String(local.paymentReference) };
+        }
+
         await fetch(
           `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(local.id)}`,
           {
             method: 'PATCH',
             keepalive: true,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fields: {
-                id: { stringValue: String(local.id) },
-                hotelId: { stringValue: String(local.hotelId || 'hotel-heritage-1') },
-                hotelName: { stringValue: String(local.hotelName || 'Purely Istanbul Partner Hotel') },
-                roomNumber: { stringValue: String(local.roomNumber || '101') },
-                serviceKey: { stringValue: String(local.serviceKey || 'service') },
-                serviceTitle: { stringValue: String(local.serviceTitle || 'Oda Hizmeti') },
-                notes: { stringValue: String(local.notes || '') },
-                status: { stringValue: String(local.status || 'pending') },
-                department: { stringValue: String(local.department || 'Housekeeping') },
-                stage: { stringValue: String(local.stage || 'pending') },
-                priority: { stringValue: String(local.priority || 'standart') },
-                createdAt: { stringValue: String(local.createdAt) },
-                updatedAt: { stringValue: nowIso },
-              },
-            }),
+            body: JSON.stringify({ fields: restFields }),
           }
         );
       } catch (restErr) {
@@ -647,6 +668,70 @@ export const FirestoreService = {
       await restPromise;
     }
     return local;
+  },
+
+  async updateRequestPayment(
+    id: string,
+    payment: Pick<ServiceRequest, 'paymentMethod' | 'paymentStatus' | 'paymentAmount' | 'paymentCurrency' | 'paymentReference'>
+  ): Promise<ServiceRequest | null> {
+    const updatedLocal = XeniosStore.updateRequestPayment(id, payment);
+    const updatedAt = new Date().toISOString();
+
+    const patchViaRest = async () => {
+      try {
+        const mask = [
+          'updateMask.fieldPaths=paymentMethod',
+          'updateMask.fieldPaths=paymentStatus',
+          'updateMask.fieldPaths=paymentAmount',
+          'updateMask.fieldPaths=paymentCurrency',
+          'updateMask.fieldPaths=paymentReference',
+          'updateMask.fieldPaths=notes',
+          'updateMask.fieldPaths=updatedAt',
+        ].join('&');
+        await fetch(
+          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(id)}?${mask}`,
+          {
+            method: 'PATCH',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                paymentMethod: { stringValue: String(payment.paymentMethod || 'online_card') },
+                paymentStatus: { stringValue: String(payment.paymentStatus || 'paid_online') },
+                paymentAmount: { doubleValue: Number(payment.paymentAmount || 0) },
+                paymentCurrency: { stringValue: String(payment.paymentCurrency || 'TRY') },
+                paymentReference: { stringValue: String(payment.paymentReference || '') },
+                notes: { stringValue: String(updatedLocal?.notes || '') },
+                updatedAt: { stringValue: updatedAt },
+              },
+            }),
+          }
+        );
+      } catch (e) {
+        console.warn('Firestore REST payment update error:', e);
+      }
+    };
+
+    const restPromise = patchViaRest();
+
+    if (db && isFirebaseConfigured) {
+      try {
+        const docRef = doc(db, COLLECTIONS.REQUESTS, id);
+        await updateDoc(
+          docRef,
+          stripUndefined({
+            ...payment,
+            notes: updatedLocal?.notes,
+            updatedAt,
+          })
+        );
+      } catch {
+        await restPromise;
+      }
+    } else {
+      await restPromise;
+    }
+    return updatedLocal;
   },
 
   async updateRequestStatus(id: string, status: ServiceRequest['status']): Promise<void> {

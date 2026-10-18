@@ -1,13 +1,26 @@
 "use client";
 
 import { useState } from 'react';
-import { ServiceField, ServiceModuleConfig, buildInitialDetails, resolveFieldOptions } from '@/lib/service-modules';
+import { ServiceField, ServiceModuleConfig, buildInitialDetails, resolveFieldOptions, computeServiceModulePayableAmount } from '@/lib/service-modules';
 import { Language } from '@/lib/types';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Lock } from 'lucide-react';
+import {
+  InlineOnlinePaymentBox,
+  GuestPaymentMethod,
+  OnlineCardDetails,
+  ONLINE_PAYMENT_I18N,
+  formatCurrencyAmount,
+} from './inline-online-payment-box';
+
+export interface ServiceFormPaymentMeta {
+  paymentMethod: GuestPaymentMethod;
+  cardDetails: OnlineCardDetails;
+  payable: { amount: number; currency: string } | null;
+}
 
 interface ServiceRequestFormProps {
   config: ServiceModuleConfig;
-  onSubmit: (details: Record<string, any>) => void;
+  onSubmit: (details: Record<string, any>, paymentMeta?: ServiceFormPaymentMeta) => void;
   onCancel: () => void;
   isSubmitting: boolean;
   pricing?: Record<string, number>;
@@ -480,6 +493,7 @@ function FieldInput({ field, options, value, onChange, lang = 'tr' }: { field: S
 
 export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, pricing = {}, fieldOptionOverrides, lang = 'tr' }: ServiceRequestFormProps) {
   const ui = FORM_UI_I18N[lang] || FORM_UI_I18N.en;
+  const payUi = ONLINE_PAYMENT_I18N[lang] || ONLINE_PAYMENT_I18N.en;
   const [details, setDetails] = useState<Record<string, any>>(() => {
     const init = buildInitialDetails(config);
     if (init.pickup === 'Otel Girişi' && lang !== 'tr') {
@@ -487,6 +501,17 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
     }
     return init;
   });
+
+  const [paymentMethod, setPaymentMethod] = useState<GuestPaymentMethod>('online_card');
+  const [cardDetails, setCardDetails] = useState<OnlineCardDetails>({
+    holderName: '',
+    cardNumber: '4543 •••• •••• 8892',
+    expiry: '09/28',
+    cvv: '734',
+  });
+
+  const payable = computeServiceModulePayableAmount(config, details, pricing);
+  const isPaidOnline = !!(payable && payable.amount > 0 && paymentMethod === 'online_card');
 
   const setField = (key: string, value: any) => setDetails((prev) => ({ ...prev, [key]: value }));
 
@@ -518,6 +543,21 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
         );
       })}
 
+      {payable && payable.amount > 0 && (
+        <div className="pt-2 border-t border-[#D8CBB8]">
+          <InlineOnlinePaymentBox
+            amount={payable.amount}
+            currency={payable.currency}
+            lang={lang}
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={setPaymentMethod}
+            cardDetails={cardDetails}
+            onCardDetailsChange={setCardDetails}
+            compact
+          />
+        </div>
+      )}
+
       <div className="flex items-center gap-2 pt-2">
         <button
           type="button"
@@ -528,11 +568,20 @@ export function ServiceRequestForm({ config, onSubmit, onCancel, isSubmitting, p
         </button>
         <button
           type="button"
-          onClick={() => onSubmit(details)}
+          onClick={() => onSubmit(details, { paymentMethod, cardDetails, payable })}
           disabled={isSubmitting}
-          className="flex-1 py-2.5 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+          className="flex-2 py-2.5 px-3 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white text-xs font-bold shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5"
         >
-          {isSubmitting ? ui.submitting : ui.submit}
+          {isPaidOnline && <Lock className="w-3.5 h-3.5 shrink-0" />}
+          <span>
+            {isSubmitting
+              ? isPaidOnline
+                ? payUi.processing3DSecure
+                : ui.submitting
+              : isPaidOnline && payable
+                ? payUi.payAndSubmit(formatCurrencyAmount(payable.amount, payable.currency))
+                : ui.submit}
+          </span>
         </button>
       </div>
     </div>

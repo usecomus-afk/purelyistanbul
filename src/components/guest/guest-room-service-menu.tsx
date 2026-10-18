@@ -4,10 +4,17 @@ import { useState, useMemo, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { RoomServiceMenuItem, Hotel, Language } from '@/lib/types';
 import { LuxuryServiceIcon } from './luxury-service-icon';
-import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed, MessageSquareText } from 'lucide-react';
+import { Plus, Minus, Clock, ChevronRight, UtensilsCrossed, MessageSquareText, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
 import { getT } from '@/lib/i18n';
+import {
+  InlineOnlinePaymentBox,
+  processOnlineServicePayment,
+  ONLINE_PAYMENT_I18N,
+  GuestPaymentMethod,
+  OnlineCardDetails,
+} from './inline-online-payment-box';
 
 interface Props {
   hotel: Hotel;
@@ -296,7 +303,15 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   // Cart state: itemId -> quantity
   const [cart, setCart] = useState<Record<string, number>>({});
   const [orderNote, setOrderNote] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<GuestPaymentMethod>('room_charge');
+  const [cardDetails, setCardDetails] = useState<OnlineCardDetails>({
+    holderName: '',
+    cardNumber: '4543 •••• •••• 8892',
+    expiry: '09/28',
+    cvv: '734',
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const payUi = ONLINE_PAYMENT_I18N[safeLang] || ONLINE_PAYMENT_I18N.en;
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('xenios_modal_state', { detail: { isOpen: true } }));
@@ -358,15 +373,41 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
     if (cartCount === 0) return;
     setIsSubmitting(true);
 
+    let paymentReference = '';
+    if (paymentMethod === 'online_card') {
+      const payRes = await processOnlineServicePayment({
+        amount: cartTotal,
+        currency: 'EUR',
+        hotelId: hotel.id,
+        hotelName: hotel.name,
+        roomNumber,
+        serviceTitle: 'Oda Servisi Siparişi',
+        card: cardDetails,
+        lang: safeLang,
+      });
+      if (!payRes.success) {
+        toast.error(payRes.error || payUi.invalidCardError);
+        setIsSubmitting(false);
+        return;
+      }
+      paymentReference = payRes.paymentReference;
+    }
+
     const orderDetails = Object.entries(cart).map(([id, qty]) => {
       const item = items.find(i => i.id === id);
       return item ? `${qty}x ${item.name} (${item.price * qty} ${item.currency})` : '';
     }).filter(Boolean);
 
     const cleanNote = orderNote.trim();
+    const paymentLine =
+      paymentMethod === 'online_card'
+        ? `💳 Ödeme: Online Ödendi (${cartTotal} EUR · Onay: #${paymentReference})`
+        : `🏨 Ödeme: Oda Folyosu / Teslimatta (${cartTotal} EUR)`;
+
     const summaryParts = [
       orderDetails.join('\n'),
       cleanNote ? `Not: ${cleanNote}` : '',
+      paymentLine,
       `Toplam: ${cartTotal} EUR`,
     ].filter(Boolean);
     const summary = summaryParts.join('\n\n');
@@ -383,16 +424,27 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         department: 'Room Service (Mutfak KDS)',
         stage: 'order_received',
         priority: 'standart',
+        paymentMethod,
+        paymentStatus: paymentMethod === 'online_card' ? 'paid_online' : 'room_folio',
+        paymentAmount: cartTotal,
+        paymentCurrency: 'EUR',
+        ...(paymentReference ? { paymentReference } : {}),
         details: {
           items: orderDetails,
           total: cartTotal,
+          paymentMethod,
+          paymentStatus: paymentMethod === 'online_card' ? 'paid_online' : 'room_folio',
+          ...(paymentReference ? { paymentReference } : {}),
           ...(cleanNote ? { note: cleanNote } : {}),
         }
       });
 
-      toast.success(ui.orderReceivedTitle, {
-        description: `${hotel.name} ${t.room} ${roomNumber} · ${ui.orderServiceLabel}`
-      });
+      toast.success(
+        paymentMethod === 'online_card' ? payUi.paymentSuccessToast : ui.orderReceivedTitle,
+        {
+          description: `${hotel.name} ${t.room} ${roomNumber} · ${ui.orderServiceLabel}${paymentReference ? ` · #${paymentReference}` : ''}`
+        }
+      );
       onClose();
     } catch (e) {
       toast.error(ui.orderError);
@@ -436,7 +488,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Item List */}
-      <div className={`flex-1 overflow-y-auto p-4 space-y-3.5 ${cartCount > 0 ? 'pb-60' : 'pb-12'}`}>
+      <div className={`flex-1 overflow-y-auto p-4 space-y-3.5 ${cartCount > 0 ? 'pb-80' : 'pb-12'}`}>
         {filteredItems.map(item => {
           const qty = getQuantity(item.id);
           const itemName = getLocalizedItemName(item);
@@ -507,9 +559,9 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
         )}
       </div>
 
-      {/* Floating Cart Footer with Guest Note Input */}
+      {/* Floating Cart Footer with Guest Note Input & Online Payment Choice */}
       {cartCount > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 px-3.5 pt-3 pb-4 sm:p-4 bg-[#F7F3EA]/98 backdrop-blur-md border-t border-[#D8CBB8] shadow-[0_-10px_28px_rgba(28,22,14,0.12)] z-30 space-y-2.5">
+        <div className="absolute bottom-0 left-0 right-0 max-h-[55vh] overflow-y-auto px-3.5 pt-3 pb-4 sm:p-4 bg-[#F7F3EA]/98 backdrop-blur-md border-t border-[#D8CBB8] shadow-[0_-10px_28px_rgba(28,22,14,0.12)] z-30 space-y-2.5">
           <div className="bg-[#FAF8F4] border border-[#C4B8A4] rounded-2xl px-3 py-2 shadow-2xs">
             <label className="flex items-center gap-1.5 font-luxury-sans text-[11px] font-bold text-[#5C4938] mb-1">
               <MessageSquareText className="w-3.5 h-3.5 text-[#8E7252]" />
@@ -524,6 +576,17 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
             />
           </div>
 
+          <InlineOnlinePaymentBox
+            amount={cartTotal}
+            currency="EUR"
+            lang={safeLang}
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={setPaymentMethod}
+            cardDetails={cardDetails}
+            onCardDetailsChange={setCardDetails}
+            compact
+          />
+
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
@@ -531,9 +594,15 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
-                {cartCount}
+                {paymentMethod === 'online_card' ? <Lock className="w-4 h-4" /> : cartCount}
               </div>
-              <span className="font-bold text-base">{ui.placeOrder}</span>
+              <span className="font-bold text-sm sm:text-base">
+                {isSubmitting
+                  ? payUi.processing3DSecure
+                  : paymentMethod === 'online_card'
+                  ? payUi.payAndSubmit(`${cartTotal} €`)
+                  : ui.placeOrder}
+              </span>
             </div>
             <div className="flex items-center gap-2 font-luxury-serif font-bold text-lg">
               {cartTotal}€

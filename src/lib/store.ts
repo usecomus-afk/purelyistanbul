@@ -814,6 +814,32 @@ export const XeniosStore = {
     }
   },
 
+  updateRequestPayment(
+    id: string,
+    payment: Pick<ServiceRequest, 'paymentMethod' | 'paymentStatus' | 'paymentAmount' | 'paymentCurrency' | 'paymentReference'>
+  ): ServiceRequest | null {
+    const list = this.getRequests();
+    const item = list.find(r => r.id === id);
+    if (!item) return null;
+    item.paymentMethod = payment.paymentMethod;
+    item.paymentStatus = payment.paymentStatus;
+    item.paymentAmount = payment.paymentAmount;
+    item.paymentCurrency = payment.paymentCurrency;
+    item.paymentReference = payment.paymentReference;
+    if (payment.paymentStatus === 'paid_online' && payment.paymentReference) {
+      const tag = `💳 Online Ödendi (${payment.paymentAmount} ${payment.paymentCurrency || 'TRY'} · #${payment.paymentReference})`;
+      if (!item.notes?.includes(payment.paymentReference)) {
+        item.notes = item.notes ? `${item.notes} · ${tag}` : tag;
+      }
+    }
+    item.updatedAt = new Date().toISOString();
+    try {
+      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+    } catch (e) {}
+    return item;
+  },
+
   deleteRequest(id: string) {
     try {
       const deletedSet = this.getDeletedRequestIds();

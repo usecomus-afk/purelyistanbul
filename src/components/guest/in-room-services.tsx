@@ -7,10 +7,18 @@ import { FirestoreService } from '@/lib/firestore-service';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { getModuleConfig, deriveStatus, formatFieldValue, resolvePricing } from '@/lib/service-modules';
-import { ServiceRequestForm, translateServiceOption } from './service-request-form';
+import { ServiceRequestForm, translateServiceOption, ServiceFormPaymentMeta } from './service-request-form';
 import { GuestRoomServiceMenu } from './guest-room-service-menu';
 import { LuxuryServiceIcon } from './luxury-service-icon';
-import { Clock } from 'lucide-react';
+import {
+  InlineOnlinePaymentBox,
+  GuestPaymentMethod,
+  OnlineCardDetails,
+  ONLINE_PAYMENT_I18N,
+  processOnlineServicePayment,
+  formatCurrencyAmount,
+} from './inline-online-payment-box';
+import { Clock, Lock } from 'lucide-react';
 
 interface InRoomServicesProps {
   hotel: Hotel;
@@ -48,6 +56,7 @@ const BUILTIN_LUXURY_KEYS = new Set([
 
 export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps) {
   const t = getT(lang);
+  const payUi = ONLINE_PAYMENT_I18N[lang] || ONLINE_PAYMENT_I18N.en;
   const [services, setServices] = useState<InRoomServiceItem[]>(() => XeniosStore.getInRoomServices());
   const [selectedService, setSelectedService] = useState<InRoomServiceItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +67,13 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   const [customNote, setCustomNote] = useState('');
   const [customTime, setCustomTime] = useState(t.serviceForm?.asap || 'Hemen');
   const [customCount, setCustomCount] = useState(1);
+  const [customPaymentMethod, setCustomPaymentMethod] = useState<GuestPaymentMethod>('online_card');
+  const [customCardDetails, setCustomCardDetails] = useState<OnlineCardDetails>({
+    holderName: '',
+    cardNumber: '4543 •••• •••• 8892',
+    expiry: '09/28',
+    cvv: '734',
+  });
 
   useEffect(() => {
     const refresh = () => {
@@ -89,19 +105,50 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     return (t.servicesLabels as any)?.[item.key]?.desc || item.desc;
   };
 
-  const handleStandardRequestSubmit = async (details: Record<string, any>) => {
+  const handleStandardRequestSubmit = async (details: Record<string, any>, paymentMeta?: ServiceFormPaymentMeta) => {
     if (!selectedService) return;
     const config = getModuleConfig(selectedService.key);
     const serviceTitle = getLocalizedTitle(selectedService);
     setIsSubmitting(true);
 
     try {
+      const payable = paymentMeta?.payable;
+      let paymentReference = '';
+
+      if (payable && payable.amount > 0 && paymentMeta?.paymentMethod === 'online_card') {
+        const payRes = await processOnlineServicePayment({
+          amount: payable.amount,
+          currency: payable.currency,
+          hotelId: hotel.id,
+          hotelName: hotel.name,
+          roomNumber,
+          serviceTitle,
+          card: paymentMeta.cardDetails,
+          lang,
+        });
+        if (!payRes.success) {
+          toast.error(payRes.error || payUi.invalidCardError);
+          setIsSubmitting(false);
+          return;
+        }
+        paymentReference = payRes.paymentReference;
+      }
+
       const firstStage = config?.stages[0]?.id ?? 'pending';
       const isUrgent = config?.urgentIf?.(details) ?? false;
       const summaryFields = config?.fields.filter((f) => f.type !== 'display') ?? [];
-      const notesSummary = summaryFields
+      let notesSummary = summaryFields
         .map((f) => `${f.label}: ${formatFieldValue(f, details[f.key])}`)
         .join(' · ');
+
+      if (payable && payable.amount > 0) {
+        const amtText = formatCurrencyAmount(payable.amount, payable.currency);
+        const paymentBadgeText =
+          paymentMeta?.paymentMethod === 'online_card'
+            ? `[${payUi.paidOnlineBadge} · ${amtText} · #${paymentReference}]`
+            : `[${payUi.roomFolioBadge} · ${amtText}]`;
+        notesSummary = notesSummary ? `${notesSummary} · ${paymentBadgeText}` : paymentBadgeText;
+      }
 
       await FirestoreService.addRequest({
         hotelId: hotel.id,
@@ -114,12 +161,26 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
         details,
         department: config?.department || selectedService.department || 'Housekeeping',
         stage: firstStage,
-        priority: isUrgent ? 'acil' : 'standart'
+        priority: isUrgent ? 'acil' : 'standart',
+        ...(payable && payable.amount > 0
+          ? {
+              paymentMethod: (paymentMeta?.paymentMethod || 'room_charge') as 'online_card' | 'room_charge',
+              paymentStatus: (paymentMeta?.paymentMethod === 'online_card' ? 'paid_online' : 'room_folio') as 'paid_online' | 'room_folio',
+              paymentAmount: payable.amount,
+              paymentCurrency: payable.currency,
+              paymentReference: paymentReference || undefined,
+            }
+          : {}),
       });
 
-      toast.success(t.serviceForm?.requestSent || 'Talebiniz Alındı!', {
-        description: `${hotel.name} ${t.room} ${roomNumber} · ${serviceTitle}`
-      });
+      toast.success(
+        payable && payable.amount > 0 && paymentMeta?.paymentMethod === 'online_card'
+          ? payUi.paymentSuccessToast
+          : t.serviceForm?.requestSent || 'Talebiniz Alındı!',
+        {
+          description: `${hotel.name} ${t.room} ${roomNumber} · ${serviceTitle}${paymentReference ? ` · #${paymentReference}` : ''}`
+        }
+      );
 
       setIsSubmitting(false);
       setSelectedService(null);
@@ -136,11 +197,43 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     setIsSubmitting(true);
 
     try {
+      const unitPrice = Number(selectedService.price || 0);
+      const totalAmount = unitPrice > 0 ? unitPrice * customCount : 0;
+      const currency = selectedService.currency || 'TRY';
+      let paymentReference = '';
+
+      if (totalAmount > 0 && customPaymentMethod === 'online_card') {
+        const payRes = await processOnlineServicePayment({
+          amount: totalAmount,
+          currency,
+          hotelId: hotel.id,
+          hotelName: hotel.name,
+          roomNumber,
+          serviceTitle,
+          card: customCardDetails,
+          lang,
+        });
+        if (!payRes.success) {
+          toast.error(payRes.error || payUi.invalidCardError);
+          setIsSubmitting(false);
+          return;
+        }
+        paymentReference = payRes.paymentReference;
+      }
+
       const notesArr: string[] = [];
       if (customOption) notesArr.push(`${t.serviceForm?.optionChoice || 'Seçenek'}: ${customOption}`);
       if (customCount > 1) notesArr.push(`${t.serviceForm?.quantity || 'Adet'}: ${customCount}`);
       if (customTime) notesArr.push(`${t.serviceForm?.deliveryTime || 'Zaman'}: ${customTime}`);
       if (customNote) notesArr.push(`${t.serviceForm?.specialNote || 'Not'}: ${customNote}`);
+      if (totalAmount > 0) {
+        const amtText = formatCurrencyAmount(totalAmount, currency);
+        notesArr.push(
+          customPaymentMethod === 'online_card'
+            ? `[${payUi.paidOnlineBadge} · ${amtText} · #${paymentReference}]`
+            : `[${payUi.roomFolioBadge} · ${amtText}]`
+        );
+      }
 
       const summary = notesArr.join(' · ') || 'Standart';
 
@@ -154,12 +247,26 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
         status: 'pending',
         department: selectedService.department || 'Housekeeping',
         stage: 'pending',
-        priority: 'standart'
+        priority: 'standart',
+        ...(totalAmount > 0
+          ? {
+              paymentMethod: customPaymentMethod,
+              paymentStatus: (customPaymentMethod === 'online_card' ? 'paid_online' : 'room_folio') as 'paid_online' | 'room_folio',
+              paymentAmount: totalAmount,
+              paymentCurrency: currency,
+              paymentReference: paymentReference || undefined,
+            }
+          : {}),
       });
 
-      toast.success(t.serviceForm?.requestSent || 'Talebiniz Alındı!', {
-        description: `${hotel.name} ${t.room} ${roomNumber} · ${serviceTitle}`
-      });
+      toast.success(
+        totalAmount > 0 && customPaymentMethod === 'online_card'
+          ? payUi.paymentSuccessToast
+          : t.serviceForm?.requestSent || 'Talebiniz Alındı!',
+        {
+          description: `${hotel.name} ${t.room} ${roomNumber} · ${serviceTitle}${paymentReference ? ` · #${paymentReference}` : ''}`
+        }
+      );
 
       setIsSubmitting(false);
       setSelectedService(null);
@@ -386,9 +493,24 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                           onChange={(e) => setCustomNote(e.target.value)}
                           rows={2}
                           placeholder={t.serviceForm?.notePlaceholder || 'Özel istekleriniz...'}
-                          className="w-full text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C]"
+                          className="w-full text-[16px] sm:text-xs p-2.5 rounded-xl border border-[#D8C7A8] bg-white focus:outline-none focus:ring-2 focus:ring-[#B89146]/40 text-[#221F1C]"
                         />
                       </div>
+
+                      {Number(selectedService.price || 0) > 0 && (
+                        <div className="pt-2 border-t border-[#D8CBB8]">
+                          <InlineOnlinePaymentBox
+                            amount={Number(selectedService.price || 0) * customCount}
+                            currency={selectedService.currency || 'TRY'}
+                            lang={lang}
+                            paymentMethod={customPaymentMethod}
+                            onPaymentMethodChange={setCustomPaymentMethod}
+                            cardDetails={customCardDetails}
+                            onCardDetailsChange={setCustomCardDetails}
+                            compact
+                          />
+                        </div>
+                      )}
 
                       {/* Submit Button */}
                       <div className="flex items-center gap-2 pt-2">
@@ -402,9 +524,25 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-2 py-3 rounded-2xl bg-gradient-to-r from-[#B89146] to-[#8E6928] hover:from-[#A8823A] hover:to-[#7D5B20] text-white font-semibold transition shadow-md text-xs cursor-pointer disabled:opacity-50"
+                          className="flex-2 py-3 px-3 rounded-2xl bg-gradient-to-r from-[#B89146] to-[#8E6928] hover:from-[#A8823A] hover:to-[#7D5B20] text-white font-semibold transition shadow-md text-xs cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
                         >
-                          {isSubmitting ? '...' : (t.serviceForm?.submitRequest || 'Talebi Gönder')}
+                          {Number(selectedService.price || 0) > 0 && customPaymentMethod === 'online_card' && (
+                            <Lock className="w-3.5 h-3.5 shrink-0" />
+                          )}
+                          <span>
+                            {isSubmitting
+                              ? Number(selectedService.price || 0) > 0 && customPaymentMethod === 'online_card'
+                                ? payUi.processing3DSecure
+                                : '...'
+                              : Number(selectedService.price || 0) > 0 && customPaymentMethod === 'online_card'
+                                ? payUi.payAndSubmit(
+                                    formatCurrencyAmount(
+                                      Number(selectedService.price || 0) * customCount,
+                                      selectedService.currency || 'TRY'
+                                    )
+                                  )
+                                : t.serviceForm?.submitRequest || 'Talebi Gönder'}
+                          </span>
                         </button>
                       </div>
                     </form>

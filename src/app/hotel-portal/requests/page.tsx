@@ -10,7 +10,8 @@ import {
   Search,
   AlertTriangle,
   Trash2,
-  ChevronLeft
+  ChevronLeft,
+  CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
@@ -196,6 +197,19 @@ export default function HotelLiveRequestsPage() {
                     {req.department && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 dark:text-slate-400 font-semibold">
                         {req.department}
+                      </span>
+                    )}
+                    {req.paymentStatus === 'paid_online' && (
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold flex items-center gap-1 shadow-2xs">
+                        <CreditCard className="w-3 h-3 text-emerald-700" />
+                        ONLİNE ÖDENDİ
+                        {req.paymentAmount ? ` · ${req.paymentAmount.toLocaleString('tr-TR')} ${req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}` : ''}
+                        {req.paymentReference ? ` (#${req.paymentReference})` : ''}
+                      </span>
+                    )}
+                    {req.paymentStatus !== 'paid_online' && req.paymentAmount && req.paymentAmount > 0 && (
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1">
+                        ODA FOLYOSU · {req.paymentAmount.toLocaleString('tr-TR')} {req.paymentCurrency === 'EUR' ? '€' : req.paymentCurrency === 'USD' ? '$' : '₺'}
                       </span>
                     )}
                   </div>

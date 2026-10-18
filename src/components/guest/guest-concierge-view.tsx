@@ -24,6 +24,11 @@ import { InvestInIstanbul } from '@/components/guest/invest-in-istanbul';
 import { RestaurantReservationModal } from '@/components/guest/restaurant-reservation-modal';
 import { AestheticBookingModal } from '@/components/guest/aesthetic-booking-modal';
 import { AestheticInquiryModal } from '@/components/guest/aesthetic-inquiry-modal';
+import {
+  OnlineRequestPayModal,
+  ONLINE_PAYMENT_I18N,
+  formatCurrencyAmount,
+} from '@/components/guest/inline-online-payment-box';
 
 import Link from 'next/link';
 import { 
@@ -35,7 +40,7 @@ import {
   Compass, 
   ArrowRight, 
   ShieldCheck, 
-  Clock, Camera 
+  Clock, Camera, CreditCard, CheckCircle2
 } from 'lucide-react';
 
 interface ShowcaseEntry {
@@ -84,6 +89,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [showRequestsModal, setShowRequestsModal] = useState(false);
+  const [payModalRequest, setPayModalRequest] = useState<ServiceRequest | null>(null);
 
   useEffect(() => {
     if (initialHotelId && initialRoomId) {
@@ -661,36 +667,81 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 </div>
               ) : (
                 <div className="space-y-2.5">
-                  {requests.map((req) => (
-                    <div
-                      key={req.id}
-                      className="bg-[#FAF8F4]/90 p-3.5 rounded-2xl border border-[#C4B8A4]/80 flex items-center justify-between gap-3 text-xs shadow-sm"
-                    >
-                      <div className="space-y-1">
-                        <strong className="font-luxury-sans text-[#141414] font-bold block">{req.serviceTitle}</strong>
-                        {req.notes && <p className="font-luxury-sans text-[11px] text-[#3D352E]">{req.notes}</p>}
-                        <div className="flex items-center gap-1 text-[10px] text-[#6B5A48] font-mono">
-                          <Clock className="w-3.5 h-3.5 text-[#8E7252]" />
-                          <span>{new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
-                      </div>
+                  {requests.map((req) => {
+                    const payUi = ONLINE_PAYMENT_I18N[lang] || ONLINE_PAYMENT_I18N.en;
+                    const isPaidOnline = req.paymentStatus === 'paid_online';
+                    const hasPayableAmount = typeof req.paymentAmount === 'number' && req.paymentAmount > 0;
+                    return (
+                      <div
+                        key={req.id}
+                        className="bg-[#FAF8F4]/90 p-3.5 rounded-2xl border border-[#C4B8A4]/80 flex flex-col gap-2.5 text-xs shadow-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1 min-w-0">
+                            <strong className="font-luxury-sans text-[#141414] font-bold block">{req.serviceTitle}</strong>
+                            {req.notes && <p className="font-luxury-sans text-[11px] text-[#3D352E] leading-relaxed">{req.notes}</p>}
+                            <div className="flex flex-wrap items-center gap-2 pt-0.5 text-[10px] text-[#6B5A48] font-mono">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5 text-[#8E7252]" />
+                                {new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              {isPaidOnline && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-luxury-sans font-bold text-[10px]">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                  {payUi.paidOnlineBadge}
+                                  {hasPayableAmount ? ` · ${formatCurrencyAmount(req.paymentAmount!, req.paymentCurrency)}` : ''}
+                                  {req.paymentReference ? ` (#${req.paymentReference})` : ''}
+                                </span>
+                              )}
+                            </div>
+                          </div>
 
-                      <span className={`font-luxury-sans text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 border ${
-                        req.status === 'completed' 
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
-                          : req.status === 'in_progress'
-                            ? 'bg-amber-50 text-[#7D5E2A] border-[#D8CBB8]'
-                            : 'bg-[#FAF3E6] text-[#8C6D46] border-[#C4B8A4] animate-pulse'
-                      }`}>
-                        {t.requestStatus[req.status]}
-                      </span>
-                    </div>
-                  ))}
+                          <span className={`font-luxury-sans text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 border ${
+                            req.status === 'completed' 
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+                              : req.status === 'in_progress'
+                                ? 'bg-amber-50 text-[#7D5E2A] border-[#D8CBB8]'
+                                : 'bg-[#FAF3E6] text-[#8C6D46] border-[#C4B8A4] animate-pulse'
+                          }`}>
+                            {t.requestStatus[req.status]}
+                          </span>
+                        </div>
+
+                        {!isPaidOnline && hasPayableAmount && (
+                          <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E5DAC8]">
+                            <span className="font-luxury-sans text-[10.5px] font-semibold text-[#5C4938]">
+                              {payUi.roomFolioBadge}: <strong className="text-[#141414]">{formatCurrencyAmount(req.paymentAmount!, req.paymentCurrency)}</strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setPayModalRequest(req)}
+                              className="px-3 py-1.5 rounded-xl bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] hover:from-[#8C6D46] hover:to-[#6E501E] text-white font-luxury-sans text-[11px] font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
+                            >
+                              <CreditCard className="w-3.5 h-3.5" />
+                              <span>{payUi.payNowButton}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
           </div>
         </div>
+      )}
+
+      {payModalRequest && (
+        <OnlineRequestPayModal
+          request={payModalRequest}
+          lang={lang}
+          onClose={() => setPayModalRequest(null)}
+          onPaid={(updated) => {
+            setRequests((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+            setPayModalRequest(null);
+          }}
+        />
       )}
 
       {/* Auth Modal (Login / Register / Hotel Cockpit Entry) */}
