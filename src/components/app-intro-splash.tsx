@@ -27,9 +27,9 @@ function isNativeOrStandaloneApp(): boolean {
 function shouldSkipSplash(pathname: string | null | undefined): boolean {
   if (typeof window === "undefined") return false;
   const w = window as any;
-  if (w.__PURELY_NATIVE_VIDEO_SPLASH_V5__) return true;
+  if (w.__PURELY_NATIVE_VIDEO_SPLASH_V6__) return true;
 
-  const alreadyPlayed = sessionStorage.getItem("purely_splash_v5_played");
+  const alreadyPlayed = sessionStorage.getItem("purely_splash_v6_played");
   if (
     alreadyPlayed ||
     pathname?.startsWith("/usepurelydashboard") ||
@@ -66,7 +66,7 @@ export function AppIntroSplash() {
     setFadingOut(true);
     if (typeof window !== "undefined") {
       try {
-        sessionStorage.setItem("purely_splash_v5_played", "true");
+        sessionStorage.setItem("purely_splash_v6_played", "true");
         sessionStorage.setItem("purely_splash_played", "true");
       } catch {}
     }
@@ -105,7 +105,7 @@ export function AppIntroSplash() {
         (window as any).Capacitor?.Plugins?.SystemBars?.show?.({});
       } catch {}
       try {
-        sessionStorage.setItem("purely_splash_v5_played", "true");
+        sessionStorage.setItem("purely_splash_v6_played", "true");
         sessionStorage.setItem("purely_splash_played", "true");
       } catch {}
     }
@@ -121,7 +121,7 @@ export function AppIntroSplash() {
       }
     }
 
-    const timer = setTimeout(dismiss, 4400);
+    const timer = setTimeout(dismiss, 10400);
     return () => clearTimeout(timer);
   }, [dismiss, pathname]);
 
@@ -145,7 +145,7 @@ export function AppIntroSplash() {
             cursor: "pointer",
             userSelect: "none",
             backgroundColor: "#0F171E",
-            backgroundImage: "url('/images/splash-poster-v2.jpg?v=5')",
+            backgroundImage: "url('/images/splash-poster-v2.jpg?v=6')",
             backgroundSize: "100% 100%",
             backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
@@ -158,8 +158,8 @@ export function AppIntroSplash() {
           {/* Tam ekran açılış videosu */}
           <video
             ref={videoRef}
-            src="/videos/splash-intro.mp4?v=5"
-            poster="/images/splash-poster-v2.jpg?v=5"
+            src="/videos/splash-intro.mp4?v=6"
+            poster="/images/splash-poster-v2.jpg?v=6"
             autoPlay
             muted
             playsInline
@@ -203,7 +203,7 @@ export function AppIntroSplash() {
                 height: "100%",
                 background: "linear-gradient(90deg, #8E7252, #C9AE82, #8E7252)",
                 boxShadow: "0 0 12px rgba(142,114,82,0.5)",
-                animation: "splashProgress 4.0s cubic-bezier(0.4,0,0.2,1) forwards",
+                animation: "splashProgress 10.2s cubic-bezier(0.4,0,0.2,1) forwards",
               }}
             />
           </div>
@@ -218,7 +218,7 @@ export function AppIntroSplash() {
       )}
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){try{var w=window,p=location.pathname||'';var isApp=!!(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||!!(w.webkit&&w.webkit.messageHandlers&&w.webkit.messageHandlers.bridge)||w.navigator.standalone===true||!!(w.matchMedia&&w.matchMedia('(display-mode: standalone)').matches)||p.indexOf('/stay')===0||p==='/guest'||p.indexOf('/guest/')===0||!!localStorage.getItem('xenios_current_hotel');var skip=!!w.__PURELY_NATIVE_VIDEO_SPLASH_V5__||!!sessionStorage.getItem('purely_splash_v5_played')||!isApp||['/usepurelydashboard','/pilot','/admin','/hotel-portal','/dashboard','/qr-generator'].some(function(x){return p.indexOf(x)===0;});if(skip){var el=document.getElementById('purely-intro-splash');if(el)el.style.display='none';}}catch(e){}})();`,
+          __html: `(function(){try{var w=window,p=location.pathname||'';var isApp=!!(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||!!(w.webkit&&w.webkit.messageHandlers&&w.webkit.messageHandlers.bridge)||w.navigator.standalone===true||!!(w.matchMedia&&w.matchMedia('(display-mode: standalone)').matches)||p.indexOf('/stay')===0||p==='/guest'||p.indexOf('/guest/')===0||!!localStorage.getItem('xenios_current_hotel');var skip=!!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__||!!sessionStorage.getItem('purely_splash_v6_played')||!isApp||['/usepurelydashboard','/pilot','/admin','/hotel-portal','/dashboard','/qr-generator'].some(function(x){return p.indexOf(x)===0;});if(skip){var el=document.getElementById('purely-intro-splash');if(el)el.style.display='none';}}catch(e){}})();`,
         }}
       />
     </div>
