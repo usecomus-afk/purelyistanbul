@@ -1,24 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { PwaRegister } from "@/components/pwa-register";
 import { AppIntroSplash } from "@/components/app-intro-splash";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "./globals.css";
-
-const luxurySerif = Playfair_Display({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-luxury-serif",
-  display: "swap",
-});
-
-const luxurySans = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-luxury-sans",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Purely Istanbul — Nothing but Istanbul | Curated Experiences & Local Marketplace",
@@ -46,8 +31,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${luxurySerif.variable} ${luxurySans.variable}`}>
+    <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

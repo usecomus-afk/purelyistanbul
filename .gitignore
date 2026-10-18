@@ -7,3 +7,8 @@ node_modules
 *.tsbuildinfo
 *key*.json
 *.json.json
+latest_ipa
+old_exp.json
+temp.html
+temp-tab-bar.txt
+
