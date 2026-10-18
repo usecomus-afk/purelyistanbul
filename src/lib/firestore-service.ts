@@ -87,8 +87,15 @@ export const FirestoreService = {
   async deleteExperienceRemote(id: string): Promise<void> {
     if (!db || !isFirebaseConfigured) return;
     try {
-      await deleteDoc(doc(db, COLLECTIONS.EXPERIENCES, id));
-      await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id));
+      await setDoc(doc(db, COLLECTIONS.EXPERIENCES, id), {
+        id,
+        deleted: true,
+        status: 'suspended',
+        publishToWeb: false,
+        publishToMobile: false,
+        updatedAt: new Date().toISOString()
+      });
+      await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
       reportSyncError('deleteExperienceRemote', e);
     }
@@ -250,12 +257,38 @@ export const FirestoreService = {
           (snap) => {
             if (snap.empty) return;
             const remoteMap = new Map<string, Experience>();
-            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as Experience), id: d.id }));
+            const remoteDeletedIds: string[] = [];
+            snap.forEach((d) => {
+              const data = d.data() as Experience & { deleted?: boolean };
+              if (data.deleted === true) {
+                remoteDeletedIds.push(d.id);
+              } else {
+                remoteMap.set(d.id, { ...data, id: d.id });
+              }
+            });
+            if (remoteDeletedIds.length > 0 && typeof window !== 'undefined') {
+              try {
+                const rawDel = localStorage.getItem('xenios_deleted_experience_ids');
+                const arr: string[] = rawDel ? JSON.parse(rawDel) : [];
+                let updatedDel = false;
+                remoteDeletedIds.forEach((delId) => {
+                  if (!arr.includes(delId)) {
+                    arr.push(delId);
+                    updatedDel = true;
+                  }
+                });
+                if (updatedDel) {
+                  localStorage.setItem('xenios_deleted_experience_ids', JSON.stringify(arr));
+                }
+              } catch {}
+            }
             const current = XeniosStore.getExperiences();
             const mergedMap = new Map<string, Experience>();
             remoteMap.forEach((v, k) => mergedMap.set(k, v));
             current.forEach((item) => {
-              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+              if (!mergedMap.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+                mergedMap.set(item.id, item);
+              }
             });
             XeniosStore.saveExperiences(Array.from(mergedMap.values()));
           },

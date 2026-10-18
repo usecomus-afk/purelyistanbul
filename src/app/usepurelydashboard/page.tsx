@@ -62,11 +62,18 @@ import {
   MapPin,
   Star,
   Power,
+  PauseCircle,
   EyeOff,
   Layers,
   Bell,
   CreditCard,
   Copy,
+  BarChart3,
+  Download,
+  KeyRound,
+  TrendingUp,
+  Percent,
+  Wallet,
 } from "lucide-react";
 
 type DashboardTab =
@@ -76,7 +83,79 @@ type DashboardTab =
   | "categories"
   | "suppliers"
   | "properties"
-  | "hotels";
+  | "hotels"
+  | "payments"
+  | "reports";
+
+type PaymentGatewayConfig = {
+  activeProvider: "stripe" | "iyzico" | "paytr";
+  defaultCurrency: "EUR" | "TRY" | "USD" | "GBP";
+  vendorSharePercent: number;
+  platformSharePercent: number;
+  platformCommissionPct: number;
+  hotelReferralPercent: number;
+  hotelReferralPct: number;
+  require3DSecure: boolean;
+  roomChargeEnabled: boolean;
+  cashOnArrivalEnabled: boolean;
+  autoPayoutSchedule: "daily" | "weekly" | "monthly";
+  settlementAccountName: string;
+  settlementIban: string;
+  stripeEnabled: boolean;
+  stripeMode: "live" | "test";
+  stripePublishableKey: string;
+  stripeSecretKey: string;
+  stripeWebhookSecret: string;
+  stripeSplitConnect: boolean;
+  iyzicoEnabled: boolean;
+  iyzicoMode: "live" | "sandbox";
+  iyzicoApiKey: string;
+  iyzicoSecretKey: string;
+  iyzicoBaseUrl: string;
+  iyzicoSubMerchantSplit: boolean;
+  iyzicoForce3DS: boolean;
+  paytrEnabled: boolean;
+  paytrMerchantId: string;
+  paytrMerchantKey: string;
+  paytrMerchantSalt: string;
+  roomFolioChargeEnabled: boolean;
+  onSiteCashOrPosEnabled: boolean;
+};
+
+const DEFAULT_PAYMENT_CONFIG: PaymentGatewayConfig = {
+  activeProvider: "stripe",
+  defaultCurrency: "EUR",
+  vendorSharePercent: 85,
+  platformSharePercent: 12,
+  platformCommissionPct: 12,
+  hotelReferralPercent: 3,
+  hotelReferralPct: 3,
+  require3DSecure: true,
+  roomChargeEnabled: true,
+  cashOnArrivalEnabled: true,
+  autoPayoutSchedule: "weekly",
+  settlementAccountName: "Purely İstanbul Turizm & Teknoloji A.Ş.",
+  settlementIban: "TR48 0006 2000 4120 0006 2984 10",
+  stripeEnabled: true,
+  stripeMode: "live",
+  stripePublishableKey: "pk_live_51PurelyIstanbul...",
+  stripeSecretKey: "",
+  stripeWebhookSecret: "",
+  stripeSplitConnect: true,
+  iyzicoEnabled: true,
+  iyzicoMode: "live",
+  iyzicoApiKey: "iyz_api_purelyistanbul...",
+  iyzicoSecretKey: "",
+  iyzicoBaseUrl: "https://api.iyzipay.com",
+  iyzicoSubMerchantSplit: true,
+  iyzicoForce3DS: true,
+  paytrEnabled: false,
+  paytrMerchantId: "",
+  paytrMerchantKey: "",
+  paytrMerchantSalt: "",
+  roomFolioChargeEnabled: true,
+  onSiteCashOrPosEnabled: true,
+};
 
 type ChannelSubTab = "matrix" | "modules" | "marketplace" | "requests";
 
@@ -255,6 +334,7 @@ export default function UsePurelyDashboardPage() {
 
   // Module toggles (persisted in localStorage for instant UI feedback)
   const [disabledModules, setDisabledModules] = useState<string[]>([]);
+  const [paymentConfig, setPaymentConfig] = useState<PaymentGatewayConfig>(DEFAULT_PAYMENT_CONFIG);
 
   // 1. Force Light Mode & Unlock Document Scroll on Mount
   useEffect(() => {
@@ -274,7 +354,59 @@ export default function UsePurelyDashboardPage() {
       const savedDisabled = localStorage.getItem("purely_disabled_modules");
       if (savedDisabled) setDisabledModules(JSON.parse(savedDisabled));
     } catch {}
+    try {
+      const savedPay = localStorage.getItem("purely_payment_gateway_config");
+      if (savedPay) {
+        setPaymentConfig({ ...DEFAULT_PAYMENT_CONFIG, ...JSON.parse(savedPay) });
+      }
+    } catch {}
   }, []);
+
+  const handleSavePaymentConfig = () => {
+    try {
+      localStorage.setItem("purely_payment_gateway_config", JSON.stringify(paymentConfig));
+    } catch {}
+    toast.success("Ödeme yöntemi ve Sanal POS entegrasyon ayarları kaydedildi!");
+  };
+
+  const handleExportReportsCsv = () => {
+    const headers = [
+      "ID",
+      "İlan Başlığı",
+      "Kategori",
+      "İşletme / Tedarikçi",
+      "Bölge",
+      "Fiyat",
+      "Para Birimi",
+      "Komisyon (%)",
+      "Durum",
+      "Web Yayını",
+      "Mobil Yayını",
+    ];
+    const rows = experiences.map((e) => [
+      e.id,
+      `"${(e.title || "").replace(/"/g, '""')}"`,
+      `"${(e.category || "").replace(/"/g, '""')}"`,
+      `"${(e.provider || "").replace(/"/g, '""')}"`,
+      `"${(e.location || "").replace(/"/g, '""')}"`,
+      e.price,
+      e.currency,
+      e.commissionRate ?? 15,
+      e.status === "suspended" ? "Askıda" : "Aktif",
+      e.publishToWeb !== false ? "Açık" : "Kapalı",
+      e.publishToMobile !== false ? "Açık" : "Kapalı",
+    ]);
+    const csvContent =
+      "\uFEFF" + [headers.join(";"), ...rows.map((r) => r.join(";"))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `purelyistanbul-rapor-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Rapor CSV dosyası olarak indirildi.");
+  };
 
   // 2. Check Admin Auth & Load Data
   const refreshAllData = () => {
@@ -563,43 +695,25 @@ export default function UsePurelyDashboardPage() {
   };
 
   /**
-   * Hazır (uygulama sürümüne gömülü) katalog ilanları gerçekten silinemez; her cihazda
-   * yeniden görünürlerdi. Bu yüzden onlar askıya alınıp tüm kanallardan gizlenir.
+   * İlanı kalıcı olarak siler (askıya almaktan tamamen ayrı bir işlemdir).
    */
-  const deleteOrArchiveListing = (exp: Experience): "deleted" | "suspended" => {
-    if (SEED_EXPERIENCE_IDS.has(exp.id)) {
-      XeniosStore.updateExperience(exp.id, {
-        status: "suspended",
-        publishToWeb: false,
-        publishToMobile: false,
-      });
-      return "suspended";
-    }
+  const permanentlyDeleteListing = (exp: Experience) => {
     XeniosStore.deleteExperience(exp.id);
-    return "deleted";
   };
 
   const bulkDeleteSelected = () => {
     if (selectedListingIds.size === 0) return;
     if (
       !window.confirm(
-        `${selectedListingIds.size} ilan silinsin mi? Hazır katalog ilanları silinmez, askıya alınıp gizlenir.`
+        `Seçili ${selectedListingIds.size} ilanı kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
       )
     )
       return;
-    let deleted = 0;
-    let archived = 0;
-    experiences
-      .filter((e) => selectedListingIds.has(e.id))
-      .forEach((e) => {
-        if (deleteOrArchiveListing(e) === "deleted") deleted += 1;
-        else archived += 1;
-      });
+    const toDelete = experiences.filter((e) => selectedListingIds.has(e.id));
+    toDelete.forEach((e) => permanentlyDeleteListing(e));
     setSelectedListingIds(new Set());
     refreshAllData();
-    toast.success(
-      `${deleted} ilan silindi${archived ? `, ${archived} hazır katalog ilanı askıya alınıp gizlendi` : ""}.`
-    );
+    toast.success(`${toDelete.length} ilan kalıcı olarak silindi.`);
   };
 
 
@@ -632,7 +746,9 @@ export default function UsePurelyDashboardPage() {
     XeniosStore.updateExperience(exp.id, { status: next });
     refreshAllData();
     toast.info(
-      next === "active" ? "İlan tekrar yayına alındı." : "İlan askıya alındı."
+      next === "active"
+        ? `"${exp.title}" ilanı tekrar yayına alındı.`
+        : `"${exp.title}" ilanı askıya alındı (silinmedi, istediğiniz zaman tekrar yayına alabilirsiniz).`
     );
   };
 
@@ -649,16 +765,15 @@ export default function UsePurelyDashboardPage() {
   };
 
   const handleDeleteListing = (exp: Experience) => {
-    const isSeed = SEED_EXPERIENCE_IDS.has(exp.id);
-    const message = isSeed
-      ? `"${exp.title}" hazır katalog ilanıdır ve tamamen silinemez. Askıya alınıp tüm kanallardan gizlensin mi?`
-      : `"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz?`;
-    if (!window.confirm(message)) return;
-    const result = deleteOrArchiveListing(exp);
+    if (
+      !window.confirm(
+        `"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz? (Yalnızca geçici olarak durdurmak istiyorsanız "Askıya Al" butonunu kullanabilirsiniz.)`
+      )
+    )
+      return;
+    permanentlyDeleteListing(exp);
     refreshAllData();
-    toast.success(
-      result === "deleted" ? "İlan silindi." : "İlan askıya alındı ve tüm kanallardan gizlendi."
-    );
+    toast.success(`"${exp.title}" ilanı kalıcı olarak silindi.`);
   };
 
   const toggleAppModule = (modId: string) => {
@@ -980,6 +1095,19 @@ export default function UsePurelyDashboardPage() {
       sublabel: "Otel, Oda, Wi-Fi & QR Kodlar",
       icon: HotelIcon,
       count: hotels.length,
+    },
+    {
+      id: "payments",
+      label: "Ödeme & Sanal POS",
+      sublabel: "Stripe, iyzico, PayTR & Komisyon",
+      icon: CreditCard,
+    },
+    {
+      id: "reports",
+      label: "Raporlar & Analitik",
+      sublabel: "Ciro, Komisyon, Kanal & Kategori Analizi",
+      icon: BarChart3,
+      count: bookings.length + serviceRequests.length,
     },
   ];
 
@@ -2502,18 +2630,34 @@ export default function UsePurelyDashboardPage() {
 
                             <button
                               onClick={() => handleToggleListingActive(exp)}
-                              className="comus-btn-ghost text-xs py-1.5 px-3"
-                              title="Yayına Al / Askıya Al"
+                              className={`text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center gap-1.5 cursor-pointer transition ${
+                                exp.status === "suspended"
+                                  ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97] hover:bg-[#dcebc9]"
+                                  : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0] hover:bg-[#ebd3c3]"
+                              }`}
+                              title={
+                                exp.status === "suspended"
+                                  ? "İlanı Tekrar Yayına Al"
+                                  : "İlanı Geçici Olarak Askıya Al"
+                              }
                             >
-                              <Power className="w-3.5 h-3.5" />
+                              {exp.status === "suspended" ? (
+                                <>
+                                  <Power className="w-3.5 h-3.5" /> Yayına Al
+                                </>
+                              ) : (
+                                <>
+                                  <PauseCircle className="w-3.5 h-3.5" /> Askıya Al
+                                </>
+                              )}
                             </button>
 
                             <button
                               onClick={() => handleDeleteListing(exp)}
-                              className="p-2 rounded-full border border-[#C8C4B0] text-[#6B6B55] hover:text-red-700 hover:border-red-300 cursor-pointer"
-                              title="İlanı Sil"
+                              className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer transition"
+                              title="İlanı Kalıcı Olarak Sil"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3.5 h-3.5" /> Sil
                             </button>
                           </div>
                         </div>
@@ -2640,6 +2784,994 @@ export default function UsePurelyDashboardPage() {
               </div>
 
               <HotelAdminPanel />
+            </div>
+          )}
+
+          {/* =========================================================
+              TAB 7: ÖDEME YÖNTEMİ & SANAL POS ENTEGRASYON ALANI
+          ========================================================= */}
+          {activeTab === "payments" && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#C8C4B0]">
+                <div>
+                  <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
+                    Finansal Altyapı &amp; Tahsilat Kanalları
+                  </div>
+                  <h1 className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
+                    Ödeme Yöntemi &amp;{" "}
+                    <em className="italic text-[#3B6D11]">Sanal POS</em>{" "}
+                    Entegrasyonu
+                  </h1>
+                  <p className="text-sm text-[#6B6B55] font-light mt-1">
+                    purelyistanbul.com Web, iOS App ve Oda İçi QR PWA üzerinden
+                    alınan rezervasyonların Sanal POS (Stripe, iyzico, PayTR),
+                    oda hesabına yansıtma ve komisyon dağıtım ayarlarını yönetin.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleSavePaymentConfig}
+                  className="comus-btn-primary"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Ödeme Ayarlarını Kaydet</span>
+                </button>
+              </div>
+
+              {/* Aktif Ödeme Sağlayıcı Seçimi & Durum Kartları */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="comus-card space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-[#6B6B55] font-medium">
+                      Birincil Sanal POS
+                    </span>
+                    <CreditCard className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-2xl font-medium text-[#2C2C1A] uppercase">
+                    {paymentConfig.activeProvider === "stripe"
+                      ? "Stripe Connect"
+                      : paymentConfig.activeProvider === "iyzico"
+                      ? "iyzico Korumalı"
+                      : "PayTR Sanal POS"}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Varsayılan para birimi:{" "}
+                    <strong>{paymentConfig.defaultCurrency}</strong> • 3D Secure{" "}
+                    <strong>
+                      {paymentConfig.require3DSecure ? "Zorunlu" : "Opsiyonel"}
+                    </strong>
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-[#6B6B55] font-medium">
+                      Platform Hizmet Payı
+                    </span>
+                    <Percent className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-2xl font-medium text-[#2C2C1A]">
+                    %{paymentConfig.platformCommissionPct}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Otel yönlendirme payı:{" "}
+                    <strong>%{paymentConfig.hotelReferralPct}</strong>
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-[#6B6B55] font-medium">
+                      Oda Hesabına Yansıtma
+                    </span>
+                    <HotelIcon className="w-4 h-4 text-[#C1622F]" />
+                  </div>
+                  <div className="comus-serif text-2xl font-medium text-[#2C2C1A]">
+                    {paymentConfig.roomChargeEnabled ? "Aktif" : "Pasif"}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Kapıda / nakit ödeme:{" "}
+                    <strong>
+                      {paymentConfig.cashOnArrivalEnabled ? "Açık" : "Kapalı"}
+                    </strong>
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-[#6B6B55] font-medium">
+                      Hakediş Döngüsü
+                    </span>
+                    <Wallet className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-2xl font-medium text-[#2C2C1A]">
+                    {paymentConfig.autoPayoutSchedule === "daily"
+                      ? "Günlük (T+1)"
+                      : paymentConfig.autoPayoutSchedule === "weekly"
+                      ? "Haftalık"
+                      : "Aylık"}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    IBAN: {paymentConfig.settlementIban.slice(0, 12)}...
+                  </p>
+                </div>
+              </div>
+
+              {/* Sanal POS Entegrasyon Kartları: Stripe, iyzico, PayTR */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* 1. Stripe Connect */}
+                <div
+                  className={`comus-card space-y-4 border-2 transition ${
+                    paymentConfig.activeProvider === "stripe"
+                      ? "border-[#3B6D11]"
+                      : "border-[#C8C4B0]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-[#C8C4B0]/60 pb-3">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                        Küresel Kart &amp; Apple Pay
+                      </div>
+                      <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                        Stripe Connect
+                      </h3>
+                    </div>
+                    <label className="inline-flex items-center gap-2 text-xs font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.stripeEnabled}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            stripeEnabled: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                      <span>{paymentConfig.stripeEnabled ? "Aktif" : "Pasif"}</span>
+                    </label>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="comus-label">
+                        Publishable Key (pk_live / pk_test)
+                      </label>
+                      <input
+                        type="text"
+                        value={paymentConfig.stripePublishableKey}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            stripePublishableKey: e.target.value,
+                          })
+                        }
+                        placeholder="pk_live_51PurelyIstanbul..."
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">
+                        Secret Key (sk_live / sk_test)
+                      </label>
+                      <input
+                        type="password"
+                        value={paymentConfig.stripeSecretKey}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            stripeSecretKey: e.target.value,
+                          })
+                        }
+                        placeholder="sk_live_••••••••••••••••"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">Webhook Signing Secret</label>
+                      <input
+                        type="password"
+                        value={paymentConfig.stripeWebhookSecret}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            stripeWebhookSecret: e.target.value,
+                          })
+                        }
+                        placeholder="whsec_••••••••••••••••"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-[11px] text-[#6B6B55]">
+                      EUR, USD, GBP &amp; Apple Pay destekli
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPaymentConfig({
+                          ...paymentConfig,
+                          activeProvider: "stripe",
+                          stripeEnabled: true,
+                        })
+                      }
+                      className={`text-xs px-3 py-1.5 rounded-full border font-medium cursor-pointer ${
+                        paymentConfig.activeProvider === "stripe"
+                          ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                          : "bg-[#F6F1E8] text-[#2C2C1A] border-[#C8C4B0]"
+                      }`}
+                    >
+                      {paymentConfig.activeProvider === "stripe"
+                        ? "✓ Birincil POS"
+                        : "Birincil Yap"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. iyzico Sanal POS */}
+                <div
+                  className={`comus-card space-y-4 border-2 transition ${
+                    paymentConfig.activeProvider === "iyzico"
+                      ? "border-[#3B6D11]"
+                      : "border-[#C8C4B0]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-[#C8C4B0]/60 pb-3">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-widest text-[#C1622F] font-semibold">
+                        Türkiye Pazaryeri Çözümü
+                      </div>
+                      <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                        iyzico Pazaryeri POS
+                      </h3>
+                    </div>
+                    <label className="inline-flex items-center gap-2 text-xs font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.iyzicoEnabled}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            iyzicoEnabled: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                      <span>{paymentConfig.iyzicoEnabled ? "Aktif" : "Pasif"}</span>
+                    </label>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="comus-label">iyzico API Key</label>
+                      <input
+                        type="text"
+                        value={paymentConfig.iyzicoApiKey}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            iyzicoApiKey: e.target.value,
+                          })
+                        }
+                        placeholder="sandbox- veya live- api key"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">iyzico Secret Key</label>
+                      <input
+                        type="password"
+                        value={paymentConfig.iyzicoSecretKey}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            iyzicoSecretKey: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••••••••••••••"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">API Ortamı (Base URL)</label>
+                      <select
+                        value={paymentConfig.iyzicoBaseUrl}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            iyzicoBaseUrl: e.target.value,
+                          })
+                        }
+                        className="comus-select text-xs"
+                      >
+                        <option value="https://api.iyzipay.com">
+                          Canlı Ortam (https://api.iyzipay.com)
+                        </option>
+                        <option value="https://sandbox-api.iyzipay.com">
+                          Test / Sandbox (https://sandbox-api.iyzipay.com)
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-[11px] text-[#6B6B55]">
+                      Alt üye işyeri hakediş dağıtımı
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPaymentConfig({
+                          ...paymentConfig,
+                          activeProvider: "iyzico",
+                          iyzicoEnabled: true,
+                        })
+                      }
+                      className={`text-xs px-3 py-1.5 rounded-full border font-medium cursor-pointer ${
+                        paymentConfig.activeProvider === "iyzico"
+                          ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                          : "bg-[#F6F1E8] text-[#2C2C1A] border-[#C8C4B0]"
+                      }`}
+                    >
+                      {paymentConfig.activeProvider === "iyzico"
+                        ? "✓ Birincil POS"
+                        : "Birincil Yap"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. PayTR Sanal POS */}
+                <div
+                  className={`comus-card space-y-4 border-2 transition ${
+                    paymentConfig.activeProvider === "paytr"
+                      ? "border-[#3B6D11]"
+                      : "border-[#C8C4B0]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-[#C8C4B0]/60 pb-3">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                        Hızlı Tahsilat &amp; Linkle Ödeme
+                      </div>
+                      <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                        PayTR iFrame POS
+                      </h3>
+                    </div>
+                    <label className="inline-flex items-center gap-2 text-xs font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.paytrEnabled}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            paytrEnabled: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                      <span>{paymentConfig.paytrEnabled ? "Aktif" : "Pasif"}</span>
+                    </label>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="comus-label">Mağaza No (Merchant ID)</label>
+                      <input
+                        type="text"
+                        value={paymentConfig.paytrMerchantId}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            paytrMerchantId: e.target.value,
+                          })
+                        }
+                        placeholder="Örn: 284910"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">Merchant Key</label>
+                      <input
+                        type="password"
+                        value={paymentConfig.paytrMerchantKey}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            paytrMerchantKey: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••••••••••"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">Merchant Salt</label>
+                      <input
+                        type="password"
+                        value={paymentConfig.paytrMerchantSalt}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            paytrMerchantSalt: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••••••••••"
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-[11px] text-[#6B6B55]">
+                      Döviz &amp; TL taksitli çekim
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPaymentConfig({
+                          ...paymentConfig,
+                          activeProvider: "paytr",
+                          paytrEnabled: true,
+                        })
+                      }
+                      className={`text-xs px-3 py-1.5 rounded-full border font-medium cursor-pointer ${
+                        paymentConfig.activeProvider === "paytr"
+                          ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                          : "bg-[#F6F1E8] text-[#2C2C1A] border-[#C8C4B0]"
+                      }`}
+                    >
+                      {paymentConfig.activeProvider === "paytr"
+                        ? "✓ Birincil POS"
+                        : "Birincil Yap"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Oda İçi Ödeme Kuralları, Komisyon Dağıtımı ve Banka/IBAN Ayarları */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="comus-card space-y-4">
+                  <div className="border-b border-[#C8C4B0]/60 pb-3">
+                    <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                      Otel &amp; Tedarikçi Gelir Paylaşımı
+                    </div>
+                    <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                      Komisyon Dağıtımı &amp; Oda Hesabı Kuralları
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="comus-label">
+                        Purelyİstanbul Platform Payı (%)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={50}
+                        value={paymentConfig.platformCommissionPct}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            platformCommissionPct: Number(e.target.value),
+                          })
+                        }
+                        className="comus-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">
+                        Partner Otel Yönlendirme Payı (%)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={30}
+                        value={paymentConfig.hotelReferralPct}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            hotelReferralPct: Number(e.target.value),
+                          })
+                        }
+                        className="comus-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">Varsayılan Para Birimi</label>
+                      <select
+                        value={paymentConfig.defaultCurrency}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            defaultCurrency: e.target.value as "EUR" | "TRY" | "USD",
+                          })
+                        }
+                        className="comus-select"
+                      >
+                        <option value="EUR">EUR (€) - Euro</option>
+                        <option value="TRY">TRY (₺) - Türk Lirası</option>
+                        <option value="USD">USD ($) - Amerikan Doları</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="comus-label">Otomatik Hakediş Gönderimi</label>
+                      <select
+                        value={paymentConfig.autoPayoutSchedule}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            autoPayoutSchedule: e.target.value as
+                              | "daily"
+                              | "weekly"
+                              | "monthly",
+                          })
+                        }
+                        className="comus-select"
+                      >
+                        <option value="daily">Günlük (T+1 İş Günü)</option>
+                        <option value="weekly">Haftalık (Her Pazartesi)</option>
+                        <option value="monthly">Aylık (Ayın 1. İş Günü)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5 pt-2">
+                    <label className="flex items-center justify-between p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] cursor-pointer">
+                      <div>
+                        <div className="text-xs font-medium text-[#2C2C1A]">
+                          Oda Hesabına Yansıt (Room Charge / Folio)
+                        </div>
+                        <div className="text-[11px] text-[#6B6B55]">
+                          Misafir oda içi QR ile sipariş verdiğinde tutarı çıkışta
+                          resepsiyonda ödeyebilir
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.roomChargeEnabled}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            roomChargeEnabled: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] cursor-pointer">
+                      <div>
+                        <div className="text-xs font-medium text-[#2C2C1A]">
+                          Hizmet Anında / Kapıda Ödeme
+                        </div>
+                        <div className="text-[11px] text-[#6B6B55]">
+                          Tekne, VIP transfer veya tur başlangıcında nakit / fiziksel
+                          POS ile tahsilat izni
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.cashOnArrivalEnabled}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            cashOnArrivalEnabled: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] cursor-pointer">
+                      <div>
+                        <div className="text-xs font-medium text-[#2C2C1A]">
+                          3D Secure Doğrulaması Zorunlu
+                        </div>
+                        <div className="text-[11px] text-[#6B6B55]">
+                          Ters ibraz (chargeback) riskini önlemek için kart
+                          işlemlerinde SMS / banka onayı iste
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={paymentConfig.require3DSecure}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            require3DSecure: e.target.checked,
+                          })
+                        }
+                        className="accent-[#3B6D11] w-4 h-4"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Kurumsal Hakediş Hesabı & Son POS İşlemleri */}
+                <div className="comus-card space-y-4">
+                  <div className="border-b border-[#C8C4B0]/60 pb-3">
+                    <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                      Kurumsal Banka &amp; Mutabakat
+                    </div>
+                    <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                      Merkezi Hakediş IBAN &amp; Son Tahsilatlar
+                    </h3>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="comus-label">
+                        Şirket Ünvanı (Hakediş Alıcısı)
+                      </label>
+                      <input
+                        type="text"
+                        value={paymentConfig.settlementAccountName}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            settlementAccountName: e.target.value,
+                          })
+                        }
+                        className="comus-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="comus-label">
+                        Ana Tahsilat IBAN (TR / EUR)
+                      </label>
+                      <input
+                        type="text"
+                        value={paymentConfig.settlementIban}
+                        onChange={(e) =>
+                          setPaymentConfig({
+                            ...paymentConfig,
+                            settlementIban: e.target.value,
+                          })
+                        }
+                        className="comus-input font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 space-y-2">
+                    <div className="text-xs font-semibold text-[#2C2C1A]">
+                      Son Rezervasyon &amp; Ödeme Hareketleri ({bookings.length})
+                    </div>
+                    {bookings.length === 0 ? (
+                      <div className="p-4 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] text-xs text-[#6B6B55]">
+                        Henüz kartlı veya oda hesabına yansıtılmış rezervasyon
+                        kaydı bulunmuyor.
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        {bookings.slice(0, 6).map((b) => {
+                          const commPct =
+                            paymentConfig.platformCommissionPct || 12;
+                          const commAmt = Math.round(
+                            ((Number(b.amount) || 0) * commPct) / 100
+                          );
+                          return (
+                            <div
+                              key={b.id}
+                              className="p-2.5 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex items-center justify-between gap-2 text-xs"
+                            >
+                              <div className="min-w-0">
+                                <div className="font-medium text-[#2C2C1A] truncate">
+                                  {b.experienceTitle}
+                                </div>
+                                <div className="text-[11px] text-[#6B6B55]">
+                                  {b.guestName} • Oda {b.roomNumber || "-"} •{" "}
+                                  {b.bookingDate}
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <div className="font-semibold text-[#2C2C1A]">
+                                  {formatPrice(b.amount, b.currency)}
+                                </div>
+                                <div className="text-[10px] text-[#3B6D11]">
+                                  Komisyon: €{commAmt}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              TAB 8: RAPORLAR & ANALİTİK SAYFASI
+          ========================================================= */}
+          {activeTab === "reports" && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#C8C4B0]">
+                <div>
+                  <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
+                    Performans, Gelir &amp; Kanal Raporlaması
+                  </div>
+                  <h1 className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
+                    Raporlar &amp;{" "}
+                    <em className="italic text-[#3B6D11]">Analitik</em> Merkezi
+                  </h1>
+                  <p className="text-sm text-[#6B6B55] font-light mt-1">
+                    Kategori bazlı ilan dağılımını, tedarikçi komisyon
+                    oranlarını, otel oda QR etkileşimlerini ve rezervasyon
+                    gelirlerini inceleyin veya CSV olarak dışa aktarın.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleExportReportsCsv}
+                  className="comus-btn-primary"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Tüm Katalog &amp; Komisyon Raporunu İndir (CSV)</span>
+                </button>
+              </div>
+
+              {/* Üst Finansal & Operasyonel KPI Kartları */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="comus-card space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                    <span>Toplam Rezervasyon Hacmi (GMV)</span>
+                    <TrendingUp className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                    €
+                    {bookings
+                      .reduce((sum, b) => sum + (Number(b.amount) || 0), 0)
+                      .toLocaleString("tr-TR")}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Toplam <strong>{bookings.length}</strong> onaylı deneyim
+                    rezervasyonu
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                    <span>Net Platform Komisyon Geliri</span>
+                    <Wallet className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-3xl font-light text-[#3B6D11]">
+                    €
+                    {Math.round(
+                      bookings.reduce(
+                        (sum, b) =>
+                          sum +
+                          ((Number(b.amount) || 0) *
+                            (paymentConfig.platformCommissionPct || 12)) /
+                            100,
+                        0
+                      )
+                    ).toLocaleString("tr-TR")}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Ortalama komisyon oranı:{" "}
+                    <strong>
+                      %
+                      {experiences.length > 0
+                        ? Math.round(
+                            experiences.reduce(
+                              (s, e) => s + (e.commissionRate || 15),
+                              0
+                            ) / experiences.length
+                          )
+                        : 15}
+                    </strong>
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                    <span>Oda İçi QR Misafir Talepleri</span>
+                    <QrCode className="w-4 h-4 text-[#C1622F]" />
+                  </div>
+                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                    {serviceRequests.length}
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    <strong>
+                      {
+                        serviceRequests.filter((r) => r.status === "completed")
+                          .length
+                      }
+                    </strong>{" "}
+                    tamamlandı • <strong>{pendingRequestsCount}</strong> işlemde
+                  </p>
+                </div>
+
+                <div className="comus-card space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                    <span>Aktif Kanal Kapsaması</span>
+                    <BarChart3 className="w-4 h-4 text-[#3B6D11]" />
+                  </div>
+                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                    {webActiveCount} Web / {mobileActiveCount} Mobil
+                  </div>
+                  <p className="text-[11px] text-[#6B6B55]">
+                    Toplam <strong>{experiences.length}</strong> deneyim &amp;{" "}
+                    <strong>{properties.length}</strong> gayrimenkul
+                  </p>
+                </div>
+              </div>
+
+              {/* Kategori Bazlı İlan, Fiyat ve Komisyon Raporu Tablosu */}
+              <div className="comus-card space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#C8C4B0]/60 pb-3">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                      Kategori Performans Matrisi
+                    </div>
+                    <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                      Kategorilere Göre İlan Sayısı, Ortalama Fiyat ve Komisyon
+                    </h3>
+                  </div>
+                  <span className="text-xs text-[#6B6B55]">
+                    Toplam {categoryConfigs.length} kategori tanımlı
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-[#C8C4B0] text-[11px] uppercase tracking-wider text-[#6B6B55]">
+                        <th className="py-2.5 px-3">Kategori</th>
+                        <th className="py-2.5 px-3">Durum</th>
+                        <th className="py-2.5 px-3">Toplam İlan</th>
+                        <th className="py-2.5 px-3">Yayında (Aktif)</th>
+                        <th className="py-2.5 px-3">Askıda</th>
+                        <th className="py-2.5 px-3">Ort. Komisyon</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#C8C4B0]/50">
+                      {categoryConfigs.map((cat) => {
+                        const catExps = experiences.filter(
+                          (e) => getExperienceCategoryKey(e) === cat.key
+                        );
+                        const activeExps = catExps.filter(
+                          (e) => e.status !== "suspended"
+                        );
+                        const suspendedExps = catExps.filter(
+                          (e) => e.status === "suspended"
+                        );
+                        const avgComm =
+                          catExps.length > 0
+                            ? Math.round(
+                                catExps.reduce(
+                                  (s, e) => s + (e.commissionRate || 15),
+                                  0
+                                ) / catExps.length
+                              )
+                            : 15;
+                        return (
+                          <tr key={cat.key} className="hover:bg-[#F6F1E8]/60">
+                            <td className="py-2.5 px-3 font-medium text-[#2C2C1A]">
+                              {cat.label}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                  !cat.hidden
+                                    ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                                    : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
+                                }`}
+                              >
+                                {!cat.hidden ? "Açık" : "Gizli"}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-3 font-semibold text-[#2C2C1A]">
+                              {catExps.length}
+                            </td>
+                            <td className="py-2.5 px-3 text-[#3B6D11] font-medium">
+                              {activeExps.length}
+                            </td>
+                            <td className="py-2.5 px-3 text-[#9C4E24]">
+                              {suspendedExps.length}
+                            </td>
+                            <td className="py-2.5 px-3 font-medium text-[#2C2C1A]">
+                              %{avgComm}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Tedarikçi & Partner Otel Performans Özeti */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="comus-card space-y-4">
+                  <div className="border-b border-[#C8C4B0]/60 pb-3">
+                    <div className="text-[11px] uppercase tracking-widest text-[#C1622F] font-semibold">
+                      Tedarikçi &amp; Komisyon Dağılımı
+                    </div>
+                    <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                      Anlaşmalı İşletmeler Özeti ({suppliers.length})
+                    </h3>
+                  </div>
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    {suppliers.map((sup) => {
+                      const supListings = experiences.filter(
+                        (e) =>
+                          e.supplierId === sup.id || e.provider === sup.name
+                      );
+                      return (
+                        <div
+                          key={sup.id}
+                          className="p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[#2C2C1A] truncate">
+                              {sup.name}
+                            </div>
+                            <div className="text-[11px] text-[#6B6B55]">
+                              {sup.category} • {sup.district}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className="font-semibold text-[#3B6D11]">
+                              %{sup.commissionRate} Komisyon
+                            </div>
+                            <div className="text-[11px] text-[#6B6B55]">
+                              {supListings.length} bağlı ilan
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="comus-card space-y-4">
+                  <div className="border-b border-[#C8C4B0]/60 pb-3">
+                    <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                      Konaklama &amp; Oda İçi QR Raporu
+                    </div>
+                    <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                      Partner Oteller &amp; Oda Envanteri ({hotels.length})
+                    </h3>
+                  </div>
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    {hotels.map((h) => (
+                      <div
+                        key={h.id}
+                        className="p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div className="min-w-0">
+                          <div className="font-semibold text-[#2C2C1A] truncate">
+                            {h.name}
+                          </div>
+                          <div className="text-[11px] text-[#6B6B55]">
+                            {h.district} • Wi-Fi:{" "}
+                            {h.rooms?.[0]?.wifiSsid || "-"}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="font-semibold text-[#2C2C1A]">
+                            {h.rooms?.length || 0} Oda QR
+                          </div>
+                          <div className="text-[11px] text-[#3B6D11]">
+                            {
+                              Object.values(h.modules || {}).filter(Boolean)
+                                .length
+                            }{" "}
+                            aktif hizmet modülü
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </main>
