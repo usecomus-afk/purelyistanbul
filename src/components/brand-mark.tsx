@@ -12,25 +12,28 @@ interface BrandMarkProps {
 }
 
 export function BrandMark({
-  size = 44,
+  size = 40,
   showText = true,
-  showIcon = false,
+  showIcon = true,
   theme = 'sand',
   href = '/',
   asDiv = false,
   className = '',
 }: BrandMarkProps) {
+  const wordmarkHeight = Math.round(size * 0.85);
+  const wordmarkWidth = Math.round(wordmarkHeight * (165 / 60));
+
   const content = (
     <>
       {showIcon && (
-        <div 
+        <div
           className="relative overflow-hidden transition-transform group-hover:scale-105 shrink-0 bg-transparent"
           style={{ width: size, height: size }}
         >
-          <Image 
-            src="/logo.png" 
-            alt="purelyİstanbul" 
-            width={size} 
+          <Image
+            src="/logo.png"
+            alt="purelyistanbul"
+            width={size}
             height={size}
             unoptimized
             className="object-contain w-full h-full"
@@ -39,16 +42,17 @@ export function BrandMark({
         </div>
       )}
       {showText && (
-        <div translate="no" className="notranslate flex flex-col leading-none">
-          <span
-            translate="no"
-            className={`notranslate font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
-              theme === 'dark' ? 'text-white' : 'text-slate-900 '
-            }`}
-          >
-            <span translate="no" className="notranslate">purely</span>
-            <span translate="no" className="notranslate text-red-600 font-bold">istanbul</span>
-          </span>
+        <div translate="no" className="notranslate flex items-center leading-none shrink-0 bg-transparent">
+          <Image
+            src="/purely-wordmark.png"
+            alt="purelyistanbul"
+            width={wordmarkWidth}
+            height={wordmarkHeight}
+            unoptimized
+            priority
+            className={`object-contain w-auto ${theme === 'dark' ? 'brightness-110' : ''}`}
+            style={{ height: wordmarkHeight }}
+          />
         </div>
       )}
     </>
@@ -56,7 +60,7 @@ export function BrandMark({
 
   if (asDiv) {
     return (
-      <div translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
+      <div translate="no" className={`notranslate inline-flex items-center gap-1.5 group ${className}`}>
         {content}
       </div>
     );
@@ -64,14 +68,14 @@ export function BrandMark({
 
   if (href.startsWith('/')) {
     return (
-      <Link href={href} translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
+      <Link href={href} translate="no" className={`notranslate inline-flex items-center gap-1.5 group ${className}`}>
         {content}
       </Link>
     );
   }
 
   return (
-    <a href={href || "https://www.purelyistanbul.com"} target="_blank" rel="noopener noreferrer" translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
+    <a href={href || "https://www.purelyistanbul.com"} target="_blank" rel="noopener noreferrer" translate="no" className={`notranslate inline-flex items-center gap-1.5 group ${className}`}>
       {content}
     </a>
   );

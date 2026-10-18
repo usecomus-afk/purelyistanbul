@@ -235,7 +235,7 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Map & Skyline */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end -mt-[80px] pt-[80px]">
+      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-6 sm:pt-8">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src="/images/marketplace-hero.webp"
@@ -246,14 +246,14 @@ export function MarketplaceHome() {
             className="object-cover opacity-25 mix-blend-multiply"
             style={{ objectPosition: "50% 0%" }}
           />
-          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-sand-bg via-sand-bg/80 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-sand-bg via-sand-bg/80 to-transparent" />
           <div className="absolute left-1/2 bottom-[5%] -translate-x-1/2 w-[90%] max-w-[800px] h-[50%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
           <div className="absolute left-1/2 bottom-[10%] -translate-x-1/2 w-[80%] max-w-[600px] h-[40%] bg-sand-bg rounded-[100%] blur-2xl opacity-100" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-sand-bg via-sand-bg/95 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 h-12 bg-sand-bg" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-6 sm:pt-8 pb-0">
+        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-2 sm:pt-4 pb-0">
           <Image
             src="/images/skyline-drawing-transparent.png"
             alt="Purely Istanbul — Nothing but Istanbul"

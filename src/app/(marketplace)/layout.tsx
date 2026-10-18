@@ -15,8 +15,7 @@ export default function MarketplaceLayout({ children }: { children: React.ReactN
     <AuthProvider>
       <div className={`min-h-screen bg-sand-bg text-ink ${marketplaceFont.className}`}>
         <MarketplaceHeader />
-        {/* fixed header h-[84px] için içerik aşağıdan başlar */}
-        <div className="pt-[84px]">
+        <div>
           {children}
         </div>
         <MarketplaceFooter />

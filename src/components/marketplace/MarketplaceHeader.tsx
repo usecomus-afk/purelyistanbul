@@ -32,32 +32,32 @@ export function MarketplaceHeader() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 pt-[max(0.2rem,env(safe-area-inset-top))] ${
+      className={`sticky top-0 inset-x-0 z-40 w-full transition-all duration-300 pt-[max(0.15rem,env(safe-area-inset-top))] ${
         scrolled
-          ? "bg-sand-bg/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(11,25,44,0.08)]"
-          : "bg-sand-bg/85 backdrop-blur-sm border-b border-sand-border/40"
+          ? "bg-sand-bg/98 backdrop-blur-md shadow-[0_1px_0_0_rgba(11,25,44,0.08)]"
+          : "bg-sand-bg border-b border-sand-border/50"
       }`}
     >
-      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-12 h-[76px] sm:h-[80px] gap-4">
-        <BrandMark href="/" theme="light" className="shrink-0" />
+      <div className="w-full flex items-center justify-between px-4 sm:px-6 lg:px-10 h-[72px] gap-3">
+        <BrandMark href="/" size={38} showIcon={true} showText={true} theme="light" className="shrink-0" />
 
-        <nav className="ml-auto flex items-center justify-end gap-1 sm:gap-1.5 lg:gap-2 shrink-0">
-          <div className="hidden md:flex items-center gap-0.5 lg:gap-1 mr-1 lg:mr-2">
+        <nav className="ml-auto flex items-center justify-end gap-1 sm:gap-1.5 shrink-0">
+          <div className="hidden md:flex items-center justify-end gap-0.5 lg:gap-1">
             <Link
               href="/our-philosophy"
-              className="hidden lg:inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+              className="hidden lg:inline-flex text-[12.5px] font-medium text-ink/90 hover:text-ink px-2.5 py-1.5 rounded-full hover:bg-white/90 transition whitespace-nowrap"
             >
               Our Philosophy
             </Link>
             <Link
               href="/marketplace/partner/extranet"
-              className="hidden xl:inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+              className="hidden xl:inline-flex text-[12.5px] font-medium text-ink/90 hover:text-ink px-2.5 py-1.5 rounded-full hover:bg-white/90 transition whitespace-nowrap"
             >
               For Boutique Hotels
             </Link>
             <Link
               href="/istanbul-tourist-guide"
-              className="inline-flex text-[13px] font-medium text-ink/90 hover:text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
+              className="inline-flex text-[12.5px] font-medium text-ink/90 hover:text-ink px-2.5 py-1.5 rounded-full hover:bg-white/90 transition whitespace-nowrap"
             >
               Istanbul Guide
             </Link>
@@ -66,19 +66,10 @@ export function MarketplaceHeader() {
           {hotelSession && (
             <Link
               href={`/stay/${hotelSession.hotelId}/${hotelSession.roomId}`}
-              className="inline-flex items-center gap-1.5 text-[11px] sm:text-[12.5px] font-semibold text-amber-900 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 px-3 py-1.5 rounded-full transition shadow-2xs shrink-0"
+              className="inline-flex items-center gap-1 text-[11px] sm:text-[12px] font-semibold text-amber-900 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 px-2.5 py-1 rounded-full transition shadow-2xs shrink-0 whitespace-nowrap"
             >
-              <span className="hidden sm:inline">Return to Room</span>
-              <span className="font-mono text-amber-950 font-bold">(Room {hotelSession.roomId})</span>
-            </Link>
-          )}
-
-          {profile?.roles.host && (
-            <Link
-              href="/marketplace/host/listings"
-              className="hidden sm:inline-flex text-[13px] font-medium text-ink px-3 py-1.5 rounded-full hover:bg-white/80 transition whitespace-nowrap"
-            >
-              Partner Listings
+              <span className="hidden xl:inline">Return to Room</span>
+              <span className="font-mono text-amber-950 font-bold">#{hotelSession.roomId}</span>
             </Link>
           )}
 
@@ -86,9 +77,9 @@ export function MarketplaceHeader() {
             <Link
               href="/marketplace/favorites"
               aria-label="Saved Experiences"
-              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/80 transition text-ink"
+              className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/90 transition text-ink"
             >
-              <Heart className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              <Heart className="w-[17px] h-[17px]" strokeWidth={1.75} />
             </Link>
           )}
 
