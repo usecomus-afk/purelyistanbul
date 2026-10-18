@@ -571,13 +571,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {/* TAB 4: Practical Info & Ombudsman (Rehber & Haklar) */}
         {activeTab === 'practical' && (
           <div className="space-y-4">
-            <div className="px-1">
-              <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
-                {t.practicalTitle}
-              </h2>
-              <p className="font-luxury-sans text-xs text-[#5C4938]">{t.practicalSubtitle}</p>
-            </div>
-
             {/* Xenios Fair Shopping Policy & Misafir Kalkanı Component */}
             <FairShoppingPolicy lang={lang} />
           </div>

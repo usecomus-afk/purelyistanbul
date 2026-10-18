@@ -121,12 +121,12 @@ export default function HotelPortalDashboard() {
               </span>
             )}
 
-            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 relative">
-              <LuxuryPortalIcon id={mod.id} className="w-[52px] h-[52px] sm:w-[60px] sm:h-[60px]" />
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
+              <LuxuryPortalIcon id={mod.id} className="w-[78px] h-[78px] sm:w-24 sm:h-24" />
             </div>
 
-            <div className="w-full">
-              <span className="font-luxury-sans text-[12.5px] sm:text-[13.5px] font-medium text-[#1A1A1A] tracking-[-0.01em] leading-[1.22] block px-1 line-clamp-2">
+            <div className="w-full px-1">
+              <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#141414] leading-[1.18] block line-clamp-2">
                 {mod.title}
               </span>
             </div>

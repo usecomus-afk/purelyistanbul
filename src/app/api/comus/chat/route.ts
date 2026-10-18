@@ -25,19 +25,22 @@ export interface PropertyLiveContext {
 
 /**
  * Base System Instruction for Comus (temperature: 0.35, maxOutputTokens: 350)
- * NEVER introduce as "ComusAI" — always "Ben Comus" or "I am Comus".
+ * Comus already introduces himself in the first welcome message; never repeat "Ben Comus" / "I am Comus" in follow-up replies.
  */
-export const COMUS_SYSTEM_INSTRUCTION = `You are Comus, the local guardian, host, and companion of Istanbul, exclusively serving guests staying at Purely Istanbul partner properties.
+export const COMUS_SYSTEM_INSTRUCTION = `You are Comus, the dedicated digital stay and city assistant for guests who have traveled from their home countries to visit Istanbul and are staying at Purely Istanbul partner properties.
+Your core mission: Assist international and domestic guests throughout their stay in Istanbul—helping with their in-accommodation requests and providing practical, reliable guidance on getting around the city, local routes, and dining spots.
 
-NAME & VOICE RULES:
-- NEVER introduce yourself as "ComusAI". Always say "Ben Comus" or "I am Comus".
-- Character: Street-smart, warm, protective, respectful, and culturally deep. Treat the traveler as "Tanrı Misafiri" (honored guest).
-- Language: Automatically detect user language and reply fluently in the EXACT SAME LANGUAGE they speak.
+NAME, PURPOSE & CONVERSATION CONTINUITY RULES (CRITICAL):
+- NEVER use the name "ComusAI" (your name is simply "Comus").
+- NO REPEATED SELF-INTRODUCTION: You have ALREADY introduced yourself ("Ben Comus" / "I am Comus") in the first welcome message when the chat opened. In the 2nd and all subsequent messages, NEVER start your reply with "Ben Comus", "Merhaba, ben Comus", "I am Comus", "Hello, I am Comus", or any self-introduction! Jump directly, warmly, and naturally into answering the guest's question or fulfilling their request. Only state your name if the guest explicitly asks who you are.
+- REALISTIC & SENSIBLE TONE (CRITICAL): Always make realistic, modest, and sensible statements. NEVER make exaggerated or unrealistic claims such as "şehrin sokaklarında güvenliğiniz için buradayım" ("I am here for your safety on the streets of the city"), "100% guarantee", or acting as a physical bodyguard/guardian. Frame your help practically: assisting with accommodation requests, route planning, official taxi fare calculations, and practical local tips.
+- Character: Warm, hospitable, helpful, respectful, and knowledgeable about Istanbul.
+- Language: Automatically detect the guest's language and reply fluently in the EXACT SAME LANGUAGE they speak.
 
 1. DYNAMIC PROPERTY AWARENESS (NO RIGID "ODA" WORDING):
 - If propertyType === "apartment": Address the accommodation as "süitiniz", "daireniz" or "konaklamanız" (in your suite / apartment). NEVER use "otel odası" or "hotel room".
 - If propertyType === "hotel": Use "odanız" or "otelimiz" (your room / our hotel).
-- Mention the property name naturally: "Burada, [propertyName]'de kaldığınız süre boyunca..."
+- Mention the property name naturally when relevant: "[propertyName]'deki konaklamanız boyunca..."
 
 2. REAL-TIME INVENTORY & TOGGLE ENFORCEMENT (CRITICAL):
 - ALWAYS check activeServices in the [LIVE PROPERTY SNAPSHOT] before recommending in-stay comfort.
@@ -45,14 +48,9 @@ NAME & VOICE RULES:
 - If a guest asks for an inactive or closed service (e.g. asks for breakfast at 14:00 or dry cleaning on Sunday when disabled), politely explain the current status:
   "Şu an dairenize kahvaltı servis saatimiz (08:00 - 11:30) sona erdi; ancak yakınınızda harika bir yerel fırın/kafe önerebilirim veya yarın sabah için siparişinizi şimdiden oluşturabilirim."
 
-3. FIRST WELCOME MESSAGE ADAPTATION:
-Generate the first opening message dynamically according to the property type:
-- For Boutique Hotels (propertyType === "hotel"):
-"İstanbul’a ve [propertyName]’e hoş geldiniz! Ben Comus. 🕌
-Kaldığınız süre boyunca hem otel içi konforunuz hem de şehrin sokaklarında güvenliğiniz için buradayım. Resepsiyon ve oda içi hizmetlerden şehirdeki gizli lezzet duraklarına kadar her an yanınızdayım. Bugün sizin için ne yapabilirim?"
-- For PMCs / Apartments (propertyType === "apartment"):
-"İstanbul’a ve [propertyName]’deki süitinize hoş geldiniz! Ben Comus. 🕌
-Bu özel dairede kendinizi evinizde hissetmeniz ve İstanbul'u bir turist gibi değil, gerçek bir misafir gibi güvenle yaşamanız için buradayım. Daire içi ihtiyaçlarınızdan (kapıya kahvaltı, temizlik, teknik destek) şehirdeki taksi ve rota rehberliğine kadar 7/24 hizmetinizdeyim. Bugün nasıl yardımcı olabilirim?"
+3. CONTINUOUS STAY ASSISTANCE (FROM 2ND MESSAGE ONWARD):
+- The opening welcome message has already been displayed to the guest in the chat interface.
+- Respond directly to the guest's inquiry as an ongoing conversation without re-introducing yourself or repeating the welcome greeting.
 
 4. LIVE SERVICES KNOWLEDGE BASE & FUNCTION CALLING:
 When the guest requests any in-stay service:
@@ -63,8 +61,8 @@ When the guest requests any in-stay service:
    - Maintenance: [action:in_stay, service:maintenance, unit:unitName]
 3. If inactive (listed in disabledServices or isAvailableNow === false): Do NOT emit action tag; provide a friendly alternative.
 
-5. TAXI, SCAM SHIELD & VERIFIED CURATION:
-- When asked about prices, taxis, or street safety, provide exact local norms via \`checkTaxiFare\`. Warn against meter-swapping, banknote hand-tricks, and aggressive club/bar invitations.
+5. PRACTICAL TAXI TIPS & VERIFIED CURATION:
+- When asked about prices, taxis, or common tourist traps, provide official local norms via \`checkTaxiFare\` and practical tips (e.g. checking that the taximeter is turned on and checking banknote denominations).
 - Only recommend locations from the curated 4 districts (Fatih, Beyoğlu, Beşiktaş, Kadıköy) via \`searchVerifiedPlaces\`. Never hallucinate unverified businesses or fake entry fees.
 - Append relevant deep-link tags for booking verified city experiences:
   - [action:explore_category, id:bosphorus]
@@ -1108,22 +1106,22 @@ async function buildToolGroundedResponse(
     q.includes('dolandır')
   ) {
     if (isTurkish) {
-      return `Ben Comus. Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca ${unitWordTr} ve İstanbul sokaklarında bir **Tanrı Misafiri** olarak huzurla gezmeniz için dikkat etmeniz gereken 4 temel kural:
+      return `**${liveContext.propertyName}**'deki konaklamanız boyunca şehirde karşılaşabileceğiniz yaygın turist tuzaklarına karşı işinize yarayacak 4 pratik ipucu:
 
-• **Taksimetre & Banknot Hilesi:** İBB UKOME resmi tarifesine göre taksi açılışı **30 TL**, km başı **20 TL**, indi-bindi (minimum) **100 TL**'dir. Taksimetre açmayan veya 200/500 TL banknotunuzu el çabukluğuyla 20/50 TL ile değiştirmeye çalışanlara karşı parayı sesli söyleyerek verin.
-• **"Yere Fırça Düşüren" Ayakkabı Boyacısı:** Galata, Karaköy veya Eminönü'nde önünüzde yürürken fırçasını düşüren boyacıyı uyarsanız, "teşekkür" bahanesiyle ayakkabınızı boyayıp fahiş ücret ister. Gülümseyip geçin.
-• **İstiklal / Taksim Gece Kulübü Davetleri:** Sokakta yanınıza yaklaşıp "beraber bir içki içelim" diyen kişilerin götürdüğü mekana asla girmeyin (binlerce Euro hesap tuzağıdır).
-• **Fiyatsız Menü & Kuver:** Restorana oturmadan önce mutlaka fiyatlı menüyü görün; sadece **Fatih, Beyoğlu, Beşiktaş ve Kadıköy**'deki doğrulanmış noktalarımızı tercih edin.
+• **Taksimetre & Banknot Kontrolü:** İBB UKOME resmi tarifesine göre taksi açılışı **30 TL**, km başı **20 TL**, indi-bindi (minimum) **100 TL**'dir. Taksimetrenin açıldığından emin olun ve 200/500 TL gibi yüksek banknot verirken tutarı sesli belirtin.
+• **"Yere Fırça Düşüren" Ayakkabı Boyacısı:** Galata, Karaköy veya Eminönü'nde önünüzde yürürken fırçasını düşüren boyacıyı uyarsanız, "teşekkür" bahanesiyle ayakkabınızı boyayıp yüksek ücret talep edebilir. Teşekkür edip yolunuza devam edin.
+• **İstiklal / Taksim Gece Kulübü Davetleri:** Sokakta yanınıza yaklaşıp "beraber bir şeyler içelim" diyen yabancıların yönlendirdiği mekanlara girmeyin (fahiş hesap tuzağıdır).
+• **Fiyatlı Menü Kontrolü:** Restorana oturmadan önce mutlaka fiyatları yazılı menüyü inceleyin; **Fatih, Beyoğlu, Beşiktaş ve Kadıköy**'deki önerdiğimiz yerel mekanları tercih edebilirsiniz.
 
 [action:explore_category, id:culinary]`;
     }
 
-    return `I am Comus, your local Istanbul guardian. Throughout your stay here at **${liveContext.propertyName}** (${liveContext.unitName}), watch out for these 4 common street tricks:
+    return `During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), here are 4 practical tips to avoid common tourist traps in Istanbul:
 
-• **Taxi Meter & Banknote Switch:** Official İBB UKOME rates are **30 TL opening**, **20 TL/km**, and **100 TL minimum fare**. Never accept a "flat rate" with the meter off, and announce your banknote value out loud when handing over **200 TL or 500 TL** so drivers cannot swap it for a 20/50 TL note.
-• **Dropped Shoe-Shiner Brush:** Around Galata Bridge or Sultanahmet, if a shoe-shiner "accidentally" drops his brush in front of you, do not accept his "free thank-you shine"—it ends with an aggressive demand for cash.
-• **Overly Friendly Bar/Club Invites:** Never follow strangers in Taksim/Beyoğlu inviting you for a "quick drink"—this is a classic bill-padding trap.
-• **No-Price Menus:** Only dine where printed prices are clear, or stick to our vetted spots in **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**.
+• **Taxi Meter & Banknote Check:** Official İBB UKOME rates are **30 TL opening**, **20 TL/km**, and **100 TL minimum fare**. Make sure the meter is turned on, and state the value of **200 TL or 500 TL** banknotes out loud when paying in cash.
+• **Dropped Shoe-Shiner Brush:** Around Galata Bridge or Sultanahmet, if a shoe-shiner drops his brush in front of you, politely decline any "free thank-you shine" as they will ask for a high fee afterward.
+• **Unsolicited Bar/Club Invites:** Avoid following strangers in Taksim/Beyoğlu who invite you for a "quick drink"—this is a common overcharging scheme.
+• **Check Printed Menus:** Always ask for a menu with clearly printed prices before ordering, or choose from our recommended spots in **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**.
 
 [action:explore_category, id:culinary]`;
   }
@@ -1157,22 +1155,22 @@ async function buildToolGroundedResponse(
     const fare = checkTaxiFare({ origin: originMatch, destination: destMatch });
 
     if (isTurkish) {
-      return `Ben Comus. **${liveContext.propertyName}** (${liveContext.unitName}) konaklamanızdan resmi **İBB UKOME** taksi tarifesine göre (**Açılış: ${fare.ukomeTariff.openingTL} TL**, **Km Başı: ${fare.ukomeTariff.perKmTL} TL**, **İndi-Bindi Min: ${fare.ukomeTariff.minFareTL} TL**) hesaplamam:
+      return `**${liveContext.propertyName}** (${liveContext.unitName}) konaklamanızdan resmi **İBB UKOME** taksi tarifesine göre (**Açılış: ${fare.ukomeTariff.openingTL} TL**, **Km Başı: ${fare.ukomeTariff.perKmTL} TL**, **İndi-Bindi Min: ${fare.ukomeTariff.minFareTL} TL**) tahmini ücret:
 
 • **Rota & Mesafe:** ${fare.origin} → ${fare.destination} (~${fare.estimatedDistanceKm} km)
-• **Resmi Taksimetre Tutarı:** **${fare.estimatedFareTL.formatted}** (Yaklaşık **${fare.estimatedFareEUR.formatted}**)
+• **Tahmini Taksimetre Tutarı:** **${fare.estimatedFareTL.formatted}** (Yaklaşık **${fare.estimatedFareEUR.formatted}**)
 • **Geçiş Notu:** ${fare.tollsNote}
-• **Koruma Kuralım:** Taksimetre açmayan ("sabit fiyat" isteyen) araçlara binmeyin ve 200/500 TL banknot uzatırken tutarı sesli belirtin. Sabit fiyatlı, lisanslı VIP transfer isterseniz aşağıdan anında seçebilirsiniz.
+• **Pratik İpucu:** Binmeden önce taksimetrenin açıldığını kontrol edin. Sabit fiyatlı, lisanslı VIP transfer tercih ederseniz aşağıdan inceleyebilirsiniz.
 
 ${fare.actionTag}`;
     }
 
-    return `I am Comus. From **${liveContext.propertyName}** (${liveContext.unitName}), using official **İBB UKOME** metered taxi rates (**Opening: ${fare.ukomeTariff.openingTL} TL**, **Per Km: ${fare.ukomeTariff.perKmTL} TL**, **Minimum Fare: ${fare.ukomeTariff.minFareTL} TL**):
+    return `From **${liveContext.propertyName}** (${liveContext.unitName}), based on official **İBB UKOME** metered taxi rates (**Opening: ${fare.ukomeTariff.openingTL} TL**, **Per Km: ${fare.ukomeTariff.perKmTL} TL**, **Minimum Fare: ${fare.ukomeTariff.minFareTL} TL**):
 
 • **Route & Distance:** ${fare.origin} → ${fare.destination} (~${fare.estimatedDistanceKm} km)
-• **Official Metered Fare:** **${fare.estimatedFareTL.formatted}** (Approx. **${fare.estimatedFareEUR.formatted}**)
+• **Estimated Metered Fare:** **${fare.estimatedFareTL.formatted}** (Approx. **${fare.estimatedFareEUR.formatted}**)
 • **Toll Note:** ${fare.tollsNote}
-• **Guardian Rule:** Always insist on the digital meter (*taksimetre*) starting at 30 TL, and announce high banknotes (200/500 TL) out loud to prevent bill-swapping.
+• **Practical Tip:** Make sure the digital meter (*taksimetre*) is turned on when starting the ride, and state large banknotes (200/500 TL) out loud when paying.
 
 ${fare.actionTag}`;
   }
@@ -1227,9 +1225,9 @@ ${fare.actionTag}`;
           const hrs = availability.hours || '08:00 - 11:30';
           return availability.isActive
             ? `Şu an ${unitTargetTr} kahvaltı servis saatimiz (**${hrs}**) sona erdi; ancak **${liveContext.propertyName}** yakınında harika bir yerel fırın/kafe (**${topSpot}**) önerebilirim veya yarın sabah için siparişinizi şimdiden oluşturabilirim.`
-            : `Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca ${unitTargetTr} doğrudan kahvaltı servisimiz şu an kapalıdır; ancak yürüme mesafenizdeki **${topSpot}** gibi doğrulanmış yerel kahvaltı duraklarımızı önerebilirim.`;
+            : `**${liveContext.propertyName}**'deki konaklamanız boyunca ${unitTargetTr} doğrudan kahvaltı servisimiz şu an kapalıdır; ancak yürüme mesafenizdeki **${topSpot}** gibi doğrulanmış yerel kahvaltı duraklarımızı önerebilirim.`;
         }
-        return `Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca **${availability.title}** hizmetimiz şu an aktif saatleri dışındadır veya geçici olarak kapalıdır (${availability.hours || 'Kapalı'}). Dilerseniz yarın için planlayabilir veya yakınınızdaki doğrulanmış yerel noktalarımız konusunda yardımcı olabilirim.`;
+        return `**${liveContext.propertyName}**'deki konaklamanız boyunca **${availability.title}** hizmetimiz şu an aktif saatleri dışındadır veya geçici olarak kapalıdır (${availability.hours || 'Kapalı'}). Dilerseniz yarın için planlayabilir veya yakınınızdaki doğrulanmış yerel noktalarımız konusunda yardımcı olabilirim.`;
       }
 
       if (requestedService === 'breakfast') {
@@ -1252,7 +1250,7 @@ ${fare.actionTag}`;
     });
 
     if (isTurkish) {
-      return `Ben Comus. Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca ${unitWordTr} konforunuz için talebinizi (**${ticket.ticketId}**) yönetim ekibimize ilettim:
+      return `**${liveContext.propertyName}**'deki konaklamanız boyunca ${unitWordTr} konforunuz için talebinizi (**${ticket.ticketId}**) yönetim ekibimize ilettim:
 
 • **Konaklama Birimi:** ${liveContext.unitName}
 • **Hizmet Türü:** ${availability.title}${availability.hours ? ` (${availability.hours})` : ''}
@@ -1261,7 +1259,7 @@ ${fare.actionTag}`;
 ${ticket.actionTag}`;
     }
 
-    return `I am Comus. Throughout your stay at **${liveContext.propertyName}**, I have prepared your priority request (**${ticket.ticketId}**) for ${unitWordEn}:
+    return `Throughout your stay at **${liveContext.propertyName}**, I have prepared your priority request (**${ticket.ticketId}**) for ${unitWordEn}:
 
 • **Unit:** ${liveContext.unitName}
 • **Service Requested:** ${availability.title}${availability.hours ? ` (${availability.hours})` : ''}
@@ -1279,7 +1277,7 @@ ${ticket.actionTag}`;
   ) {
     const verified = searchVerifiedPlaces({ preference: 'route' });
     if (isTurkish) {
-      return `Ben Comus. Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca turist kalabalıklarına girmeden, doğrulanmış 4 bölgemizi (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**) kapsayan bugünkü yerel rotanız:
+      return `**${liveContext.propertyName}**'deki konaklamanız boyunca turist kalabalıklarına girmeden, doğrulanmış 4 bölgemizi (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**) kapsayan bugünkü yerel rotanız:
 
 • **Sabah (Beyoğlu / Cihangir & Galata):** Güne **Van Kahvaltı Evi**'nde (Cihangir) gerçek serpme kahvaltıyla başlayın, ardından **Serdar-ı Ekrem Sokak** ve **Kamondo Merdivenleri**'nden Karaköy'e yürüyün.
 • **Öğle (Fatih / Tarihi Yarımada):** T1 tramvayıyla Sirkeci'ye geçip **Şehzade Cağ Kebap** veya **Tarihi Sultanahmet Köftecisi (1920)**'nde öğle yemeği yiyin; **Büyük Valide Han** avlusunda közde çay molası verin.
@@ -1288,7 +1286,7 @@ ${ticket.actionTag}`;
 [action:explore_category, id:bosphorus]`;
     }
 
-    return `I am Comus. From **${liveContext.propertyName}** (${liveContext.unitName}), here is your crowd-free, authentic full-day Istanbul itinerary across our 4 verified districts (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**):
+    return `From **${liveContext.propertyName}** (${liveContext.unitName}), here is your crowd-free, authentic full-day Istanbul itinerary across our 4 verified districts (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**):
 
 • **Morning (Beyoğlu — Cihangir & Galata):** Start with an artisanal spread at **Van Kahvaltı Evi**, then stroll down **Serdar-ı Ekrem Street** and the historic **Camondo Stairs** to Karaköy (${verified.matches.length} vetted spots nearby).
 • **Midday (Fatih — Historic Peninsula):** Ride the T1 tram to Sirkeci for lunch at **Şehzade Cağ Kebap** or **Tarihi Sultanahmet Köftecisi (1920)**, followed by hidden-courtyard tea at **Büyük Valide Han**.
@@ -1329,11 +1327,11 @@ ${ticket.actionTag}`;
       )
       .join('\n');
 
-    return `Ben Comus. Burada, **${liveContext.propertyName}**'de kaldığınız süre boyunca sadece doğrulanmış 4 bölgemizden (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**) seçtiğim, sıfır turist tuzağı garantili otantik önerilerim:
+    return `**${liveContext.propertyName}**'deki konaklamanız boyunca **Fatih, Beyoğlu, Beşiktaş ve Kadıköy** bölgelerinden seçtiğim yerel mekan önerilerim:
 
 ${bulletLines}
 
-• **Comus Koruma Notu:** Sokakta menüsüz davet yapan hanutçulara itibar etmeyin; önerdiğim tüm noktalar şeffaf fiyatlı yerel klasiklerdir.
+• **Pratik Not:** Önerdiğim bu mekanlar şeffaf menü ve yerel fiyatlarla hizmet veren bilinen noktalardır.
 
 ${verifiedResult.recommendedActionTag}`;
   }
@@ -1345,11 +1343,11 @@ ${verifiedResult.recommendedActionTag}`;
     )
     .join('\n');
 
-  return `I am Comus. During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), here are my verified, scam-free local recommendations strictly curated from **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**:
+  return `During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), here are my local recommendations curated from **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**:
 
 ${bulletLinesEn}
 
-• **Guardian Note:** Every spot above operates with transparent printed local prices—never follow street touts into unverified venues.
+• **Helpful Tip:** All spots above operate with clear printed menus and standard local prices.
 
 ${verifiedResult.recommendedActionTag}`;
 }

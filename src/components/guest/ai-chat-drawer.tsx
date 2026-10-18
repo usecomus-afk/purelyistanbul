@@ -104,50 +104,50 @@ export function buildDynamicWelcomeMessage(
     case 'tr':
       if (isApt) {
         return `İstanbul’a ve ${propertyName}’deki süitinize hoş geldiniz! Ben Comus. 🕌
-Bu özel dairede kendinizi evinizde hissetmeniz ve İstanbul'u bir turist gibi değil, gerçek bir misafir gibi güvenle yaşamanız için buradayım. Daire içi ihtiyaçlarınızdan (kapıya kahvaltı, temizlik, teknik destek) şehirdeki taksi ve rota rehberliğine kadar 7/24 hizmetinizdeyim. Bugün nasıl yardımcı olabilirim?`;
+Konaklamanız boyunca daire içi taleplerinizde (kahvaltı, temizlik, teknik destek) ve İstanbul’daki ulaşım, rota ve mekan önerilerinde size yardımcı olmak için buradayım. Bugün sizin için ne yapabilirim?`;
       }
       return `İstanbul’a ve ${propertyName}’e hoş geldiniz! Ben Comus. 🕌
-Kaldığınız süre boyunca hem otel içi konforunuz hem de şehrin sokaklarında güvenliğiniz için buradayım. Resepsiyon ve oda içi hizmetlerden şehirdeki gizli lezzet duraklarına kadar her an yanınızdayım. Bugün sizin için ne yapabilirim?`;
+Konaklamanız boyunca hem otel içi taleplerinizde hem de İstanbul’u keşfederken ihtiyaç duyacağınız ulaşım, rota ve yerel mekan önerilerinde size yardımcı olmak için buradayım. Bugün sizin için ne yapabilirim?`;
 
     case 'en':
       if (isApt) {
         return `Welcome to Istanbul and to your suite at ${propertyName}! I am Comus. 🕌
-I am here so you feel right at home in this private apartment and experience Istanbul safely—not like a tourist, but like a true guest. From your in-suite needs (doorstep breakfast, housekeeping, technical support) to city taxi fares and route guidance, I am at your service 24/7. How may I help you today?`;
+I am here to assist you throughout your stay with your in-suite requests (breakfast, housekeeping, technical support) as well as practical city routes, transport tips, and local dining recommendations. How can I help you today?`;
       }
       return `Welcome to Istanbul and ${propertyName}! I am Comus. 🕌
-Throughout your stay, I am here for both your in-hotel comfort and your safety on the streets of the city. From reception and in-room services to hidden culinary gems across the city, I am by your side at every moment. What can I do for you today?`;
+I am here to assist you throughout your stay with both your in-hotel requests and practical recommendations for getting around Istanbul, local routes, and dining spots. How can I help you today?`;
 
     case 'ar':
       if (isApt) {
-        return `أهلاً بك في إسطنبول وفي جناحك الخاص في ${propertyName}! أنا Comus. 🕌
-أنا هنا لتشعر وكأنك في منزلك داخل هذه الشقة الخاصة ولتعيش إسطنبول بأمان كضيف حقيقي وليس كسائح. من احتياجات شقتك (إفطار عند الباب، تنظيف، دعم فني) إلى أسعار التاكسي ومسارات المدينة، أنا في خدمتك 24/7. كيف يمكنني مساعدتك اليوم؟`;
+        return `أهلاً بك في إسطنبول وفي جناحك في ${propertyName}! أنا Comus. 🕌
+أنا هنا لمساعدتك طوال فترة إقامتك في طلبات الجناح (الإفطار، التنظيف، الدعم الفني) بالإضافة إلى معلومات المواصلات والمسارات وتوصيات الأماكن المحلية في إسطنبول. كيف يمكنني مساعدتك اليوم؟`;
       }
       return `أهلاً بك في إسطنبول وفي ${propertyName}! أنا Comus. 🕌
-طوال فترة إقامتك، أنا هنا من أجل راحتك داخل الفندق وأمانك في شوارع المدينة. من الاستقبال وخدمات الغرف إلى الوجهات المحلية المخفية، أنا بجانبك في كل لحظة. ماذا يمكنني أن أفعل من أجلك اليوم؟`;
+أنا هنا لمساعدتك طوال فترة إقامتك سواء في خدمات الفندق والغرف أو في اقتراح المسارات والمواصلات والمطاعم المحلية لاكتشاف إسطنبول بسهولة. كيف يمكنني مساعدتك اليوم؟`;
 
     case 'ru':
       if (isApt) {
         return `Добро пожаловать в Стамбул и в ваши апартаменты в ${propertyName}! Я Comus. 🕌
-Я здесь, чтобы в этих частных апартаментах вы чувствовали себя как дома и прожили Стамбул безопасно — не как турист, а как дорогой гость. От ваших потребностей в апартаментах (завтрак к двери, уборка, техподдержка) до расчета такси и маршрутов по городу — я к вашим услугам 24/7. Чем я могу помочь вам сегодня?`;
+Я здесь, чтобы помогать вам на протяжении всего проживания: от запросов по апартаментам (завтрак, уборка, техподдержка) до удобных маршрутов по городу, информации о транспорте и рекомендаций местных заведений. Чем я могу помочь вам сегодня?`;
       }
       return `Добро пожаловать в Стамбул и в ${propertyName}! Я Comus. 🕌
-На протяжении всего вашего пребывания я забочусь о вашем комфорте в отеле и вашей безопасности на улицах города. От ресепшена и обслуживания в номере до скрытых гастрономических мест — я рядом в любой момент. Что я могу сделать для вас сегодня?`;
+Я здесь, чтобы помогать вам на протяжении всего проживания как с услугами в отеле, так и с маршрутами по городу, транспортом и рекомендациями проверенных местных заведений. Чем я могу помочь вам сегодня?`;
 
     case 'de':
       if (isApt) {
         return `Willkommen in Istanbul und in Ihrer Suite im ${propertyName}! Ich bin Comus. 🕌
-Ich bin hier, damit Sie sich in diesem privaten Apartment wie zu Hause fühlen und Istanbul sicher wie ein echter Gast erleben. Von Ihren Wünschen im Apartment (Frühstück an die Tür, Reinigung, technischer Support) bis zu Taxitarifen und Routenführung in der Stadt bin ich 24/7 für Sie da. Wie kann ich Ihnen heute helfen?`;
+Ich bin während Ihres gesamten Aufenthalts für Sie da – sowohl für Ihre Anliegen in der Suite (Frühstück, Reinigung, technischer Support) als auch für praktische Routen, Verkehrstipps und lokale Empfehlungen in Istanbul. Wie kann ich Ihnen heute helfen?`;
       }
       return `Willkommen in Istanbul und im ${propertyName}! Ich bin Comus. 🕌
-Während Ihres gesamten Aufenthalts bin ich sowohl für Ihren Komfort im Hotel als auch für Ihre Sicherheit auf den Straßen der Stadt da. Von der Rezeption und dem Zimmerservice bis zu versteckten kulinarischen Orten stehe ich Ihnen jederzeit zur Seite. Was kann ich heute für Sie tun?`;
+Ich unterstütze Sie während Ihres gesamten Aufenthalts bei Ihren Wünschen im Hotel sowie mit praktischen Tipps zu Routen, öffentlichen Verkehrsmitteln und lokalen Restaurants in Istanbul. Wie kann ich Ihnen heute helfen?`;
 
     case 'fr':
       if (isApt) {
         return `Bienvenue à Istanbul et dans votre suite au ${propertyName} ! Je suis Comus. 🕌
-Je suis là pour que vous vous sentiez comme chez vous dans cet appartement privé et que vous viviez Istanbul en toute sécurité, non pas comme un touriste, mais comme un véritable invité. De vos besoins en suite (petit-déjeuner à la porte, ménage, assistance technique) aux tarifs de taxi et itinéraires en ville, je suis à votre service 24h/24 et 7j/7. Comment puis-je vous aider aujourd’hui ?`;
+Je suis à votre disposition tout au long de votre séjour pour vos demandes en suite (petit-déjeuner, ménage, assistance technique) ainsi que pour vous conseiller sur vos itinéraires, les transports et les bonnes adresses locales à Istanbul. Comment puis-je vous aider aujourd’hui ?`;
       }
       return `Bienvenue à Istanbul et au ${propertyName} ! Je suis Comus. 🕌
-Tout au long de votre séjour, je veille aussi bien à votre confort au sein de l’hôtel qu’à votre sécurité dans les rues de la ville. De la réception et des services en chambre jusqu’aux adresses secrètes de la ville, je suis à vos côtés à chaque instant. Que puis-je faire pour vous aujourd’hui ?`;
+Je suis à votre disposition tout au long de votre séjour pour vos demandes au sein de l’hôtel ainsi que pour vous orienter dans Istanbul (itinéraires, transports et adresses locales). Comment puis-je vous aider aujourd’hui ?`;
 
     default:
       return `Welcome to Istanbul and ${propertyName}! I am Comus. 🕌`;
@@ -254,8 +254,8 @@ const COMUS_I18N: Record<
   }
 > = {
   tr: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'Çevrimiçi • Yerel Dostunuz',
+    headerTitle: 'Comus • Konaklama & Şehir Asistanı',
+    statusBadge: 'Çevrimiçi • Dijital Asistanınız',
     suiteLabelHotel: 'Oda',
     suiteLabelApartment: 'Süit',
     resetBtn: 'Sıfırla',
@@ -326,8 +326,8 @@ const COMUS_I18N: Record<
     },
   },
   en: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'Online • Local Guardian',
+    headerTitle: 'Comus • Stay & City Assistant',
+    statusBadge: 'Online • Digital Concierge',
     suiteLabelHotel: 'Room',
     suiteLabelApartment: 'Suite',
     resetBtn: 'Reset',
@@ -365,8 +365,8 @@ const COMUS_I18N: Record<
     },
   },
   ar: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'متصل • حارسك المحلي',
+    headerTitle: 'Comus • مساعد الإقامة والمدينة',
+    statusBadge: 'متصل • المساعد الرقمي',
     suiteLabelHotel: 'غرفة',
     suiteLabelApartment: 'جناح',
     resetBtn: 'إعادة تعيين',
@@ -437,8 +437,8 @@ const COMUS_I18N: Record<
     },
   },
   ru: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'Онлайн • Ваш защитник и гид',
+    headerTitle: 'Comus • Ассистент по проживанию и городу',
+    statusBadge: 'Онлайн • Цифровой консьерж',
     suiteLabelHotel: 'Номер',
     suiteLabelApartment: 'Апартаменты',
     resetBtn: 'Сброс',
@@ -509,8 +509,8 @@ const COMUS_I18N: Record<
     },
   },
   de: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'Online • Lokaler Beschützer',
+    headerTitle: 'Comus • Aufenthalts- & Stadtassistent',
+    statusBadge: 'Online • Digitaler Concierge',
     suiteLabelHotel: 'Zimmer',
     suiteLabelApartment: 'Suite',
     resetBtn: 'Reset',
@@ -581,8 +581,8 @@ const COMUS_I18N: Record<
     },
   },
   fr: {
-    headerTitle: 'Comus • Local Guardian & Concierge',
-    statusBadge: 'En ligne • Gardien & Concierge',
+    headerTitle: 'Comus • Assistant Séjour & Ville',
+    statusBadge: 'En ligne • Concierge Digital',
     suiteLabelHotel: 'Chambre',
     suiteLabelApartment: 'Suite',
     resetBtn: 'Réinitialiser',
@@ -654,10 +654,20 @@ const COMUS_I18N: Record<
   },
 };
 
+export function stripRepeatedSelfIntro(text: string): string {
+  return text
+    .replace(
+      /^(?:Merhaba[!.,\s]+)?(?:Ben\s+Comus(?:\s*,\s*[^.!?\n]+)?|I\s+am\s+Comus(?:\s*,\s*[^.!?\n]+)?|I'm\s+Comus(?:\s*,\s*[^.!?\n]+)?)[.!?\s]+(?:Burada,\s*)?/i,
+      ''
+    )
+    .trim();
+}
+
 export function parseMessageAndActions(
   rawText: string,
   lang: Language = 'tr',
-  disabledServiceIds: string[] = []
+  disabledServiceIds: string[] = [],
+  isFollowUp: boolean = false
 ): {
   cleanText: string;
   parsedActions: ParsedComusAction[];
@@ -715,11 +725,13 @@ export function parseMessageAndActions(
 
   // Strip complete action tags and any partially-streamed trailing "[action:..." fragment,
   // and sanitize any legacy "ComusAI" string to "Comus".
-  const cleanText = rawText
+  const baseClean = rawText
     .replace(/ComusAI/gi, 'Comus')
     .replace(ACTION_TAG_REGEX, '')
     .replace(/\[action:[^\]]*$/g, '')
     .trim();
+
+  const cleanText = isFollowUp ? stripRepeatedSelfIntro(baseClean) : baseClean;
 
   return { cleanText, parsedActions };
 }
@@ -970,7 +982,7 @@ export function AiChatDrawer({
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const freshWelcome: ChatMessage = {
-      id: 'comus-welcome-v4',
+      id: 'comus-welcome-v5',
       sender: 'assistant',
       text: dynamicWelcomeText,
       time: ui.justNow,
@@ -984,7 +996,13 @@ export function AiChatDrawer({
       const normalized = saved.map((m, i) =>
         i === 0 && m.sender === 'assistant'
           ? freshWelcome
-          : { ...m, text: m.text.replace(/ComusAI/gi, 'Comus') }
+          : {
+              ...m,
+              text:
+                m.sender === 'assistant'
+                  ? stripRepeatedSelfIntro(m.text.replace(/ComusAI/gi, 'Comus'))
+                  : m.text.replace(/ComusAI/gi, 'Comus'),
+            }
       );
       XeniosStore.saveAiChatMessages(normalized);
       return normalized;
@@ -998,7 +1016,7 @@ export function AiChatDrawer({
       if (prev.length >= 1 && prev[0]?.sender === 'assistant') {
         const updatedFirst: ChatMessage = {
           ...prev[0],
-          id: 'comus-welcome-v4',
+          id: 'comus-welcome-v5',
           text: dynamicWelcomeText,
           time: ui.justNow,
         };
@@ -1469,7 +1487,7 @@ export function AiChatDrawer({
             const isUser = msg.sender === 'user';
             const { cleanText, parsedActions } = isUser
               ? { cleanText: msg.text, parsedActions: [] }
-              : parseMessageAndActions(msg.text, lang, disabledServiceIds);
+              : parseMessageAndActions(msg.text, lang, disabledServiceIds, msgIndex > 0);
 
             return (
               <div
