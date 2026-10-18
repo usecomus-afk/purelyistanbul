@@ -101,7 +101,10 @@ export function HotelHeader({
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-2">
         
         {/* Centered Logo/Name — Hotel Name ONLY on Hotel page; PURELY ISTANBUL on all other pages */}
-        <h1 className="font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5">
+        <h1
+          translate="no"
+          className="notranslate font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5"
+        >
           {isHotelServices ? (
             hotel.name.toUpperCase().endsWith(' ISTANBUL') ? (
               <>
@@ -113,7 +116,7 @@ export function HotelHeader({
               hotel.name
             )
           ) : (
-            'PURELY ISTANBUL'
+            <span translate="no" className="notranslate">PURELY ISTANBUL</span>
           )}
         </h1>
 

@@ -387,7 +387,7 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLa
               className="object-contain w-full h-full"
             />
           </div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 block">
+          <span translate="no" className="notranslate text-[10px] uppercase font-bold tracking-widest text-amber-700 block">
             purelyİstanbul
           </span>
           <h2 className="text-xl font-bold font-serif text-slate-900 ">

@@ -117,7 +117,7 @@ export function MarketplaceFooter() {
             <div className="text-[12px] sm:text-[12.5px] text-ink-muted leading-relaxed">
               <p className="font-semibold text-ink mb-1">Marketplace &amp; Fulfillment Notice:</p>
               <p>
-                Purely Istanbul is a curated marketplace and digital concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey).
+                <span translate="no" className="notranslate">Purely Istanbul</span> is a curated marketplace and digital concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey).
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export function MarketplaceFooter() {
 
           <div className="flex flex-col items-center md:items-start gap-1.5">
             <p className="text-[12px] text-ink-muted/80 tracking-wide text-center md:text-left">
-              © {new Date().getFullYear()} Purely Istanbul — Nothing but Istanbul.
+              © {new Date().getFullYear()} <span translate="no" className="notranslate">Purely Istanbul</span> — Nothing but Istanbul.
             </p>
             <span className="relative h-4 sm:h-5 w-16 sm:w-20 opacity-70 bg-transparent">
               <Image src="/comus-logo.png" alt="Powered by Comus" fill unoptimized className="object-contain" />
@@ -159,7 +159,7 @@ export function MarketplaceFooter() {
             </button>
 
             <h2 className="font-luxury-serif text-xl font-semibold tracking-tight text-ink mb-1">
-              Contact Purely Istanbul
+              Contact <span translate="no" className="notranslate">Purely Istanbul</span>
             </h2>
             <p className="text-sm text-ink-muted mb-5">
               Write to our Guest Care or Boutique Hotel Partnership team in Istanbul.

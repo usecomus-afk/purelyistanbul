@@ -269,7 +269,7 @@ export function MarketplaceHome() {
             Curated Istanbul Experiences &amp; Authentic Local Marketplace
           </p>
           <h1 className="font-luxury-serif text-xl sm:text-2xl md:text-3xl font-semibold text-ink tracking-tight">
-            Purely Istanbul — Nothing but Istanbul.
+            <span translate="no" className="notranslate">Purely Istanbul</span> — Nothing but Istanbul.
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted max-w-2xl mx-auto mt-1.5 leading-relaxed">
             Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul.
@@ -618,7 +618,7 @@ export function MarketplaceHome() {
 
           <div className="mt-8 pt-6 border-t border-sand-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <p className="text-xs sm:text-sm text-ink-muted">
-              Every partner on Purely Istanbul is pre-vetted for licensing, transparent local pricing, and genuine Turkish hospitality.
+              Every partner on <span translate="no" className="notranslate">Purely Istanbul</span> is pre-vetted for licensing, transparent local pricing, and genuine Turkish hospitality.
             </p>
           </div>
         </div>
@@ -633,7 +633,7 @@ export function MarketplaceHome() {
               About Us &amp; Brand Story
             </span>
             <h2 className="font-luxury-serif text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
-              Purely Istanbul — Nothing but Istanbul.
+              <span translate="no" className="notranslate">Purely Istanbul</span> — Nothing but Istanbul.
             </h2>
             <p className="mt-3 text-sm sm:text-base text-white/80 leading-relaxed">
               Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul&apos;s finest neighborhoods.
@@ -647,7 +647,7 @@ export function MarketplaceHome() {
               </div>
               <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">The Genesis</h3>
               <p className="text-[13.5px] text-white/75 leading-relaxed">
-                Created by proud Istanbul locals, Purely Istanbul was born to end predatory tourist traps and bridge discerning world travelers directly to the city&apos;s authentic heart.
+                Created by proud Istanbul locals, <span translate="no" className="notranslate">Purely Istanbul</span> was born to end predatory tourist traps and bridge discerning world travelers directly to the city&apos;s authentic heart.
               </p>
             </div>
 

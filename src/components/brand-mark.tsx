@@ -39,11 +39,15 @@ export function BrandMark({
         </div>
       )}
       {showText && (
-        <div className="flex flex-col leading-none">
-          <span className={`font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
-            theme === 'dark' ? 'text-white' : 'text-slate-900 '
-          }`}>
-            purely<span className="text-red-600 font-bold">istanbul</span>
+        <div translate="no" className="notranslate flex flex-col leading-none">
+          <span
+            translate="no"
+            className={`notranslate font-serif tracking-tight font-bold text-2xl sm:text-3xl leading-none ${
+              theme === 'dark' ? 'text-white' : 'text-slate-900 '
+            }`}
+          >
+            <span translate="no" className="notranslate">purely</span>
+            <span translate="no" className="notranslate text-red-600 font-bold">istanbul</span>
           </span>
         </div>
       )}
@@ -52,7 +56,7 @@ export function BrandMark({
 
   if (asDiv) {
     return (
-      <div className={`inline-flex items-center gap-2 group ${className}`}>
+      <div translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
         {content}
       </div>
     );
@@ -60,14 +64,14 @@ export function BrandMark({
 
   if (href.startsWith('/')) {
     return (
-      <Link href={href} className={`inline-flex items-center gap-2 group ${className}`}>
+      <Link href={href} translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
         {content}
       </Link>
     );
   }
 
   return (
-    <a href={href || "https://www.purelyistanbul.com"} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 group ${className}`}>
+    <a href={href || "https://www.purelyistanbul.com"} target="_blank" rel="noopener noreferrer" translate="no" className={`notranslate inline-flex items-center gap-2 group ${className}`}>
       {content}
     </a>
   );

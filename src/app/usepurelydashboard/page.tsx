@@ -953,11 +953,11 @@ export default function UsePurelyDashboardPage() {
       >
         {/* Top Minimalist Nav */}
         <header className="max-w-5xl w-full mx-auto flex items-center justify-between">
-          <Link href="/" className="comus-logo">
-            purely<span>istanbul</span>
+          <Link href="/" translate="no" className="notranslate comus-logo">
+            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">istanbul</span>
           </Link>
           <Link href="/" className="comus-btn-ghost">
-            purelyistanbul.com&apos;a Dön →
+            <span translate="no" className="notranslate">purelyistanbul.com</span>&apos;a Dön →
           </Link>
         </header>
 
@@ -970,11 +970,11 @@ export default function UsePurelyDashboardPage() {
                 Merkezi Yönetim Masası
               </div>
               <h1 className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A] leading-tight">
-                Purelyİstanbul için <br />
+                <span translate="no" className="notranslate">Purelyİstanbul</span> için <br />
                 <em className="italic text-[#3B6D11]">sade ve akıllı</em> yönetim
               </h1>
               <p className="text-sm text-[#6B6B55] font-light leading-relaxed">
-                purelyistanbul.com Web Sitesi, iOS App ve Otel İçi PWA&apos;yı
+                <span translate="no" className="notranslate">purelyistanbul.com</span> Web Sitesi, iOS App ve Otel İçi PWA&apos;yı
                 tek ekrandan yönetmek için giriş yapın.
               </p>
             </div>
@@ -1031,7 +1031,7 @@ export default function UsePurelyDashboardPage() {
         </main>
 
         <footer className="max-w-5xl w-full mx-auto text-center text-xs text-[#6B6B55]">
-          © 2026 purelyİstanbul • Web, iOS App &amp; PWA Merkezi Yönetim
+          © 2026 <span translate="no" className="notranslate">purelyİstanbul</span> • Web, iOS App &amp; PWA Merkezi Yönetim
         </footer>
       </div>
     );
@@ -1116,8 +1116,8 @@ export default function UsePurelyDashboardPage() {
       {/* Brand Header */}
       <div className="px-6 py-5 border-b border-[#C8C4B0]/70 flex items-center justify-between shrink-0">
         <div>
-          <Link href="/usepurelydashboard" className="comus-logo block">
-            purely<span>istanbul</span>
+          <Link href="/usepurelydashboard" translate="no" className="notranslate comus-logo block">
+            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">istanbul</span>
           </Link>
           <p className="text-[11px] text-[#6B6B55] mt-0.5 tracking-wide">
             Web • iOS App • PWA Yönetimi
