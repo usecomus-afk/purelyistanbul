@@ -411,11 +411,29 @@ export const FirestoreService = {
             remoteMap.forEach((remoteItem, id) => {
               if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
               const localItem = currentMap.get(id);
-              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
-                mergedMap.set(id, localItem);
-              } else {
-                mergedMap.set(id, remoteItem);
+              const baseItem =
+                localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')
+                  ? localItem
+                  : remoteItem;
+
+              if (localItem && Array.isArray(baseItem.rooms) && Array.isArray(localItem.rooms)) {
+                const localRoomMap = new Map(localItem.rooms.map((r) => [r.number, r]));
+                baseItem.rooms = baseItem.rooms.map((rm) => {
+                  const locRm = localRoomMap.get(rm.number);
+                  if (locRm && locRm.status && (!rm.status || (locRm.updatedAt || '') >= (rm.updatedAt || ''))) {
+                    return {
+                      ...rm,
+                      status: locRm.status,
+                      guest: locRm.status === 'clean' || locRm.status === 'cleaning' ? '' : locRm.guest,
+                      checkout: locRm.status === 'clean' || locRm.status === 'cleaning' ? '' : locRm.checkout,
+                      updatedAt: locRm.updatedAt,
+                    };
+                  }
+                  return rm;
+                });
               }
+
+              mergedMap.set(id, baseItem);
             });
 
             current.forEach((item) => {

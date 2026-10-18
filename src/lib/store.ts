@@ -1,4 +1,4 @@
-import { Hotel, Room, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
+import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
 import { UserPreferences } from '@/types/comusAi';
 import { CategoryConfig, mergeCategoryConfigs } from '@/lib/marketplace/categories';
 import rawHotels from '@/data/hotels.json';
@@ -396,6 +396,136 @@ export const XeniosStore = {
       import('./firestore-service').then(({ FirestoreService }) => {
         FirestoreService.upsertHotel(h).catch(() => {});
       }).catch(() => {});
+    }
+  },
+
+  getRoomStates(hotelId: string): Record<string, RoomStateInfo> {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const storageKey = `xenios_room_states_v2_${targetHotelId}`;
+    let storedMap: Record<string, RoomStateInfo> = {};
+    let hadStoredMap = false;
+
+    try {
+      const raw = safeGet(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          storedMap = parsed;
+          hadStoredMap = Object.keys(parsed).length > 0;
+        }
+      }
+    } catch {}
+
+    const hotel = this.getHotelById(targetHotelId);
+    const rooms = hotel?.rooms || [];
+    const result: Record<string, RoomStateInfo> = { ...storedMap };
+    let needsPersist = false;
+
+    rooms.forEach((r, idx) => {
+      const localEntry = storedMap[r.number];
+      const roomHasState = Boolean(r.status);
+      const roomEntry: RoomStateInfo | undefined = roomHasState
+        ? {
+            status: r.status as RoomOccupancyStatus,
+            guest: r.guest || '',
+            checkout: r.checkout || '',
+            updatedAt: r.updatedAt || '',
+          }
+        : undefined;
+
+      let chosen: RoomStateInfo | undefined;
+      if (localEntry && roomEntry) {
+        chosen =
+          (roomEntry.updatedAt || '') > (localEntry.updatedAt || '')
+            ? roomEntry
+            : localEntry;
+      } else if (localEntry) {
+        chosen = localEntry;
+      } else if (roomEntry) {
+        chosen = roomEntry;
+        needsPersist = true;
+      } else if (!hadStoredMap) {
+        // Initial one-time seed only if this hotel has never had stored states
+        if (idx % 3 === 0) {
+          chosen = { status: 'occupied', guest: 'John Miller', checkout: 'Çıkış: 12:00' };
+        } else if (idx % 5 === 0) {
+          chosen = { status: 'cleaning', guest: '', checkout: '' };
+        } else if (idx % 7 === 0) {
+          chosen = { status: 'reserved', guest: 'Elena Rostova', checkout: 'Giriş: 14:00' };
+        } else {
+          chosen = { status: 'clean', guest: '', checkout: '' };
+        }
+        needsPersist = true;
+      } else {
+        chosen = { status: 'clean', guest: '', checkout: '' };
+        needsPersist = true;
+      }
+
+      if (chosen.status === 'clean' || chosen.status === 'cleaning') {
+        chosen = {
+          ...chosen,
+          guest: '',
+          checkout: '',
+        };
+      }
+
+      result[r.number] = chosen;
+    });
+
+    if (needsPersist) {
+      safeSet(storageKey, JSON.stringify(result));
+    }
+
+    return result;
+  },
+
+  updateRoomState(hotelId: string, roomNumber: string, nextState: RoomStateInfo) {
+    const targetHotelId = hotelId || this.getActiveHotelId();
+    const storageKey = `xenios_room_states_v2_${targetHotelId}`;
+    const now = new Date().toISOString();
+
+    const isVacantOrCleaning =
+      nextState.status === 'clean' || nextState.status === 'cleaning';
+
+    const sanitized: RoomStateInfo = {
+      status: nextState.status,
+      guest: isVacantOrCleaning ? '' : (nextState.guest || '').trim(),
+      checkout: isVacantOrCleaning ? '' : (nextState.checkout || '').trim(),
+      updatedAt: now,
+    };
+
+    const currentMap = this.getRoomStates(targetHotelId);
+    const updatedMap: Record<string, RoomStateInfo> = {
+      ...currentMap,
+      [roomNumber]: sanitized,
+    };
+    safeSet(storageKey, JSON.stringify(updatedMap));
+
+    const hotels = this.getHotels();
+    const h = hotels.find((item) => item.id === targetHotelId);
+    if (h && Array.isArray(h.rooms)) {
+      h.rooms = h.rooms.map((r) =>
+        r.number === roomNumber
+          ? {
+              ...r,
+              status: sanitized.status,
+              guest: sanitized.guest,
+              checkout: sanitized.checkout,
+              updatedAt: now,
+            }
+          : r
+      );
+      h.updatedAt = now;
+      this.saveHotels(hotels);
+      import('./firestore-service')
+        .then(({ FirestoreService }) => {
+          FirestoreService.upsertHotel(h).catch(() => {});
+        })
+        .catch(() => {});
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_room_states_updated'));
     }
   },
 

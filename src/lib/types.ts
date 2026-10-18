@@ -1,5 +1,14 @@
 export type Language = 'tr' | 'en' | 'ar' | 'ru' | 'de' | 'fr';
 
+export type RoomOccupancyStatus = 'occupied' | 'clean' | 'cleaning' | 'reserved' | 'maintenance';
+
+export interface RoomStateInfo {
+  status: RoomOccupancyStatus;
+  guest?: string;
+  checkout?: string;
+  updatedAt?: string;
+}
+
 export interface Room {
   id: string;
   number: string;
@@ -7,6 +16,10 @@ export interface Room {
   floor: string;
   wifiSsid: string;
   wifiPass: string;
+  status?: RoomOccupancyStatus;
+  guest?: string;
+  checkout?: string;
+  updatedAt?: string;
 }
 
 export interface HotelModules {
