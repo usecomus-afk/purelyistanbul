@@ -64,14 +64,6 @@ export function MarketplaceFooter() {
           <ul className="space-y-2.5">
             <li>
               <Link
-                href="/our-philosophy"
-                className="text-[13px] font-semibold text-terracotta hover:text-amber-700 hover:underline underline-offset-2 transition"
-              >
-                Our Ethical Charter & Guest Commitment
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/guest-commitment"
                 className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
               >

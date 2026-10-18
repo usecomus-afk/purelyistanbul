@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, Scale, HeartHandshake, Compass, Sparkles, ArrowRight } from "lucide-react";
+import { ShieldCheck, HeartHandshake, Compass, ArrowRight } from "lucide-react";
 
 export const GUIDING_PILLARS = [
   {
@@ -11,20 +11,13 @@ export const GUIDING_PILLARS = [
   },
   {
     number: "02",
-    title: "Fairness for All (Adil)",
-    description:
-      "While global platforms take 25-30% from local boat captains and artisans, we charge a modest 10-12% tech fee so authentic Turkish craftspeople thrive and travelers save.",
-    icon: Scale,
-  },
-  {
-    number: "03",
     title: "Genuine Hospitality (Misafirperver)",
     description:
       "The timeless Turkish hosting tradition digitized. If an experience doesn't match our verified standards, our dedicated guest care resolves it with empathy and speed.",
     icon: HeartHandshake,
   },
   {
-    number: "04",
+    number: "03",
     title: "Hyper-Local & Sincere (Samimi)",
     description:
       "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
@@ -41,13 +34,8 @@ export function EthicalCharterContent() {
 
       {/* Hero Narrative */}
       <div className="mt-8 rounded-3xl border border-sand-border bg-white p-8 md:p-12 shadow-[0_12px_36px_-16px_rgba(11,25,44,0.08)]">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/10 border border-terracotta/25 px-3.5 py-1 text-[11.5px] font-semibold uppercase tracking-widest text-terracotta">
-          <Sparkles className="w-3.5 h-3.5" />
-          Our Ethical Charter &amp; Guest Commitment
-        </span>
-
-        <h1 className="mt-4 font-luxury-serif text-3xl sm:text-4xl md:text-[42px] font-semibold tracking-tight text-ink leading-[1.15]">
-          Transparent, Fair, Hospitable, and Sincerely Local.
+        <h1 className="font-luxury-serif text-3xl sm:text-4xl md:text-[42px] font-semibold tracking-tight text-ink leading-[1.15]">
+          Transparent, Hospitable, and Sincerely Local.
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-ink leading-relaxed max-w-3xl font-medium">
@@ -57,10 +45,10 @@ export function EthicalCharterContent() {
         </p>
       </div>
 
-      {/* The 4 Guiding Pillars */}
+      {/* Guiding Pillars */}
       <section className="mt-14">
         <div className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">The Four Guiding Pillars</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Guiding Pillars</p>
           <h2 className="mt-1.5 font-luxury-serif text-2xl sm:text-3xl font-semibold text-ink">
             Our Promise to Every Traveler &amp; Local Artisan
           </h2>

@@ -15,9 +15,9 @@ export default function OrtaklarYardimPage() {
       </section>
 
       <section>
-        <h2>Alignment with Our Ethical Charter</h2>
+        <h2>Guest Care &amp; Quality Standards</h2>
         <p>
-          Every verified partner commits to our four guiding pillars: Radical Transparency (real local rates, zero tourist markups), Fairness for All (10–12% technology fee), Genuine Hospitality, and Sincere Local Expertise.
+          Every verified partner commits to our guiding pillars: Radical Transparency (real local rates, zero tourist markups), Genuine Hospitality, and Sincere Local Expertise.
         </p>
       </section>
 

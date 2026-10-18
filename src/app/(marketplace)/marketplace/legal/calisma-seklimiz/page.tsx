@@ -15,16 +15,9 @@ export default function CalismaSeklimizPage() {
       </section>
 
       <section>
-        <h2>In-Room Smart QR Stand &amp; ComusAI Concierge</h2>
+        <h2>In-Room Smart QR Stand &amp; Comus Concierge</h2>
         <p>
-          Travelers staying with our partner Boutique Hotels &amp; Professional Property Managers enjoy instant Wi-Fi onboarding, seamless PWA guest services (housekeeping, maintenance, breakfast catering, express laundry), and 24/7 native-language guidance from ComusAI — our Gemini-powered hyper-local AI concierge.
-        </p>
-      </section>
-
-      <section>
-        <h2>Fairness &amp; Merit-Based Curation</h2>
-        <p>
-          While global platforms extract 25–30% commissions from local boat captains and artisans, Purely Istanbul charges a modest 10–12% technology fee. Rankings are determined strictly by verified guest satisfaction and adherence to our Ethical Charter — never paid advertising.
+          Travelers staying with our partner Boutique Hotels &amp; Professional Property Managers enjoy instant Wi-Fi onboarding, seamless PWA guest services, and 24/7 native-language guidance from Comus — our hyper-local concierge.
         </p>
       </section>
     </LegalPageShell>

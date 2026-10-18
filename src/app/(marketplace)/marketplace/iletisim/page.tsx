@@ -2,11 +2,11 @@ import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
 import { Phone, Mail, Clock, MapPin, HeartHandshake } from "lucide-react";
 
 const CHANNELS = [
-  { icon: Phone, label: "Live Guest Care & WhatsApp Concierge", value: "Available 7 days via In-Room PWA & Partner Desk" },
-  { icon: Mail, label: "Guest Care & Support Email", value: "support@purelyistanbul.com" },
-  { icon: Clock, label: "Concierge Operating Hours", value: "7 days a week, 08:30 – 23:00 (Istanbul GMT+3)" },
+  { icon: Phone, label: "WhatsApp İletişim / Live Guest Care", value: "0850 308 59 06" },
+  { icon: Mail, label: "Guest Care & Support Email", value: "hi@usecomus.com" },
+  { icon: Clock, label: "Concierge Operating Hours", value: "7 days a week, 24/7 Support (Istanbul GMT+3)" },
   { icon: MapPin, label: "Local Operations", value: "Beyoğlu, Istanbul" },
-  { icon: HeartHandshake, label: "Tanrı Misafiri Quality Assurance", value: "Direct accountability and empathetic resolution: care@purelyistanbul.com" },
+  { icon: HeartHandshake, label: "Tanrı Misafiri Quality Assurance", value: "Direct accountability and empathetic resolution: hi@usecomus.com" },
 ];
 
 export default function IletisimPage() {

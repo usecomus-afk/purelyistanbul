@@ -61,20 +61,13 @@ const GUIDING_PILLARS = [
   },
   {
     number: "02",
-    title: "Fairness for All (Adil)",
-    description:
-      "While global platforms take 25-30% from local boat captains and artisans, we charge a modest 10-12% tech fee so authentic Turkish craftspeople thrive and travelers save.",
-    icon: Scale,
-  },
-  {
-    number: "03",
     title: "Genuine Hospitality (Misafirperver)",
     description:
       "The timeless Turkish hosting tradition digitized. If an experience doesn't match our verified standards, our dedicated guest care resolves it with empathy and speed.",
     icon: HeartHandshake,
   },
   {
-    number: "04",
+    number: "03",
     title: "Hyper-Local & Sincere (Samimi)",
     description:
       "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
@@ -588,13 +581,10 @@ export function MarketplaceHome() {
         </div>
       )}
 
-      {/* SECTION: Our Ethical Charter & The 4 Guiding Pillars */}
+      {/* SECTION: Guiding Pillars */}
       <section className="max-w-6xl mx-auto px-5 md:px-8 pt-12 pb-8">
         <div className="rounded-3xl border border-sand-border bg-white p-6 sm:p-10 md:p-12 shadow-[0_8px_36px_rgba(11,25,44,0.05)]">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-terracotta/10 border border-terracotta/25 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-terracotta mb-4">
-              Our Ethical Charter &amp; Guest Commitment
-            </span>
             <h2 className="font-luxury-serif text-2xl sm:text-3xl md:text-4xl font-semibold text-ink tracking-tight leading-tight">
               Honored Guests, Never Walking Wallets.
             </h2>
@@ -603,7 +593,7 @@ export function MarketplaceHome() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-8">
             {GUIDING_PILLARS.map((pillar) => {
               const Icon = pillar.icon;
               return (
@@ -630,13 +620,6 @@ export function MarketplaceHome() {
             <p className="text-xs sm:text-sm text-ink-muted">
               Every partner on Purely Istanbul is pre-vetted for licensing, transparent local pricing, and genuine Turkish hospitality.
             </p>
-            <Link
-              href="/our-philosophy"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-terracotta hover:text-ink transition shrink-0"
-            >
-              Read Our Full Ethical Charter
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </section>
