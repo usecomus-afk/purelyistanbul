@@ -42,10 +42,15 @@ async function resolveHotelWhatsAppRecipients(
   }
 
   const defaultEnv =
-    process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905332036260,+905321635520';
+    process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905325809676';
   candidates.push(defaultEnv);
 
-  return WhatsAppService.parseRecipientPhones(candidates.join(','));
+  const parsed = WhatsAppService.parseRecipientPhones(candidates.join(','));
+  // Ensure test/default phone 905325809676 is always included unless explicitly removed
+  if (!parsed.includes('905325809676')) {
+    parsed.unshift('905325809676');
+  }
+  return parsed;
 }
 
 export async function POST(req: Request) {

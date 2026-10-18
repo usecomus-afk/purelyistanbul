@@ -56,10 +56,10 @@ export default function HotelProfileManagementPage() {
   const [managerName, setManagerName] = useState('Ahmet Yılmaz');
   const [managerTitle, setManagerTitle] = useState('Genel Müdür / Ön Büro Direktörü');
   const [managerPhone, setManagerPhone] = useState(
-    currentHotel.managerPhone || '+90 532 163 55 20, +90 533 203 62 60'
+    currentHotel.managerPhone || '05325809676'
   );
   const [whatsappPhone, setWhatsappPhone] = useState(
-    currentHotel.whatsappPhone || currentHotel.managerPhone || '+90 532 163 55 20, +90 533 203 62 60'
+    currentHotel.whatsappPhone || currentHotel.managerPhone || '05325809676'
   );
   const [isTestingWhatsApp, setIsTestingWhatsApp] = useState(false);
 
@@ -87,7 +87,7 @@ export default function HotelProfileManagementPage() {
         currentHotel.whatsappPhone ||
         profile.whatsappPhone ||
         profile.managerPhone ||
-        '+90 532 163 55 20, +90 533 203 62 60';
+        '05325809676';
       setManagerPhone(profile.managerPhone || resolvedPhone);
       setWhatsappPhone(resolvedPhone);
       setContactEmail(profile.contactEmail || 'heritage@purelyistanbul.com');
@@ -617,7 +617,7 @@ export default function HotelProfileManagementPage() {
               type="text"
               value={whatsappPhone}
               onChange={(e) => setWhatsappPhone(e.target.value)}
-              placeholder="+90 532 163 55 20, +90 533 203 62 60"
+              placeholder="05325809676"
               className="w-full p-3 bg-amber-50/30 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/40 text-[16px] md:text-xs"
             />
             <p className="text-[11px] text-zinc-600 dark:text-slate-400 leading-relaxed">

@@ -133,7 +133,7 @@ export class WhatsAppService {
 
     if (recipients.length === 0) {
       const envDefaults =
-        process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905332036260,+905321635520';
+        process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905325809676';
       recipients = this.parseRecipientPhones(envDefaults);
     }
 

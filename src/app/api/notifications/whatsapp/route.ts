@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         priority: 'standart',
       };
       const res = await WhatsAppService.sendGuestRequestAlertWhatsApp(
-        phone || '+905332036260,+905321635520',
+        phone || '+905325809676',
         alertData
       );
       return NextResponse.json(res);

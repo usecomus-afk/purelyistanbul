@@ -67,7 +67,7 @@ env:
       - BUILD
       - RUNTIME
   - variable: WHATSAPP_DEFAULT_RECIPIENT_PHONES
-    value: "+905332036260,+905321635520"
+    value: "+905325809676"
     availability:
       - BUILD
       - RUNTIME

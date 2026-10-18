@@ -320,12 +320,19 @@ export const XeniosStore = {
       const stored = safeGet(key);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed.managerPhone === '+90 532 555 44 33') {
-          parsed.managerPhone = hotel?.whatsappPhone || hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60';
+        if (
+          parsed.managerPhone === '+90 532 555 44 33' ||
+          parsed.managerPhone === '+90 532 163 55 20, +90 533 203 62 60'
+        ) {
+          parsed.managerPhone = hotel?.whatsappPhone || hotel?.managerPhone || '05325809676';
         }
-        if (!parsed.whatsappPhone || parsed.whatsappPhone === '+90 532 555 44 33') {
+        if (
+          !parsed.whatsappPhone ||
+          parsed.whatsappPhone === '+90 532 555 44 33' ||
+          parsed.whatsappPhone === '+90 532 163 55 20, +90 533 203 62 60'
+        ) {
           parsed.whatsappPhone =
-            hotel?.whatsappPhone || parsed.managerPhone || '+90 532 163 55 20, +90 533 203 62 60';
+            hotel?.whatsappPhone || parsed.managerPhone || '05325809676';
         }
         return parsed;
       }
@@ -333,8 +340,8 @@ export const XeniosStore = {
     return {
       managerName: hotel?.managerName || 'Ahmet Yılmaz',
       managerTitle: 'Genel Müdür / Ön Büro Direktörü',
-      managerPhone: hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60',
-      whatsappPhone: hotel?.whatsappPhone || hotel?.managerPhone || '+90 532 163 55 20, +90 533 203 62 60',
+      managerPhone: hotel?.managerPhone || '05325809676',
+      whatsappPhone: hotel?.whatsappPhone || hotel?.managerPhone || '05325809676',
       contactEmail: hotel?.contactEmail || 'heritage@xenios.istanbul',
       notificationEmail: 'concierge@heritagehotel.com',
       notifyOnNewBooking: true,
