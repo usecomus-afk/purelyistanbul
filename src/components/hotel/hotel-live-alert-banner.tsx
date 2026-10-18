@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ServiceRequest } from '@/lib/types';
-import { HotelAudioNotification, HotelAudioNotificationPrefs } from '@/lib/hotel-audio-notification';
+import { HotelAudioNotification, HotelAudioNotificationPrefs, shouldReceiveStaffRequestAlerts } from '@/lib/hotel-audio-notification';
 import { XeniosStore } from '@/lib/store';
 import { 
   BellRing, 
@@ -28,6 +28,7 @@ export function HotelLiveAlertBanner() {
     window.addEventListener('xenios_hotel_audio_prefs_updated', handleUpdatePrefs);
 
     const handleCreatedRequest = (e: Event) => {
+      if (!shouldReceiveStaffRequestAlerts()) return;
       const customEvent = e as CustomEvent<ServiceRequest>;
       const req = customEvent.detail;
       if (!req) return;
@@ -35,6 +36,7 @@ export function HotelLiveAlertBanner() {
     };
 
     const handlePopupBanner = (e: Event) => {
+      if (!shouldReceiveStaffRequestAlerts()) return;
       const customEvent = e as CustomEvent<ServiceRequest>;
       const req = customEvent.detail;
       if (!req) return;
@@ -67,7 +69,7 @@ export function HotelLiveAlertBanner() {
     }
   };
 
-  if (!activeAlert) return null;
+  if (!activeAlert || !shouldReceiveStaffRequestAlerts()) return null;
 
   const isUrgent = activeAlert.priority === 'acil';
 

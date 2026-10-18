@@ -101,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private func startFirestoreRequestWatcher() {
         requestPollTimer?.invalidate()
-        let timer = Timer(timeInterval: 4.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 3.0, repeats: true) { [weak self] _ in
             self?.pollFirestoreServiceRequests()
         }
         RunLoop.main.add(timer, forMode: .common)
@@ -125,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             "structuredQuery": [
                 "from": [["collectionId": "service_requests"]],
                 "orderBy": [["field": ["fieldPath": "createdAt"], "direction": "DESCENDING"]],
-                "limit": 15
+                "limit": 20
             ]
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: queryBody, options: [])
@@ -159,6 +159,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
 
                 let status = (fields["status"]?["stringValue"] as? String) ?? "pending"
+                let isActiveStatus = status != "completed" && status != "cancelled"
                 let roomNumber = (fields["roomNumber"]?["stringValue"] as? String) ?? "101"
                 let hotelName = (fields["hotelName"]?["stringValue"] as? String) ?? "Purely Istanbul"
                 let serviceTitle = (fields["serviceTitle"]?["stringValue"] as? String) ?? "Oda Hizmeti Talebi"
@@ -171,7 +172,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let createdDate = isoFormatter.date(from: createdAtStr) ?? fallbackFormatter.date(from: createdAtStr)
                     let isVeryRecent = createdDate != nil && Date().timeIntervalSince(createdDate!) < 20.0
                     _ = AppDelegate.markIfNew(reqId)
-                    if isVeryRecent && status == "pending" {
+                    if isVeryRecent && isActiveStatus {
                         let isUrgent = priority == "acil"
                         let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
@@ -179,7 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)
                     }
                 } else {
-                    if status == "pending" && AppDelegate.markIfNew(reqId) {
+                    if isActiveStatus && AppDelegate.markIfNew(reqId) {
                         let isUrgent = priority == "acil"
                         let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
@@ -230,6 +231,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootVC = scene.windows.first?.rootViewController as? CAPBridgeViewController {
+                rootVC.webView?.evaluateJavaScript("window.location.href = '/hotel-portal/requests';", completionHandler: nil)
+            }
+        }
         completionHandler()
     }
 

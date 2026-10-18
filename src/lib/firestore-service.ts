@@ -423,6 +423,21 @@ export const FirestoreService = {
 
         // Detect newly arrived remote requests reliably across all listeners
         if (typeof window !== 'undefined') {
+          const w = window as any;
+          const isNativeApp =
+            !!w.Capacitor?.isNativePlatform?.() ||
+            !!w.webkit?.messageHandlers?.bridge ||
+            !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__;
+          const p = window.location.pathname || '';
+          const isStaffRoute =
+            p.startsWith('/hotel-portal') ||
+            p.startsWith('/usepurelydashboard') ||
+            p.startsWith('/live-requests') ||
+            p.startsWith('/admin') ||
+            p.startsWith('/dashboard') ||
+            p.startsWith('/pilot');
+          const allowStaffAlert = isNativeApp || isStaffRoute;
+
           const nowMs = Date.now();
           if (!initialSnapshotSeeded) {
             initialSnapshotSeeded = true;
@@ -430,7 +445,7 @@ export const FirestoreService = {
               const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
               const isJustCreated = createdMs > 0 && nowMs - createdMs < 20000;
               seenRemoteRequestIds.add(item.id);
-              if (isJustCreated && item.status === 'pending') {
+              if (allowStaffAlert && isJustCreated && item.status === 'pending') {
                 if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
                   window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
                 }
@@ -440,7 +455,7 @@ export const FirestoreService = {
             list.forEach((item) => {
               if (!seenRemoteRequestIds.has(item.id)) {
                 seenRemoteRequestIds.add(item.id);
-                if (item.status === 'pending') {
+                if (allowStaffAlert && item.status === 'pending') {
                   if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
                     window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
                   }
@@ -469,20 +484,19 @@ export const FirestoreService = {
   },
 
   async addRequest(req: Omit<ServiceRequest, 'id' | 'createdAt' | 'updatedAt'>): Promise<ServiceRequest> {
-    const local = XeniosStore.addRequest(req);
+    const local = XeniosStore.addRequest({
+      ...req,
+      status: req.status || 'pending',
+    });
     seenRemoteRequestIds.add(local.id);
-    if (!db || !isFirebaseConfigured) return local;
 
     const payload = stripUndefined({
       ...local,
+      status: local.status || 'pending',
       updatedAt: new Date().toISOString()
     });
 
-    try {
-      const colRef = collection(db, COLLECTIONS.REQUESTS);
-      await setDoc(doc(colRef, local.id), payload);
-    } catch (e) {
-      console.warn("Firestore SDK save error, using REST fallback:", e);
+    const saveViaRest = async () => {
       try {
         await fetch(
           `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests?documentId=${encodeURIComponent(local.id)}`,
@@ -511,31 +525,89 @@ export const FirestoreService = {
       } catch (restErr) {
         console.warn("Firestore REST fallback error:", restErr);
       }
+    };
+
+    if (!db || !isFirebaseConfigured) {
+      await saveViaRest();
+      return local;
+    }
+
+    try {
+      const colRef = collection(db, COLLECTIONS.REQUESTS);
+      await Promise.race([
+        setDoc(doc(colRef, local.id), payload),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 3000)),
+      ]);
+    } catch (e) {
+      console.warn("Firestore SDK save error/timeout, using REST fallback:", e);
+      await saveViaRest();
     }
     return local;
   },
 
   async updateRequestStatus(id: string, status: ServiceRequest['status']): Promise<void> {
     XeniosStore.updateRequestStatus(id, status);
-    if (!db || !isFirebaseConfigured) return;
+    const updatedAt = new Date().toISOString();
+
+    const patchViaRest = async () => {
+      try {
+        await fetch(
+          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(id)}?updateMask.fieldPaths=status&updateMask.fieldPaths=updatedAt`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                status: { stringValue: String(status) },
+                updatedAt: { stringValue: updatedAt },
+              },
+            }),
+          }
+        );
+      } catch (e) {
+        console.warn("Firestore REST update error:", e);
+      }
+    };
+
+    if (!db || !isFirebaseConfigured) {
+      await patchViaRest();
+      return;
+    }
 
     try {
       const docRef = doc(db, COLLECTIONS.REQUESTS, id);
-      await updateDoc(docRef, { status, updatedAt: new Date().toISOString() });
+      await updateDoc(docRef, { status, updatedAt });
     } catch (e) {
-      console.warn("Firestore update error:", e);
+      console.warn("Firestore update error, using REST fallback:", e);
+      await patchViaRest();
     }
   },
 
   async deleteRequest(id: string): Promise<void> {
     XeniosStore.deleteRequest(id);
-    if (!db || !isFirebaseConfigured) return;
+
+    const deleteViaRest = async () => {
+      try {
+        await fetch(
+          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(id)}`,
+          { method: 'DELETE' }
+        );
+      } catch (e) {
+        console.warn("Firestore REST delete error:", e);
+      }
+    };
+
+    if (!db || !isFirebaseConfigured) {
+      await deleteViaRest();
+      return;
+    }
 
     try {
       const docRef = doc(db, COLLECTIONS.REQUESTS, id);
       await deleteDoc(docRef);
     } catch (e) {
-      console.warn("Firestore delete error:", e);
+      console.warn("Firestore delete error, using REST fallback:", e);
+      await deleteViaRest();
     }
   },
 

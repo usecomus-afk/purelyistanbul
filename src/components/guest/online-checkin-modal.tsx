@@ -425,6 +425,22 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
       });
 
       if (res.ok) {
+        try {
+          const { FirestoreService } = await import('@/lib/firestore-service');
+          await FirestoreService.addRequest({
+            hotelId: hotel.id,
+            hotelName: hotel.name,
+            roomNumber: roomNumber,
+            serviceKey: 'kbs_checkin',
+            serviceTitle: ui.title,
+            notes: `${firstName.toUpperCase()} ${lastName.toUpperCase()} · ${documentType}: ${documentNumber.toUpperCase()} (${nationality})`,
+            status: 'pending',
+            department: 'Resepsiyon / Ön Büro (KBS)',
+            stage: 'pending',
+            priority: 'standart',
+          });
+        } catch {}
+
         setStep('SUCCESS');
         confetti({
           particleCount: 80,

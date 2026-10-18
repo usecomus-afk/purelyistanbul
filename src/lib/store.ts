@@ -782,7 +782,7 @@ export const XeniosStore = {
     const list = this.getRequests();
     const newReq: ServiceRequest = {
       ...req,
-      id: `req-${Date.now()}`,
+      id: `req-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -791,7 +791,22 @@ export const XeniosStore = {
       safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('xenios_requests_updated'));
-        window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: newReq }));
+        const w = window as any;
+        const isNativeApp =
+          !!w.Capacitor?.isNativePlatform?.() ||
+          !!w.webkit?.messageHandlers?.bridge ||
+          !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__;
+        const p = window.location.pathname || '';
+        const isStaffRoute =
+          p.startsWith('/hotel-portal') ||
+          p.startsWith('/usepurelydashboard') ||
+          p.startsWith('/live-requests') ||
+          p.startsWith('/admin') ||
+          p.startsWith('/dashboard') ||
+          p.startsWith('/pilot');
+        if (isNativeApp || isStaffRoute) {
+          window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: newReq }));
+        }
       }
     } catch (e) {}
     return newReq;

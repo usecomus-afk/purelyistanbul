@@ -110,7 +110,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
         serviceKey: selectedService.key,
         serviceTitle: serviceTitle,
         notes: notesSummary,
-        status: config ? deriveStatus(config, firstStage) : 'pending',
+        status: 'pending',
         details,
         department: config?.department || selectedService.department || 'Housekeeping',
         stage: firstStage,

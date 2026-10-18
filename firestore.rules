@@ -190,7 +190,10 @@ service cloud.firestore {
     // 16. Oteller (Hotels) — herkes okuyabilir, admin ve otel yöneticisi/pilot yazabilir.
     match /hotels/{hotelId} {
       allow read: if true;
-      allow write: if isAdmin() || isPilotOrHotelManager();
+      allow create, update: if isAdmin() || isPilotOrHotelManager() || (
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 300
+      );
+      allow delete: if isAdmin() || isPilotOrHotelManager();
     }
 
     // 17. Deneyimler ve Restoranlar (Experiences) — herkes okuyabilir, sadece admin yazabilir.
@@ -240,7 +243,12 @@ service cloud.firestore {
     match /service_requests/{requestId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if isAdmin() || isPilotOrHotelManager();
+      allow update: if isAdmin() || isPilotOrHotelManager() || (
+        request.resource.data.status in ['pending', 'in_progress', 'completed', 'cancelled']
+      );
+      allow delete: if isAdmin() || isPilotOrHotelManager() || (
+        resource.data.keys().hasAny(['id', 'serviceKey', 'serviceTitle', 'status'])
+      );
     }
 
     // 21. Yatırım Talepleri (Investment Leads) — ziyaretçiler talep bırakabilir,

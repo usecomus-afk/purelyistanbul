@@ -116,16 +116,6 @@ export const PwaNotificationManager = {
   setupGlobalNotificationListeners() {
     if (typeof window === 'undefined') return;
 
-    // Listen to new room requests
-    window.addEventListener('xenios_request_created', ((e: CustomEvent) => {
-      const detail = e.detail;
-      this.showNotification(
-        '🛎️ Yeni Oda Hizmeti Talebi',
-        detail?.title ? `"${detail.title}" talebiniz personele iletildi.` : 'Talebiniz resepsiyona başarıyla iletildi.',
-        '/'
-      );
-    }) as EventListener);
-
     // Listen to new bookings
     window.addEventListener('xenios_booking_created', ((e: CustomEvent) => {
       const detail = e.detail;

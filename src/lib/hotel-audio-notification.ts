@@ -34,6 +34,44 @@ const DEFAULT_PREFS: HotelAudioNotificationPrefs = {
   systemNotificationEnabled: true,
 };
 
+export function isNativeHostApp(): boolean {
+  if (typeof window === 'undefined') return false;
+  const w = window as any;
+  return (
+    Capacitor.isNativePlatform() ||
+    !!w.Capacitor?.isNativePlatform?.() ||
+    !!w.webkit?.messageHandlers?.bridge ||
+    !!w.__PURELY_NATIVE_VIDEO_SPLASH__ ||
+    !!w.__PURELY_NATIVE_VIDEO_SPLASH_V2__ ||
+    !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__
+  );
+}
+
+export function isStaffManagementRoute(pathname?: string): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = pathname ?? window.location.pathname ?? '';
+  return (
+    p.startsWith('/hotel-portal') ||
+    p.startsWith('/usepurelydashboard') ||
+    p.startsWith('/live-requests') ||
+    p.startsWith('/admin') ||
+    p.startsWith('/dashboard') ||
+    p.startsWith('/pilot')
+  );
+}
+
+/**
+ * Returns true ONLY inside the Native iOS App (built for accommodation providers)
+ * or on web management portals (/hotel-portal, /usepurelydashboard, /live-requests).
+ * Returns false on the QR Guest PWA (/stay/[hotelId]/[roomId], /guest) and public web!
+ */
+export function shouldReceiveStaffRequestAlerts(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (isNativeHostApp()) return true;
+  if (isStaffManagementRoute()) return true;
+  return false;
+}
+
 class HotelAudioNotificationService {
   private audioCtx: AudioContext | null = null;
   private notifiedRequestIds: Set<string> = new Set();
@@ -283,6 +321,7 @@ class HotelAudioNotificationService {
    */
   public async triggerGuestRequestAlert(req: ServiceRequest) {
     if (typeof window === 'undefined' || !req) return;
+    if (!shouldReceiveStaffRequestAlerts()) return;
     if (req.id && this.hasNotified(req.id)) return;
     if (req.id) this.markNotified(req.id);
 
@@ -306,7 +345,7 @@ class HotelAudioNotificationService {
           : `🛎️ Yeni Talep: Oda ${req.roomNumber}`;
         const body = `${req.serviceTitle}${req.notes ? ` · ${req.notes.replace(/\s+/g, ' ')}` : ''}`;
 
-        if (Capacitor.isNativePlatform()) {
+        if (isNativeHostApp()) {
           await XeniosNotifications.scheduleNotification({
             id: req.id,
             title,
