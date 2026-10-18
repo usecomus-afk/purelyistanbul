@@ -351,11 +351,16 @@ Return ONLY a valid JSON object with this exact structure:
    */
   static getKbsRecords(hotelId?: string): KbsGuestRecord[] {
     ensureKbsSeedData();
-    const list = Array.from(kbsRecordsStore.values());
-    if (hotelId) {
-      return list.filter(r => r.hotel_id === hotelId);
+    const list = Array.from(kbsRecordsStore.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    if (!hotelId) return list;
+    const defaultIds = new Set(['hotel-1', 'hotel_1', 'hotel_pera']);
+    if (defaultIds.has(hotelId)) {
+      return list.filter(r => defaultIds.has(r.hotel_id) || r.hotel_id === hotelId);
     }
-    return list;
+    const matched = list.filter(r => r.hotel_id === hotelId);
+    return matched.length > 0 ? matched : list;
   }
 
   /**

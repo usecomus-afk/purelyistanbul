@@ -14,8 +14,9 @@ export async function GET(req: Request) {
       return new NextResponse(csvData, {
         status: 200,
         headers: {
-          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Type': 'application/octet-stream',
           'Content-Disposition': `attachment; filename="kbs-egm-export-${date}.csv"`,
+          'X-Content-Type-Options': 'nosniff',
           'Cache-Control': 'no-cache'
         }
       });
@@ -25,8 +26,9 @@ export async function GET(req: Request) {
     return new NextResponse(xmlData, {
       status: 200,
       headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
+        'Content-Type': 'application/octet-stream',
         'Content-Disposition': `attachment; filename="kbs-egm-export-${date}.xml"`,
+        'X-Content-Type-Options': 'nosniff',
         'Cache-Control': 'no-cache'
       }
     });

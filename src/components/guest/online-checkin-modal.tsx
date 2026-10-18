@@ -566,6 +566,35 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
       });
 
       if (res.ok) {
+        const submitJson = await res.json().catch(() => ({}));
+        const checkInDate = new Date().toISOString().split('T')[0];
+        const checkOutDate = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+        const structuredKbsRecord = {
+          id: submitJson?.record?.id || `kbs_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          hotel_id: hotel.id,
+          hotel_name: hotel.name,
+          room_number: roomNumber,
+          first_name: firstName.trim().toLocaleUpperCase('tr-TR'),
+          last_name: lastName.trim().toLocaleUpperCase('tr-TR'),
+          document_type: documentType,
+          document_number: documentNumber.trim().toUpperCase(),
+          nationality: (nationality || 'TUR').trim().toUpperCase(),
+          birth_date: birthDate || '1990-01-01',
+          gender,
+          check_in_date: checkInDate,
+          check_out_date: checkOutDate,
+          created_source: 'GUEST_PWA',
+          status: 'VERIFIED',
+          created_at: new Date().toISOString(),
+        };
+
+        try {
+          const rawStored = localStorage.getItem('xenios_kbs_records_v1');
+          const parsedList = rawStored ? JSON.parse(rawStored) : [];
+          const nextList = [structuredKbsRecord, ...(Array.isArray(parsedList) ? parsedList : [])];
+          localStorage.setItem('xenios_kbs_records_v1', JSON.stringify(nextList.slice(0, 200)));
+        } catch {}
+
         try {
           const { FirestoreService } = await import('@/lib/firestore-service');
           await FirestoreService.addRequest({
@@ -579,6 +608,9 @@ export function OnlineCheckinModal({ hotel, roomNumber, lang, onClose }: OnlineC
             department: 'Resepsiyon / Ön Büro (KBS)',
             stage: 'pending',
             priority: 'standart',
+            details: {
+              kbsRecordJson: JSON.stringify(structuredKbsRecord),
+            },
           });
         } catch {}
 
