@@ -28,7 +28,7 @@ export function PwaRegister() {
       const shouldAlert = shouldReceiveStaffRequestAlerts(pathname || undefined);
       setEnableStaffAlerts(shouldAlert);
 
-      if (nativeApp) {
+      if (nativeApp || shouldAlert) {
         HotelAudioNotification.requestSystemNotificationPermission().catch(() => {});
         HotelAudioNotification.startNativeWebViewKeepAlive();
       }
@@ -44,10 +44,16 @@ export function PwaRegister() {
     evaluateAndSubscribe();
     const t1 = setTimeout(evaluateAndSubscribe, 400);
     const t2 = setTimeout(evaluateAndSubscribe, 1500);
+    window.addEventListener('xenios_hotel_portal_auth', evaluateAndSubscribe);
+    window.addEventListener('xenios_master_admin_auth', evaluateAndSubscribe);
+    window.addEventListener('storage', evaluateAndSubscribe);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      window.removeEventListener('xenios_hotel_portal_auth', evaluateAndSubscribe);
+      window.removeEventListener('xenios_master_admin_auth', evaluateAndSubscribe);
+      window.removeEventListener('storage', evaluateAndSubscribe);
       if (unsub) {
         unsub();
         unsub = null;

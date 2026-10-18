@@ -37,8 +37,8 @@ export default function HotelPortalLayout({
     window.addEventListener('xenios_hotels_updated', refreshState);
     window.addEventListener('xenios_hotel_audio_prefs_updated', handlePrefsUpdate);
 
-    const unsubscribe = FirestoreService.subscribeToLiveRequests(activeHotelId, (reqs) => {
-      const pending = reqs.filter(r => (r.hotelId === activeHotelId || !r.hotelId) && r.status === 'pending');
+    const unsubscribe = FirestoreService.subscribeToLiveRequests(null, (reqs) => {
+      const pending = reqs.filter(r => r.status === 'pending');
       setPendingReqCount(pending.length);
     });
 
@@ -190,7 +190,6 @@ export default function HotelPortalLayout({
                   XeniosStore.setActiveHotelSession(targetHotelId, 'TEST');
                   if (typeof window !== 'undefined') {
                     try {
-                      localStorage.setItem('xenios_app_role', 'guest');
                       sessionStorage.setItem('purely_splash_v6_played', 'true');
                       sessionStorage.setItem('purely_splash_played', 'true');
                     } catch {}

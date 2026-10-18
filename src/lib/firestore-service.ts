@@ -59,18 +59,38 @@ function stripUndefined<T extends Record<string, any>>(obj: T): T {
   return clean as T;
 }
 
+async function postAdminCatalog(action: string, payload: Record<string, any>): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  try {
+    const res = await fetch('/api/admin/catalog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, payload }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data?.ok === true;
+  } catch {
+    return false;
+  }
+}
+
 const seenRemoteRequestIds = new Set<string>();
 let initialSnapshotSeeded = false;
 
 export const FirestoreService = {
   // 🌐 CATALOG REALTIME SYNC (Experiences, Hotels, Properties, Suppliers -> Web Marketplace + Mobile App)
   async upsertExperience(exp: Experience): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = exp.updatedAt || new Date().toISOString();
+    const stamped = { ...exp, deleted: false, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_experience', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await setDoc(doc(db, COLLECTIONS.EXPERIENCES, exp.id), stripUndefined({
-        ...exp,
-        updatedAt: new Date().toISOString()
-      }));
+      await setDoc(doc(db, COLLECTIONS.EXPERIENCES, exp.id), stripUndefined(stamped));
 
       // Mirror to marketplace_listings so Web Marketplace updates live alongside Mobile Concierge
       const mpListing = experienceToMarketplaceListing(exp, 0);
@@ -78,15 +98,22 @@ export const FirestoreService = {
       await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, exp.id), stripUndefined({
         ...mpListing,
         status: mpStatus,
-        updatedAt: new Date().toISOString()
+        updatedAt: now
       }));
     } catch (e) {
-      reportSyncError('upsertExperience', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertExperience', e);
     }
   },
 
   async deleteExperienceRemote(id: string): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = new Date().toISOString();
+    const serverOkPromise = postAdminCatalog('delete_experience', { id });
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
       await setDoc(doc(db, COLLECTIONS.EXPERIENCES, id), {
         id,
@@ -94,101 +121,166 @@ export const FirestoreService = {
         status: 'suspended',
         publishToWeb: false,
         publishToMobile: false,
-        updatedAt: new Date().toISOString()
+        updatedAt: now
       });
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
-      reportSyncError('deleteExperienceRemote', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('deleteExperienceRemote', e);
     }
   },
 
   async upsertHotel(hotel: Hotel): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
-    try {
-      await setDoc(doc(db, COLLECTIONS.HOTELS, hotel.id), stripUndefined({
-        ...hotel,
-        updatedAt: new Date().toISOString()
-      }));
+    const now = hotel.updatedAt || new Date().toISOString();
+    const stamped = { ...hotel, deleted: false, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_hotel', stamped);
 
-      if (hotel.publishToWeb) {
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
+    try {
+      await setDoc(doc(db, COLLECTIONS.HOTELS, hotel.id), stripUndefined(stamped));
+
+      if (hotel.publishToWeb && hotel.status !== 'suspended') {
         const mpListing = hotelToMarketplaceListing(hotel, 0);
         await setDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, hotel.id), stripUndefined({
           ...mpListing,
-          status: hotel.status === 'suspended' ? 'suspended' : 'approved',
-          updatedAt: new Date().toISOString()
+          status: 'approved',
+          updatedAt: now
         }));
+      } else {
+        await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, hotel.id)).catch(() => {});
       }
     } catch (e) {
-      reportSyncError('upsertHotel', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertHotel', e);
     }
   },
 
   async deleteHotelRemote(id: string): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = new Date().toISOString();
+    const serverOkPromise = postAdminCatalog('delete_hotel', { id });
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await deleteDoc(doc(db, COLLECTIONS.HOTELS, id));
+      await setDoc(doc(db, COLLECTIONS.HOTELS, id), {
+        id,
+        deleted: true,
+        status: 'suspended',
+        publishToWeb: false,
+        publishToMobile: false,
+        updatedAt: now
+      });
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
-      reportSyncError('deleteHotelRemote', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('deleteHotelRemote', e);
     }
   },
 
   async upsertProperty(prop: PropertyListing): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = prop.updatedAt || new Date().toISOString();
+    const stamped = { ...prop, deleted: false, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_property', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await setDoc(doc(db, COLLECTIONS.PROPERTIES, prop.id), stripUndefined({
-        ...prop,
-        updatedAt: new Date().toISOString()
-      }));
+      await setDoc(doc(db, COLLECTIONS.PROPERTIES, prop.id), stripUndefined(stamped));
     } catch (e) {
-      reportSyncError('upsertProperty', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertProperty', e);
     }
   },
 
   async deletePropertyRemote(id: string): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = new Date().toISOString();
+    const serverOkPromise = postAdminCatalog('delete_property', { id });
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await deleteDoc(doc(db, COLLECTIONS.PROPERTIES, id));
+      await setDoc(doc(db, COLLECTIONS.PROPERTIES, id), {
+        id,
+        deleted: true,
+        status: 'suspended',
+        publishToWeb: false,
+        publishToMobile: false,
+        updatedAt: now
+      });
       await deleteDoc(doc(db, COLLECTIONS.MARKETPLACE_LISTINGS, id)).catch(() => {});
     } catch (e) {
-      reportSyncError('deletePropertyRemote', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('deletePropertyRemote', e);
     }
   },
 
   async upsertSupplier(supplier: SupplierPartner): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = supplier.updatedAt || new Date().toISOString();
+    const stamped = { ...supplier, deleted: false, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_supplier', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await setDoc(doc(db, COLLECTIONS.SUPPLIERS, supplier.id), stripUndefined({
-        ...supplier,
-        updatedAt: new Date().toISOString()
-      }));
+      await setDoc(doc(db, COLLECTIONS.SUPPLIERS, supplier.id), stripUndefined(stamped));
     } catch (e) {
-      reportSyncError('upsertSupplier', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertSupplier', e);
     }
   },
 
   async deleteSupplierRemote(id: string): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const now = new Date().toISOString();
+    const serverOkPromise = postAdminCatalog('delete_supplier', { id });
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      await deleteDoc(doc(db, COLLECTIONS.SUPPLIERS, id));
+      await setDoc(doc(db, COLLECTIONS.SUPPLIERS, id), {
+        id,
+        deleted: true,
+        contractStatus: 'suspended',
+        updatedAt: now
+      });
     } catch (e) {
-      reportSyncError('deleteSupplierRemote', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('deleteSupplierRemote', e);
     }
   },
 
   /** Panelden düzenlenen kategori kaydını (ad, ikon, sıra, gizli/açık) tüm cihazlara yansıtır. */
   async upsertCategory(cfg: CategoryConfig): Promise<void> {
-    if (!db || !isFirebaseConfigured) return;
+    const normalizedLabel = normalizeCategoryLabel(cfg.label, cfg.label);
+    const stamped = {
+      ...cfg,
+      label: normalizedLabel,
+      labelEn: normalizeCategoryLabel(cfg.labelEn, normalizedLabel),
+      updatedAt: cfg.updatedAt || new Date().toISOString()
+    };
+    const serverOkPromise = postAdminCatalog('upsert_category', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
     try {
-      const normalizedLabel = normalizeCategoryLabel(cfg.label, cfg.label);
-      await setDoc(doc(db, COLLECTIONS.SITE_CATEGORIES, cfg.key), stripUndefined({
-        ...cfg,
-        label: normalizedLabel,
-        labelEn: normalizeCategoryLabel(cfg.labelEn, normalizedLabel),
-        updatedAt: cfg.updatedAt || new Date().toISOString()
-      }));
+      await setDoc(doc(db, COLLECTIONS.SITE_CATEGORIES, cfg.key), stripUndefined(stamped));
     } catch (e) {
-      reportSyncError('upsertCategory', e);
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertCategory', e);
     }
   },
 
@@ -263,31 +355,28 @@ export const FirestoreService = {
               const data = d.data() as Experience & { deleted?: boolean };
               if (data.deleted === true) {
                 remoteDeletedIds.push(d.id);
+                XeniosStore.markExperienceDeleted(d.id);
               } else {
                 remoteMap.set(d.id, { ...data, id: d.id });
               }
             });
-            if (remoteDeletedIds.length > 0 && typeof window !== 'undefined') {
-              try {
-                const rawDel = localStorage.getItem('xenios_deleted_experience_ids');
-                const arr: string[] = rawDel ? JSON.parse(rawDel) : [];
-                let updatedDel = false;
-                remoteDeletedIds.forEach((delId) => {
-                  if (!arr.includes(delId)) {
-                    arr.push(delId);
-                    updatedDel = true;
-                  }
-                });
-                if (updatedDel) {
-                  localStorage.setItem('xenios_deleted_experience_ids', JSON.stringify(arr));
-                }
-              } catch {}
-            }
+            const localDeletedIds = XeniosStore.getDeletedExperienceIds();
             const current = XeniosStore.getExperiences();
+            const currentMap = new Map<string, Experience>(current.map((item) => [item.id, item]));
             const mergedMap = new Map<string, Experience>();
-            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+
+            remoteMap.forEach((remoteItem, id) => {
+              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              const localItem = currentMap.get(id);
+              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
+                mergedMap.set(id, localItem);
+              } else {
+                mergedMap.set(id, remoteItem);
+              }
+            });
+
             current.forEach((item) => {
-              if (!mergedMap.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
                 mergedMap.set(item.id, item);
               }
             });
@@ -304,12 +393,35 @@ export const FirestoreService = {
           (snap) => {
             if (snap.empty) return;
             const remoteMap = new Map<string, Hotel>();
-            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as Hotel), id: d.id }));
+            const remoteDeletedIds: string[] = [];
+            snap.forEach((d) => {
+              const data = d.data() as Hotel & { deleted?: boolean };
+              if (data.deleted === true) {
+                remoteDeletedIds.push(d.id);
+                XeniosStore.markHotelDeleted(d.id);
+              } else {
+                remoteMap.set(d.id, { ...data, id: d.id });
+              }
+            });
+            const localDeletedIds = XeniosStore.getDeletedHotelIds();
             const current = XeniosStore.getHotels();
+            const currentMap = new Map<string, Hotel>(current.map((item) => [item.id, item]));
             const mergedMap = new Map<string, Hotel>();
-            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+
+            remoteMap.forEach((remoteItem, id) => {
+              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              const localItem = currentMap.get(id);
+              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
+                mergedMap.set(id, localItem);
+              } else {
+                mergedMap.set(id, remoteItem);
+              }
+            });
+
             current.forEach((item) => {
-              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+                mergedMap.set(item.id, item);
+              }
             });
             XeniosStore.saveHotels(Array.from(mergedMap.values()));
 
@@ -333,12 +445,35 @@ export const FirestoreService = {
           (snap) => {
             if (snap.empty) return;
             const remoteMap = new Map<string, PropertyListing>();
-            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as PropertyListing), id: d.id }));
+            const remoteDeletedIds: string[] = [];
+            snap.forEach((d) => {
+              const data = d.data() as PropertyListing & { deleted?: boolean };
+              if (data.deleted === true) {
+                remoteDeletedIds.push(d.id);
+                XeniosStore.markPropertyDeleted(d.id);
+              } else {
+                remoteMap.set(d.id, { ...data, id: d.id });
+              }
+            });
+            const localDeletedIds = XeniosStore.getDeletedPropertyIds();
             const current = XeniosStore.getPropertyListings();
+            const currentMap = new Map<string, PropertyListing>(current.map((item) => [item.id, item]));
             const mergedMap = new Map<string, PropertyListing>();
-            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+
+            remoteMap.forEach((remoteItem, id) => {
+              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              const localItem = currentMap.get(id);
+              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
+                mergedMap.set(id, localItem);
+              } else {
+                mergedMap.set(id, remoteItem);
+              }
+            });
+
             current.forEach((item) => {
-              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+                mergedMap.set(item.id, item);
+              }
             });
             XeniosStore.savePropertyListings(Array.from(mergedMap.values()));
           },
@@ -353,12 +488,35 @@ export const FirestoreService = {
           (snap) => {
             if (snap.empty) return;
             const remoteMap = new Map<string, SupplierPartner>();
-            snap.forEach((d) => remoteMap.set(d.id, { ...(d.data() as SupplierPartner), id: d.id }));
+            const remoteDeletedIds: string[] = [];
+            snap.forEach((d) => {
+              const data = d.data() as SupplierPartner & { deleted?: boolean };
+              if (data.deleted === true) {
+                remoteDeletedIds.push(d.id);
+                XeniosStore.markSupplierDeleted(d.id);
+              } else {
+                remoteMap.set(d.id, { ...data, id: d.id });
+              }
+            });
+            const localDeletedIds = XeniosStore.getDeletedSupplierIds();
             const current = XeniosStore.getSuppliers();
+            const currentMap = new Map<string, SupplierPartner>(current.map((item) => [item.id, item]));
             const mergedMap = new Map<string, SupplierPartner>();
-            remoteMap.forEach((v, k) => mergedMap.set(k, v));
+
+            remoteMap.forEach((remoteItem, id) => {
+              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              const localItem = currentMap.get(id);
+              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
+                mergedMap.set(id, localItem);
+              } else {
+                mergedMap.set(id, remoteItem);
+              }
+            });
+
             current.forEach((item) => {
-              if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+                mergedMap.set(item.id, item);
+              }
             });
             XeniosStore.saveSuppliers(Array.from(mergedMap.values()));
           },
@@ -406,7 +564,7 @@ export const FirestoreService = {
 
       if (typeof window !== 'undefined') {
         const allowStaffAlert = shouldReceiveStaffRequestAlerts();
-        if (allowStaffAlert) {
+        if (allowStaffAlert && list.length > 0) {
           const nowMs = Date.now();
           const alreadyInitialized = HotelAudioNotification.isNotifiedStorageInitialized();
 
@@ -418,12 +576,11 @@ export const FirestoreService = {
             );
             for (const item of chronological) {
               const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
-              const isRecentOnFirstBoot = createdMs > 0 && nowMs - createdMs < 180_000;
+              const ageMs = nowMs - createdMs;
+              const isRecentOnFirstBoot = createdMs > 0 && ageMs > -300_000 && ageMs < 180_000;
               seenRemoteRequestIds.add(item.id);
               if (isRecentOnFirstBoot && item.status === 'pending' && !HotelAudioNotification.hasNotified(item.id)) {
-                if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
-                  HotelAudioNotification.triggerGuestRequestAlert(item);
-                }
+                HotelAudioNotification.triggerGuestRequestAlert(item);
               } else {
                 HotelAudioNotification.markNotified(item.id);
               }
@@ -436,11 +593,10 @@ export const FirestoreService = {
               seenRemoteRequestIds.add(item.id);
               if (!HotelAudioNotification.hasNotified(item.id)) {
                 const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
-                const isWithinActiveWindow = createdMs > 0 && nowMs - createdMs < 30 * 60 * 1000;
+                const ageMs = nowMs - createdMs;
+                const isWithinActiveWindow = createdMs > 0 && ageMs > -300_000 && ageMs < 30 * 60 * 1000;
                 if (isWithinActiveWindow && item.status === 'pending') {
-                  if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
-                    HotelAudioNotification.triggerGuestRequestAlert(item);
-                  }
+                  HotelAudioNotification.triggerGuestRequestAlert(item);
                 } else if (!isWithinActiveWindow || item.status === 'completed' || item.status === 'cancelled') {
                   HotelAudioNotification.markNotified(item.id);
                 }

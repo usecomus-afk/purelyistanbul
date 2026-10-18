@@ -62,6 +62,15 @@ jobs:
       - name: Sync Capacitor iOS Platform
         run: |
           npx cap sync ios
+          node -e "
+            const fs = require('fs');
+            const p = 'ios/App/App/capacitor.config.json';
+            if (fs.existsSync(p)) {
+              const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+              c.packageClassList = Array.from(new Set([...(c.packageClassList || []), 'XeniosNotificationPlugin']));
+              fs.writeFileSync(p, JSON.stringify(c, null, '\t'));
+            }
+          "
 
       - name: Select Xcode
         run: |

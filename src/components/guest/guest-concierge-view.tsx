@@ -4,8 +4,11 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
 import { FirestoreService } from '@/lib/firestore-service';
+import { PwaNotificationManager } from '@/lib/pwa-notifications';
+import { shouldReceiveStaffRequestAlerts } from '@/lib/hotel-audio-notification';
 import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage, getLocalizedCategoryTitle } from '@/lib/i18n';
+import { toast } from 'sonner';
 import { getExperienceCategoryKey } from '@/lib/marketplace/seed-listings';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace/categories';
 import { useCategoryConfigs } from '@/lib/marketplace/use-category-configs';
@@ -238,6 +241,46 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
       window.removeEventListener('xenios_open_ai', handleOpenAi);
     };
   }, []);
+
+  // Subscribe to live request status updates for the guest's unit
+  useEffect(() => {
+    const statusMap = new Map<string, string>();
+    let seeded = false;
+
+    const unsubLiveReqs = FirestoreService.subscribeToLiveRequests(null, (liveReqs) => {
+      setRequests(liveReqs);
+      const unitNorm = (activeRoomNumber || '').trim().toUpperCase();
+      if (!unitNorm) return;
+
+      for (const req of liveReqs) {
+        if ((req.roomNumber || '').trim().toUpperCase() !== unitNorm) continue;
+        const prevStatus = statusMap.get(req.id);
+        statusMap.set(req.id, req.status);
+
+        if (seeded && prevStatus && prevStatus !== req.status && !shouldReceiveStaffRequestAlerts()) {
+          const pwaPrefs = PwaNotificationManager.getPreferences();
+          if (pwaPrefs.roomRequests !== false) {
+            if (req.status === 'in_progress') {
+              const title = lang === 'tr' ? '🛎️ Talebiniz Hazırlanıyor' : '🛎️ Request In Progress';
+              const body = `${req.serviceTitle} (${lang === 'tr' ? 'Birim' : 'Unit'} ${req.roomNumber})`;
+              toast.info(`${title}: ${body}`);
+              PwaNotificationManager.showNotification(title, body, window.location.pathname);
+            } else if (req.status === 'completed') {
+              const title = lang === 'tr' ? '✅ Talebiniz Tamamlandı' : '✅ Request Completed';
+              const body = `${req.serviceTitle} (${lang === 'tr' ? 'Birim' : 'Unit'} ${req.roomNumber})`;
+              toast.success(`${title}: ${body}`);
+              PwaNotificationManager.showNotification(title, body, window.location.pathname);
+            }
+          }
+        }
+      }
+      seeded = true;
+    });
+
+    return () => {
+      unsubLiveReqs();
+    };
+  }, [activeRoomNumber, lang]);
 
   // Lock vertical movement when on the Otel ('services') page without clipping document.body safe-area bleed
   useEffect(() => {

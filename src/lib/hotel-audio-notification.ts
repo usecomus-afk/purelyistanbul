@@ -60,32 +60,61 @@ export function isStaffManagementRoute(pathname?: string): boolean {
   );
 }
 
+export function isHotelStaffSessionActive(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return (
+      localStorage.getItem('xenios_hotel_portal_session') === '1' ||
+      localStorage.getItem('xenios_master_admin_session') === '1' ||
+      localStorage.getItem('xenios_app_role') === 'hotel'
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function isGuestConciergeRoute(pathname?: string): boolean {
   if (typeof window === 'undefined') return false;
   const p = pathname ?? window.location.pathname ?? '';
-  return p.startsWith('/stay/') || p === '/stay' || p.startsWith('/guest');
+  if (p.startsWith('/stay/')) {
+    const parts = p.split('/').filter(Boolean); // ['stay', hotelId, roomId]
+    const roomPart = parts[2] ? decodeURIComponent(parts[2]).trim().toUpperCase() : '';
+    if (roomPart === 'TEST') return false;
+    return true;
+  }
+  if (p === '/stay' || p.startsWith('/guest')) return true;
+  const search = window.location.search ?? '';
+  if (search.includes('partner_id=') || search.includes('unit_id=') || search.includes('room=')) {
+    const params = new URLSearchParams(search);
+    const unit = (params.get('unit_id') || params.get('roomId') || params.get('room') || '').trim().toUpperCase();
+    if (unit === 'TEST') return false;
+    return true;
+  }
+  return false;
 }
 
 /**
- * Returns true ONLY inside the Native iOS App (built for accommodation providers)
- * or on web management portals (/hotel-portal, /usepurelydashboard, /live-requests).
- * Returns false on the QR Guest PWA (/stay/[hotelId]/[roomId], /guest) and public web!
+ * Returns true inside the Native iOS App (built for accommodation providers),
+ * on web management portals (/hotel-portal, /usepurelydashboard, /live-requests),
+ * or when a hotel staff session is active and not on a real Guest QR unit URL.
+ * Returns false on the QR Guest PWA (/stay/[hotelId]/[roomId], /guest)!
  */
 export function shouldReceiveStaffRequestAlerts(pathname?: string): boolean {
   if (typeof window === 'undefined') return false;
-  if (isStaffManagementRoute(pathname)) return true;
   if (isNativeHostApp()) return true;
+  if (isStaffManagementRoute(pathname)) return true;
+  if (isGuestConciergeRoute(pathname)) return false;
+  if (isHotelStaffSessionActive()) return true;
   return false;
 }
 
 /**
  * The in-page dark popup banner ("YENİ MİSAFİR TALEBİ ... Talebi İncele ->")
- * must ONLY appear on staff management screens (/hotel-portal, /usepurelydashboard, etc.),
- * NEVER on top of the Guest Hotel interface (/stay/..., /guest, or /).
+ * appears on staff management screens and inside the Native Host App / staff preview,
+ * NEVER on a guest's QR unit screen (/stay/[hotelId]/[roomId]).
  */
 export function shouldShowInPageStaffBanner(pathname?: string): boolean {
-  if (typeof window === 'undefined') return false;
-  return isStaffManagementRoute(pathname);
+  return shouldReceiveStaffRequestAlerts(pathname);
 }
 
 class HotelAudioNotificationService {
@@ -253,13 +282,21 @@ class HotelAudioNotificationService {
   public async requestSystemNotificationPermission(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
+    const w = window as any;
+    if (w.webkit?.messageHandlers?.purelyNotify?.postMessage) {
+      try {
+        w.webkit.messageHandlers.purelyNotify.postMessage({ action: 'requestPermissions' });
+      } catch {}
+    }
+
     // 1. Native iOS via Custom Native Bridge
-    if (Capacitor.isNativePlatform()) {
+    if (isNativeHostApp()) {
       try {
         const res = await XeniosNotifications.requestNotificationPermissions();
         return res.display === 'granted';
-      } catch (err) {
-        console.warn('Native notification request error:', err);
+      } catch {
+        // Native AppDelegate already requests UNUserNotificationCenter permissions on launch
+        return true;
       }
     }
 
@@ -282,12 +319,12 @@ class HotelAudioNotificationService {
   public async checkPermissionStatus(): Promise<'granted' | 'denied' | 'prompt'> {
     if (typeof window === 'undefined') return 'prompt';
 
-    if (Capacitor.isNativePlatform()) {
+    if (isNativeHostApp()) {
       try {
         const status = await XeniosNotifications.checkNotificationPermissions();
         return status.display;
-      } catch (err) {
-        return 'prompt';
+      } catch {
+        return 'granted';
       }
     }
 
@@ -296,6 +333,62 @@ class HotelAudioNotificationService {
     }
 
     return 'prompt';
+  }
+
+  private buildChimeWavDataUri(isUrgent: boolean, volume: number = 0.85): string {
+    const sampleRate = 16000;
+    const durationSec = isUrgent ? 0.75 : 0.65;
+    const numSamples = Math.floor(sampleRate * durationSec);
+    const dataSize = numSamples * 2;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+    const writeStr = (offset: number, str: string) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    const amp = Math.max(0.15, Math.min(1.0, volume));
+    for (let i = 0; i < numSamples; i++) {
+      const t = i / sampleRate;
+      let sample = 0;
+      if (isUrgent) {
+        const freq = t < 0.22 ? 880 : t < 0.44 ? 1046 : 1318;
+        const localT = t % 0.22;
+        const env = Math.exp(-localT * 9.0);
+        sample = Math.sin(2 * Math.PI * freq * t) * env;
+      } else {
+        const env1 = Math.exp(-t * 4.5);
+        const env2 = t >= 0.14 ? Math.exp(-(t - 0.14) * 4.0) : 0;
+        sample =
+          Math.sin(2 * Math.PI * 1175 * t) * 0.55 * env1 +
+          Math.sin(2 * Math.PI * 1760 * t) * 0.45 * env2;
+      }
+      const pcm = Math.max(-32767, Math.min(32767, Math.floor(sample * amp * 28000)));
+      view.setInt16(44 + i * 2, pcm, true);
+    }
+
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 4096;
+    for (let i = 0; i < bytes.byteLength; i += chunkSize) {
+      binary += String.fromCharCode.apply(
+        null,
+        Array.from(bytes.subarray(i, Math.min(i + chunkSize, bytes.byteLength)))
+      );
+    }
+    return `data:audio/wav;base64,${btoa(binary)}`;
   }
 
   private getAudioContext(): AudioContext | null {
@@ -323,11 +416,21 @@ class HotelAudioNotificationService {
     const prefs = this.getPreferences();
     if (!prefs.soundEnabled && customVolume === undefined) return;
 
-    const ctx = this.getAudioContext();
-    if (!ctx) return;
-
     const sound = soundType || prefs.selectedSound || 'luxury_bell';
     const volume = customVolume !== undefined ? customVolume : prefs.volume;
+
+    // Play HTML5 Audio WAV chime so iOS AVAudioSession plays even when WebAudio is suspended
+    try {
+      const wavUri = this.buildChimeWavDataUri(sound === 'urgent_chime', volume);
+      const htmlAudio = new Audio(wavUri);
+      htmlAudio.volume = Math.max(0.1, Math.min(1.0, volume));
+      (htmlAudio as any).playsInline = true;
+      htmlAudio.setAttribute('playsinline', 'true');
+      htmlAudio.play().catch(() => {});
+    } catch {}
+
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
 
     const now = ctx.currentTime;
 
@@ -440,7 +543,96 @@ class HotelAudioNotificationService {
   }
 
   /**
-   * Broadcast and trigger on-screen live request alert and native iOS notification
+   * Dispatch a notification across Native WKWebView bridge, Capacitor Plugin, ServiceWorker, or Web Notification API
+   */
+  public async scheduleSystemOrNativeNotification(opts: {
+    id?: string;
+    title: string;
+    subtitle?: string;
+    body: string;
+    url?: string;
+  }): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+    let delivered = false;
+    const w = window as any;
+
+    // 1. Direct WKScriptMessageHandler (works in WKWebView without Capacitor plugin registration)
+    if (w.webkit?.messageHandlers?.purelyNotify?.postMessage) {
+      try {
+        w.webkit.messageHandlers.purelyNotify.postMessage({
+          action: 'scheduleNotification',
+          id: opts.id || String(Date.now()),
+          title: opts.title,
+          subtitle: opts.subtitle || 'Purely Istanbul',
+          body: opts.body,
+        });
+        delivered = true;
+      } catch {}
+    }
+
+    // 2. Capacitor Plugin bridge
+    if (isNativeHostApp()) {
+      try {
+        await XeniosNotifications.scheduleNotification({
+          id: opts.id,
+          title: opts.title,
+          subtitle: opts.subtitle,
+          body: opts.body,
+        });
+        delivered = true;
+      } catch {
+        try {
+          if (w.Capacitor?.Plugins?.XeniosNotifications?.scheduleNotification) {
+            await w.Capacitor.Plugins.XeniosNotifications.scheduleNotification({
+              id: opts.id,
+              title: opts.title,
+              subtitle: opts.subtitle,
+              body: opts.body,
+            });
+            delivered = true;
+          }
+        } catch {}
+      }
+    }
+
+    // 3. Service Worker & Web Notification API (for iOS/Android Home Screen PWA & Desktop/Mobile Web)
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await Promise.race([
+            navigator.serviceWorker.getRegistration(),
+            new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 1200)),
+          ]);
+          if (reg && typeof reg.showNotification === 'function') {
+            await reg.showNotification(opts.title, {
+              body: opts.body,
+              icon: '/logo.png',
+              badge: '/icon.png',
+              tag: opts.id || `purely-${Date.now()}`,
+              vibrate: [200, 100, 200],
+              data: { url: opts.url || '/hotel-portal/requests' },
+            } as any);
+            delivered = true;
+          }
+        }
+      } catch {}
+
+      if (!delivered) {
+        try {
+          new Notification(opts.title, {
+            body: opts.body,
+            icon: '/icon.png',
+          });
+          delivered = true;
+        } catch {}
+      }
+    }
+
+    return delivered;
+  }
+
+  /**
+   * Broadcast and trigger on-screen live request alert and native iOS / PWA notification
    */
   public async triggerGuestRequestAlert(req: ServiceRequest) {
     if (typeof window === 'undefined' || !req) return;
@@ -458,54 +650,27 @@ class HotelAudioNotificationService {
       this.play(soundType);
     }
 
-    // 2. Dispatch event for on-screen live banner / modal ONLY on staff management routes
-    if (showStaffBanner) {
+    // 2. Dispatch event for on-screen live banner / modal
+    if (showStaffBanner || isNativeHostApp()) {
       window.dispatchEvent(new CustomEvent('xenios_hotel_live_request_popup', { detail: req }));
     }
 
-    // 3. Trigger Native iOS Local Notification (Banner, Lock Screen, Sound)
+    // 3. Trigger Native iOS / PWA System Notification (Banner, Lock Screen, Sound)
     if (prefs.systemNotificationEnabled !== false) {
-      try {
-        const title = isUrgent
-          ? `🚨 ACİL TALEP: Birim ${req.roomNumber}`
-          : `🛎️ Yeni Sipariş / Talep: Birim ${req.roomNumber}`;
-        const cleanNotes = req.notes ? req.notes.replace(/\s+/g, ' ').trim() : '';
-        const body = `${req.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
-        const subtitle = req.hotelName || 'Purely Istanbul';
+      const title = isUrgent
+        ? `🚨 ACİL TALEP: Birim ${req.roomNumber}`
+        : `🛎️ Yeni Sipariş / Talep: Birim ${req.roomNumber}`;
+      const cleanNotes = req.notes ? req.notes.replace(/\s+/g, ' ').trim() : '';
+      const body = `${req.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
+      const subtitle = req.hotelName || 'Purely Istanbul';
 
-        if (isNativeHostApp()) {
-          let scheduled = false;
-          try {
-            await XeniosNotifications.scheduleNotification({
-              id: req.id,
-              title,
-              subtitle,
-              body,
-            });
-            scheduled = true;
-          } catch {
-            // Fallback to direct Capacitor Plugins bridge if available
-          }
-          if (!scheduled) {
-            const w = window as any;
-            if (w.Capacitor?.Plugins?.XeniosNotifications?.scheduleNotification) {
-              await w.Capacitor.Plugins.XeniosNotifications.scheduleNotification({
-                id: req.id,
-                title,
-                subtitle,
-                body,
-              });
-            }
-          }
-        } else if (showStaffBanner && 'Notification' in window && Notification.permission === 'granted') {
-          new Notification(title, {
-            body,
-            icon: '/icon.png',
-          });
-        }
-      } catch (err) {
-        console.warn('System notification trigger warning:', err);
-      }
+      await this.scheduleSystemOrNativeNotification({
+        id: req.id,
+        title,
+        subtitle,
+        body,
+        url: '/hotel-portal/requests',
+      });
     }
   }
 }

@@ -1,3 +1,5 @@
+import { HotelAudioNotification, isNativeHostApp } from './hotel-audio-notification';
+
 export interface PwaNotificationPrefs {
   enabled: boolean;
   roomRequests: boolean;
@@ -38,16 +40,26 @@ export const PwaNotificationManager = {
 
   isSupported(): boolean {
     if (typeof window === 'undefined') return false;
-    return 'Notification' in window && 'serviceWorker' in navigator;
+    if (isNativeHostApp()) return true;
+    return 'Notification' in window;
   },
 
   getPermission(): NotificationPermission {
-    if (typeof window === 'undefined' || !('Notification' in window)) return 'default';
+    if (typeof window === 'undefined') return 'default';
+    if (isNativeHostApp()) return 'granted';
+    if (!('Notification' in window)) return 'default';
     return Notification.permission;
   },
 
   async requestPermission(): Promise<NotificationPermission> {
-    if (!this.isSupported()) return 'denied';
+    if (typeof window === 'undefined') return 'denied';
+    if (isNativeHostApp()) {
+      const ok = await HotelAudioNotification.requestSystemNotificationPermission();
+      const current = this.getPreferences();
+      this.savePreferences({ ...current, enabled: true });
+      return ok ? 'granted' : 'granted';
+    }
+    if (!('Notification' in window)) return 'denied';
     try {
       const perm = await Notification.requestPermission();
       if (perm === 'granted') {
@@ -76,39 +88,22 @@ export const PwaNotificationManager = {
     const prefs = this.getPreferences();
     if (!prefs.enabled) return;
 
-    if (!this.isSupported() || Notification.permission !== 'granted') {
-      return;
+    if (prefs.sound) {
+      HotelAudioNotification.play('digital_ping', 0.65).catch(() => {});
     }
 
-    try {
-      if ('serviceWorker' in navigator) {
-        const reg = await navigator.serviceWorker.ready;
-        if (reg && reg.showNotification) {
-          await reg.showNotification(title, {
-            body,
-            icon: '/logo.png',
-            badge: '/icon.png',
-            vibrate: prefs.sound ? [100, 50, 100] : undefined,
-            data: { url }
-          } as any);
-          return;
-        }
-      }
-
-      // Fallback
-      new Notification(title, {
-        body,
-        icon: '/logo.png'
-      });
-    } catch (e) {
-      console.warn("Notification trigger error:", e);
-    }
+    await HotelAudioNotification.scheduleSystemOrNativeNotification({
+      title,
+      body,
+      subtitle: 'Purely Istanbul',
+      url,
+    });
   },
 
   async testNotification() {
     await this.showNotification(
-      '🛎️ Xenios Istanbul Bildirim Testi',
-      'PWA bildirimleriniz başarıyla aktif edildi! Oda talepleriniz ve rezervasyon güncellemeleri anında buraya iletilecektir.',
+      '🛎️ purelyİstanbul Bildirim Testi',
+      'Bildirimleriniz başarıyla aktif edildi! Birim talepleriniz ve rezervasyon güncellemeleri anında buraya iletilecektir.',
       '/hotel-portal/requests'
     );
   },

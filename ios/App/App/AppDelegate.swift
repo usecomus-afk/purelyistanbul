@@ -196,19 +196,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let ageSeconds = createdDate != nil ? Date().timeIntervalSince(createdDate!) : 999999.0
 
                 if isFirstEverPoll {
-                    let isRecentOnFirstBoot = ageSeconds < 180.0
+                    let isRecentOnFirstBoot = ageSeconds > -300.0 && ageSeconds < 180.0
                     if AppDelegate.markIfNew(reqId) && isRecentOnFirstBoot && isActiveStatus {
                         let isUrgent = priority == "acil"
-                        let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
+                        let title = isUrgent ? "🚨 ACİL TALEP: Birim \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Birim \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
                         let body = cleanNotes.isEmpty ? serviceTitle : "\(serviceTitle) · \(cleanNotes)"
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)
                     }
                 } else {
-                    let isWithinActiveWindow = ageSeconds < 1800.0
+                    let isWithinActiveWindow = ageSeconds > -300.0 && ageSeconds < 1800.0
                     if AppDelegate.markIfNew(reqId) && isWithinActiveWindow && isActiveStatus {
                         let isUrgent = priority == "acil"
-                        let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
+                        let title = isUrgent ? "🚨 ACİL TALEP: Birim \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Birim \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
                         let body = cleanNotes.isEmpty ? serviceTitle : "\(serviceTitle) · \(cleanNotes)"
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)

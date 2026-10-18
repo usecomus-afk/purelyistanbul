@@ -75,7 +75,7 @@ export function HotelLiveAlertBanner() {
   const isUrgent = activeAlert.priority === 'acil';
 
   return (
-    <div className="fixed top-4 right-4 z-50 max-w-md w-[calc(100vw-32px)] sm:w-[420px] animate-in slide-in-from-top-4 duration-300">
+    <div className="fixed top-[max(1rem,calc(env(safe-area-inset-top,0px)+0.5rem))] right-4 z-[9999] max-w-md w-[calc(100vw-32px)] sm:w-[420px] animate-in slide-in-from-top-4 duration-300">
       <div className={`p-4 rounded-3xl shadow-2xl border backdrop-blur-xl transition-all ${
         isUrgent 
           ? 'bg-red-950/95 border-red-500 text-white shadow-red-950/50' 

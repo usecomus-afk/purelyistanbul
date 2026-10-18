@@ -2,6 +2,34 @@ import UIKit
 import Capacitor
 import AVFoundation
 import WebKit
+import UserNotifications
+
+class PurelyNotifyScriptHandler: NSObject, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "purelyNotify" else { return }
+        if let bodyDict = message.body as? [String: Any] {
+            let action = (bodyDict["action"] as? String) ?? "scheduleNotification"
+            if action == "requestPermissions" {
+                if let appDel = UIApplication.shared.delegate as? AppDelegate {
+                    appDel.requestNotificationPermissions()
+                }
+                return
+            }
+            let id = (bodyDict["id"] as? String) ?? UUID().uuidString
+            let title = (bodyDict["title"] as? String) ?? "purelyİstanbul"
+            let subtitle = bodyDict["subtitle"] as? String
+            let body = (bodyDict["body"] as? String) ?? "Yeni bir bildiriminiz var."
+            AppDelegate.deliverLocalNotification(id: id, title: title, subtitle: subtitle, body: body)
+        }
+    }
+}
+
+class PurelyBridgeViewController: CAPBridgeViewController {
+    override open func capacitorDidLoad() {
+        super.capacitorDidLoad()
+        bridge?.registerPluginInstance(XeniosNotificationPlugin())
+    }
+}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -10,6 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var splashPlayerLayer: AVPlayerLayer?
     private var splashEndObserver: NSObjectProtocol?
     private var isSplashDismissed = false
+    private let notifyScriptHandler = PurelyNotifyScriptHandler()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
@@ -21,7 +50,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             bridgeVC = existingVC
         } else {
             let newWindow = UIWindow(windowScene: windowScene)
-            let newVC = CAPBridgeViewController()
+            let newVC = PurelyBridgeViewController()
             newWindow.rootViewController = newVC
             self.window = newWindow
             bridgeVC = newVC
@@ -37,6 +66,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.webView?.scrollView.contentInsetAdjustmentBehavior = .never
         bridgeVC.webView?.scrollView.contentInset = .zero
         bridgeVC.webView?.scrollView.scrollIndicatorInsets = .zero
+
+        bridgeVC.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "purelyNotify")
+        bridgeVC.webView?.configuration.userContentController.add(notifyScriptHandler, name: "purelyNotify")
 
         let videoURL = Bundle.main.url(forResource: "splash-intro", withExtension: "mp4", subdirectory: "public/videos")
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
