@@ -17,12 +17,13 @@ export interface HotelAudioNotificationPrefs {
 interface XeniosNotificationPluginType {
   requestNotificationPermissions(): Promise<{ display: 'granted' | 'denied' }>;
   checkNotificationPermissions(): Promise<{ display: 'granted' | 'denied' | 'prompt' }>;
-  scheduleNotification(options: { title: string; body: string }): Promise<{ success: boolean }>;
+  scheduleNotification(options: { id?: string; title: string; body: string; subtitle?: string }): Promise<{ success: boolean }>;
 }
 
 const XeniosNotifications = registerPlugin<XeniosNotificationPluginType>('XeniosNotifications');
 
 const STORAGE_KEY = 'xenios_hotel_audio_notification_prefs';
+const NOTIFIED_IDS_KEY = 'xenios_notified_request_ids';
 
 const DEFAULT_PREFS: HotelAudioNotificationPrefs = {
   soundEnabled: true,
@@ -35,6 +36,33 @@ const DEFAULT_PREFS: HotelAudioNotificationPrefs = {
 
 class HotelAudioNotificationService {
   private audioCtx: AudioContext | null = null;
+  private notifiedRequestIds: Set<string> = new Set();
+
+  public hasNotified(requestId?: string): boolean {
+    if (!requestId) return false;
+    if (this.notifiedRequestIds.has(requestId)) return true;
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = sessionStorage.getItem(NOTIFIED_IDS_KEY);
+        if (raw) {
+          const arr: string[] = JSON.parse(raw);
+          arr.forEach((id) => this.notifiedRequestIds.add(id));
+        }
+      } catch {}
+    }
+    return this.notifiedRequestIds.has(requestId);
+  }
+
+  public markNotified(requestId?: string) {
+    if (!requestId) return;
+    this.notifiedRequestIds.add(requestId);
+    if (typeof window !== 'undefined') {
+      try {
+        const arr = Array.from(this.notifiedRequestIds).slice(-200);
+        sessionStorage.setItem(NOTIFIED_IDS_KEY, JSON.stringify(arr));
+      } catch {}
+    }
+  }
 
   public getPreferences(): HotelAudioNotificationPrefs {
     if (typeof window === 'undefined') return DEFAULT_PREFS;
@@ -254,7 +282,9 @@ class HotelAudioNotificationService {
    * Broadcast and trigger on-screen live request alert and native iOS notification
    */
   public async triggerGuestRequestAlert(req: ServiceRequest) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !req) return;
+    if (req.id && this.hasNotified(req.id)) return;
+    if (req.id) this.markNotified(req.id);
 
     const isUrgent = req.priority === 'acil';
     const prefs = this.getPreferences();
@@ -274,11 +304,13 @@ class HotelAudioNotificationService {
         const title = isUrgent
           ? `🚨 ACİL TALEP: Oda ${req.roomNumber}`
           : `🛎️ Yeni Talep: Oda ${req.roomNumber}`;
-        const body = `${req.serviceTitle}${req.notes ? ` · ${req.notes}` : ''}`;
+        const body = `${req.serviceTitle}${req.notes ? ` · ${req.notes.replace(/\s+/g, ' ')}` : ''}`;
 
         if (Capacitor.isNativePlatform()) {
           await XeniosNotifications.scheduleNotification({
+            id: req.id,
             title,
+            subtitle: req.hotelName || 'Purely Istanbul',
             body,
           });
         } else if ('Notification' in window && Notification.permission === 'granted') {

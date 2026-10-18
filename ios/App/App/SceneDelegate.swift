@@ -47,7 +47,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)
             bridgeVC.webView?.evaluateJavaScript(scriptSource, completionHandler: nil)
 
-            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try? AVAudioSession.sharedInstance().setActive(true)
 
             let container = UIView(frame: win.bounds)
             container.autoresizingMask = [.flexibleWidth, .flexibleHeight]

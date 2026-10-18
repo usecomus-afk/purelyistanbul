@@ -58,6 +58,9 @@ function stripUndefined<T extends Record<string, any>>(obj: T): T {
   return clean as T;
 }
 
+const seenRemoteRequestIds = new Set<string>();
+let initialSnapshotSeeded = false;
+
 export const FirestoreService = {
   // 🌐 CATALOG REALTIME SYNC (Experiences, Hotels, Properties, Suppliers -> Web Marketplace + Mobile App)
   async upsertExperience(exp: Experience): Promise<void> {
@@ -360,14 +363,14 @@ export const FirestoreService = {
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
       // Query without composite index requirement so it never throws missing index error
-      const q = query(colRef, limit(150));
+      const q = query(colRef, limit(200));
 
       return onSnapshot(q, (snapshot) => {
         const deletedIds = typeof window !== 'undefined' ? XeniosStore.getDeletedRequestIds() : new Set<string>();
         const statusOverrides = typeof window !== 'undefined' ? XeniosStore.getRequestStatusOverrides() : {};
         const list: ServiceRequest[] = [];
         snapshot.forEach((d) => {
-          if (deletedIds.has(d.id)) return;
+          if (deletedIds.has(d.id) || d.id.includes('test')) return;
           const rawData = d.data() as any;
           if (!rawData?.serviceTitle && !rawData?.serviceKey) return;
           const item: ServiceRequest = { id: d.id, ...rawData };
@@ -385,21 +388,33 @@ export const FirestoreService = {
         // Sort descending by createdAt
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        // Detect newly arrived remote requests
+        // Detect newly arrived remote requests reliably across all listeners
         if (typeof window !== 'undefined') {
-          const currentLocal = XeniosStore.getRequests();
-          const existingIds = new Set(currentLocal.map((r) => r.id));
-
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added' && !deletedIds.has(change.doc.id)) {
-              const newReq = { id: change.doc.id, ...(change.doc.data() as any) } as ServiceRequest;
-              if (!existingIds.has(newReq.id) && newReq.status === 'pending') {
-                if (!hotelId || !newReq.hotelId || newReq.hotelId === hotelId) {
-                  window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: newReq }));
+          const nowMs = Date.now();
+          if (!initialSnapshotSeeded) {
+            initialSnapshotSeeded = true;
+            list.forEach((item) => {
+              const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
+              const isJustCreated = createdMs > 0 && nowMs - createdMs < 20000;
+              seenRemoteRequestIds.add(item.id);
+              if (isJustCreated && item.status === 'pending') {
+                if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
+                  window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
                 }
               }
-            }
-          });
+            });
+          } else {
+            list.forEach((item) => {
+              if (!seenRemoteRequestIds.has(item.id)) {
+                seenRemoteRequestIds.add(item.id);
+                if (item.status === 'pending') {
+                  if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
+                    window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
+                  }
+                }
+              }
+            });
+          }
 
           XeniosStore.syncRequestsFromRemote(filtered);
         }
@@ -422,16 +437,47 @@ export const FirestoreService = {
 
   async addRequest(req: Omit<ServiceRequest, 'id' | 'createdAt' | 'updatedAt'>): Promise<ServiceRequest> {
     const local = XeniosStore.addRequest(req);
+    seenRemoteRequestIds.add(local.id);
     if (!db || !isFirebaseConfigured) return local;
+
+    const payload = stripUndefined({
+      ...local,
+      updatedAt: new Date().toISOString()
+    });
 
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
-      await setDoc(doc(colRef, local.id), {
-        ...local,
-        updatedAt: new Date().toISOString()
-      });
+      await setDoc(doc(colRef, local.id), payload);
     } catch (e) {
-      console.warn("Firestore save error:", e);
+      console.warn("Firestore SDK save error, using REST fallback:", e);
+      try {
+        await fetch(
+          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests?documentId=${encodeURIComponent(local.id)}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                id: { stringValue: String(local.id) },
+                hotelId: { stringValue: String(local.hotelId || 'hotel-heritage-1') },
+                hotelName: { stringValue: String(local.hotelName || 'Purely Istanbul Partner Hotel') },
+                roomNumber: { stringValue: String(local.roomNumber || '101') },
+                serviceKey: { stringValue: String(local.serviceKey || 'service') },
+                serviceTitle: { stringValue: String(local.serviceTitle || 'Oda Hizmeti') },
+                notes: { stringValue: String(local.notes || '') },
+                status: { stringValue: String(local.status || 'pending') },
+                department: { stringValue: String(local.department || 'Housekeeping') },
+                stage: { stringValue: String(local.stage || 'pending') },
+                priority: { stringValue: String(local.priority || 'standart') },
+                createdAt: { stringValue: String(local.createdAt) },
+                updatedAt: { stringValue: new Date().toISOString() },
+              },
+            }),
+          }
+        );
+      } catch (restErr) {
+        console.warn("Firestore REST fallback error:", restErr);
+      }
     }
     return local;
   },

@@ -206,6 +206,36 @@ export async function createRoomTicket({
   const ticketId = `COMUS-${Math.floor(100000 + Math.random() * 900000)}`;
   const waMessage = `🚨 *[Purely Istanbul • Comus Acil Oda Kaydı]*\n• *Kayıt No:* ${ticketId}\n• *Oda / Ünite:* ${unitId}\n• *Hizmet Tipi:* ${serviceType}\n• *Detay:* ${details}\n• *Öncelik:* ACİL (URGENT)`;
 
+  // Persist to Firestore service_requests so the Hotel App / Lock Screen Notification triggers immediately
+  try {
+    const reqDocId = `req-${Date.now()}`;
+    const nowIso = new Date().toISOString();
+    await fetch(
+      `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests?documentId=${reqDocId}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: {
+            id: { stringValue: reqDocId },
+            hotelId: { stringValue: 'hotel-heritage-1' },
+            hotelName: { stringValue: 'Old City Heritage Hotel Istanbul' },
+            roomNumber: { stringValue: String(unitId || '101') },
+            serviceKey: { stringValue: normalizedActionService },
+            serviceTitle: { stringValue: `Comus Talebi: ${serviceType}` },
+            notes: { stringValue: String(details || '') },
+            status: { stringValue: 'pending' },
+            department: { stringValue: 'Concierge & Front Desk' },
+            stage: { stringValue: 'pending' },
+            priority: { stringValue: 'acil' },
+            createdAt: { stringValue: nowIso },
+            updatedAt: { stringValue: nowIso },
+          },
+        }),
+      }
+    );
+  } catch {}
+
   const managerPhone = process.env.PROPERTY_MANAGER_WHATSAPP || '905325554433';
   const deepLinkUrl = `https://api.whatsapp.com/send?phone=${managerPhone}&text=${encodeURIComponent(waMessage)}`;
 

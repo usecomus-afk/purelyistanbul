@@ -27,29 +27,30 @@ export function HotelLiveAlertBanner() {
     };
     window.addEventListener('xenios_hotel_audio_prefs_updated', handleUpdatePrefs);
 
-    const handleNewRequest = (e: Event) => {
+    const handleCreatedRequest = (e: Event) => {
       const customEvent = e as CustomEvent<ServiceRequest>;
       const req = customEvent.detail;
       if (!req) return;
+      HotelAudioNotification.triggerGuestRequestAlert(req);
+    };
 
-      const activeHotelId = XeniosStore.getActiveHotelId();
-      // If request belongs to current hotel or global
-      if (!req.hotelId || req.hotelId === activeHotelId) {
-        HotelAudioNotification.triggerGuestRequestAlert(req);
-        const currentPrefs = HotelAudioNotification.getPreferences();
-        if (currentPrefs.visualBannerEnabled) {
-          setActiveAlert(req);
-        }
+    const handlePopupBanner = (e: Event) => {
+      const customEvent = e as CustomEvent<ServiceRequest>;
+      const req = customEvent.detail;
+      if (!req) return;
+      const currentPrefs = HotelAudioNotification.getPreferences();
+      if (currentPrefs.visualBannerEnabled) {
+        setActiveAlert(req);
       }
     };
 
-    window.addEventListener('xenios_request_created', handleNewRequest);
-    window.addEventListener('xenios_hotel_live_request_popup', handleNewRequest);
+    window.addEventListener('xenios_request_created', handleCreatedRequest);
+    window.addEventListener('xenios_hotel_live_request_popup', handlePopupBanner);
 
     return () => {
       window.removeEventListener('xenios_hotel_audio_prefs_updated', handleUpdatePrefs);
-      window.removeEventListener('xenios_request_created', handleNewRequest);
-      window.removeEventListener('xenios_hotel_live_request_popup', handleNewRequest);
+      window.removeEventListener('xenios_request_created', handleCreatedRequest);
+      window.removeEventListener('xenios_hotel_live_request_popup', handlePopupBanner);
     };
   }, []);
 

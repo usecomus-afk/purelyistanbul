@@ -82,7 +82,6 @@ export default function HotelPortalLayout({
 
   return (
     <HotelAuthGuard>
-      <HotelLiveAlertBanner />
       <div className={`${isSubPage ? 'min-h-[100dvh]' : 'fixed inset-0 h-[100dvh] w-screen overscroll-none'} text-[#221F1C] flex flex-col relative`}>
         {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
         <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">

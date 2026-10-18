@@ -753,7 +753,7 @@ export const XeniosStore = {
       if (stored) {
         const list: ServiceRequest[] = JSON.parse(stored);
         const realList = list
-          .filter(r => !r.isDemo && !r.id?.includes('demo') && !deletedIds.has(r.id))
+          .filter(r => !r.isDemo && !r.id?.includes('demo') && !r.id?.includes('test') && !deletedIds.has(r.id))
           .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
         if (realList.length !== list.length) {
           safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(realList));
@@ -820,7 +820,7 @@ export const XeniosStore = {
       const deletedIds = this.getDeletedRequestIds();
       const statusOverrides = this.getRequestStatusOverrides();
       const cleaned = list
-        .filter(r => !r.isDemo && !r.id?.includes('demo') && !deletedIds.has(r.id))
+        .filter(r => !r.isDemo && !r.id?.includes('demo') && !r.id?.includes('test') && !deletedIds.has(r.id))
         .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
       safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(cleaned));
       if (typeof window !== 'undefined') {
