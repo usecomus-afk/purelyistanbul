@@ -82,12 +82,12 @@ export default function HotelLiveRequestsPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             Canlı Misafir Talepleri
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5">
             Konaklama birimlerinden gelen QR taleplerini sesli uyarı ve canlı ekran bildirimleriyle takip edin.
           </p>
         </div>
@@ -105,9 +105,9 @@ export default function HotelLiveRequestsPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+      <div className="luxury-service-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 dark:text-slate-400 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
           <input
             type="text"
             value={search}
@@ -121,7 +121,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="text-xs bg-amber-50/50 border border-amber-200 text-zinc-800 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Departmanlar</option>
             <option value="Housekeeping">Housekeeping</option>
@@ -134,7 +134,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 text-zinc-700 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+            className="text-xs bg-amber-50/50 border border-amber-200 text-zinc-800 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
           >
             <option value="all">Tüm Durumlar</option>
             <option value="pending">Bekleyenler</option>
@@ -147,8 +147,8 @@ export default function HotelLiveRequestsPage() {
       {/* Requests List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="p-12 text-center bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200 text-zinc-500 dark:text-slate-400 space-y-2 shadow-xs">
-            <BellRing className="w-8 h-8 mx-auto text-amber-600/60" />
+          <div className="luxury-service-card p-12 text-center rounded-3xl text-zinc-600 space-y-2">
+            <BellRing className="w-8 h-8 mx-auto text-amber-700/70" />
             <p className="text-xs font-semibold">Şu anda bekleyen veya filtrelere uyan talep bulunmuyor.</p>
           </div>
         ) : (
@@ -156,12 +156,12 @@ export default function HotelLiveRequestsPage() {
             const isCompleted = req.status === 'completed';
             const cardContent = (
               <div
-                className={`p-4 rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs min-w-full shrink-0 snap-start ${
+                className={`p-4 rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-full shrink-0 snap-start ${
                   isCompleted
-                    ? 'bg-white/70 opacity-80 border-none'
+                    ? 'luxury-service-card opacity-80'
                     : req.priority === 'acil'
-                    ? 'bg-red-50/50 border border-red-300 shadow-xs'
-                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 hover:border-amber-400'
+                    ? 'bg-red-50/70 backdrop-blur-[18px] border-[1.5px] border-red-300 shadow-xs'
+                    : 'luxury-service-card'
                 }`}
               >
                 <div className="space-y-1.5 min-w-0 flex-1 relative">
@@ -179,11 +179,11 @@ export default function HotelLiveRequestsPage() {
                     </button>
                   )}
                   <div className="flex flex-wrap items-center gap-2 pr-14 sm:pr-0">
-                    <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
+                    <span className="golden-pill-badge px-2.5 py-1 rounded-full text-[#2C1E0F] font-mono font-bold text-xs">
                       Birim {req.roomNumber}
                     </span>
                     {req.hotelName && (
-                      <span className="px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-800 font-semibold text-[11px] border border-amber-200">
+                      <span className="golden-pill-badge px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-semibold text-[11px]">
                         {req.hotelName}
                       </span>
                     )}
@@ -195,7 +195,7 @@ export default function HotelLiveRequestsPage() {
                       </span>
                     )}
                     {req.department && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 dark:text-slate-400 font-semibold">
+                      <span className="golden-pill-badge text-[10px] px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-semibold">
                         {req.department}
                       </span>
                     )}

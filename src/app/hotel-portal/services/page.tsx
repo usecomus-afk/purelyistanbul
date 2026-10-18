@@ -280,24 +280,24 @@ export default function HotelPortalServicesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel?.name}</span>
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel?.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             Konaklama İçi Hizmetler &amp; Menü
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5">
             Yiyecek-içecek (F&amp;B) menüsünü ve konaklama içi servislerin misafir ekranındaki görünürlüğünü yönetin.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1.5 p-1 bg-amber-100/60 rounded-2xl border border-amber-200">
+        <div className="flex items-center gap-1.5 p-1 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border border-[rgba(230,185,75,0.55)]">
           <button
             onClick={() => setActiveTab('menu')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'menu'
                 ? 'bg-amber-500 text-white shadow-xs'
-                : 'text-zinc-700 hover:bg-amber-200/50'
+                : 'text-zinc-800 hover:bg-amber-200/50'
             }`}
           >
             <ChefHat className="w-3.5 h-3.5" />
@@ -305,10 +305,10 @@ export default function HotelPortalServicesPage() {
           </button>
           <button
             onClick={() => setActiveTab('services')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'services'
                 ? 'bg-amber-500 text-white shadow-xs'
-                : 'text-zinc-700 hover:bg-amber-200/50'
+                : 'text-zinc-800 hover:bg-amber-200/50'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -321,9 +321,9 @@ export default function HotelPortalServicesPage() {
       {activeTab === 'menu' && (
         <div className="space-y-5">
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 dark:border-slate-800 p-4 rounded-3xl border border-amber-200/80 shadow-xs">
+          <div className="luxury-service-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl">
             <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" />
               <input
                 type="text"
                 value={searchMenu}
@@ -347,10 +347,10 @@ export default function HotelPortalServicesPage() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-3.5 py-1.5 rounded-xl whitespace-nowrap font-medium transition cursor-pointer ${
+                className={`text-xs px-3.5 py-1.5 rounded-full whitespace-nowrap font-semibold active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-amber-500 text-white font-bold shadow-xs'
-                    : 'bg-white dark:bg-slate-900 dark:border-slate-800 text-zinc-600 dark:text-slate-400 hover:bg-amber-50 border border-amber-200/70'
+                    ? 'bg-amber-500 text-white font-bold shadow-xs border border-amber-600'
+                    : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] hover:bg-[rgba(240,195,70,0.48)]'
                 }`}
               >
                 {cat}
@@ -374,10 +374,10 @@ export default function HotelPortalServicesPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-1">
-                        <span className="text-[10px] uppercase font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-full border border-amber-200">
+                        <span className="golden-pill-badge text-[10px] uppercase font-bold text-[#2C1E0F] px-2.5 py-0.5 rounded-full">
                           {item.category}
                         </span>
-                        <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-300">
                           €{item.price}
                         </span>
                       </div>
@@ -385,27 +385,27 @@ export default function HotelPortalServicesPage() {
                         {item.name}
                       </h3>
                       {item.preparationTimeMinutes && (
-                        <span className="text-[10px] text-zinc-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3 text-amber-600" />
+                        <span className="text-[10px] text-zinc-600 flex items-center gap-1 mt-0.5">
+                          <Clock className="w-3 h-3 text-amber-700" />
                           <span>{item.preparationTimeMinutes} dk</span>
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-zinc-600 dark:text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
+                  <p className="text-[11px] text-zinc-700 line-clamp-2 leading-relaxed">{item.description}</p>
 
                   {item.ingredients && (
-                    <div className="text-[10px] text-zinc-500 dark:text-slate-400 bg-amber-50/50 p-2 rounded-xl border border-amber-100 line-clamp-1">
+                    <div className="text-[10px] text-zinc-700 bg-[rgba(245,215,130,0.22)] p-2 rounded-xl border border-[rgba(230,185,75,0.55)] line-clamp-1">
                       <strong>İçindekiler:</strong> {item.ingredients}
                     </div>
                   )}
                 </div>
 
-                <div className="pt-2.5 border-t border-zinc-100 flex items-center justify-between gap-2">
+                <div className="pt-2.5 border-t border-[rgba(230,185,75,0.4)] flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleToggleAvailability(item)}
-                    className={`text-[10px] font-bold px-2.5 py-1 rounded-xl border transition cursor-pointer ${
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition cursor-pointer ${
                       item.available
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
                         : 'bg-zinc-100 text-zinc-600 dark:text-slate-400 border-zinc-200 hover:bg-zinc-200'
@@ -416,7 +416,7 @@ export default function HotelPortalServicesPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEditModal(item)}
-                      className="p-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition cursor-pointer"
+                      className="p-1.5 rounded-xl bg-[rgba(240,195,70,0.35)] hover:bg-[rgba(240,195,70,0.5)] text-[#2C1E0F] border border-[rgba(220,175,50,0.6)] transition cursor-pointer"
                       title="Düzenle"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -435,15 +435,15 @@ export default function HotelPortalServicesPage() {
           </div>
 
           {filteredMenuItems.length === 0 && (
-            <div className="text-center py-12 bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl border border-amber-200 p-6 space-y-2">
-              <UtensilsCrossed className="w-10 h-10 text-amber-400 mx-auto" />
+            <div className="luxury-service-card text-center py-12 rounded-3xl p-6 space-y-2">
+              <UtensilsCrossed className="w-10 h-10 text-amber-600 mx-auto" />
               <h3 className="text-sm font-bold text-zinc-800 dark:text-slate-200">Menüde ürün bulunamadı</h3>
-              <p className="text-xs text-zinc-500 dark:text-slate-400 max-w-xs mx-auto">
+              <p className="text-xs text-zinc-600 max-w-xs mx-auto">
                 Arama kriterlerinize uygun yemek bulunamadı veya bu kategoride henüz ürün yok.
               </p>
               <button
                 onClick={handleOpenAddModal}
-                className="mt-2 text-xs font-bold text-amber-800 bg-amber-50 px-4 py-2 rounded-xl border border-amber-200"
+                className="golden-pill-badge mt-2 text-xs font-bold text-[#2C1E0F] px-4 py-2 rounded-full"
               >
                 + Yeni Ürün Ekle
               </button>

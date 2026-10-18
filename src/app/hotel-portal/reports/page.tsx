@@ -304,18 +304,18 @@ export default function HotelReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-amber-700" />
             <span>Raporlar, Misafir Folyo & Analitik</span>
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5">
             Birim bazlı ücretli talep/sipariş folyosu, online ödemeler, işlem hacimleri ve Comus AI kullanım analizleri.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-amber-100/60 p-1.5 px-3 rounded-2xl border border-amber-200 text-xs font-bold text-amber-900 self-start sm:self-auto">
+        <div className="golden-pill-badge flex items-center gap-2 p-1.5 px-3 rounded-full text-xs font-bold text-[#2C1E0F] self-start sm:self-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Canlı Folyo & Veri Akışı</span>
         </div>
@@ -324,17 +324,17 @@ export default function HotelReportsPage() {
       {/* ===================================================================== */}
       {/* MİSAFİR FOLYO & BİRİM HESABI / ONLİNE ÖDEME TAKİP MASASI              */}
       {/* ===================================================================== */}
-      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-amber-300/90 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-100 pb-4">
+      <div className="luxury-service-card p-5 sm:p-6 rounded-3xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[rgba(230,185,75,0.45)] pb-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase tracking-wider">
-              <Receipt className="w-3.5 h-3.5 text-amber-700" />
+            <div className="golden-pill-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[#2C1E0F] text-[10px] font-bold uppercase tracking-wider">
+              <Receipt className="w-3.5 h-3.5 text-amber-800" />
               <span>Misafir Folyo & Ödeme Takibi</span>
             </div>
             <h2 className="text-base sm:text-lg font-bold font-serif text-zinc-900 dark:text-slate-100">
               Birim Bazlı Ücretli Siparişler, Hizmet Talepleri ve Online Ödemeler
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-slate-400">
+            <p className="text-xs text-zinc-600">
               Uygulama üzerinden iletilen tüm ücretli yeme-içme siparişleri, konaklama içi talepler ve online kart ödemeleri birim numarasıyla birlikte anlık tutulur.
             </p>
           </div>
@@ -343,7 +343,7 @@ export default function HotelReportsPage() {
         {/* 4 Guest Folio KPI Summary Boxes */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* 1. Toplam Folyo Hacmi */}
-          <div className="p-4 rounded-2xl bg-[#FAF8F4] border border-[#D8CBB8] space-y-1">
+          <div className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1">
             <div className="flex items-center justify-between text-xs text-zinc-600">
               <span className="font-bold text-zinc-800">Toplam Ücretli İşlem</span>
               <Wallet className="w-4 h-4 text-amber-700" />
@@ -352,13 +352,13 @@ export default function HotelReportsPage() {
               {folioTotals.totalTRY > 0 ? `${folioTotals.totalTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
               {folioTotals.totalEUR > 0 ? ` + ${folioTotals.totalEUR.toLocaleString('tr-TR')} €` : ''}
             </div>
-            <span className="text-[10px] text-zinc-500 block">
+            <span className="text-[10px] text-zinc-600 block">
               Toplam {folioItems.length} ücretli sipariş & talep
             </span>
           </div>
 
           {/* 2. Online Ödeme Yapanlar */}
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
+          <div className="p-4 rounded-2xl bg-emerald-50/75 backdrop-blur-[18px] border border-emerald-200 space-y-1">
             <div className="flex items-center justify-between text-xs text-emerald-900">
               <span className="font-bold">Online Ödeme Yapanlar</span>
               <CreditCard className="w-4 h-4 text-emerald-700" />
@@ -373,7 +373,7 @@ export default function HotelReportsPage() {
           </div>
 
           {/* 3. Birim Folyosunda Bekleyen */}
-          <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-1">
+          <div className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1">
             <div className="flex items-center justify-between text-xs text-amber-900">
               <span className="font-bold">Birim Hesabı (Folyo)</span>
               <Receipt className="w-4 h-4 text-amber-700" />
@@ -388,7 +388,7 @@ export default function HotelReportsPage() {
           </div>
 
           {/* 4. Aktif Folyo Birimi */}
-          <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-1">
+          <div className="p-4 rounded-2xl bg-sky-50/75 backdrop-blur-[18px] border border-sky-200 space-y-1">
             <div className="flex items-center justify-between text-xs text-sky-900">
               <span className="font-bold">Folyo Açık Birim Sayısı</span>
               <DoorOpen className="w-4 h-4 text-sky-700" />
@@ -431,17 +431,17 @@ export default function HotelReportsPage() {
                     onClick={() =>
                       setSelectedRoomFilter(isSelected ? 'all' : rm.roomNumber)
                     }
-                    className={`p-3.5 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between gap-2 ${
+                    className={`p-3.5 rounded-2xl border text-left active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex flex-col justify-between gap-2 ${
                       isSelected
-                        ? 'bg-amber-100/90 border-amber-600 ring-2 ring-amber-500/30 shadow-xs'
-                        : 'bg-[#FAF8F4] hover:bg-amber-50/60 border-[#D8CBB8]'
+                        ? 'bg-[rgba(240,195,70,0.42)] border-[rgba(220,175,50,0.85)] ring-2 ring-amber-500/30 shadow-xs'
+                        : 'bg-[rgba(245,215,130,0.22)] hover:bg-[rgba(245,215,130,0.32)] border-[rgba(230,185,75,0.55)]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-0.5 rounded-lg bg-amber-900 text-white font-mono font-bold text-xs">
+                      <span className="golden-pill-badge px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-mono font-bold text-xs">
                         Birim {rm.roomNumber}
                       </span>
-                      <span className="text-[11px] font-semibold text-zinc-600">
+                      <span className="text-[11px] font-semibold text-zinc-700">
                         {rm.count} Ücretli İşlem
                       </span>
                     </div>
@@ -560,13 +560,13 @@ export default function HotelReportsPage() {
                   key={item.id}
                   className={`p-3.5 sm:p-4 rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                     isOnline
-                      ? 'bg-emerald-50/35 border-emerald-200/90 hover:border-emerald-400'
-                      : 'bg-[#FAF8F4] border-[#D8CBB8] hover:border-amber-400'
+                      ? 'bg-emerald-50/45 border-emerald-200/90 hover:border-emerald-400'
+                      : 'bg-[rgba(245,215,130,0.22)] border-[rgba(230,185,75,0.55)] hover:border-amber-400'
                   }`}
                 >
                   <div className="space-y-1.5 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-xl bg-amber-900 text-white font-mono font-bold text-xs">
+                      <span className="golden-pill-badge px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-mono font-bold text-xs">
                         Birim {item.roomNumber}
                       </span>
 
@@ -583,13 +583,13 @@ export default function HotelReportsPage() {
                           )}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10.5px] font-bold">
+                        <span className="golden-pill-badge inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[#2C1E0F] text-[10.5px] font-bold">
                           <Receipt className="w-3 h-3 text-amber-800" />
                           <span>BİRİM FOLYOSU (Birim Hesabı)</span>
                         </span>
                       )}
 
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 font-semibold">
+                      <span className="golden-pill-badge text-[10px] px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-semibold">
                         {item.department}
                       </span>
                     </div>
@@ -600,7 +600,7 @@ export default function HotelReportsPage() {
                       </p>
                     )}
 
-                    <div className="flex flex-wrap items-center gap-3 text-[10.5px] text-zinc-500 font-mono">
+                    <div className="flex flex-wrap items-center gap-3 text-[10.5px] text-zinc-600 font-mono">
                       <span>
                         Tarih/Saat:{' '}
                         {new Date(item.createdAt).toLocaleString('tr-TR', {
@@ -658,7 +658,7 @@ export default function HotelReportsPage() {
       {/* Misafir Uygulama Kullanımı - 3 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-zinc-600 text-xs">
             <span className="font-bold text-zinc-800 dark:text-slate-200">Aktif Misafir Oturumu</span>
             <Smartphone className="w-4 h-4 text-amber-600" />
           </div>
@@ -668,11 +668,11 @@ export default function HotelReportsPage() {
               <ArrowUpRight className="w-3 h-3" /> +18.4%
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Bu hafta QR kod taratarak bağlanan misafirler</p>
+          <p className="text-[10px] text-zinc-600">Bu hafta QR kod taratarak bağlanan misafirler</p>
         </div>
 
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-zinc-600 text-xs">
             <span className="font-bold text-zinc-800 dark:text-slate-200">Ortalama Oturum Süresi</span>
             <Clock className="w-4 h-4 text-sky-600" />
           </div>
@@ -682,11 +682,11 @@ export default function HotelReportsPage() {
               <ArrowUpRight className="w-3 h-3" /> +12.1%
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Misafir başına PWA & AI asistan etkileşim süresi</p>
+          <p className="text-[10px] text-zinc-600">Misafir başına PWA & AI asistan etkileşim süresi</p>
         </div>
 
         <div className="btn-3d p-5 space-y-2">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-zinc-600 text-xs">
             <span className="font-bold text-zinc-800 dark:text-slate-200">Yayınlanan 3. Taraf Aktif İlan</span>
             <Store className="w-4 h-4 text-purple-600" />
           </div>
@@ -696,12 +696,12 @@ export default function HotelReportsPage() {
               <ArrowUpRight className="w-3 h-3" /> Aktif
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500 dark:text-slate-400">Estetik klinikleri, gurme restoranlar ve turlar</p>
+          <p className="text-[10px] text-zinc-600">Estetik klinikleri, gurme restoranlar ve turlar</p>
         </div>
       </div>
 
       {/* İşlem İstatistikleri Grid - Satın Alma, Rezervasyon, Randevu, Bilgi Alma, İptal */}
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+      <div className="luxury-service-card p-6 rounded-3xl space-y-4">
         <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-amber-700" />
           <span>Misafir İşlem & Etkileşim İstatistikleri</span>
@@ -709,70 +709,70 @@ export default function HotelReportsPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {/* 1. Satın Alma */}
-          <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-1">
+          <div className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] border border-[rgba(230,185,75,0.55)] space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-zinc-700">Satın Alma</span>
               <ShoppingBag className="w-4 h-4 text-amber-700" />
             </div>
             <div className="text-xl font-bold font-mono text-amber-900">{totalPurchases}</div>
-            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Yeme-içme & ödemeler</span>
+            <span className="text-[10px] text-zinc-600 block">Yeme-içme & ödemeler</span>
           </div>
 
           {/* 2. Rezervasyon */}
-          <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+          <div className="p-4 rounded-2xl bg-emerald-50/75 border border-emerald-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-zinc-700">Rezervasyon</span>
               <CalendarCheck className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-xl font-bold font-mono text-emerald-900">{totalReservations}</div>
-            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Tur & restoran kaydı</span>
+            <span className="text-[10px] text-zinc-600 block">Tur & restoran kaydı</span>
           </div>
 
           {/* 3. Randevu */}
-          <div className="p-4 rounded-2xl bg-sky-50/60 border border-sky-200/80 space-y-1">
+          <div className="p-4 rounded-2xl bg-sky-50/75 border border-sky-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-zinc-700">Randevu Talebi</span>
               <Users className="w-4 h-4 text-sky-700" />
             </div>
             <div className="text-xl font-bold font-mono text-sky-900">{totalAppointments}</div>
-            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Estetik & klinik</span>
+            <span className="text-[10px] text-zinc-600 block">Estetik & klinik</span>
           </div>
 
           {/* 4. Bilgi Almak İstiyorum */}
-          <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-1">
+          <div className="p-4 rounded-2xl bg-indigo-50/75 border border-indigo-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-zinc-700">Bilgi Formu</span>
               <FileQuestion className="w-4 h-4 text-indigo-700" />
             </div>
             <div className="text-xl font-bold font-mono text-indigo-900">{totalInfoInquiries}</div>
-            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">Danışma & lead talebi</span>
+            <span className="text-[10px] text-zinc-600 block">Danışma & lead talebi</span>
           </div>
 
           {/* 5. İptal İşlemleri */}
-          <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-200/80 space-y-1 col-span-2 sm:col-span-1">
+          <div className="p-4 rounded-2xl bg-rose-50/75 border border-rose-200/80 space-y-1 col-span-2 sm:col-span-1">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-zinc-700">İptal İşlemleri</span>
               <XCircle className="w-4 h-4 text-rose-700" />
             </div>
             <div className="text-xl font-bold font-mono text-rose-900">{totalCancellations}</div>
-            <span className="text-[10px] text-zinc-500 dark:text-slate-400 block">İptal edilen rezervasyon</span>
+            <span className="text-[10px] text-zinc-600 block">İptal edilen rezervasyon</span>
           </div>
         </div>
       </div>
 
       {/* Comus AI Rehber Kullanım Dağılımı (Pasta Dilimi & Detay) */}
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-6 rounded-3xl border border-amber-200/80 shadow-xs space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
+      <div className="luxury-service-card p-6 rounded-3xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[rgba(230,185,75,0.45)] pb-3">
           <div>
             <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-600" />
               <span>Comus AI Akıllı Asistan Kullanım Dağılımı</span>
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-zinc-600 mt-0.5">
               Misafirlerin yapay zeka asistana yönelttiği soruların kategori bazlı pasta dilim dağılımı
             </p>
           </div>
-          <span className="text-xs font-mono font-bold bg-amber-50 text-amber-900 px-3 py-1 rounded-full border border-amber-200 self-start sm:self-auto">
+          <span className="golden-pill-badge text-xs font-mono font-bold text-[#2C1E0F] px-3 py-1 rounded-full self-start sm:self-auto">
             Toplam 410 AI Sohbeti
           </span>
         </div>

@@ -144,40 +144,40 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
         <button
           onClick={() => setPersonaFilter('all')}
-          className={`font-luxury-sans px-3.5 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition cursor-pointer border ${
+          className={`font-luxury-sans px-3.5 py-1.5 rounded-full text-[11px] whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer border ${
             personaFilter === 'all'
               ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm'
-              : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border-[#C4B8A4]/80'
+              : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
           }`}
         >
           {t.allPersonas}
         </button>
         <button
           onClick={() => setPersonaFilter('citizenship')}
-          className={`font-luxury-sans px-3.5 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition cursor-pointer border ${
+          className={`font-luxury-sans px-3.5 py-1.5 rounded-full text-[11px] whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer border ${
             personaFilter === 'citizenship'
               ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm'
-              : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border-[#C4B8A4]/80'
+              : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
           }`}
         >
           {t.citizenshipFilter}
         </button>
         <button
           onClick={() => setPersonaFilter('short_term_rental')}
-          className={`font-luxury-sans px-3.5 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition cursor-pointer border ${
+          className={`font-luxury-sans px-3.5 py-1.5 rounded-full text-[11px] whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer border ${
             personaFilter === 'short_term_rental'
               ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm'
-              : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border-[#C4B8A4]/80'
+              : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
           }`}
         >
           {t.airbnbFilter}
         </button>
         <button
           onClick={() => setPersonaFilter('luxury_lifestyle')}
-          className={`font-luxury-sans px-3.5 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition cursor-pointer border ${
+          className={`font-luxury-sans px-3.5 py-1.5 rounded-full text-[11px] whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer border ${
             personaFilter === 'luxury_lifestyle'
               ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm'
-              : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border-[#C4B8A4]/80'
+              : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
           }`}
         >
           {t.luxuryFilter}
@@ -186,13 +186,13 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
 
       {/* Search Input */}
       <div className="relative">
-        <Search className="w-4 h-4 text-[#8E7252] absolute left-3.5 top-3.5" />
+        <Search className="w-4 h-4 text-[#7D5E2A] absolute left-3.5 top-3.5" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t.searchPlaceholder}
-          className="w-full pl-10 pr-4 py-2.5 text-xs font-luxury-sans text-[#141414] placeholder:text-[#78716C] bg-[#FAF8F4]/90 backdrop-blur-md rounded-2xl border-[1.5px] border-[#C4B8A4]/85 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40"
+          className="w-full pl-10 pr-4 py-2.5 text-xs font-luxury-sans text-[#141414] placeholder:text-[#5C4938]/80 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)] focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40"
         />
       </div>
 
@@ -216,7 +216,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   
                   {p.citizenshipEligible && (
-                    <div className="absolute top-3 left-3 bg-[#FAF8F4]/95 text-[#141414] border border-[#C4B8A4] font-luxury-sans text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-md flex items-center gap-1">
+                    <div className="golden-pill-badge absolute top-3 left-3 text-[#2C1E0F] font-luxury-sans text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-[18px] flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-[#7D5E2A]" />
                       <span>{t.citizenshipEligible}</span>
                     </div>
@@ -244,7 +244,7 @@ export function InvestInIstanbul({ hotel, roomNumber, lang = "tr" }: InvestInIst
                     </div>
                   </div>
 
-                  <p className="font-luxury-sans text-[11.5px] text-[#221F1C] line-clamp-2 leading-relaxed bg-[#FAF8F4]/90 p-2.5 rounded-xl border border-[#D8CBB8]">
+                  <p className="font-luxury-sans text-[11.5px] text-[#221A0F] line-clamp-2 leading-relaxed bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] p-2.5 rounded-xl border border-[rgba(230,185,75,0.55)]">
                     {loc.description}
                   </p>
 

@@ -334,13 +334,13 @@ export function FairShoppingPolicy({ lang = "en" }: FairShoppingPolicyProps) {
             return (
               <div
                 key={pillar.number}
-                className="p-4 rounded-2xl bg-[#FAF8F4]/95 border border-[#D8CBB8] space-y-1.5"
+                className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)] space-y-1.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="w-8 h-8 rounded-xl bg-[#D47A43]/15 flex items-center justify-center text-[#D47A43]">
+                  <span className="w-8 h-8 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] flex items-center justify-center text-[#7D5E2A]">
                     <Icon className="w-4 h-4" />
                   </span>
-                  <span className="font-mono text-[11px] font-semibold text-[#64748B]">{pillar.number}</span>
+                  <span className="golden-pill-badge px-2 py-0.5 font-mono text-[10.5px] font-bold text-[#2C1E0F]">{pillar.number}</span>
                 </div>
                 <h4 className="font-luxury-serif text-sm font-bold text-[#0B192C]">{pillar.title}</h4>
                 <p className="text-xs text-[#4A433B] leading-relaxed">{pillar.desc}</p>
@@ -364,13 +364,13 @@ export function FairShoppingPolicy({ lang = "en" }: FairShoppingPolicyProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <a
             href="mailto:hi@usecomus.com"
-            className="p-3.5 bg-[#FAF8F4]/95 rounded-2xl border border-[#D8CBB8] hover:border-[#9E7B42] flex items-center gap-3.5 transition group"
+            className="p-3.5 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)] hover:border-[#9E7B42] active:opacity-75 active:scale-[0.985] flex items-center gap-3.5 transition-all duration-150 group"
           >
             <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9E7B42] to-[#7D5E2A] text-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(92,68,30,0.2)]">
               <Mail className="w-4 h-4" />
             </span>
             <div className="min-w-0">
-              <span className="text-[#6E655B] block text-[10.5px] font-medium">
+              <span className="text-[#5C4938] block text-[10.5px] font-medium">
                 {ui.emailLabel}
               </span>
               <strong className="text-[#0B192C] group-hover:text-[#7D5E2A] text-sm font-mono font-bold truncate block transition">
@@ -383,13 +383,13 @@ export function FairShoppingPolicy({ lang = "en" }: FairShoppingPolicyProps) {
             href="https://wa.me/908503085906"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3.5 bg-[#FAF8F4]/95 rounded-2xl border border-[#D8CBB8] hover:border-[#9E7B42] flex items-center gap-3.5 transition group"
+            className="p-3.5 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)] hover:border-[#9E7B42] active:opacity-75 active:scale-[0.985] flex items-center gap-3.5 transition-all duration-150 group"
           >
             <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9E7B42] to-[#7D5E2A] text-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(92,68,30,0.2)]">
               <MessageCircle className="w-4 h-4" />
             </span>
             <div className="min-w-0">
-              <span className="text-[#6E655B] block text-[10.5px] font-medium">
+              <span className="text-[#5C4938] block text-[10.5px] font-medium">
                 {ui.whatsappLabel}
               </span>
               <strong className="text-[#0B192C] group-hover:text-[#7D5E2A] text-sm font-mono font-bold truncate block transition">
@@ -409,21 +409,21 @@ export function FairShoppingPolicy({ lang = "en" }: FairShoppingPolicyProps) {
           </h3>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-          <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8]">
-            <span className="text-[#6E655B] block text-[10.5px] font-medium">{ui.emergency112}</span>
+          <div className="p-3 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)]">
+            <span className="text-[#5C4938] block text-[10.5px] font-medium">{ui.emergency112}</span>
             <strong className="text-[#8B3A2B] text-sm font-mono font-bold">112</strong>
           </div>
-          <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8]">
-            <span className="text-[#6E655B] block text-[10.5px] font-medium">{ui.tourismPolice}</span>
+          <div className="p-3 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)]">
+            <span className="text-[#5C4938] block text-[10.5px] font-medium">{ui.tourismPolice}</span>
             <strong className="text-[#0B192C] text-sm font-mono font-bold">+90 212 527 45 03</strong>
           </div>
-          <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8]">
-            <span className="text-[#6E655B] block text-[10.5px] font-medium">{ui.municipality153}</span>
+          <div className="p-3 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)]">
+            <span className="text-[#5C4938] block text-[10.5px] font-medium">{ui.municipality153}</span>
             <strong className="text-[#0B192C] text-sm font-mono font-bold">153</strong>
           </div>
-          <div className="p-3 bg-[#FAF8F4]/90 rounded-2xl border border-[#D8CBB8]">
-            <span className="text-[#6E655B] block text-[10.5px] font-medium">{ui.guestCare}</span>
-            <strong className="text-[#D47A43] text-xs font-mono font-bold">{ui.support247}</strong>
+          <div className="p-3 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)]">
+            <span className="text-[#5C4938] block text-[10.5px] font-medium">{ui.guestCare}</span>
+            <strong className="text-[#7D5E2A] text-xs font-mono font-bold">{ui.support247}</strong>
           </div>
         </div>
       </div>

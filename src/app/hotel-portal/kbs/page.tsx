@@ -138,18 +138,18 @@ export default function HotelKbsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         {/* Toggle Switch Card */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 shadow-xs space-y-3 flex flex-col justify-between">
+        <div className="luxury-service-card p-5 rounded-3xl space-y-3 flex flex-col justify-between">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">Misafir Ön Kayıt Anahtarı</span>
+              <span className="golden-pill-badge text-[10px] uppercase font-bold text-[#2C1E0F] px-2.5 py-0.5 rounded-full tracking-wider">Misafir Ön Kayıt Anahtarı</span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                settings.enable_guest_self_kbs ? 'bg-emerald-100 text-emerald-800' : 'bg-zinc-100 text-zinc-600 dark:text-slate-400'
+                settings.enable_guest_self_kbs ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-zinc-100 text-zinc-600'
               }`}>
                 {settings.enable_guest_self_kbs ? 'PWA’da Aktif' : 'PWA’da Gizli'}
               </span>
             </div>
             <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Misafir PWA Ön Kayıt & OCR</h3>
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+            <p className="text-[11px] text-zinc-600">
               Bu ayar kapatıldığında misafir PWA arayüzündeki pasaport tarama ve check-in butonu tamamen gizlenir.
             </p>
           </div>
@@ -178,11 +178,11 @@ export default function HotelKbsPage() {
         </div>
 
         {/* EGM Batch XML & CSV Export Card */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 shadow-xs space-y-3 flex flex-col justify-between">
+        <div className="luxury-service-card p-5 rounded-3xl space-y-3 flex flex-col justify-between">
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">EGM Toplu Bildirim</span>
+            <span className="golden-pill-badge inline-block text-[10px] uppercase font-bold text-[#2C1E0F] px-2.5 py-0.5 rounded-full tracking-wider">EGM Toplu Bildirim</span>
             <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">KBS Batch XML & CSV İndir</h3>
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+            <p className="text-[11px] text-zinc-600">
               Emniyet Genel Müdürlüğü KBS web portalına tek tıkla yüklenebilir resmi XML veya CSV çıktısı.
             </p>
           </div>
@@ -199,7 +199,7 @@ export default function HotelKbsPage() {
             <a
               href={`/api/kbs/export?format=csv&hotelId=${currentHotel.id}`}
               download
-              className="py-2.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:text-slate-200 font-bold rounded-2xl text-xs flex items-center justify-center gap-1.5 transition text-center border border-zinc-200 shadow-xs"
+              className="golden-pill-badge py-2.5 px-3 hover:bg-[rgba(240,195,70,0.48)] text-[#2C1E0F] font-bold rounded-2xl text-xs flex items-center justify-center gap-1.5 transition text-center shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               <span>CSV İndir</span>
@@ -208,11 +208,11 @@ export default function HotelKbsPage() {
         </div>
 
         {/* KVKK 30-Day Retention Policy Card */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200 shadow-xs space-y-3 flex flex-col justify-between">
+        <div className="luxury-service-card p-5 rounded-3xl space-y-3 flex flex-col justify-between">
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">KVKK & Veri Güvenliği</span>
+            <span className="golden-pill-badge inline-block text-[10px] uppercase font-bold text-[#2C1E0F] px-2.5 py-0.5 rounded-full tracking-wider">KVKK & Veri Güvenliği</span>
             <h3 className="text-sm font-bold text-zinc-900 dark:text-slate-100">30 Günlük Otomatik İmha</h3>
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+            <p className="text-[11px] text-zinc-600">
               Çıkış yapmış misafirlerin pasaport görselleri ve hassas kimlik verileri 30 gün sonra otomatik maskelenir.
             </p>
           </div>

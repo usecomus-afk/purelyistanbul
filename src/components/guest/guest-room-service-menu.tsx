@@ -471,15 +471,15 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       </div>
 
       {/* Categories */}
-      <div className="flex overflow-x-auto gap-2 p-3 bg-[#FAF8F4] border-b border-[#D8CBB8] shrink-0 hide-scrollbar">
+      <div className="flex overflow-x-auto gap-2 p-3 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-b border-[rgba(230,185,75,0.55)] shrink-0 hide-scrollbar">
         {categories.map(cat => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`font-luxury-sans px-4 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors border cursor-pointer ${
+            className={`font-luxury-sans px-4 py-1.5 rounded-full text-xs whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 border cursor-pointer ${
               selectedCategory === cat 
                 ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold border-[#7D5E2A] shadow-sm' 
-                : 'bg-[#F7F3EA] text-[#221F1C] font-semibold border-[#C4B8A4] hover:bg-[#EFE8DA]'
+                : 'golden-pill-badge text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
             }`}
           >
             {ui.categories[cat] || cat}
@@ -496,7 +496,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
           return (
             <div key={item.id} className="luxury-service-card p-3.5 flex gap-3.5 transition-all">
               {/* Image placeholder if none */}
-              <div className="w-24 h-24 rounded-2xl bg-[#EFE8DA] overflow-hidden shrink-0 relative border border-[#C4B8A4]">
+              <div className="w-24 h-24 rounded-2xl bg-[rgba(245,215,130,0.22)] overflow-hidden shrink-0 relative border border-[rgba(230,185,75,0.55)]">
                 {item.image ? (
                   <img src={item.image} alt={itemName} className="w-full h-full object-cover" />
                 ) : (
@@ -505,7 +505,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                   </div>
                 )}
                 {/* Price tag */}
-                <div className="absolute bottom-1.5 right-1.5 bg-[#FAF8F4]/95 backdrop-blur-sm px-2 py-0.5 rounded-lg font-luxury-serif text-[12px] font-bold text-[#141414] shadow-sm border border-[#C4B8A4]">
+                <div className="golden-pill-badge absolute bottom-1.5 right-1.5 backdrop-blur-md px-2.5 py-0.5 rounded-full font-luxury-serif text-[12px] font-bold text-[#2C1E0F] shadow-sm">
                   {item.price}{item.currency === 'EUR' ? '€' : item.currency}
                 </div>
               </div>
@@ -531,17 +531,17 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                   {qty === 0 ? (
                     <button 
                       onClick={() => addToCart(item.id)}
-                      className="px-4 py-1.5 bg-[#FAF8F4] text-[#7D5E2A] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                      className="golden-pill-badge px-4 py-1.5 text-[#2C1E0F] hover:bg-[rgba(240,195,70,0.48)] rounded-full text-xs font-bold active:opacity-75 active:scale-[0.985] transition-all duration-150 flex items-center gap-1 cursor-pointer shadow-2xs"
                     >
                       <Plus className="w-3.5 h-3.5" /> {ui.add}
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2.5 bg-[#FAF8F4] border border-[#C4B8A4] rounded-full p-1 shadow-2xs">
-                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-white border border-[#D8CBB8] flex items-center justify-center text-[#7D5E2A] shadow-xs hover:bg-[#EFE8DA] transition cursor-pointer">
+                    <div className="golden-pill-badge flex items-center gap-2.5 rounded-full p-1 shadow-2xs">
+                      <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 rounded-full bg-[rgba(245,215,130,0.45)] border border-[rgba(220,175,50,0.6)] flex items-center justify-center text-[#2C1E0F] shadow-xs hover:bg-[rgba(240,195,70,0.55)] active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer">
                         <Minus className="w-3.5 h-3.5" />
                       </button>
                       <span className="font-extrabold text-sm w-5 text-center text-[#141414] select-none">{qty}</span>
-                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] flex items-center justify-center text-white shadow-xs transition cursor-pointer">
+                      <button onClick={() => addToCart(item.id)} className="w-7 h-7 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] flex items-center justify-center text-white shadow-xs active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer">
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>

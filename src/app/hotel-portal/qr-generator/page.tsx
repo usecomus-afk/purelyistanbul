@@ -188,13 +188,13 @@ export default function HotelPortalQrPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4 print:hidden">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <QrCode className="w-6 h-6 text-amber-700" />
             <span>Birim QR Kodları & iCal Takvim Masası</span>
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5">
             Her birime özel dijital concierge standee QR kodları ve OTA takvim senkronizasyon .ics bağlantıları
           </p>
         </div>
@@ -211,7 +211,7 @@ export default function HotelPortalQrPage() {
       </div>
 
       {/* Property & Unit Selector Control Bar */}
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4 print:hidden">
+      <div className="luxury-service-card p-5 rounded-3xl space-y-4 print:hidden">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-end">
           {/* 1. İşletme Seçimi */}
           <div className="space-y-1">

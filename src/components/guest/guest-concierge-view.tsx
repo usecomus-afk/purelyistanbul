@@ -450,7 +450,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 <button
                   type="button"
                   onClick={() => setActiveTab('categories')}
-                  className="font-luxury-sans text-[11px] font-bold text-[#7D5E2A] bg-[#FAF8F4]/90 px-3 py-1.5 rounded-xl border border-[#C4B8A4] shadow-sm hover:bg-[#F3ECE0] transition cursor-pointer"
+                  className="golden-pill-badge font-luxury-sans text-[11px] font-bold text-[#2C1E0F] px-3.5 py-1.5 rounded-full backdrop-blur-[18px] shadow-xs hover:bg-[rgba(240,195,70,0.48)] active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer"
                 >
                   ← {t.allCategories}
                 </button>
@@ -467,13 +467,13 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             {/* Search & Category Filter */}
             <div className="space-y-2.5">
               <div className="relative">
-                <Search className="w-4 h-4 text-[#8E7252] absolute left-3.5 top-3.5" />
+                <Search className="w-4 h-4 text-[#7D5E2A] absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs font-luxury-sans text-[#141414] placeholder:text-[#78716C] bg-[#FAF8F4]/90 backdrop-blur-md rounded-2xl border-[1.5px] border-[#C4B8A4]/85 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs font-luxury-sans text-[#141414] placeholder:text-[#5C4938]/80 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-[0_8px_24px_0_rgba(0,0,0,0.08)] focus:outline-none focus:ring-2 focus:ring-[#8E7252]/40"
                 />
               </div>
 
@@ -484,10 +484,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     <button
                       key={cIdx}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`font-luxury-sans text-[11px] px-3.5 py-1.5 rounded-xl whitespace-nowrap transition cursor-pointer ${
+                      className={`font-luxury-sans text-[11px] px-3.5 py-1.5 rounded-full whitespace-nowrap active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer ${
                         selectedCategory === cat
                           ? 'bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-bold shadow-sm border border-[#7D5E2A]'
-                          : 'bg-[#FAF8F4]/90 backdrop-blur-md text-[#221F1C] font-semibold hover:bg-[#F3ECE0] border border-[#C4B8A4]/80'
+                          : 'golden-pill-badge backdrop-blur-[18px] text-[#2C1E0F] font-semibold hover:bg-[rgba(240,195,70,0.48)]'
                       }`}
                     >
                       {getCategoryLabel(cat)}

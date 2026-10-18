@@ -70,7 +70,7 @@ export function ExperienceCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
           
           <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap max-w-[70%]">
-            <span className="font-luxury-sans px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#FAF8F4]/95 text-[#141414] border border-[#C4B8A4] shadow-sm">
+            <span className="golden-pill-badge font-luxury-sans px-2.5 py-1 rounded-full text-[10px] font-bold text-[#2C1E0F] backdrop-blur-[18px] shadow-xs">
               {getLocalizedTag()}
             </span>
             {loc.cuisine && (
@@ -104,7 +104,7 @@ export function ExperienceCard({
             </div>
             <div className="flex items-center gap-1 font-semibold text-[#3D352E] shrink-0">
               {isRestaurant && loc.priceLevel ? (
-                <span className="px-2 py-0.5 rounded-md bg-[#FAF8F4] text-[#7D5E2A] font-bold text-[11px] border border-[#C4B8A4]">
+                <span className="golden-pill-badge px-2.5 py-0.5 rounded-full text-[#2C1E0F] font-bold text-[11px]">
                   {loc.priceLevel.split(' ')[0]}
                 </span>
               ) : (
@@ -117,7 +117,7 @@ export function ExperienceCard({
           </div>
 
           {/* Description / Agent Note */}
-          <p className="font-luxury-sans text-xs text-[#221F1C] leading-relaxed bg-[#FAF8F4]/90 p-3 rounded-xl border border-[#D8CBB8] min-h-[3.8rem]">
+          <p className="font-luxury-sans text-xs text-[#221A0F] leading-relaxed bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] p-3 rounded-xl border border-[rgba(230,185,75,0.55)] min-h-[3.8rem]">
             {loc.agentNote}
           </p>
 
@@ -132,7 +132,7 @@ export function ExperienceCard({
                 {loc.specialties.map((item, idx) => (
                   <span
                     key={idx}
-                    className="font-luxury-sans inline-block px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-[#FAF8F4] text-[#5C4938] border border-[#C4B8A4]"
+                    className="golden-pill-badge font-luxury-sans inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-[#2C1E0F]"
                   >
                     {item}
                   </span>
@@ -158,9 +158,9 @@ export function ExperienceCard({
                 e.stopPropagation();
                 onSelect(experience);
               }}
-              className="font-luxury-sans flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] text-xs font-bold border border-[#C4B8A4] shadow-2xs transition cursor-pointer"
+              className="golden-pill-badge font-luxury-sans flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-[rgba(240,195,70,0.48)] text-[#2C1E0F] text-xs font-bold shadow-2xs active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer"
             >
-              <Info className="w-3.5 h-3.5 text-[#8E7252]" />
+              <Info className="w-3.5 h-3.5 text-[#7D5E2A]" />
               <span>{t.details}</span>
             </button>
           </div>
@@ -176,10 +176,10 @@ export function ExperienceCard({
             e.stopPropagation();
             onOpenTransit(experience);
           }}
-          className="p-2.5 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#7D5E2A] border border-[#C4B8A4] text-xs font-semibold flex items-center justify-center shadow-2xs transition cursor-pointer"
+          className="p-2.5 rounded-xl bg-[rgba(240,195,70,0.35)] hover:bg-[rgba(240,195,70,0.48)] text-[#2C1E0F] border border-[rgba(220,175,50,0.6)] text-xs font-semibold flex items-center justify-center shadow-2xs active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer"
           title={t.transitTitle}
         >
-          <Navigation className="w-4 h-4 text-[#8E7252]" />
+          <Navigation className="w-4 h-4 text-[#7D5E2A]" />
         </button>
 
         {isAesthetic ? (
@@ -212,9 +212,9 @@ export function ExperienceCard({
                   onSelect(experience);
                 }
               }}
-              className="font-luxury-sans flex-1 py-2.5 px-2 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] border border-[#C4B8A4] text-[11px] font-bold flex items-center justify-center gap-1 transition transform active:scale-95 cursor-pointer truncate shadow-2xs"
+              className="font-luxury-sans flex-1 py-2.5 px-2 rounded-xl bg-[rgba(240,195,70,0.35)] hover:bg-[rgba(240,195,70,0.48)] text-[#2C1E0F] border border-[rgba(220,175,50,0.6)] text-[11px] font-bold flex items-center justify-center gap-1 active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer truncate shadow-2xs"
             >
-              <Phone className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
+              <Phone className="w-3.5 h-3.5 text-[#7D5E2A] shrink-0" />
               <span className="truncate">{ui.requestInfo}</span>
             </button>
           </div>
@@ -244,10 +244,10 @@ export function ExperienceCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-2.5 rounded-xl bg-[#FAF8F4] hover:bg-[#EFE8DA] text-[#141414] border border-[#C4B8A4] text-xs font-semibold flex items-center justify-center shadow-2xs transition cursor-pointer"
+                className="p-2.5 rounded-xl bg-[rgba(240,195,70,0.35)] hover:bg-[rgba(240,195,70,0.48)] text-[#2C1E0F] border border-[rgba(220,175,50,0.6)] text-xs font-semibold flex items-center justify-center shadow-2xs active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer"
                 title={ui.websiteMenu}
               >
-                <Globe className="w-4 h-4 text-[#8E7252]" />
+                <Globe className="w-4 h-4 text-[#7D5E2A]" />
               </a>
             )}
           </>

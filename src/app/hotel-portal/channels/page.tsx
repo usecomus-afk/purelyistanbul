@@ -124,12 +124,12 @@ export default function HotelChannelsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-amber-800 font-bold uppercase tracking-wider">{currentHotel.name}</span>
+            <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1">
             iCal & OTA Kanal Entegrasyon Masası
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-zinc-600 mt-0.5">
             Airbnb, Booking.com, VRBO ve Expedia takvimlerini purelyİstanbul birim envanteri ile 2 yönlü canlı senkronize edin.
           </p>
         </div>
@@ -159,20 +159,20 @@ export default function HotelChannelsPage() {
                 </span>
               </div>
 
-              <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-100 text-[11px] space-y-1">
-                <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
+              <div className="p-2.5 bg-[rgba(245,215,130,0.22)] rounded-xl border border-[rgba(230,185,75,0.55)] text-[11px] space-y-1">
+                <div className="flex items-center justify-between text-zinc-700">
                   <span>Kapsam:</span>
                   <strong className="text-zinc-900 dark:text-slate-100">{ch.roomNumber === 'all' ? 'Tüm Birimler' : `Birim ${ch.roomNumber}`}</strong>
                 </div>
-                <div className="flex items-center justify-between text-zinc-600 dark:text-slate-400">
+                <div className="flex items-center justify-between text-zinc-700">
                   <span>Son Eşitleme:</span>
                   <strong className="text-zinc-900 dark:text-slate-100">{ch.lastSync || '5 dk önce'}</strong>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-zinc-100 flex items-center justify-between">
-              <span className="text-[10px] text-zinc-500 dark:text-slate-400 truncate max-w-[120px]" title={ch.feedUrl}>
+            <div className="pt-2 border-t border-[rgba(230,185,75,0.4)] flex items-center justify-between">
+              <span className="text-[10px] text-zinc-600 truncate max-w-[120px]" title={ch.feedUrl}>
                 {ch.feedUrl}
               </span>
               <button
@@ -188,7 +188,7 @@ export default function HotelChannelsPage() {
       </div>
 
       {/* Add New Channel Feed Form */}
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl border border-amber-200/80 shadow-xs space-y-4">
+      <div className="luxury-service-card p-5 rounded-3xl space-y-4">
         <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100 flex items-center gap-2">
           <CalendarSync className="w-4 h-4 text-amber-700" />
           <span>Yeni OTA / Dış iCal Kanalı Bağla</span>

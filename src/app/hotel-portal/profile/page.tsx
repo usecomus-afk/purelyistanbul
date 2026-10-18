@@ -228,35 +228,35 @@ export default function HotelProfileManagementPage() {
   return (
     <div className="space-y-6 text-zinc-900 dark:text-slate-100 pb-16">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-amber-50/70 p-6 rounded-3xl border border-amber-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="luxury-service-card p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-full border border-amber-300 font-mono">
+            <span className="golden-pill-badge text-[10px] uppercase font-bold tracking-widest text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-mono">
               İŞLETME & YÖNETİCİ PROFİLİ
             </span>
-            <span className="text-xs text-zinc-600 dark:text-slate-400 font-medium">{currentHotel.name}</span>
+            <span className="text-xs text-zinc-700 font-medium">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100">
             İşletme & Profil Ayarları
           </h1>
-          <p className="text-xs text-zinc-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+          <p className="text-xs text-zinc-700 max-w-2xl leading-relaxed">
             İşletme bilgileri, yönetici iletişim detayları, bildirim e-postaları ve portal giriş şifrenizi bu masadan yönetebilirsiniz.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 dark:border-slate-800 px-4 py-2 rounded-2xl border border-amber-200 shadow-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="text-xs font-bold text-zinc-800 dark:text-slate-200">Doğrulanmış Partner İşletme</span>
+          <div className="golden-pill-badge flex items-center gap-2 px-4 py-2 rounded-full shadow-xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-700" />
+            <span className="text-xs font-bold text-[#2C1E0F]">Doğrulanmış Partner İşletme</span>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSaveHotelAndManager} className="space-y-6">
         {/* 1. İŞLETME BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+        <div className="luxury-service-card p-6 rounded-3xl space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-[rgba(230,185,75,0.45)] pb-3">
+            <div className="w-9 h-9 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] text-[#2C1E0F] flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -396,14 +396,14 @@ export default function HotelProfileManagementPage() {
         </div>
 
         {/* 2. KULLANICI & YETKİLİ BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+        <div className="luxury-service-card p-6 rounded-3xl space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-[rgba(230,185,75,0.45)] pb-3">
+            <div className="w-9 h-9 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] text-[#2C1E0F] flex items-center justify-center font-bold">
               <User className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Kullanıcı & İşletme Yetkilisi Bilgileri</h2>
-              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Purelyİstanbul operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
+              <p className="text-[11px] text-zinc-600">Purelyİstanbul operasyon ekibinin temas kuracağı sorumlu yönetici.</p>
             </div>
           </div>
 
@@ -445,14 +445,14 @@ export default function HotelProfileManagementPage() {
         </div>
 
         {/* 3. E-POSTA & BİLDİRİM BİLGİLERİ */}
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+        <div className="luxury-service-card p-6 rounded-3xl space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-[rgba(230,185,75,0.45)] pb-3">
+            <div className="w-9 h-9 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] text-[#2C1E0F] flex items-center justify-center font-bold">
               <Mail className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">E-Posta & Bildirim İletişimi</h2>
-              <p className="text-[11px] text-zinc-500 dark:text-slate-400">Giriş hesabı ve rezervasyon/talep bildirim adresleri.</p>
+              <p className="text-[11px] text-zinc-600">Giriş hesabı ve rezervasyon/talep bildirim adresleri.</p>
             </div>
           </div>
 
@@ -506,15 +506,15 @@ export default function HotelProfileManagementPage() {
         </div>
 
         {/* 4. SESLİ BİLDİRİM & CANLI TALEP ALARM AYARLARI */}
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-amber-100 pb-3 gap-2">
+        <div className="luxury-service-card p-6 rounded-3xl space-y-5">
+          <div className="flex items-center justify-between border-b border-[rgba(230,185,75,0.45)] pb-3 gap-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+              <div className="w-9 h-9 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] text-[#2C1E0F] flex items-center justify-center font-bold">
                 <Volume2 className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-zinc-900 dark:text-slate-100">Sesli Bildirim & Canlı Talep Uyarı Ayarları</h2>
-                <p className="text-[11px] text-zinc-500 dark:text-slate-400">Misafir birimlerinden gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
+                <p className="text-[11px] text-zinc-600">Misafir birimlerinden gelen canlı taleplerde sesli çan ve ekranda pop-up alarmı.</p>
               </div>
             </div>
 
@@ -557,26 +557,26 @@ export default function HotelProfileManagementPage() {
                     key={s.id}
                     type="button"
                     onClick={() => handleChangeSoundType(s.id as HotelSoundType)}
-                    className={`p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between gap-1 ${
+                    className={`p-3 rounded-2xl border text-left active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex flex-col justify-between gap-1 ${
                       audioPrefs.selectedSound === s.id
-                        ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500/30'
-                        : 'bg-zinc-50/70 border-zinc-200 hover:border-amber-300'
+                        ? 'bg-[rgba(240,195,70,0.42)] border-[rgba(220,175,50,0.85)] ring-2 ring-amber-500/30'
+                        : 'bg-[rgba(245,215,130,0.22)] border-[rgba(230,185,75,0.55)] hover:border-amber-400'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-zinc-900 dark:text-slate-100 text-xs">{s.name}</span>
                       {audioPrefs.selectedSound === s.id && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
                       )}
                     </div>
-                    <span className="text-[10px] text-zinc-500 dark:text-slate-400">{s.desc}</span>
+                    <span className="text-[10px] text-zinc-600">{s.desc}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Volume & Banner Settings */}
-            <div className="space-y-4 bg-amber-50/30 p-4 rounded-2xl border border-amber-100">
+            <div className="space-y-4 bg-[rgba(245,215,130,0.22)] p-4 rounded-2xl border border-[rgba(230,185,75,0.55)]">
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-zinc-700 block">Ses Seviyesi (Volume)</label>
@@ -593,7 +593,7 @@ export default function HotelProfileManagementPage() {
                   onChange={(e) => handleChangeVolume(parseFloat(e.target.value))}
                   className="w-full accent-amber-500 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
+                <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
                   <span>Kısık</span>
                   <span>Orta</span>
                   <span>Maksimum</span>
@@ -610,7 +610,7 @@ export default function HotelProfileManagementPage() {
                     className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
                   />
                 </label>
-                <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
+                <p className="text-[10px] text-zinc-600 leading-relaxed">
                   Yeni bir misafir talebi geldiğinde ekranın sağ üst köşesinde birim numarası ve notunu içeren canlı kart belirir.
                 </p>
               </div>
@@ -637,7 +637,7 @@ export default function HotelProfileManagementPage() {
                   )}
                 </div>
 
-                <p className="text-[10px] text-zinc-500 dark:text-slate-400 leading-relaxed">
+                <p className="text-[10px] text-zinc-600 leading-relaxed">
                   Uygulama arka plandayken veya kilit ekranındayken misafir taleplerini telefon bildirimi olarak alın. İzin verildiğinde iPhone <strong>Ayarlar &gt; Bildirimler &gt; purelyİstanbul</strong> altında listelenir.
                 </p>
               </div>
@@ -659,9 +659,9 @@ export default function HotelProfileManagementPage() {
       </form>
 
       {/* 4. ŞİFRE DEĞİŞİKLİĞİ FORMU */}
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 shadow-xs space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-amber-100 pb-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+      <div className="luxury-service-card p-6 rounded-3xl space-y-4">
+        <div className="flex items-center gap-2.5 border-b border-[rgba(230,185,75,0.45)] pb-3">
+          <div className="w-9 h-9 rounded-xl bg-[rgba(240,195,70,0.35)] border border-[rgba(220,175,50,0.6)] text-[#2C1E0F] flex items-center justify-center font-bold">
             <KeyRound className="w-5 h-5" />
           </div>
           <div>
