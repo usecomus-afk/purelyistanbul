@@ -55,15 +55,20 @@ export default function UsePurelyDashboardLayout({
               font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
               font-weight: 400;
               line-height: 1.6;
+              width: 100%;
               max-width: 100vw;
+              max-width: 100dvw;
+              min-height: 100vh;
+              min-height: 100dvh;
               overflow-x: hidden;
+              -webkit-text-size-adjust: 100%;
             }
             [data-comus-dashboard] .comus-serif {
               font-family: 'Cormorant Garamond', Georgia, serif;
             }
             [data-comus-dashboard] .comus-logo {
               font-family: 'Cormorant Garamond', Georgia, serif;
-              font-size: 1.65rem;
+              font-size: clamp(1.3rem, 1.05rem + 1.4vw, 1.65rem);
               font-weight: 400;
               letter-spacing: 0.06em;
               color: var(--text);
@@ -87,6 +92,7 @@ export default function UsePurelyDashboardLayout({
               border-radius: 8px;
               border: 1px solid var(--green-border);
               text-transform: uppercase;
+              max-width: 100%;
             }
             [data-comus-dashboard] .comus-badge-dot {
               width: 6px;
@@ -99,7 +105,8 @@ export default function UsePurelyDashboardLayout({
               background: var(--green);
               color: #ffffff;
               border: 1px solid var(--green);
-              padding: 0.6rem 1.15rem;
+              padding: 0.6rem 1.05rem;
+              min-height: 38px;
               border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
               font-size: 0.82rem;
@@ -107,6 +114,7 @@ export default function UsePurelyDashboardLayout({
               line-height: 1.3;
               letter-spacing: 0.01em;
               cursor: pointer;
+              touch-action: manipulation;
               transition: all 0.2s ease;
               display: inline-flex;
               align-items: center;
@@ -121,7 +129,8 @@ export default function UsePurelyDashboardLayout({
               background: var(--terracotta);
               color: #ffffff;
               border: 1px solid var(--terracotta);
-              padding: 0.6rem 1.15rem;
+              padding: 0.6rem 1.05rem;
+              min-height: 38px;
               border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
               font-size: 0.82rem;
@@ -129,6 +138,7 @@ export default function UsePurelyDashboardLayout({
               line-height: 1.3;
               letter-spacing: 0.01em;
               cursor: pointer;
+              touch-action: manipulation;
               transition: all 0.2s ease;
               display: inline-flex;
               align-items: center;
@@ -143,13 +153,15 @@ export default function UsePurelyDashboardLayout({
               background: var(--surface);
               color: var(--text);
               border: 1px solid var(--border);
-              padding: 0.58rem 1.1rem;
+              padding: 0.58rem 1rem;
+              min-height: 38px;
               border-radius: 8px;
               font-family: 'DM Sans', sans-serif;
               font-size: 0.82rem;
               font-weight: 500;
               line-height: 1.3;
               cursor: pointer;
+              touch-action: manipulation;
               transition: all 0.2s ease;
               display: inline-flex;
               align-items: center;
@@ -165,7 +177,9 @@ export default function UsePurelyDashboardLayout({
               background: var(--surface);
               border: 1px solid var(--border);
               border-radius: 12px;
-              padding: 1.25rem;
+              padding: 1rem;
+              min-width: 0;
+              max-width: 100%;
               box-shadow: 0 4px 20px rgba(44, 44, 26, 0.04);
             }
             @media (min-width: 640px) {
@@ -180,18 +194,25 @@ export default function UsePurelyDashboardLayout({
               border: 1px solid var(--border);
               border-radius: 12px;
               overflow: hidden;
+              max-width: 100%;
             }
             [data-comus-dashboard] .comus-hairline-cell {
               background: var(--surface);
-              padding: 1.5rem;
+              padding: 1rem;
+              min-width: 0;
               transition: background 0.2s ease;
+            }
+            @media (min-width: 640px) {
+              [data-comus-dashboard] .comus-hairline-cell {
+                padding: 1.5rem;
+              }
             }
             [data-comus-dashboard] .comus-hairline-cell:hover {
               background: var(--cream);
             }
             [data-comus-dashboard] .comus-input {
               font-family: 'DM Sans', sans-serif;
-              font-size: 0.875rem;
+              font-size: 16px;
               font-weight: 400;
               border: 1px solid var(--border);
               border-radius: 8px;
@@ -199,8 +220,15 @@ export default function UsePurelyDashboardLayout({
               color: var(--text);
               background: var(--surface);
               width: 100%;
+              max-width: 100%;
+              min-width: 0;
               outline: none;
               transition: border-color 0.2s ease;
+            }
+            @media (min-width: 640px) {
+              [data-comus-dashboard] .comus-input {
+                font-size: 0.875rem;
+              }
             }
             [data-comus-dashboard] .comus-input.pl-10 {
               padding-left: 2.5rem;
@@ -219,6 +247,109 @@ export default function UsePurelyDashboardLayout({
             }
             [data-comus-dashboard] .rounded-full:not(.animate-spin) {
               border-radius: 8px !important;
+            }
+            [data-comus-dashboard] .comus-mobile-tabbar {
+              display: flex;
+              align-items: center;
+              gap: 0.375rem;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+            }
+            [data-comus-dashboard] .comus-mobile-tabbar::-webkit-scrollbar {
+              display: none;
+            }
+            /* Container-queried responsive table */
+            [data-comus-dashboard] .comus-table-wrapper {
+              overflow: auto;
+              max-inline-size: 100%;
+              container-type: inline-size;
+            }
+            [data-comus-dashboard] .comus-responsive-table {
+              width: 100%;
+              border-collapse: separate;
+              border-spacing: 0;
+              --label-1: "Kategori";
+              --label-2: "Durum";
+              --label-3: "Toplam İlan";
+              --label-4: "Yayında (Aktif)";
+              --label-5: "Askıda";
+              --label-6: "Ort. Komisyon";
+            }
+            [data-comus-dashboard] .comus-responsive-table thead {
+              position: sticky;
+              inset-block-start: 0;
+              z-index: 1;
+              background: var(--surface);
+            }
+            [data-comus-dashboard] .comus-responsive-table tbody th {
+              position: sticky;
+              inset-inline-start: 0;
+              background: var(--surface);
+              text-align: left;
+            }
+            @container (width < 600px) {
+              [data-comus-dashboard] .comus-responsive-table,
+              [data-comus-dashboard] .comus-responsive-table thead,
+              [data-comus-dashboard] .comus-responsive-table tbody,
+              [data-comus-dashboard] .comus-responsive-table tr,
+              [data-comus-dashboard] .comus-responsive-table th,
+              [data-comus-dashboard] .comus-responsive-table td {
+                display: block;
+              }
+              [data-comus-dashboard] .comus-responsive-table thead {
+                display: none;
+              }
+              [data-comus-dashboard] .comus-responsive-table tbody tr {
+                margin-block-end: 0.75rem;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 0.65rem 0.85rem;
+                background: var(--cream);
+              }
+              [data-comus-dashboard] .comus-responsive-table tbody th {
+                position: sticky;
+                inset-block-start: 0;
+                z-index: 2;
+                background: var(--cream);
+                padding: 0.25rem 0 0.4rem 0;
+                margin-bottom: 0.35rem;
+                border-bottom: 1px solid var(--border);
+                font-size: 0.85rem;
+              }
+              [data-comus-dashboard] .comus-responsive-table td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.25rem 0 !important;
+                font-size: 0.78rem;
+              }
+              [data-comus-dashboard] .comus-responsive-table td:nth-child(2)::before {
+                content: var(--label-2) ": " / var(--label-2);
+                color: var(--text-muted);
+                font-weight: 500;
+              }
+              [data-comus-dashboard] .comus-responsive-table td:nth-child(3)::before {
+                content: var(--label-3) ": " / var(--label-3);
+                color: var(--text-muted);
+                font-weight: 500;
+              }
+              [data-comus-dashboard] .comus-responsive-table td:nth-child(4)::before {
+                content: var(--label-4) ": " / var(--label-4);
+                color: var(--text-muted);
+                font-weight: 500;
+              }
+              [data-comus-dashboard] .comus-responsive-table td:nth-child(5)::before {
+                content: var(--label-5) ": " / var(--label-5);
+                color: var(--text-muted);
+                font-weight: 500;
+              }
+              [data-comus-dashboard] .comus-responsive-table td:nth-child(6)::before {
+                content: var(--label-6) ": " / var(--label-6);
+                color: var(--text-muted);
+                font-weight: 500;
+              }
             }
           `,
         }}

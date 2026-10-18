@@ -55,24 +55,24 @@ export default function ListingApprovalsPage() {
       <div className="space-y-3">
         {listings.length === 0 && <p className="text-xs text-ink-muted">Onay bekleyen ilan yok.</p>}
         {listings.map((l) => (
-          <div key={l.id} className="flex gap-4 rounded-2xl border border-amber-200/80 bg-white dark:bg-slate-900 dark:border-slate-800 p-4">
-            <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-sand-card shrink-0">
+          <div key={l.id} className="flex flex-col sm:flex-row gap-3 sm:gap-4 rounded-2xl border border-amber-200/80 bg-white dark:bg-slate-900 dark:border-slate-800 p-4">
+            <div className="relative w-full sm:w-24 h-36 sm:h-24 rounded-xl overflow-hidden bg-sand-card shrink-0">
               {l.coverImageUrl ? (
-                <Image src={l.coverImageUrl} alt={l.title} fill className="object-cover" sizes="96px" />
+                <Image src={l.coverImageUrl} alt={l.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, 96px" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-ink-muted">
                   <ImageOff className="w-5 h-5" />
                 </div>
               )}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold">{l.title}</p>
               <p className="text-xs text-ink-muted">
                 {l.district} · {l.type === "stay" ? "Konaklama" : "Deneyim"} · {l.pricing.basePrice}{" "}
                 {l.pricing.currency}
               </p>
               <p className="text-xs text-zinc-700 mt-1 line-clamp-2">{l.description}</p>
-              <div className="flex items-center gap-2 mt-3">
+              <div className="flex flex-wrap items-center gap-2 mt-3">
                 <button
                   disabled={busyId === l.id}
                   onClick={() => handleApprove(l.id)}

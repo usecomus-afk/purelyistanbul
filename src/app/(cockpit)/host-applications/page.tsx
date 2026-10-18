@@ -98,7 +98,7 @@ export default function HostApplicationsPage() {
             <p className="text-xs text-zinc-700">{app.about}</p>
 
             {app.status === "pending" && (
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex flex-wrap items-center gap-2 pt-2">
                 <input
                   type="number"
                   min={1}

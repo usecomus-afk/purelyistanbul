@@ -945,20 +945,20 @@ export default function UsePurelyDashboardPage() {
     return (
       <div
         data-comus-dashboard="true"
-        className="min-h-screen flex flex-col justify-between p-6 md:p-12 overflow-y-auto"
+        className="min-h-dvh flex flex-col justify-between p-4 sm:p-6 md:p-12 overflow-y-auto"
       >
         {/* Top Minimalist Nav */}
-        <header className="max-w-5xl w-full mx-auto flex items-center justify-between">
+        <header className="max-w-5xl w-full mx-auto flex flex-wrap items-center justify-between gap-2">
           <Link href="/" translate="no" className="notranslate comus-logo">
             <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">istanbul</span>
           </Link>
-          <Link href="/" className="comus-btn-ghost">
+          <Link href="/" className="comus-btn-ghost text-xs sm:text-sm py-2 px-3">
             <span translate="no" className="notranslate">purelyistanbul.com</span>&apos;a Dön →
           </Link>
         </header>
 
         {/* Center Editorial Login Card */}
-        <main className="my-auto py-12">
+        <main className="my-auto py-8 sm:py-12">
           <div className="max-w-md w-full mx-auto comus-card space-y-6">
             <div className="text-center space-y-3">
               <div className="comus-badge mx-auto">
@@ -1279,10 +1279,10 @@ export default function UsePurelyDashboardPage() {
   return (
     <div
       data-comus-dashboard="true"
-      className="min-h-screen w-full max-w-[100vw] overflow-x-hidden md:h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
+      className="min-h-dvh w-full max-w-[100dvw] overflow-x-hidden md:h-dvh md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
     >
       {/* Desktop Sticky Left Sidebar (Independently Scrollable) */}
-      <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-screen md:overflow-y-auto">
+      <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-dvh md:overflow-y-auto">
         {sidebarContent}
       </aside>
 
@@ -1302,57 +1302,96 @@ export default function UsePurelyDashboardPage() {
       {/* Main Scrollable Area */}
       <div
         id="dashboard-main-scroll"
-        className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden md:h-screen md:overflow-y-auto"
+        className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden md:h-dvh md:overflow-y-auto"
       >
-        {/* Top Sticky Header */}
-        <header className="sticky top-0 z-30 bg-[#F6F1E8]/95 backdrop-blur-md border-b border-[#C8C4B0] px-3 sm:px-4 md:px-10 py-2.5 sm:py-3 flex items-center justify-between gap-2 w-full max-w-full">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <button
-              onClick={() => setMobileNavOpen(true)}
-              className="md:hidden p-2 rounded-lg bg-[#FFFCFA] border border-[#C8C4B0] text-[#2C2C1A] shrink-0"
-              aria-label="Menü"
-            >
-              <Menu className="w-4 h-4" />
-            </button>
-            <div className="comus-badge whitespace-nowrap truncate">
-              <span className="comus-badge-dot" />
-              <span className="sm:hidden">Canlı Senkron</span>
-              <span className="hidden sm:inline">Canlı Senkronizasyon Aktif</span>
+        {/* Top Sticky Header + Mobile Quick Tab Bar */}
+        <header className="sticky top-0 z-30 bg-[#F6F1E8]/95 backdrop-blur-md border-b border-[#C8C4B0] w-full max-w-full">
+          <div className="px-3 sm:px-4 md:px-10 py-2.5 sm:py-3 flex items-center justify-between gap-2 w-full max-w-full">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="md:hidden p-2 rounded-lg bg-[#FFFCFA] border border-[#C8C4B0] text-[#2C2C1A] shrink-0"
+                aria-label="Menü"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+              <div className="comus-badge whitespace-nowrap truncate">
+                <span className="comus-badge-dot" />
+                <span className="sm:hidden">Canlı Senkron</span>
+                <span className="hidden sm:inline">Canlı Senkronizasyon Aktif</span>
+              </div>
+              <span className="hidden lg:inline text-xs text-[#6B6B55] truncate">
+                Yaptığınız her değişiklik anında{" "}
+                <strong className="font-medium text-[#2C2C1A]">
+                  purelyistanbul.com
+                </strong>
+                , <strong className="font-medium text-[#2C2C1A]">iOS App</strong>{" "}
+                ve <strong className="font-medium text-[#2C2C1A]">PWA</strong>{" "}
+                üzerinde güncellenir.
+              </span>
             </div>
-            <span className="hidden lg:inline text-xs text-[#6B6B55] truncate">
-              Yaptığınız her değişiklik anında{" "}
-              <strong className="font-medium text-[#2C2C1A]">
-                purelyistanbul.com
-              </strong>
-              , <strong className="font-medium text-[#2C2C1A]">iOS App</strong>{" "}
-              ve <strong className="font-medium text-[#2C2C1A]">PWA</strong>{" "}
-              üzerinde güncellenir.
-            </span>
+
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <button
+                onClick={handleCloudSync}
+                disabled={isSyncing}
+                className="comus-btn-ghost text-xs py-2 px-2.5 sm:px-3 whitespace-nowrap"
+                title="Tüm Kanalları Eşitle"
+              >
+                <RefreshCw
+                  className={`w-3.5 h-3.5 text-[#3B6D11] ${
+                    isSyncing ? "animate-spin" : ""
+                  }`}
+                />
+                <span className="hidden sm:inline">Tüm Kanalları Eşitle</span>
+              </button>
+              <Link
+                href="/"
+                target="_blank"
+                className="comus-btn-primary text-xs py-2 px-2.5 sm:px-4 whitespace-nowrap"
+              >
+                <Globe className="w-3.5 h-3.5 shrink-0" />
+                <span>Web Vitrini ↗</span>
+              </Link>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              onClick={handleCloudSync}
-              disabled={isSyncing}
-              className="comus-btn-ghost text-xs py-2 px-2.5 sm:px-3 whitespace-nowrap"
-              title="Tüm Kanalları Eşitle"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 text-[#3B6D11] ${
-                  isSyncing ? "animate-spin" : ""
-                }`}
-              />
-              <span className="hidden sm:inline">Tüm Kanalları Eşitle</span>
-            </button>
-            <Link
-              href="/"
-              target="_blank"
-              className="comus-btn-primary text-xs py-2 px-2.5 sm:px-4 whitespace-nowrap"
-            >
-              <Globe className="w-3.5 h-3.5 shrink-0" />
-              <span>Web Vitrini ↗</span>
-            </Link>
-          </div>
+          {/* Mobile Horizontal Quick-Navigation Bar */}
+          <nav
+            aria-label="Mobil Hızlı Sekmeler"
+            className="md:hidden comus-mobile-tabbar px-3 pb-2.5 pt-0.5 border-t border-[#C8C4B0]/50"
+          >
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => switchTab(item.id)}
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer whitespace-nowrap ${
+                    active
+                      ? "bg-[#3B6D11] text-white border-[#3B6D11]"
+                      : "bg-[#FFFCFA] text-[#2C2C1A] border-[#C8C4B0]"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{item.label}</span>
+                  {typeof item.count === "number" && item.count > 0 && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
+                        active
+                          ? "bg-white/20 text-white"
+                          : "bg-[#EDE8DE] text-[#2C2C1A]"
+                      }`}
+                    >
+                      {item.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </header>
 
         {/* Main Content Container */}
@@ -1363,7 +1402,7 @@ export default function UsePurelyDashboardPage() {
           {activeTab === "overview" && (
             <div className="space-y-6 sm:space-y-10 min-w-0">
               {/* Comus Hero Banner */}
-              <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#C8C4B0]">
+              <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 pb-5 sm:pb-6 border-b border-[#C8C4B0]">
                 <div className="space-y-2">
                   <div className="text-xs uppercase tracking-[0.14em] text-[#3B6D11] font-medium">
                     Purelyİstanbul Merkezi Yönetim
@@ -1379,51 +1418,53 @@ export default function UsePurelyDashboardPage() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2.5 shrink-0">
+                <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 w-full md:w-auto shrink-0">
                   <button
                     onClick={() => {
                       setActiveTab("listings");
                       setShowAddListingModal(true);
                     }}
-                    className="comus-btn-primary"
+                    className="comus-btn-primary w-full sm:w-auto"
                   >
                     <Plus className="w-4 h-4" />
                     Yeni İlan Gir
                   </button>
-                  <button
-                    onClick={() => setActiveTab("suppliers")}
-                    className="comus-btn-terracotta"
-                  >
-                    <Briefcase className="w-4 h-4" />
-                    Yeni İşletme Ekle
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("properties")}
-                    className="comus-btn-ghost"
-                  >
-                    <Building2 className="w-4 h-4" />
-                    Mülk Ekle
-                  </button>
+                  <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                    <button
+                      onClick={() => setActiveTab("suppliers")}
+                      className="comus-btn-terracotta w-full sm:w-auto"
+                    >
+                      <Briefcase className="w-4 h-4 shrink-0" />
+                      <span>Yeni İşletme Ekle</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("properties")}
+                      className="comus-btn-ghost w-full sm:w-auto"
+                    >
+                      <Building2 className="w-4 h-4 shrink-0" />
+                      <span>Mülk Ekle</span>
+                    </button>
+                  </div>
                 </div>
               </section>
 
               {/* Comus Hairline Stat Grid */}
-              <section className="comus-hairline-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              <section className="comus-hairline-grid grid-cols-2 lg:grid-cols-4">
                 <div
                   onClick={() => setActiveTab("listings")}
                   className="comus-hairline-cell cursor-pointer"
                 >
-                  <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-2">
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-1.5 sm:mb-2">
                     Deneyim &amp; Konaklama İlanları
                   </div>
-                  <div className="comus-serif text-4xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
                     {experiences.length}
                   </div>
-                  <p className="text-xs text-[#6B6B55] mt-2">
+                  <p className="text-[11px] sm:text-xs text-[#6B6B55] mt-1.5 sm:mt-2">
                     Web: <strong>{webActiveCount}</strong> aktif • iOS/PWA:{" "}
                     <strong>{mobileActiveCount}</strong> aktif
                   </p>
-                  <div className="text-xs text-[#3B6D11] font-medium mt-3">
+                  <div className="text-[11px] sm:text-xs text-[#3B6D11] font-medium mt-2.5 sm:mt-3">
                     İlanları yönet →
                   </div>
                 </div>
@@ -1432,17 +1473,17 @@ export default function UsePurelyDashboardPage() {
                   onClick={() => setActiveTab("suppliers")}
                   className="comus-hairline-cell cursor-pointer"
                 >
-                  <div className="text-[11px] uppercase tracking-widest text-[#C1622F] font-medium mb-2">
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#C1622F] font-medium mb-1.5 sm:mb-2">
                     Anlaşmalı İşletmeler
                   </div>
-                  <div className="comus-serif text-4xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
                     {suppliers.length}
                   </div>
-                  <p className="text-xs text-[#6B6B55] mt-2">
+                  <p className="text-[11px] sm:text-xs text-[#6B6B55] mt-1.5 sm:mt-2">
                     Aktif sözleşmeli tedarikçi, restoran, acente ve mülk
                     firmaları
                   </p>
-                  <div className="text-xs text-[#C1622F] font-medium mt-3">
+                  <div className="text-[11px] sm:text-xs text-[#C1622F] font-medium mt-2.5 sm:mt-3">
                     İşletmeleri yönet →
                   </div>
                 </div>
@@ -1451,17 +1492,17 @@ export default function UsePurelyDashboardPage() {
                   onClick={() => setActiveTab("properties")}
                   className="comus-hairline-cell cursor-pointer"
                 >
-                  <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-2">
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-1.5 sm:mb-2">
                     Mülk &amp; Gayrimenkul
                   </div>
-                  <div className="comus-serif text-4xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
                     {properties.length}
                   </div>
-                  <p className="text-xs text-[#6B6B55] mt-2">
+                  <p className="text-[11px] sm:text-xs text-[#6B6B55] mt-1.5 sm:mt-2">
                     Satılık &amp; kısa dönem kiralık •{" "}
                     <strong>{investmentLeads.length}</strong> yatırımcı talebi
                   </p>
-                  <div className="text-xs text-[#3B6D11] font-medium mt-3">
+                  <div className="text-[11px] sm:text-xs text-[#3B6D11] font-medium mt-2.5 sm:mt-3">
                     Portföyü yönet →
                   </div>
                 </div>
@@ -1470,17 +1511,17 @@ export default function UsePurelyDashboardPage() {
                   onClick={() => setActiveTab("hotels")}
                   className="comus-hairline-cell cursor-pointer"
                 >
-                  <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-2">
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-medium mb-1.5 sm:mb-2">
                     Partner Oteller &amp; QR
                   </div>
-                  <div className="comus-serif text-4xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A]">
                     {hotels.length}
                   </div>
-                  <p className="text-xs text-[#6B6B55] mt-2">
+                  <p className="text-[11px] sm:text-xs text-[#6B6B55] mt-1.5 sm:mt-2">
                     Toplam <strong>{totalRoomsCount}</strong> oda QR envanteri
                     tanımlı
                   </p>
-                  <div className="text-xs text-[#3B6D11] font-medium mt-3">
+                  <div className="text-[11px] sm:text-xs text-[#3B6D11] font-medium mt-2.5 sm:mt-3">
                     Otelleri &amp; QR yönet →
                   </div>
                 </div>
@@ -1839,7 +1880,7 @@ export default function UsePurelyDashboardPage() {
               TAB 2: WEB, IOS APP & PWA KANAL YÖNETİMİ
           ========================================================= */}
           {activeTab === "channels" && (
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8 min-w-0">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-[#C8C4B0]">
                 <div>
                   <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
@@ -1857,7 +1898,7 @@ export default function UsePurelyDashboardPage() {
                 </div>
 
                 {/* Sub-navigation Pills */}
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2 w-full md:w-auto">
                   {[
                     {
                       id: "matrix" as ChannelSubTab,
@@ -1887,8 +1928,8 @@ export default function UsePurelyDashboardPage() {
                       onClick={() => setChannelSubTab(st.id)}
                       className={
                         channelSubTab === st.id
-                          ? "comus-btn-primary text-xs py-2 px-4"
-                          : "comus-btn-ghost text-xs py-2 px-4"
+                          ? "comus-btn-primary text-xs py-2 px-3 sm:px-4 w-full lg:w-auto"
+                          : "comus-btn-ghost text-xs py-2 px-3 sm:px-4 w-full lg:w-auto"
                       }
                     >
                       {st.label}
@@ -1918,7 +1959,7 @@ export default function UsePurelyDashboardPage() {
                         setActiveTab("listings");
                         setShowAddListingModal(true);
                       }}
-                      className="comus-btn-primary text-xs"
+                      className="comus-btn-primary text-xs w-full sm:w-auto"
                     >
                       <Plus className="w-3.5 h-3.5" /> Yeni İlan Ekle
                     </button>
@@ -1954,20 +1995,20 @@ export default function UsePurelyDashboardPage() {
                           </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0">
                           <button
                             onClick={() =>
                               handleToggleListingChannel(exp, "web")
                             }
-                            className={`px-3.5 py-1.5 rounded-full text-xs font-medium border cursor-pointer transition flex items-center gap-1.5 ${
+                            className={`px-2.5 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border cursor-pointer transition flex items-center justify-center gap-1.5 ${
                               exp.publishToWeb !== false
                                 ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
                                 : "bg-[#FFFCFA] text-[#6B6B55] border-[#C8C4B0]"
                             }`}
                           >
-                            <Globe className="w-3.5 h-3.5" />
-                            <span>
-                              purelyistanbul.com:{" "}
+                            <Globe className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">
+                              Web:{" "}
                               {exp.publishToWeb !== false ? "Yayında" : "Gizli"}
                             </span>
                           </button>
@@ -1976,15 +2017,15 @@ export default function UsePurelyDashboardPage() {
                             onClick={() =>
                               handleToggleListingChannel(exp, "mobile")
                             }
-                            className={`px-3.5 py-1.5 rounded-full text-xs font-medium border cursor-pointer transition flex items-center gap-1.5 ${
+                            className={`px-2.5 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border cursor-pointer transition flex items-center justify-center gap-1.5 ${
                               exp.publishToMobile !== false
                                 ? "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
                                 : "bg-[#FFFCFA] text-[#6B6B55] border-[#C8C4B0]"
                             }`}
                           >
-                            <Smartphone className="w-3.5 h-3.5" />
-                            <span>
-                              iOS App &amp; PWA:{" "}
+                            <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">
+                              iOS/PWA:{" "}
                               {exp.publishToMobile !== false
                                 ? "Yayında"
                                 : "Gizli"}
@@ -1993,7 +2034,7 @@ export default function UsePurelyDashboardPage() {
 
                           <button
                             onClick={() => handleToggleListingActive(exp)}
-                            className={`text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center gap-1.5 cursor-pointer transition ${
+                            className={`text-[11px] sm:text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center justify-center gap-1.5 cursor-pointer transition ${
                               exp.status === "suspended"
                                 ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97] hover:bg-[#dcebc9]"
                                 : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0] hover:bg-[#ebd3c3]"
@@ -2001,21 +2042,21 @@ export default function UsePurelyDashboardPage() {
                           >
                             {exp.status === "suspended" ? (
                               <>
-                                <Power className="w-3.5 h-3.5" /> Yayına Al
+                                <Power className="w-3.5 h-3.5 shrink-0" /> Yayına Al
                               </>
                             ) : (
                               <>
-                                <PauseCircle className="w-3.5 h-3.5" /> Askıya Al
+                                <PauseCircle className="w-3.5 h-3.5 shrink-0" /> Askıya Al
                               </>
                             )}
                           </button>
 
                           <button
                             onClick={() => handleDeleteListing(exp)}
-                            className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer transition"
+                            className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-[11px] sm:text-xs font-medium inline-flex items-center justify-center gap-1.5 cursor-pointer transition"
                             title="İlanı Sil"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Sil
+                            <Trash2 className="w-3.5 h-3.5 shrink-0" /> Sil
                           </button>
                         </div>
                       </div>
@@ -2048,12 +2089,12 @@ export default function UsePurelyDashboardPage() {
                           className="comus-card flex flex-col justify-between space-y-4"
                         >
                           <div className="space-y-2">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-2">
                               <span className="text-[11px] uppercase tracking-wider text-[#3B6D11] font-medium">
                                 {mod.channel}
                               </span>
                               <span
-                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
+                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium border shrink-0 ${
                                   isEnabled
                                     ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
                                     : "bg-[#EDE8DE] text-[#6B6B55] border-[#C8C4B0]"
@@ -2070,7 +2111,7 @@ export default function UsePurelyDashboardPage() {
                             </p>
                           </div>
 
-                          <div className="pt-3 border-t border-[#C8C4B0]/60 flex items-center justify-between">
+                          <div className="pt-3 border-t border-[#C8C4B0]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <span className="text-[11px] text-[#6B6B55]">
                               Durum:{" "}
                               <strong>
@@ -2083,8 +2124,8 @@ export default function UsePurelyDashboardPage() {
                               onClick={() => toggleAppModule(mod.id)}
                               className={
                                 isEnabled
-                                  ? "comus-btn-ghost text-xs py-1.5 px-3"
-                                  : "comus-btn-primary text-xs py-1.5 px-3"
+                                  ? "comus-btn-ghost text-xs py-1.5 px-3 w-full sm:w-auto"
+                                  : "comus-btn-primary text-xs py-1.5 px-3 w-full sm:w-auto"
                               }
                             >
                               {isEnabled ? "Modülü Gizle" : "Modülü Aktifleştir"}
@@ -2137,14 +2178,14 @@ export default function UsePurelyDashboardPage() {
                                   {item.pricing.currency}
                                 </p>
                               </div>
-                              <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-[#F3E3D8] text-[#9C4E24] border border-[#E5C4B0]">
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-[#F3E3D8] text-[#9C4E24] border border-[#E5C4B0] shrink-0">
                                 İncelemede
                               </span>
                             </div>
                             <p className="text-xs text-[#6B6B55] line-clamp-2">
                               {item.description}
                             </p>
-                            <div className="flex items-center gap-2 pt-1">
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
                               <button
                                 disabled={busyApprovalId === item.id}
                                 onClick={async () => {
@@ -2162,7 +2203,7 @@ export default function UsePurelyDashboardPage() {
                                     setBusyApprovalId(null);
                                   }
                                 }}
-                                className="comus-btn-primary text-xs py-1.5 px-4"
+                                className="comus-btn-primary text-xs py-1.5 px-4 flex-1 sm:flex-initial"
                               >
                                 Onayla &amp; Vitrine Al
                               </button>
@@ -2180,7 +2221,7 @@ export default function UsePurelyDashboardPage() {
                                     setBusyApprovalId(null);
                                   }
                                 }}
-                                className="comus-btn-ghost text-xs py-1.5 px-4 text-red-700"
+                                className="comus-btn-ghost text-xs py-1.5 px-4 text-red-700 flex-1 sm:flex-initial"
                               >
                                 Reddet
                               </button>
@@ -2214,12 +2255,12 @@ export default function UsePurelyDashboardPage() {
                             key={app.id}
                             className="p-4 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] space-y-2.5"
                           >
-                            <div className="flex items-center justify-between">
-                              <div>
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
                                 <div className="text-sm font-medium text-[#2C2C1A]">
                                   {app.applicantName}
                                 </div>
-                                <div className="text-xs text-[#6B6B55]">
+                                <div className="text-xs text-[#6B6B55] break-all sm:break-normal">
                                   {app.applicantEmail} •{" "}
                                   {app.businessType === "company"
                                     ? "Kurumsal İşletme"
@@ -2227,7 +2268,7 @@ export default function UsePurelyDashboardPage() {
                                 </div>
                               </div>
                               <span
-                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${
                                   app.status === "approved"
                                     ? "bg-[#EAF3DE] text-[#3B6D11]"
                                     : app.status === "rejected"
@@ -2244,7 +2285,7 @@ export default function UsePurelyDashboardPage() {
                             </div>
                             <p className="text-xs text-[#6B6B55]">{app.about}</p>
                             {app.status === "pending" && (
-                              <div className="flex items-center gap-2 pt-2">
+                              <div className="flex flex-wrap items-center gap-2 pt-2">
                                 <input
                                   type="number"
                                   min={1}
@@ -2257,7 +2298,7 @@ export default function UsePurelyDashboardPage() {
                                       [app.id]: e.target.value,
                                     }))
                                   }
-                                  className="comus-input w-40 text-xs py-1.5"
+                                  className="comus-input flex-1 sm:w-40 text-xs py-1.5"
                                 />
                                 <button
                                   disabled={busyApprovalId === app.id}
@@ -2286,7 +2327,7 @@ export default function UsePurelyDashboardPage() {
                                       setBusyApprovalId(null);
                                     }
                                   }}
-                                  className="comus-btn-primary text-xs py-1.5 px-4"
+                                  className="comus-btn-primary text-xs py-1.5 px-4 shrink-0"
                                 >
                                   Onayla
                                 </button>
@@ -2318,17 +2359,17 @@ export default function UsePurelyDashboardPage() {
                       {serviceRequests.map((req) => (
                         <div
                           key={req.id}
-                          className="p-3.5 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex items-center justify-between gap-3"
+                          className="p-3.5 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3"
                         >
-                          <div>
+                          <div className="min-w-0">
                             <div className="text-xs font-medium text-[#2C2C1A]">
-                              Oda {req.roomNumber} • {req.serviceTitle}
+                              Birim {req.roomNumber} • {req.serviceTitle}
                             </div>
-                            <div className="text-xs text-[#6B6B55]">
+                            <div className="text-xs text-[#6B6B55] break-words">
                               {req.notes || req.serviceKey} ({req.hotelName || "Partner Otel"})
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="grid grid-cols-3 sm:flex items-center gap-1.5 w-full sm:w-auto shrink-0">
                             {(
                               [
                                 { key: "pending", label: "Yeni" },
@@ -2345,10 +2386,10 @@ export default function UsePurelyDashboardPage() {
                                   );
                                   refreshAllData();
                                   toast.success(
-                                    `Oda ${req.roomNumber} talebi "${st.label}" olarak güncellendi.`
+                                    `Birim ${req.roomNumber} talebi "${st.label}" olarak güncellendi.`
                                   );
                                 }}
-                                className={`px-2.5 py-1 rounded-full text-[10px] font-medium border cursor-pointer ${
+                                className={`px-2.5 py-1.5 sm:py-1 rounded-full text-[10px] font-medium border cursor-pointer text-center ${
                                   req.status === st.key
                                     ? "bg-[#3B6D11] text-white border-[#3B6D11]"
                                     : "bg-[#FFFCFA] text-[#6B6B55] border-[#C8C4B0]"
@@ -2385,7 +2426,7 @@ export default function UsePurelyDashboardPage() {
                             key={bk.id}
                             className="p-3.5 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                           >
-                            <div>
+                            <div className="min-w-0">
                               <div className="text-xs font-medium text-[#2C2C1A]">
                                 {bk.experienceTitle} ({bk.confirmationCode})
                               </div>
@@ -2406,7 +2447,7 @@ export default function UsePurelyDashboardPage() {
                                 refreshAllData();
                                 toast.success("Rezervasyon durumu güncellendi.");
                               }}
-                              className="comus-input w-auto text-xs py-1 px-2.5"
+                              className="comus-input w-full sm:w-auto text-xs py-1.5 sm:py-1 px-2.5"
                             >
                               <option value="payment_success">
                                 Ödeme Alındı
@@ -2431,7 +2472,7 @@ export default function UsePurelyDashboardPage() {
               TAB 3: İLAN YÖNETİMİ (DENEYİM, TUR, RESTORAN, KONAKLAMA)
           ========================================================= */}
           {activeTab === "listings" && (
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8 min-w-0">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-[#C8C4B0]">
                 <div>
                   <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
@@ -2553,7 +2594,7 @@ export default function UsePurelyDashboardPage() {
                     <select
                       value={bulkMoveCategory}
                       onChange={(e) => setBulkMoveCategory(e.target.value)}
-                      className="comus-input w-auto text-xs py-1.5 px-2.5"
+                      className="comus-input w-full sm:w-auto text-xs py-1.5 px-2.5"
                     >
                       <option value="">Kategoriye taşı…</option>
                       {categoryConfigs.map((c) => (
@@ -2591,7 +2632,7 @@ export default function UsePurelyDashboardPage() {
                       className={`comus-card ${isSelected ? "ring-2 ring-[#3B6D11]/60" : ""}`}
                     >
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex items-start gap-4 min-w-0">
+                          <div className="flex items-start gap-3 sm:gap-4 min-w-0">
                             <input
                               type="checkbox"
                               checked={isSelected}
@@ -2603,15 +2644,15 @@ export default function UsePurelyDashboardPage() {
                               <img
                                 src={exp.image}
                                 alt={exp.title}
-                                className="w-20 h-20 rounded-xl object-cover border border-[#C8C4B0] shrink-0"
+                                className="w-16 h-16 sm:w-20 sm:h-20 aspect-square rounded-xl object-cover border border-[#C8C4B0] shrink-0"
                               />
                             )}
                             <div className="space-y-1 min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <h3 className="comus-serif text-xl font-medium text-[#2C2C1A]">
+                              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                <h3 className="comus-serif text-lg sm:text-xl font-medium text-[#2C2C1A] leading-snug">
                                   {exp.title}
                                 </h3>
-                                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#F6F1E8] border border-[#C8C4B0] text-[#6B6B55]">
+                                <span className="text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full bg-[#F6F1E8] border border-[#C8C4B0] text-[#6B6B55]">
                                   {rowCategory?.label ?? exp.category}
                                 </span>
                                 {exp.status === "suspended" && (
@@ -2634,8 +2675,8 @@ export default function UsePurelyDashboardPage() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-2 shrink-0">
-                            <div className="text-right mr-2">
+                          <div className="w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-[#C8C4B0]/50 flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between md:justify-end gap-2.5 shrink-0">
+                            <div className="flex items-baseline justify-between sm:block sm:text-right sm:mr-2">
                               <div className="comus-serif text-2xl font-medium text-[#2C2C1A]">
                                 {formatPrice(exp.price, exp.currency)}
                               </div>
@@ -2644,79 +2685,81 @@ export default function UsePurelyDashboardPage() {
                               </div>
                             </div>
 
-                            <button
-                              onClick={() =>
-                                handleToggleListingChannel(exp, "web")
-                              }
-                              className={`px-3 py-1.5 rounded-full text-[11px] font-medium border cursor-pointer ${
-                                exp.publishToWeb !== false
-                                  ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
-                                  : "bg-[#F6F1E8] text-[#6B6B55] border-[#C8C4B0]"
-                              }`}
-                            >
-                              Web {exp.publishToWeb !== false ? "✓" : "✕"}
-                            </button>
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <button
+                                onClick={() =>
+                                  handleToggleListingChannel(exp, "web")
+                                }
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-medium border cursor-pointer ${
+                                  exp.publishToWeb !== false
+                                    ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                                    : "bg-[#F6F1E8] text-[#6B6B55] border-[#C8C4B0]"
+                                }`}
+                              >
+                                Web {exp.publishToWeb !== false ? "✓" : "✕"}
+                              </button>
 
-                            <button
-                              onClick={() =>
-                                handleToggleListingChannel(exp, "mobile")
-                              }
-                              className={`px-3 py-1.5 rounded-full text-[11px] font-medium border cursor-pointer ${
-                                exp.publishToMobile !== false
-                                  ? "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
-                                  : "bg-[#F6F1E8] text-[#6B6B55] border-[#C8C4B0]"
-                              }`}
-                            >
-                              iOS/PWA{" "}
-                              {exp.publishToMobile !== false ? "✓" : "✕"}
-                            </button>
+                              <button
+                                onClick={() =>
+                                  handleToggleListingChannel(exp, "mobile")
+                                }
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-medium border cursor-pointer ${
+                                  exp.publishToMobile !== false
+                                    ? "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
+                                    : "bg-[#F6F1E8] text-[#6B6B55] border-[#C8C4B0]"
+                                }`}
+                              >
+                                iOS/PWA{" "}
+                                {exp.publishToMobile !== false ? "✓" : "✕"}
+                              </button>
 
-                            <button
-                              onClick={() => handleStartEditListing(exp)}
-                              className="comus-btn-ghost text-xs py-1.5 px-3"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" /> Düzenle
-                            </button>
+                              <button
+                                onClick={() => handleStartEditListing(exp)}
+                                className="comus-btn-ghost text-xs py-1.5 px-3"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" /> Düzenle
+                              </button>
 
-                            <button
-                              onClick={() => handleDuplicateListing(exp)}
-                              className="comus-btn-ghost text-xs py-1.5 px-3"
-                              title="İlanı Çoğalt (askıda kopya oluşturur)"
-                            >
-                              <Copy className="w-3.5 h-3.5" />
-                            </button>
+                              <button
+                                onClick={() => handleDuplicateListing(exp)}
+                                className="comus-btn-ghost text-xs py-1.5 px-2.5"
+                                title="İlanı Çoğalt (askıda kopya oluşturur)"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
 
-                            <button
-                              onClick={() => handleToggleListingActive(exp)}
-                              className={`text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center gap-1.5 cursor-pointer transition ${
-                                exp.status === "suspended"
-                                  ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97] hover:bg-[#dcebc9]"
-                                  : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0] hover:bg-[#ebd3c3]"
-                              }`}
-                              title={
-                                exp.status === "suspended"
-                                  ? "İlanı Tekrar Yayına Al"
-                                  : "İlanı Geçici Olarak Askıya Al"
-                              }
-                            >
-                              {exp.status === "suspended" ? (
-                                <>
-                                  <Power className="w-3.5 h-3.5" /> Yayına Al
-                                </>
-                              ) : (
-                                <>
-                                  <PauseCircle className="w-3.5 h-3.5" /> Askıya Al
-                                </>
-                              )}
-                            </button>
+                              <button
+                                onClick={() => handleToggleListingActive(exp)}
+                                className={`text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center gap-1.5 cursor-pointer transition ${
+                                  exp.status === "suspended"
+                                    ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97] hover:bg-[#dcebc9]"
+                                    : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0] hover:bg-[#ebd3c3]"
+                                }`}
+                                title={
+                                  exp.status === "suspended"
+                                    ? "İlanı Tekrar Yayına Al"
+                                    : "İlanı Geçici Olarak Askıya Al"
+                                }
+                              >
+                                {exp.status === "suspended" ? (
+                                  <>
+                                    <Power className="w-3.5 h-3.5" /> Yayına Al
+                                  </>
+                                ) : (
+                                  <>
+                                    <PauseCircle className="w-3.5 h-3.5" /> Askıya Al
+                                  </>
+                                )}
+                              </button>
 
-                            <button
-                              onClick={() => handleDeleteListing(exp)}
-                              className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer transition"
-                              title="İlanı Kalıcı Olarak Sil"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Sil
-                            </button>
+                              <button
+                                onClick={() => handleDeleteListing(exp)}
+                                className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer transition"
+                                title="İlanı Kalıcı Olarak Sil"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> Sil
+                              </button>
+                            </div>
                           </div>
                         </div>
                     </div>
@@ -2830,12 +2873,12 @@ export default function UsePurelyDashboardPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Link href="/qr-generator" className="comus-btn-primary">
-                    <QrCode className="w-4 h-4" />
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <Link href="/qr-generator" className="comus-btn-primary flex-1 sm:flex-initial">
+                    <QrCode className="w-4 h-4 shrink-0" />
                     <span>Toplu Oda QR Kod Yazdır →</span>
                   </Link>
-                  <Link href="/hotel-portal" className="comus-btn-ghost">
+                  <Link href="/hotel-portal" className="comus-btn-ghost flex-1 sm:flex-initial">
                     <span>Otel Paneline Geç ↗</span>
                   </Link>
                 </div>
@@ -2869,7 +2912,7 @@ export default function UsePurelyDashboardPage() {
 
                 <button
                   onClick={handleSavePaymentConfig}
-                  className="comus-btn-primary"
+                  className="comus-btn-primary w-full sm:w-auto"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Ödeme Ayarlarını Kaydet</span>
@@ -2877,7 +2920,7 @@ export default function UsePurelyDashboardPage() {
               </div>
 
               {/* Aktif Ödeme Sağlayıcı Seçimi & Durum Kartları */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div className="comus-card space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-wider text-[#6B6B55] font-medium">
@@ -3548,7 +3591,7 @@ export default function UsePurelyDashboardPage() {
               TAB 8: RAPORLAR & ANALİTİK SAYFASI
           ========================================================= */}
           {activeTab === "reports" && (
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#C8C4B0]">
                 <div>
                   <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
@@ -3567,21 +3610,21 @@ export default function UsePurelyDashboardPage() {
 
                 <button
                   onClick={handleExportReportsCsv}
-                  className="comus-btn-primary"
+                  className="comus-btn-primary w-full sm:w-auto text-center"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4 shrink-0" />
                   <span>Tüm Katalog &amp; Komisyon Raporunu İndir (CSV)</span>
                 </button>
               </div>
 
               {/* Üst Finansal & Operasyonel KPI Kartları */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div className="comus-card space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                  <div className="flex items-center justify-between gap-1 text-[11px] sm:text-xs text-[#6B6B55]">
                     <span>Toplam Rezervasyon Hacmi (GMV)</span>
-                    <TrendingUp className="w-4 h-4 text-[#3B6D11]" />
+                    <TrendingUp className="w-4 h-4 text-[#3B6D11] shrink-0" />
                   </div>
-                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-2xl sm:text-3xl font-light text-[#2C2C1A]">
                     €
                     {bookings
                       .reduce((sum, b) => sum + (Number(b.amount) || 0), 0)
@@ -3594,11 +3637,11 @@ export default function UsePurelyDashboardPage() {
                 </div>
 
                 <div className="comus-card space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                  <div className="flex items-center justify-between gap-1 text-[11px] sm:text-xs text-[#6B6B55]">
                     <span>Net Platform Komisyon Geliri</span>
-                    <Wallet className="w-4 h-4 text-[#3B6D11]" />
+                    <Wallet className="w-4 h-4 text-[#3B6D11] shrink-0" />
                   </div>
-                  <div className="comus-serif text-3xl font-light text-[#3B6D11]">
+                  <div className="comus-serif text-2xl sm:text-3xl font-light text-[#3B6D11]">
                     €
                     {Math.round(
                       bookings.reduce(
@@ -3628,11 +3671,11 @@ export default function UsePurelyDashboardPage() {
                 </div>
 
                 <div className="comus-card space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
-                    <span>Oda İçi QR Misafir Talepleri</span>
-                    <QrCode className="w-4 h-4 text-[#C1622F]" />
+                  <div className="flex items-center justify-between gap-1 text-[11px] sm:text-xs text-[#6B6B55]">
+                    <span>Birim İçi QR Misafir Talepleri</span>
+                    <QrCode className="w-4 h-4 text-[#C1622F] shrink-0" />
                   </div>
-                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-2xl sm:text-3xl font-light text-[#2C2C1A]">
                     {serviceRequests.length}
                   </div>
                   <p className="text-[11px] text-[#6B6B55]">
@@ -3647,11 +3690,11 @@ export default function UsePurelyDashboardPage() {
                 </div>
 
                 <div className="comus-card space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[#6B6B55]">
+                  <div className="flex items-center justify-between gap-1 text-[11px] sm:text-xs text-[#6B6B55]">
                     <span>Aktif Kanal Kapsaması</span>
-                    <BarChart3 className="w-4 h-4 text-[#3B6D11]" />
+                    <BarChart3 className="w-4 h-4 text-[#3B6D11] shrink-0" />
                   </div>
-                  <div className="comus-serif text-3xl font-light text-[#2C2C1A]">
+                  <div className="comus-serif text-2xl sm:text-3xl font-light text-[#2C2C1A]">
                     {webActiveCount} Web / {mobileActiveCount} Mobil
                   </div>
                   <p className="text-[11px] text-[#6B6B55]">
@@ -3677,16 +3720,16 @@ export default function UsePurelyDashboardPage() {
                   </span>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-xs">
+                <div className="comus-table-wrapper">
+                  <table className="comus-responsive-table text-left text-xs">
                     <thead>
                       <tr className="border-b border-[#C8C4B0] text-[11px] uppercase tracking-wider text-[#6B6B55]">
-                        <th className="py-2.5 px-3">Kategori</th>
-                        <th className="py-2.5 px-3">Durum</th>
-                        <th className="py-2.5 px-3">Toplam İlan</th>
-                        <th className="py-2.5 px-3">Yayında (Aktif)</th>
-                        <th className="py-2.5 px-3">Askıda</th>
-                        <th className="py-2.5 px-3">Ort. Komisyon</th>
+                        <th scope="col" className="py-2.5 px-3">Kategori</th>
+                        <th scope="col" className="py-2.5 px-3">Durum</th>
+                        <th scope="col" className="py-2.5 px-3">Toplam İlan</th>
+                        <th scope="col" className="py-2.5 px-3">Yayında (Aktif)</th>
+                        <th scope="col" className="py-2.5 px-3">Askıda</th>
+                        <th scope="col" className="py-2.5 px-3">Ort. Komisyon</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#C8C4B0]/50">
@@ -3711,9 +3754,9 @@ export default function UsePurelyDashboardPage() {
                             : 15;
                         return (
                           <tr key={cat.key} className="hover:bg-[#F6F1E8]/60">
-                            <td className="py-2.5 px-3 font-medium text-[#2C2C1A]">
+                            <th scope="row" className="py-2.5 px-3 font-medium text-[#2C2C1A]">
                               {cat.label}
-                            </td>
+                            </th>
                             <td className="py-2.5 px-3">
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
@@ -3862,15 +3905,15 @@ export default function UsePurelyDashboardPage() {
         )}
 
         {/* Minimalist Comus Footer */}
-        <footer className="mt-16 border-t border-[#C8C4B0] px-6 md:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B6B55]">
-          <div className="flex items-center gap-3">
+        <footer className="mt-10 sm:mt-16 border-t border-[#C8C4B0] px-4 sm:px-6 md:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-[#6B6B55] text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
             <span className="comus-logo text-lg">
               purely<span>istanbul</span>
             </span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>Merkezi Yönetim Paneli (/usepurelydashboard)</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <Link href="/" target="_blank" className="hover:text-[#3B6D11]">
               purelyistanbul.com Web
             </Link>

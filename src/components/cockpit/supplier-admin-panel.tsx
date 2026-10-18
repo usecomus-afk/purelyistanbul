@@ -333,7 +333,7 @@ export function SupplierAdminPanel({ onCreateListingForSupplier }: SupplierAdmin
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
-            className="px-3 py-2.5 text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 rounded-xl text-zinc-800 dark:text-slate-200 cursor-pointer"
+            className="w-full sm:w-auto px-3 py-2.5 text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 rounded-xl text-zinc-800 dark:text-slate-200 cursor-pointer"
           >
             <option value="all">Tüm İşletme Tipleri</option>
             {Object.entries(SUPPLIER_TYPE_LABELS).map(([k, v]) => (
@@ -346,7 +346,7 @@ export function SupplierAdminPanel({ onCreateListingForSupplier }: SupplierAdmin
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-3 py-2.5 text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 rounded-xl text-zinc-800 dark:text-slate-200 cursor-pointer"
+            className="w-full sm:w-auto px-3 py-2.5 text-xs bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80 rounded-xl text-zinc-800 dark:text-slate-200 cursor-pointer"
           >
             <option value="all">Tüm Sözleşmeler</option>
             <option value="active">Aktif</option>
@@ -356,7 +356,7 @@ export function SupplierAdminPanel({ onCreateListingForSupplier }: SupplierAdmin
 
           <button
             onClick={() => setIsNewOpen(true)}
-            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
+            className="w-full sm:w-auto px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4" /> Yeni İşletme / Tedarikçi Ekle
           </button>
@@ -544,8 +544,8 @@ function SupplierFormModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 border border-amber-200/80 rounded-3xl max-w-2xl w-full p-6 space-y-4 my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-amber-200/80 rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 my-4 sm:my-8 max-h-[90dvh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
           <div>
             <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">{title}</h3>

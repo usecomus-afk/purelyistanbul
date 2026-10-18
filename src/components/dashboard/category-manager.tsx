@@ -298,7 +298,7 @@ export function CategoryManager({
   const renderIconField = (value: string, cfgKey: string | null, onChange: (v: string) => void) => (
     <div>
       <label className="comus-label">İkon</label>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
         <div className="w-12 h-12 rounded-xl border border-[#C8C4B0] bg-[#FFFCFA] flex items-center justify-center shrink-0 overflow-hidden">
           {renderIcon(value, "?", "w-10 h-10")}
         </div>
@@ -308,7 +308,7 @@ export function CategoryManager({
           readOnly={value.startsWith("data:")}
           onChange={(e) => onChange(e.target.value)}
           placeholder="/icons/... veya https://..."
-          className="comus-input flex-1"
+          className="comus-input flex-1 min-w-[140px]"
         />
         <label className="comus-btn-ghost text-xs px-3 py-1.5 shrink-0 cursor-pointer">
           <ImagePlus className="w-3.5 h-3.5" /> Yükle
@@ -349,7 +349,7 @@ export function CategoryManager({
             <strong>iOS uygulaması / otel PWA</strong> üzerinde anında yansır.
           </p>
         </div>
-        <button onClick={() => setShowNew((v) => !v)} className="comus-btn-primary">
+        <button onClick={() => setShowNew((v) => !v)} className="comus-btn-primary w-full md:w-auto justify-center">
           <Plus className="w-4 h-4" />
           <span>{showNew ? "Formu Kapat" : "Yeni Kategori Ekle"}</span>
         </button>
@@ -568,11 +568,11 @@ export function CategoryManager({
                       >
                         Tümünü Askıya Al
                       </button>
-                      <span className="text-[#C8C4B0]">|</span>
+                      <span className="hidden sm:inline text-[#C8C4B0]">|</span>
                       <select
                         value={moveTargets[cfg.key] ?? ""}
                         onChange={(e) => setMoveTargets((prev) => ({ ...prev, [cfg.key]: e.target.value }))}
-                        className="comus-input w-auto text-xs py-1.5 px-2.5"
+                        className="comus-input w-full sm:w-auto text-xs py-1.5 px-2.5"
                       >
                         <option value="">Taşınacak kategori…</option>
                         {configs

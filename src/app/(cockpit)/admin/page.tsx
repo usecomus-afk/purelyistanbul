@@ -812,8 +812,8 @@ function ExperienceFormModal({ title, submitLabel, values, onChange, onCancel, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-2xl w-full p-6 border border-amber-500/40 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 animate-in fade-in">
+      <div className="bg-white dark:bg-slate-900 dark:border-slate-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 border border-amber-500/40 shadow-2xl space-y-4 max-h-[90dvh] overflow-y-auto text-zinc-900 dark:text-slate-100 animate-in zoom-in-95">
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
           <div className="flex items-center gap-2">
             <Edit3 className="w-5 h-5 text-amber-500" />

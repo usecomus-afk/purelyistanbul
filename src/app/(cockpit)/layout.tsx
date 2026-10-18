@@ -32,7 +32,7 @@ export default function CockpitLayout({
 
   return (
     <AdminAuthGuard>
-      <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#F6F1E8] text-[#2C2C1A] flex flex-col md:flex-row">
+      <div className="min-h-dvh w-full max-w-[100dvw] overflow-x-hidden bg-[#F6F1E8] text-[#2C2C1A] flex flex-col md:flex-row">
         <CockpitSideNav
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}

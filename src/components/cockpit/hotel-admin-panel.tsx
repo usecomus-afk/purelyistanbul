@@ -330,7 +330,7 @@ export function HotelAdminPanel() {
         <select
           value={selectedDistrict}
           onChange={(e) => setSelectedDistrict(e.target.value)}
-          className="px-3 py-2.5 text-xs bg-white dark:bg-slate-900 border border-amber-200/80 rounded-xl text-zinc-700 cursor-pointer"
+          className="w-full sm:w-auto px-3 py-2.5 text-xs bg-white dark:bg-slate-900 border border-amber-200/80 rounded-xl text-zinc-700 cursor-pointer"
         >
           {districts.map((d) => (
             <option key={d} value={d}>
@@ -339,21 +339,23 @@ export function HotelAdminPanel() {
           ))}
         </select>
 
-        <button
-          onClick={() => setIsNewOpen(true)}
-          className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Yeni Partner Otel Ekle</span>
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => setIsNewOpen(true)}
+            className="flex-1 sm:flex-initial px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Yeni Partner Otel Ekle</span>
+          </button>
 
-        <Link
-          href="/qr-generator"
-          className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shrink-0"
-        >
-          <QrCode className="w-4 h-4" />
-          <span>Toplu QR</span>
-        </Link>
+          <Link
+            href="/qr-generator"
+            className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shrink-0"
+          >
+            <QrCode className="w-4 h-4" />
+            <span>Toplu QR</span>
+          </Link>
+        </div>
       </div>
 
       {/* Hotel Grid */}
@@ -481,8 +483,8 @@ export function HotelAdminPanel() {
 
       {/* Room Inventory Modal */}
       {managingRoomsHotel && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-amber-200 rounded-3xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white dark:bg-slate-900 border border-amber-200 rounded-3xl max-w-xl w-full p-4 sm:p-6 space-y-4 max-h-[88dvh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-amber-200 pb-3">
               <div>
                 <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">
@@ -576,8 +578,8 @@ function HotelFormModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 border border-amber-200/80 rounded-3xl max-w-2xl w-full p-6 space-y-4 my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-amber-200/80 rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 my-4 sm:my-8 max-h-[90dvh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
           <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-slate-100">{title}</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg bg-amber-50 text-zinc-500 hover:text-zinc-900">

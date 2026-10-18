@@ -198,11 +198,11 @@ export function ListingEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/40 backdrop-blur-xs p-3 sm:p-6">
+    <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/40 backdrop-blur-xs p-2 sm:p-6">
       <form
         onSubmit={handleSubmit}
         data-comus-dashboard="true"
-        className="comus-card w-full max-w-4xl my-4 space-y-5 border-2 border-[#3B6D11]"
+        className="comus-card w-full max-w-4xl my-2 sm:my-4 max-h-[92dvh] overflow-y-auto space-y-5 border-2 border-[#3B6D11]"
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#C8C4B0]/60 pb-3">
           <div>
@@ -436,11 +436,11 @@ export function ListingEditorModal({
               <span>Askıya al (hiçbir kanalda gösterme)</span>
             </label>
           </div>
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={onClose} className="comus-btn-ghost">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button type="button" onClick={onClose} className="comus-btn-ghost flex-1 sm:flex-initial justify-center">
               Vazgeç
             </button>
-            <button type="submit" className="comus-btn-primary">
+            <button type="submit" className="comus-btn-primary flex-1 sm:flex-initial justify-center">
               <Save className="w-4 h-4" />
               <span>{mode === "edit" ? "Değişiklikleri Kaydet" : "İlanı Kaydet ve Yayına Al"}</span>
             </button>
