@@ -107,20 +107,80 @@ function buildDefaultSuppliers(): SupplierPartner[] {
 
 const DEFAULT_MODULE_SETTING: ModuleAdminSettings = { enabled: true, hidden: false };
 
+const memoryStore = new Map<string, string>();
+
 function safeGet(key: string, defaultVal: string = ''): string {
+  if (memoryStore.has(key)) {
+    return memoryStore.get(key) || defaultVal;
+  }
   if (typeof window === 'undefined') return defaultVal;
   try {
-    return localStorage.getItem(key) || defaultVal;
+    const val = localStorage.getItem(key);
+    if (val !== null) {
+      memoryStore.set(key, val);
+      return val;
+    }
+    return defaultVal;
   } catch (e) {
     return defaultVal;
   }
 }
 
 function safeSet(key: string, val: string): void {
+  memoryStore.set(key, val);
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(key, val);
-  } catch (e) {}
+  } catch (e) {
+    // QuotaExceededError durumunda büyük base64 görselleri sıkıştırıp tekrar dene
+    try {
+      if (key === 'xenios_custom_experiences') {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) {
+          const compact = parsed.map((item: any) =>
+            typeof item?.image === 'string' && item.image.startsWith('data:') && item.image.length > 40000
+              ? { ...item, image: '/images/istanbul/il_1588xN.6201904451_eqr3.webp' }
+              : item
+          );
+          localStorage.setItem(key, JSON.stringify(compact));
+          return;
+        }
+      }
+      // Kritik silme/durum anahtarları için yer aç
+      const rawExp = localStorage.getItem('xenios_custom_experiences');
+      if (rawExp && rawExp.length > 250000) {
+        const parsed = JSON.parse(rawExp);
+        if (Array.isArray(parsed)) {
+          const compact = parsed.map((item: any) =>
+            typeof item?.image === 'string' && item.image.startsWith('data:')
+              ? { ...item, image: '/images/istanbul/il_1588xN.6201904451_eqr3.webp' }
+              : item
+          );
+          localStorage.setItem('xenios_custom_experiences', JSON.stringify(compact));
+        }
+      }
+      localStorage.setItem(key, val);
+    } catch {}
+  }
+}
+
+function getDeletedIdSet(storageKey: string): Set<string> {
+  try {
+    const raw = safeGet(storageKey);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return new Set(parsed);
+    }
+  } catch {}
+  return new Set<string>();
+}
+
+function addDeletedId(storageKey: string, id: string): void {
+  const set = getDeletedIdSet(storageKey);
+  if (!set.has(id)) {
+    set.add(id);
+    safeSet(storageKey, JSON.stringify(Array.from(set)));
+  }
 }
 
 export const XeniosStore = {
@@ -137,8 +197,11 @@ export const XeniosStore = {
     if (user) {
       safeSet(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
     } else {
+      memoryStore.delete(STORAGE_KEYS.CURRENT_USER);
       if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+        try {
+          localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+        } catch {}
       }
     }
     if (typeof window !== 'undefined') {
@@ -150,39 +213,79 @@ export const XeniosStore = {
     this.setUser(null);
   },
 
+  // Deleted ID Tombstones
+  getDeletedExperienceIds(): Set<string> {
+    return getDeletedIdSet('xenios_deleted_experience_ids');
+  },
+
+  markExperienceDeleted(id: string) {
+    addDeletedId('xenios_deleted_experience_ids', id);
+  },
+
+  getDeletedPropertyIds(): Set<string> {
+    return getDeletedIdSet('xenios_deleted_property_ids');
+  },
+
+  markPropertyDeleted(id: string) {
+    addDeletedId('xenios_deleted_property_ids', id);
+  },
+
+  getDeletedHotelIds(): Set<string> {
+    return getDeletedIdSet('xenios_deleted_hotel_ids');
+  },
+
+  markHotelDeleted(id: string) {
+    addDeletedId('xenios_deleted_hotel_ids', id);
+  },
+
+  getDeletedSupplierIds(): Set<string> {
+    return getDeletedIdSet('xenios_deleted_supplier_ids');
+  },
+
+  markSupplierDeleted(id: string) {
+    addDeletedId('xenios_deleted_supplier_ids', id);
+  },
+
   // Hotels Management & Live Inventory
   getHotels(): Hotel[] {
+    const deletedIds = this.getDeletedHotelIds();
     try {
       const stored = safeGet('xenios_custom_hotels');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter((h: Hotel) => h && h.id && !h.deleted && !deletedIds.has(h.id));
+        }
       }
     } catch (e) {}
-    return hotelsData;
+    return hotelsData.filter((h) => h && h.id && !deletedIds.has(h.id));
   },
 
   saveHotels(hotels: Hotel[]) {
-    safeSet('xenios_custom_hotels', JSON.stringify(hotels));
+    const deletedIds = this.getDeletedHotelIds();
+    const filtered = hotels.filter((h) => h && h.id && !h.deleted && !deletedIds.has(h.id));
+    safeSet('xenios_custom_hotels', JSON.stringify(filtered));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_hotels_updated'));
     }
   },
 
   addHotel(hotel: Hotel) {
+    const stamped: Hotel = { ...hotel, updatedAt: new Date().toISOString(), deleted: false };
     const list = this.getHotels();
-    list.unshift(hotel);
+    list.unshift(stamped);
     this.saveHotels(list);
     import('./firestore-service').then(({ FirestoreService }) => {
-      FirestoreService.upsertHotel(hotel).catch(() => {});
+      FirestoreService.upsertHotel(stamped).catch(() => {});
     }).catch(() => {});
   },
 
   updateHotel(id: string, updated: Partial<Hotel>) {
+    const now = new Date().toISOString();
     let target: Hotel | undefined;
     const list = this.getHotels().map(h => {
       if (h.id === id) {
-        target = { ...h, ...updated };
+        target = { ...h, ...updated, updatedAt: now };
         return target;
       }
       return h;
@@ -197,6 +300,7 @@ export const XeniosStore = {
   },
 
   deleteHotel(id: string) {
+    this.markHotelDeleted(id);
     const list = this.getHotels().filter(h => h.id !== id);
     this.saveHotels(list);
     import('./firestore-service').then(({ FirestoreService }) => {
@@ -240,6 +344,7 @@ export const XeniosStore = {
       if (!h.rooms) h.rooms = [];
       if (!h.rooms.some(r => r.number === room.number)) {
         h.rooms.push(room);
+        h.updatedAt = new Date().toISOString();
         this.saveHotels(hotels);
         import('./firestore-service').then(({ FirestoreService }) => {
           FirestoreService.upsertHotel(h).catch(() => {});
@@ -253,6 +358,7 @@ export const XeniosStore = {
     const h = hotels.find(item => item.id === hotelId);
     if (h && h.rooms) {
       h.rooms = h.rooms.map(r => r.number === roomNumber ? { ...r, ...updated } : r);
+      h.updatedAt = new Date().toISOString();
       this.saveHotels(hotels);
       import('./firestore-service').then(({ FirestoreService }) => {
         FirestoreService.upsertHotel(h).catch(() => {});
@@ -265,6 +371,7 @@ export const XeniosStore = {
     const h = hotels.find(item => item.id === hotelId);
     if (h && h.rooms) {
       h.rooms = h.rooms.filter(r => r.number !== roomNumber);
+      h.updatedAt = new Date().toISOString();
       this.saveHotels(hotels);
       import('./firestore-service').then(({ FirestoreService }) => {
         FirestoreService.upsertHotel(h).catch(() => {});
@@ -305,19 +412,13 @@ export const XeniosStore = {
       'exp-aesthetic-5', 'exp-aesthetic-6', 'exp-aesthetic-7', 'exp-aesthetic-8',
       'exp-aesthetic-9', 'exp-aesthetic-10', 'exp-aesthetic-11', 'exp-aesthetic-12'
     ]);
-    let deletedIds = new Set<string>();
-    try {
-      const rawDel = safeGet('xenios_deleted_experience_ids');
-      if (rawDel) {
-        const parsedDel = JSON.parse(rawDel);
-        if (Array.isArray(parsedDel)) deletedIds = new Set(parsedDel);
-      }
-    } catch {}
+    const deletedIds = this.getDeletedExperienceIds();
 
     const isRemovedExp = (item: Experience) => {
       if (!item || !item.id) return true;
       if ((item as any).deleted === true) {
         deletedIds.add(item.id);
+        this.markExperienceDeleted(item.id);
         return true;
       }
       if (removedLegacyIds.has(item.id) || item.id.startsWith('exp-aesthetic-')) return true;
@@ -374,7 +475,7 @@ export const XeniosStore = {
       const stored = safeGet('xenios_custom_experiences');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return this.normalizeExperiences(parsed);
         }
       }
@@ -391,10 +492,11 @@ export const XeniosStore = {
   },
 
   updateExperience(id: string, updated: Partial<Experience>) {
+    const now = new Date().toISOString();
     let target: Experience | undefined;
     const list = this.getExperiences().map(e => {
       if (e.id === id) {
-        target = { ...e, ...updated };
+        target = { ...e, ...updated, updatedAt: now };
         return target;
       }
       return e;
@@ -409,13 +511,15 @@ export const XeniosStore = {
   },
 
   updateExperienceQuota(id: string, availableSlots: number, capacity?: number) {
+    const now = new Date().toISOString();
     let target: Experience | undefined;
     const list = this.getExperiences().map(e => {
       if (e.id === id) {
         target = {
           ...e,
           availableSlots: Math.max(0, availableSlots),
-          capacity: capacity !== undefined ? capacity : (e.capacity || 20)
+          capacity: capacity !== undefined ? capacity : (e.capacity || 20),
+          updatedAt: now
         };
         return target;
       }
@@ -431,23 +535,17 @@ export const XeniosStore = {
   },
 
   addExperience(exp: Experience) {
+    const stamped: Experience = { ...exp, updatedAt: new Date().toISOString(), deleted: false };
     const list = this.getExperiences();
-    list.unshift(exp);
+    list.unshift(stamped);
     this.saveExperiences(list);
     import('./firestore-service').then(({ FirestoreService }) => {
-      FirestoreService.upsertExperience(exp).catch(() => {});
+      FirestoreService.upsertExperience(stamped).catch(() => {});
     }).catch(() => {});
   },
 
   deleteExperience(id: string) {
-    try {
-      const rawDel = safeGet('xenios_deleted_experience_ids');
-      const arr: string[] = rawDel ? JSON.parse(rawDel) : [];
-      if (!arr.includes(id)) {
-        arr.push(id);
-        safeSet('xenios_deleted_experience_ids', JSON.stringify(arr));
-      }
-    } catch {}
+    this.markExperienceDeleted(id);
     const list = this.getExperiences().filter(e => e.id !== id);
     this.saveExperiences(list);
     import('./firestore-service').then(({ FirestoreService }) => {
@@ -461,29 +559,35 @@ export const XeniosStore = {
 
   // Agreed Suppliers & Partner Businesses (Anlaşmalı İşletmeler & Tedarikçiler)
   getSuppliers(): SupplierPartner[] {
+    const deletedIds = this.getDeletedSupplierIds();
     try {
       const stored = safeGet(STORAGE_KEYS.SUPPLIERS);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter((s: SupplierPartner) => s && s.id && !s.deleted && !deletedIds.has(s.id));
+        }
       }
     } catch (e) {}
-    return buildDefaultSuppliers();
+    return buildDefaultSuppliers().filter((s) => s && s.id && !deletedIds.has(s.id));
   },
 
   saveSuppliers(suppliers: SupplierPartner[]) {
-    safeSet(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+    const deletedIds = this.getDeletedSupplierIds();
+    const filtered = suppliers.filter((s) => s && s.id && !s.deleted && !deletedIds.has(s.id));
+    safeSet(STORAGE_KEYS.SUPPLIERS, JSON.stringify(filtered));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_suppliers_updated'));
     }
   },
 
   addSupplier(supplier: SupplierPartner) {
+    const stamped: SupplierPartner = { ...supplier, updatedAt: new Date().toISOString(), deleted: false };
     const list = this.getSuppliers();
-    list.unshift(supplier);
+    list.unshift(stamped);
     this.saveSuppliers(list);
     import('./firestore-service').then(({ FirestoreService }) => {
-      FirestoreService.upsertSupplier(supplier).catch(() => {});
+      FirestoreService.upsertSupplier(stamped).catch(() => {});
     }).catch(() => {});
   },
 
@@ -506,6 +610,7 @@ export const XeniosStore = {
   },
 
   deleteSupplier(id: string) {
+    this.markSupplierDeleted(id);
     const list = this.getSuppliers().filter(s => s.id !== id);
     this.saveSuppliers(list);
     import('./firestore-service').then(({ FirestoreService }) => {
@@ -587,42 +692,44 @@ export const XeniosStore = {
 
   // Invest & Live in Istanbul — Emlak & Mülk Yönetimi Vitrini
   getPropertyListings(): PropertyListing[] {
-    const cat12Hidden = this.getCategoryConfigs().find((c) => c.key === 'cat-12')?.hidden !== false;
+    const deletedIds = this.getDeletedPropertyIds();
     try {
       const stored = safeGet(STORAGE_KEYS.PROPERTIES);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return cat12Hidden
-            ? parsed.map((p: PropertyListing) => ({ ...p, status: 'suspended', publishToWeb: false }))
-            : parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter((p: PropertyListing) => p && p.id && !p.deleted && !deletedIds.has(p.id));
         }
       }
     } catch (e) {}
-    return rawProperties as PropertyListing[];
+    return (rawProperties as PropertyListing[]).filter((p) => p && p.id && !deletedIds.has(p.id));
   },
 
   savePropertyListings(properties: PropertyListing[]) {
-    safeSet(STORAGE_KEYS.PROPERTIES, JSON.stringify(properties));
+    const deletedIds = this.getDeletedPropertyIds();
+    const filtered = properties.filter((p) => p && p.id && !p.deleted && !deletedIds.has(p.id));
+    safeSet(STORAGE_KEYS.PROPERTIES, JSON.stringify(filtered));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_properties_updated'));
     }
   },
 
   addPropertyListing(property: PropertyListing) {
+    const stamped: PropertyListing = { ...property, updatedAt: new Date().toISOString(), deleted: false };
     const list = this.getPropertyListings();
-    list.unshift(property);
+    list.unshift(stamped);
     this.savePropertyListings(list);
     import('./firestore-service').then(({ FirestoreService }) => {
-      FirestoreService.upsertProperty(property).catch(() => {});
+      FirestoreService.upsertProperty(stamped).catch(() => {});
     }).catch(() => {});
   },
 
   updatePropertyListing(id: string, updated: Partial<PropertyListing>) {
+    const now = new Date().toISOString();
     let target: PropertyListing | undefined;
     const list = this.getPropertyListings().map(p => {
       if (p.id === id) {
-        target = { ...p, ...updated };
+        target = { ...p, ...updated, updatedAt: now };
         return target;
       }
       return p;
@@ -637,6 +744,7 @@ export const XeniosStore = {
   },
 
   deletePropertyListing(id: string) {
+    this.markPropertyDeleted(id);
     const list = this.getPropertyListings().filter(p => p.id !== id);
     this.savePropertyListings(list);
     import('./firestore-service').then(({ FirestoreService }) => {

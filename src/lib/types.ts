@@ -38,6 +38,8 @@ export interface Hotel {
   managerName?: string;
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  updatedAt?: string;
+  deleted?: boolean;
 }
 
 export type SupplierType =
@@ -76,6 +78,7 @@ export interface SupplierPartner {
   publishToMobile?: boolean;
   createdAt: string;
   updatedAt?: string;
+  deleted?: boolean;
 }
 
 export type ExperienceStatus = 'active' | 'suspended';
@@ -118,6 +121,8 @@ export interface Experience {
   listingType?: 'experience' | 'stay';
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  updatedAt?: string;
+  deleted?: boolean;
 }
 
 export type ServiceStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
@@ -237,6 +242,8 @@ export interface PropertyListing {
   managementType?: 'sale' | 'short_term_rental' | 'both';
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  updatedAt?: string;
+  deleted?: boolean;
 }
 
 export interface InvestmentLead {

@@ -33,6 +33,7 @@ import { MARKETPLACE_CATEGORIES, isRemovedCategory } from "@/lib/marketplace/cat
 import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
+import { XeniosStore } from "@/lib/store";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
 import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
 import { toast } from "sonner";
@@ -173,14 +174,35 @@ export function MarketplaceHome() {
   }, []);
 
   const source = useMemo(() => {
+    const deletedIds =
+      typeof window !== "undefined" ? XeniosStore.getDeletedExperienceIds() : new Set<string>();
+    const hiddenOrSuspendedIds = new Set<string>();
+    if (typeof window !== "undefined") {
+      XeniosStore.getExperiences().forEach((e) => {
+        if (e.status === "suspended" || e.publishToWeb === false || e.deleted) {
+          hiddenOrSuspendedIds.add(e.id);
+        }
+      });
+    }
+
     const map = new Map<string, MarketplaceListing>();
     listings.forEach((item) => {
-      if (item.status === "approved" && !isDisallowedListing(item)) {
+      if (
+        item.status === "approved" &&
+        !isDisallowedListing(item) &&
+        !deletedIds.has(item.id) &&
+        !hiddenOrSuspendedIds.has(item.id)
+      ) {
         map.set(item.id, item);
       }
     });
     catalogListings.forEach((item) => {
-      if (item.status === "approved" && !isDisallowedListing(item)) {
+      if (
+        item.status === "approved" &&
+        !isDisallowedListing(item) &&
+        !deletedIds.has(item.id) &&
+        !hiddenOrSuspendedIds.has(item.id)
+      ) {
         map.set(item.id, item);
       } else {
         map.delete(item.id);

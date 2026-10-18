@@ -140,12 +140,20 @@ export function getLiveCatalogListings(): MarketplaceListing[] {
 
 export function getSeedListing(id: string): MarketplaceListing | undefined {
   if (typeof window !== 'undefined') {
+    if (XeniosStore.getDeletedExperienceIds().has(id)) return undefined;
     const exp = XeniosStore.getExperiences().find((e) => e.id === id);
-    if (exp && getExperienceCategoryKey(exp) !== 'removed') {
+    if (exp) {
+      if (exp.status === 'suspended' || exp.publishToWeb === false || getExperienceCategoryKey(exp) === 'removed') {
+        return undefined;
+      }
       return experienceToMarketplaceListing(exp, 0);
     }
+    if (XeniosStore.getDeletedHotelIds().has(id)) return undefined;
     const hotel = XeniosStore.getHotels().find((h) => h.id === id);
-    if (hotel) return hotelToMarketplaceListing(hotel);
+    if (hotel) {
+      if (hotel.status === 'suspended' || hotel.publishToWeb === false) return undefined;
+      return hotelToMarketplaceListing(hotel);
+    }
   }
   return SEED_LISTINGS.find((l) => l.id === id);
 }

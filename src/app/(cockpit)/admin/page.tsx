@@ -336,10 +336,18 @@ export default function AdminPage() {
   };
 
   const handleDelete = (exp: Experience) => {
-    if (!confirm(`"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) return;
     XeniosStore.deleteExperience(exp.id);
-    toast.info(`"${exp.title}" kalıcı olarak silindi.`);
     refresh();
+    toast.success(`"${exp.title}" silindi.`, {
+      action: {
+        label: 'Geri Al',
+        onClick: () => {
+          XeniosStore.addExperience(exp);
+          refresh();
+          toast.info(`"${exp.title}" geri yüklendi.`);
+        }
+      }
+    });
   };
 
   const openEdit = (exp: Experience) => {

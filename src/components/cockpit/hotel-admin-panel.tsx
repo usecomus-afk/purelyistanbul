@@ -255,10 +255,18 @@ export function HotelAdminPanel() {
   };
 
   const handleDelete = (hotel: Hotel) => {
-    if (!confirm(`"${hotel.name}" otelini kalıcı olarak silmek istediğinize emin misiniz?`)) return;
     XeniosStore.deleteHotel(hotel.id);
-    toast.info(`"${hotel.name}" silindi.`);
     refresh();
+    toast.success(`"${hotel.name}" silindi.`, {
+      action: {
+        label: 'Geri Al',
+        onClick: () => {
+          XeniosStore.addHotel(hotel);
+          refresh();
+          toast.info(`"${hotel.name}" geri yüklendi.`);
+        }
+      }
+    });
   };
 
   const handleAddRoom = (e: React.FormEvent) => {

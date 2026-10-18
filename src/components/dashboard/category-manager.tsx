@@ -199,14 +199,12 @@ export function CategoryManager({
       toast.error("Bu kategoride ilan var. Önce ilanları başka bir kategoriye taşıyın.");
       return;
     }
-    if (!window.confirm(`"${cfg.label}" kategorisi kalıcı olarak silinsin mi?`)) return;
     XeniosStore.deleteCustomCategory(cfg.key);
     onDataChanged();
     toast.success("Kategori silindi.");
   };
 
   const resetCategory = (cfg: CategoryConfig) => {
-    if (!window.confirm(`"${cfg.label}" varsayılan ad, ikon ve ayarlarına döndürülsün mü?`)) return;
     XeniosStore.resetCategoryConfig(cfg.key);
     setEditingKey(null);
     onDataChanged();
@@ -216,14 +214,15 @@ export function CategoryManager({
   // ---------- Kategorideki ilanlara toplu işlem ----------
 
   const setAllListingsStatus = (cfg: CategoryConfig, status: "active" | "suspended") => {
+    const now = new Date().toISOString();
     const all = XeniosStore.getExperiences();
     const changed: Experience[] = [];
     const next = all.map((e) => {
       if (getExperienceCategoryKey(e) !== cfg.key) return e;
       const patched: Experience =
         status === "active"
-          ? { ...e, status: "active", publishToWeb: true, publishToMobile: true }
-          : { ...e, status: "suspended" };
+          ? { ...e, status: "active", publishToWeb: true, publishToMobile: true, updatedAt: now }
+          : { ...e, status: "suspended", updatedAt: now };
       changed.push(patched);
       return patched;
     });
@@ -234,8 +233,8 @@ export function CategoryManager({
       const nextProps = XeniosStore.getPropertyListings().map((p) => {
         const patched: PropertyListing =
           status === "active"
-            ? { ...p, status: "active", publishToWeb: true }
-            : { ...p, status: "suspended", publishToWeb: false };
+            ? { ...p, status: "active", publishToWeb: true, updatedAt: now }
+            : { ...p, status: "suspended", publishToWeb: false, updatedAt: now };
         FirestoreService.upsertProperty(patched).catch(() => {});
         return patched;
       });
@@ -262,9 +261,8 @@ export function CategoryManager({
       toast.info("Taşınacak ilan yok.");
       return;
     }
-    if (!window.confirm(`${count} ilan "${cfg.label}" kategorisinden "${target.label}" kategorisine taşınsın mı?`))
-      return;
 
+    const now = new Date().toISOString();
     const changed: Experience[] = [];
     const next = XeniosStore.getExperiences().map((e) => {
       if (getExperienceCategoryKey(e) !== cfg.key) return e;
@@ -273,6 +271,7 @@ export function CategoryManager({
         categoryKey: target.key,
         category: target.label,
         categoryTag: target.label,
+        updatedAt: now,
       };
       changed.push(patched);
       return patched;

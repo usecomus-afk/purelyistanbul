@@ -278,10 +278,18 @@ export function SupplierAdminPanel({ onCreateListingForSupplier }: SupplierAdmin
   };
 
   const handleDelete = (sup: SupplierPartner) => {
-    if (!confirm(`"${sup.name}" işletmesini kalıcı olarak silmek istediğinize emin misiniz?`)) return;
     XeniosStore.deleteSupplier(sup.id);
-    toast.info(`"${sup.name}" silindi.`);
     refresh();
+    toast.success(`"${sup.name}" silindi.`, {
+      action: {
+        label: 'Geri Al',
+        onClick: () => {
+          XeniosStore.addSupplier(sup);
+          refresh();
+          toast.info(`"${sup.name}" geri yüklendi.`);
+        }
+      }
+    });
   };
 
   return (

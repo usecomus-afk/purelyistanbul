@@ -126,10 +126,18 @@ export function PropertyAdminPanel() {
   };
 
   const handleDelete = (p: PropertyListing) => {
-    if (!confirm(`"${p.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz?`)) return;
     XeniosStore.deletePropertyListing(p.id);
-    toast.info(`"${p.title}" kalıcı olarak silindi.`);
     refresh();
+    toast.success(`"${p.title}" silindi.`, {
+      action: {
+        label: 'Geri Al',
+        onClick: () => {
+          XeniosStore.addPropertyListing(p);
+          refresh();
+          toast.info(`"${p.title}" geri yüklendi.`);
+        }
+      }
+    });
   };
 
   const handleSaveEdit = (e: React.FormEvent) => {

@@ -19,6 +19,7 @@
  */
 import { cert, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 let app: App | null | undefined;
 
@@ -66,3 +67,10 @@ export function getAdminAuthOrNull() {
   const a = initAdminApp();
   return a ? getAuth(a) : null;
 }
+
+/** Sunucu tarafı Admin Firestore erişimi (güvenlik kurallarını bypass eder). */
+export function getAdminDbOrNull() {
+  const a = initAdminApp();
+  return a ? getFirestore(a) : null;
+}
+

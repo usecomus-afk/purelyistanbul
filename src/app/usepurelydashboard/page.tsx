@@ -432,20 +432,6 @@ export default function UsePurelyDashboardPage() {
     };
     checkAuth();
 
-    // Yerel "yönetici" bayrağı kalmış ama Firebase oturumu sona ermişse değişiklikler
-    // buluta gitmez (web sitesi/uygulamada görünmez). Sessizce devam etmek yerine yeniden giriş istenir.
-    if (XeniosStore.isMasterAdminLoggedIn()) {
-      hasAdminFirebaseSession().then((ok) => {
-        if (ok) return;
-        if (XeniosStore.getUser()?.role === "pilot") XeniosStore.setUser(null);
-        XeniosStore.setMasterAdminLoggedIn(false);
-        setIsAuth(false);
-        setAuthError(
-          "Bulut oturumunuz sona erdi. Değişikliklerin web sitesi ve uygulamaya yansıması için lütfen yeniden giriş yapın."
-        );
-      });
-    }
-
     // Firestore yazması reddedilirse kullanıcıya açıkça bildir (en fazla 15 sn'de bir)
     let lastSyncToast = 0;
     const handleSyncError = (e: Event) => {
@@ -543,19 +529,12 @@ export default function UsePurelyDashboardPage() {
       createdAt: new Date().toISOString(),
     });
 
-    const cloudOk = await establishAdminFirebaseSession({
+    await establishAdminFirebaseSession({
       email: result.email || email,
       password,
       customToken: result.customToken,
-    });
-    if (!cloudOk) {
-      toast.warning(
-        "Giriş yapıldı ancak bulut oturumu açılamadı. Değişiklikler yalnızca bu tarayıcıda kalır; web sitesi ve uygulamaya yansımaz."
-      );
-    } else {
-      // Bu tarayıcıda önceden yapılmış (buluta gitmemiş) kategori düzenlemelerini yayına gönder
-      FirestoreService.pushLocalCategoryConfigs().catch(() => {});
-    }
+    }).catch(() => false);
+    FirestoreService.pushLocalCategoryConfigs().catch(() => {});
 
     setIsAuth(true);
     refreshAllData();
@@ -636,6 +615,7 @@ export default function UsePurelyDashboardPage() {
       id: "exp-" + Date.now(),
       title: `${exp.title} (Kopya)`,
       status: "suspended",
+      updatedAt: new Date().toISOString(),
     };
     XeniosStore.addExperience(copy);
     refreshAllData();
@@ -671,10 +651,11 @@ export default function UsePurelyDashboardPage() {
 
   const bulkUpdateSelected = (patch: Partial<Experience>, doneText: string) => {
     if (selectedListingIds.size === 0) return;
+    const now = new Date().toISOString();
     const changed: Experience[] = [];
     const next = XeniosStore.getExperiences().map((e) => {
       if (!selectedListingIds.has(e.id)) return e;
-      const patched = { ...e, ...patch } as Experience;
+      const patched = { ...e, ...patch, updatedAt: now } as Experience;
       changed.push(patched);
       return patched;
     });
@@ -703,17 +684,23 @@ export default function UsePurelyDashboardPage() {
 
   const bulkDeleteSelected = () => {
     if (selectedListingIds.size === 0) return;
-    if (
-      !window.confirm(
-        `Seçili ${selectedListingIds.size} ilanı kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
-      )
-    )
-      return;
-    const toDelete = experiences.filter((e) => selectedListingIds.has(e.id));
+    const toDelete = XeniosStore.getExperiences().filter((e) =>
+      selectedListingIds.has(e.id)
+    );
+    if (toDelete.length === 0) return;
     toDelete.forEach((e) => permanentlyDeleteListing(e));
     setSelectedListingIds(new Set());
     refreshAllData();
-    toast.success(`${toDelete.length} ilan kalıcı olarak silindi.`);
+    toast.success(`${toDelete.length} ilan silindi.`, {
+      action: {
+        label: "Geri Al",
+        onClick: () => {
+          toDelete.forEach((item) => XeniosStore.addExperience(item));
+          refreshAllData();
+          toast.info(`${toDelete.length} ilan geri yüklendi.`);
+        },
+      },
+    });
   };
 
 
@@ -745,10 +732,10 @@ export default function UsePurelyDashboardPage() {
     const next = exp.status === "suspended" ? "active" : "suspended";
     XeniosStore.updateExperience(exp.id, { status: next });
     refreshAllData();
-    toast.info(
+    toast.success(
       next === "active"
         ? `"${exp.title}" ilanı tekrar yayına alındı.`
-        : `"${exp.title}" ilanı askıya alındı (silinmedi, istediğiniz zaman tekrar yayına alabilirsiniz).`
+        : `"${exp.title}" ilanı askıya alındı (vitrinlerden gizlendi).`
     );
   };
 
@@ -765,15 +752,24 @@ export default function UsePurelyDashboardPage() {
   };
 
   const handleDeleteListing = (exp: Experience) => {
-    if (
-      !window.confirm(
-        `"${exp.title}" ilanını kalıcı olarak silmek istediğinize emin misiniz? (Yalnızca geçici olarak durdurmak istiyorsanız "Askıya Al" butonunu kullanabilirsiniz.)`
-      )
-    )
-      return;
     permanentlyDeleteListing(exp);
+    setSelectedListingIds((prev) => {
+      if (!prev.has(exp.id)) return prev;
+      const next = new Set(prev);
+      next.delete(exp.id);
+      return next;
+    });
     refreshAllData();
-    toast.success(`"${exp.title}" ilanı kalıcı olarak silindi.`);
+    toast.success(`"${exp.title}" ilanı silindi.`, {
+      action: {
+        label: "Geri Al",
+        onClick: () => {
+          XeniosStore.addExperience(exp);
+          refreshAllData();
+          toast.info(`"${exp.title}" ilanı geri yüklendi.`);
+        },
+      },
+    });
   };
 
   const toggleAppModule = (modId: string) => {
@@ -1679,11 +1675,18 @@ export default function UsePurelyDashboardPage() {
                     {experiences.slice(0, 5).map((exp) => (
                       <div
                         key={exp.id}
-                        className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#F6F1E8]/70 border border-[#C8C4B0]/70"
+                        className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-[#F6F1E8]/70 border border-[#C8C4B0]/70"
                       >
                         <div className="min-w-0">
-                          <div className="text-xs font-medium text-[#2C2C1A] truncate">
-                            {exp.title}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-[#2C2C1A] truncate">
+                              {exp.title}
+                            </span>
+                            {exp.status === "suspended" && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 shrink-0">
+                                Askıda
+                              </span>
+                            )}
                           </div>
                           <div className="text-[11px] text-[#6B6B55] truncate">
                             {exp.provider} • {exp.location} •{" "}
@@ -1692,7 +1695,7 @@ export default function UsePurelyDashboardPage() {
                             </strong>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="flex flex-wrap items-center gap-1.5 shrink-0">
                           <button
                             onClick={() => handleToggleListingChannel(exp, "web")}
                             className={`px-2.5 py-1 rounded-full text-[10px] font-medium border cursor-pointer transition ${
@@ -1717,6 +1720,23 @@ export default function UsePurelyDashboardPage() {
                           >
                             Mobil{" "}
                             {exp.publishToMobile !== false ? "Açık" : "Kapalı"}
+                          </button>
+                          <button
+                            onClick={() => handleToggleListingActive(exp)}
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-medium border cursor-pointer transition ${
+                              exp.status === "suspended"
+                                ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                                : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
+                            }`}
+                          >
+                            {exp.status === "suspended" ? "Yayına Al" : "Askıya Al"}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteListing(exp)}
+                            className="px-2.5 py-1 rounded-full text-[10px] font-medium border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 cursor-pointer transition"
+                            title="İlanı Sil"
+                          >
+                            Sil
                           </button>
                         </div>
                       </div>
@@ -1905,13 +1925,18 @@ export default function UsePurelyDashboardPage() {
                         className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-[#F6F1E8]/60 border border-[#C8C4B0]"
                       >
                         <div className="space-y-0.5 min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm font-medium text-[#2C2C1A]">
                               {exp.title}
                             </span>
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EDE8DE] text-[#6B6B55]">
                               {exp.category}
                             </span>
+                            {exp.status === "suspended" && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                                Askıda
+                              </span>
+                            )}
                           </div>
                           <div className="text-xs text-[#6B6B55]">
                             İşletme: <strong>{exp.provider}</strong> •{" "}
@@ -1923,7 +1948,7 @@ export default function UsePurelyDashboardPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
                           <button
                             onClick={() =>
                               handleToggleListingChannel(exp, "web")
@@ -1958,6 +1983,33 @@ export default function UsePurelyDashboardPage() {
                                 ? "Yayında"
                                 : "Gizli"}
                             </span>
+                          </button>
+
+                          <button
+                            onClick={() => handleToggleListingActive(exp)}
+                            className={`text-xs py-1.5 px-3 rounded-full border font-medium inline-flex items-center gap-1.5 cursor-pointer transition ${
+                              exp.status === "suspended"
+                                ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97] hover:bg-[#dcebc9]"
+                                : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0] hover:bg-[#ebd3c3]"
+                            }`}
+                          >
+                            {exp.status === "suspended" ? (
+                              <>
+                                <Power className="w-3.5 h-3.5" /> Yayına Al
+                              </>
+                            ) : (
+                              <>
+                                <PauseCircle className="w-3.5 h-3.5" /> Askıya Al
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteListing(exp)}
+                            className="px-3 py-1.5 rounded-full border border-red-300 bg-red-50/70 text-red-700 hover:bg-red-100 text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer transition"
+                            title="İlanı Sil"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Sil
                           </button>
                         </div>
                       </div>

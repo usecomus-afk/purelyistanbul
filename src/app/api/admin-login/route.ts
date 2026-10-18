@@ -30,13 +30,25 @@ export async function POST(req: Request) {
         let userRecord;
         try {
           userRecord = await adminAuth.getUserByEmail(expectedEmail);
+          await adminAuth.updateUser(userRecord.uid, {
+            password: expectedPassword,
+            emailVerified: true,
+          });
         } catch {
-          userRecord = await adminAuth.createUser({ email: expectedEmail, emailVerified: true });
+          userRecord = await adminAuth.createUser({
+            email: expectedEmail,
+            password: expectedPassword,
+            emailVerified: true,
+          });
         }
         await adminAuth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
-        customToken = await adminAuth.createCustomToken(userRecord.uid, { role: 'admin' });
+        try {
+          customToken = await adminAuth.createCustomToken(userRecord.uid, { role: 'admin' });
+        } catch (tokenErr) {
+          console.warn('[admin-login] Custom token skipped, email/password auth synced:', tokenErr);
+        }
       } catch (err) {
-        console.warn('[admin-login] Firebase custom token üretilemedi (cockpit girişi yine de devam eder):', err);
+        console.warn('[admin-login] Firebase admin user sync warning:', err);
       }
     }
 
