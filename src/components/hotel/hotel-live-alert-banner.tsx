@@ -100,8 +100,13 @@ export function HotelLiveAlertBanner() {
                 </span>
               </div>
               <h4 className="text-sm font-bold text-white truncate mt-0.5">
-                Oda {activeAlert.roomNumber} · {activeAlert.serviceTitle}
+                Oda / Birim {activeAlert.roomNumber} · {activeAlert.serviceTitle}
               </h4>
+              {activeAlert.hotelName && (
+                <p className="text-[11px] text-amber-300/90 font-medium truncate">
+                  {activeAlert.hotelName}
+                </p>
+              )}
             </div>
           </div>
 

@@ -822,6 +822,7 @@ export function AiChatDrawer({
         body: JSON.stringify({
           message: queryText,
           messages: historyPayload,
+          hotelId: resolvedHotelId,
           hotelName: resolvedHotelName,
           roomNumber,
           unitId: `${resolvedHotelName} · ${ui.suiteLabel} ${roomNumber}`,

@@ -2153,7 +2153,7 @@ export default function UsePurelyDashboardPage() {
                               <button
                                 key={st.key}
                                 onClick={() => {
-                                  XeniosStore.updateRequestStatus(
+                                  FirestoreService.updateRequestStatus(
                                     req.id,
                                     st.key
                                   );

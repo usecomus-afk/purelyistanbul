@@ -316,6 +316,10 @@ export const XeniosStore = {
 
     const isRemovedExp = (item: Experience) => {
       if (!item || !item.id) return true;
+      if ((item as any).deleted === true) {
+        deletedIds.add(item.id);
+        return true;
+      }
       if (removedLegacyIds.has(item.id) || item.id.startsWith('exp-aesthetic-')) return true;
       const cat = `${item.category || ''} ${item.categoryTag || ''}`.toLowerCase();
       if (
@@ -351,17 +355,10 @@ export const XeniosStore = {
       const existing = itemMap.get(seed.id);
       if (existing) {
         mergedSeedItems.push({
-          ...existing,
           ...seed,
-          desc: seed.desc ?? seed.agentNote,
-          features: seed.features ?? seed.specialties,
-          price: existing.price ?? seed.price,
-          currency: existing.currency ?? seed.currency,
-          availableSlots: existing.availableSlots ?? seed.availableSlots,
-          capacity: existing.capacity ?? seed.capacity,
-          status: existing.status ?? seed.status,
-          publishToWeb: existing.publishToWeb ?? seed.publishToWeb,
-          publishToMobile: existing.publishToMobile ?? seed.publishToMobile,
+          ...existing,
+          desc: existing.desc ?? existing.agentNote ?? seed.desc ?? seed.agentNote,
+          features: existing.features ?? existing.specialties ?? seed.features ?? seed.specialties,
           image: existing.image || seed.image,
         });
       } else {
@@ -687,13 +684,30 @@ export const XeniosStore = {
   hasActiveHotelSession(): boolean {
     if (typeof window === 'undefined') return false;
     try {
-      const isNativeOrPwa =
-        !!(window as any).Capacitor?.isNativePlatform?.() ||
-        window.matchMedia?.('(display-mode: standalone)')?.matches ||
-        (window.navigator as any)?.standalone === true;
-      return !!window.localStorage.getItem(STORAGE_KEYS.CURRENT_HOTEL) || isNativeOrPwa;
+      const w = window as any;
+      const isNativeApp =
+        !!w.Capacitor?.isNativePlatform?.() ||
+        !!w.webkit?.messageHandlers?.bridge;
+      if (isNativeApp) return true;
+
+      const pathname = window.location.pathname || '';
+      if (pathname.startsWith('/stay/')) return true;
+
+      const qrVerified = window.localStorage.getItem('xenios_qr_verified') === '1';
+      const hotelId = window.localStorage.getItem(STORAGE_KEYS.CURRENT_HOTEL);
+      const roomId = window.localStorage.getItem(STORAGE_KEYS.CURRENT_ROOM);
+      return qrVerified && !!hotelId && !!roomId;
     } catch {
       return false;
+    }
+  },
+
+  setActiveHotelSession(hotelId: string, roomNum: string) {
+    safeSet(STORAGE_KEYS.CURRENT_HOTEL, hotelId);
+    safeSet(STORAGE_KEYS.CURRENT_ROOM, roomNum);
+    safeSet('xenios_qr_verified', '1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_session_updated'));
     }
   },
 

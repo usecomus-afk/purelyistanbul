@@ -14,9 +14,10 @@ export function MarketplaceHeader() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const qrVerified = localStorage.getItem("xenios_qr_verified") === "1";
       const hId = localStorage.getItem("xenios_hotel_id");
       const rId = localStorage.getItem("xenios_room_id");
-      if (hId && rId) {
+      if (qrVerified && hId && rId && rId.toUpperCase() !== "TEST") {
         setHotelSession({ hotelId: hId, roomId: rId });
       }
     }

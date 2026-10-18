@@ -42,8 +42,7 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
       !!w.webkit?.messageHandlers?.bridge ||
       !!w.__PURELY_NATIVE_VIDEO_SPLASH__ ||
       !!w.__PURELY_NATIVE_VIDEO_SPLASH_V2__ ||
-      w.navigator?.standalone === true ||
-      !!window.matchMedia?.('(display-mode: standalone)')?.matches;
+      !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__;
     setIsNative(native);
     setHasHotelSession(native || XeniosStore.hasActiveHotelSession());
   }, [pathname]);

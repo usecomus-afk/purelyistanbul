@@ -74,6 +74,13 @@ export default function HotelPortalQrPage() {
   const refresh = () => {
     const list = XeniosStore.getHotels();
     setHotels(list);
+    if (typeof window !== 'undefined') {
+      const qHotel = new URLSearchParams(window.location.search).get('hotelId');
+      if (qHotel && list.some(h => h.id === qHotel)) {
+        setSelectedHotelId(qHotel);
+        return;
+      }
+    }
     const id = XeniosStore.getActiveHotelId();
     if (!selectedHotelId) setSelectedHotelId(id);
   };
@@ -270,8 +277,8 @@ export default function HotelPortalQrPage() {
       {/* Generated Room QR Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayRooms.map((room) => {
-          const qrUrl = `${origin}/stay/${currentHotel?.id || 'hotel-1'}/${room.number}`;
-          const icsUrl = `${origin}/api/channels/ical/room-${currentHotel?.id || 'hotel-1'}-${room.number}/export.ics`;
+          const qrUrl = `${origin}/stay/${encodeURIComponent(currentHotel?.id || 'hotel-1')}/${encodeURIComponent(room.number)}`;
+          const icsUrl = `${origin}/api/channels/ical/room-${encodeURIComponent(currentHotel?.id || 'hotel-1')}-${encodeURIComponent(room.number)}/export.ics`;
           const isCopied = copiedKey === `ics-${room.number}`;
 
           return (

@@ -1,9 +1,7 @@
-﻿{
-  "name": "purelyİstanbul - Digital Guest Directory",
-  "short_name": "purely",
-  "description": "purelyİstanbul In-Room Hotel Services & Curated Experiences Concierge",
-  "start_url": "/",
-  "id": "/",
+{
+  "name": "Purely Istanbul",
+  "short_name": "Purely",
+  "description": "Purely Istanbul — Curated Experiences & Digital Guest Concierge",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f8f6f0",

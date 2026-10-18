@@ -73,6 +73,13 @@ export default function QrGeneratorPage() {
   const refresh = () => {
     const list = XeniosStore.getHotels();
     setHotels(list);
+    if (typeof window !== 'undefined') {
+      const qHotel = new URLSearchParams(window.location.search).get('hotelId');
+      if (qHotel && list.some(h => h.id === qHotel)) {
+        setSelectedHotelId(qHotel);
+        return;
+      }
+    }
     if (list.length > 0 && !selectedHotelId) {
       setSelectedHotelId(list[0].id);
     }
@@ -243,8 +250,8 @@ export default function QrGeneratorPage() {
       {/* Generated Room QR Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => {
-          const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-          const qrUrl = `${origin}/stay/${currentHotel?.id || 'hotel-1'}/${room.number}`;
+          const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.purelyistanbul.com';
+          const qrUrl = `${origin}/stay/${encodeURIComponent(currentHotel?.id || 'hotel-1')}/${encodeURIComponent(room.number)}`;
 
           return (
             <div

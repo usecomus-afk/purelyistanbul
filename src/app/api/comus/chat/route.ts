@@ -185,10 +185,16 @@ export function checkTaxiFare({
  */
 export async function createRoomTicket({
   unitId = 'Suite-Guest',
+  hotelId = 'hotel-1',
+  hotelName = 'Old City Heritage Hotel Istanbul',
+  roomNumber,
   serviceType = 'support',
   details = 'Guest requested immediate in-room assistance via Comus.',
 }: {
   unitId?: string;
+  hotelId?: string;
+  hotelName?: string;
+  roomNumber?: string;
   serviceType?: string;
   details?: string;
 }): Promise<RoomTicketResult> {
@@ -203,10 +209,11 @@ export async function createRoomTicket({
     normalizedActionService = 'support';
   }
 
+  const resolvedRoom = String(roomNumber || unitId || '101');
   const ticketId = `COMUS-${Math.floor(100000 + Math.random() * 900000)}`;
-  const waMessage = `🚨 *[Purely Istanbul • Comus Acil Oda Kaydı]*\n• *Kayıt No:* ${ticketId}\n• *Oda / Ünite:* ${unitId}\n• *Hizmet Tipi:* ${serviceType}\n• *Detay:* ${details}\n• *Öncelik:* ACİL (URGENT)`;
+  const waMessage = `🚨 *[Purely Istanbul • Comus Acil Oda Kaydı]*\n• *Kayıt No:* ${ticketId}\n• *Tesis:* ${hotelName}\n• *Oda / Birim:* ${resolvedRoom}\n• *Hizmet Tipi:* ${serviceType}\n• *Detay:* ${details}\n• *Öncelik:* ACİL (URGENT)`;
 
-  // Persist to Firestore service_requests so the Hotel App / Lock Screen Notification triggers immediately
+  // Persist to Firestore service_requests so the Hotel App / Lock Screen Notification triggers immediately with exact unit info
   try {
     const reqDocId = `req-${Date.now()}`;
     const nowIso = new Date().toISOString();
@@ -218,9 +225,9 @@ export async function createRoomTicket({
         body: JSON.stringify({
           fields: {
             id: { stringValue: reqDocId },
-            hotelId: { stringValue: 'hotel-heritage-1' },
-            hotelName: { stringValue: 'Old City Heritage Hotel Istanbul' },
-            roomNumber: { stringValue: String(unitId || '101') },
+            hotelId: { stringValue: String(hotelId || 'hotel-1') },
+            hotelName: { stringValue: String(hotelName || 'Old City Heritage Hotel Istanbul') },
+            roomNumber: { stringValue: resolvedRoom },
             serviceKey: { stringValue: normalizedActionService },
             serviceTitle: { stringValue: `Comus Talebi: ${serviceType}` },
             notes: { stringValue: String(details || '') },
@@ -706,7 +713,10 @@ export async function POST(req: Request) {
         ? body.history
         : [];
 
-    const unitId = String(body.roomNumber || body.unitId || 'Suite-304');
+    const hotelId = String(body.hotelId || 'hotel-1');
+    const hotelName = String(body.hotelName || 'Old City Heritage Hotel Istanbul');
+    const roomNumber = String(body.roomNumber || body.unitId || '101');
+    const unitId = String(body.unitId || `${hotelName} · Oda ${roomNumber}`);
 
     if (!userMessage) {
       return new Response(
@@ -774,7 +784,10 @@ export async function POST(req: Request) {
                   });
                 } else if (call.name === 'createRoomTicket') {
                   toolOutput = await createRoomTicket({
-                    unitId: args.unitId || unitId,
+                    unitId,
+                    hotelId,
+                    hotelName,
+                    roomNumber,
                     serviceType: args.serviceType,
                     details: args.details || userMessage,
                   });

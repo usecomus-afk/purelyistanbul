@@ -21,12 +21,20 @@ export default function RootPage() {
       !!w.webkit?.messageHandlers?.bridge ||
       !!w.__PURELY_NATIVE_VIDEO_SPLASH__ ||
       !!w.__PURELY_NATIVE_VIDEO_SPLASH_V2__ ||
-      w.navigator?.standalone === true ||
-      !!window.matchMedia?.("(display-mode: standalone)")?.matches;
+      !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__;
     setIsNative(native);
+
+    if (!native) {
+      try {
+        if (localStorage.getItem("xenios_qr_verified") !== "1" && localStorage.getItem("xenios_room_id") === "TEST") {
+          localStorage.removeItem("xenios_room_id");
+          localStorage.removeItem("xenios_hotel_id");
+        }
+      } catch {}
+    }
   }, []);
 
-  // 1. Cihaza kurulu iOS IPA uygulaması veya Ana Ekrana eklenen PWA açıldığında doğrudan otel içi menü ve konsiyerj gelir
+  // 1. Yalnızca cihaza kurulu Native iOS IPA uygulaması açıldığında konsiyerj gelir (purelyistanbul.com Ana Ekrana Ekle'de normal web sitesi açılır)
   if (isMounted && isNative) {
     return <GuestConciergeView initialRoomId="TEST" />;
   }

@@ -222,7 +222,9 @@ export function GuestTabBar({
         !window.location.pathname.startsWith('/stay') &&
         !window.location.pathname.startsWith('/guest')
       ) {
-        router.push(`/guest?tab=${tabId}`);
+        const hId = localStorage.getItem('xenios_hotel_id') || 'hotel-1';
+        const rId = localStorage.getItem('xenios_room_id') || '101';
+        router.push(`/stay/${encodeURIComponent(hId)}/${encodeURIComponent(rId)}?tab=${tabId}`);
       }
     }
   };

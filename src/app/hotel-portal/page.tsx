@@ -26,7 +26,7 @@ export default function HotelPortalDashboard() {
     setHotels(list);
     const id = XeniosStore.getActiveHotelId();
     setActiveHotelId(id);
-    setRequests(XeniosStore.getRequests().filter(r => r.hotelId === id || !r.hotelId));
+    setRequests(XeniosStore.getRequests());
   };
 
   useEffect(() => {

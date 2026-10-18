@@ -18,9 +18,6 @@ function isNativeOrStandaloneApp(): boolean {
   if (Capacitor.isNativePlatform() || w.Capacitor?.isNativePlatform?.() || w.webkit?.messageHandlers?.bridge) {
     return true;
   }
-  if (w.navigator?.standalone === true || window.matchMedia?.("(display-mode: standalone)")?.matches) {
-    return true;
-  }
   return false;
 }
 
@@ -46,7 +43,7 @@ function shouldSkipSplash(pathname: string | null | undefined): boolean {
   if (pathname?.startsWith("/stay") || pathname === "/guest" || pathname?.startsWith("/guest/")) {
     return false;
   }
-  return !XeniosStore.hasActiveHotelSession();
+  return true;
 }
 
 export function AppIntroSplash() {
@@ -218,7 +215,7 @@ export function AppIntroSplash() {
       )}
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){try{var w=window,p=location.pathname||'';var isApp=!!(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||!!(w.webkit&&w.webkit.messageHandlers&&w.webkit.messageHandlers.bridge)||w.navigator.standalone===true||!!(w.matchMedia&&w.matchMedia('(display-mode: standalone)').matches)||p.indexOf('/stay')===0||p==='/guest'||p.indexOf('/guest/')===0||!!localStorage.getItem('xenios_current_hotel');var skip=!!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__||!!sessionStorage.getItem('purely_splash_v6_played')||!isApp||['/usepurelydashboard','/pilot','/admin','/hotel-portal','/dashboard','/qr-generator'].some(function(x){return p.indexOf(x)===0;});if(skip){var el=document.getElementById('purely-intro-splash');if(el)el.style.display='none';}}catch(e){}})();`,
+          __html: `(function(){try{var w=window,p=location.pathname||'';var isApp=!!(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||!!(w.webkit&&w.webkit.messageHandlers&&w.webkit.messageHandlers.bridge)||p.indexOf('/stay')===0||p==='/guest'||p.indexOf('/guest/')===0;var skip=!!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__||!!sessionStorage.getItem('purely_splash_v6_played')||!isApp||['/usepurelydashboard','/pilot','/admin','/hotel-portal','/dashboard','/qr-generator'].some(function(x){return p.indexOf(x)===0;});if(skip){var el=document.getElementById('purely-intro-splash');if(el)el.style.display='none';}}catch(e){}})();`,
         }}
       />
     </div>

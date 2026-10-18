@@ -86,19 +86,25 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   const [showRequestsModal, setShowRequestsModal] = useState(false);
 
   useEffect(() => {
-    if (initialHotelId) {
+    if (initialHotelId && initialRoomId) {
       setActiveHotelId(initialHotelId);
-      XeniosStore.setActiveHotelId(initialHotelId);
-    }
-    if (initialRoomId) {
       setActiveRoomNumber(initialRoomId);
-      XeniosStore.setActiveRoomId(initialRoomId);
+      XeniosStore.setActiveHotelSession(initialHotelId, initialRoomId);
+    } else {
+      if (initialHotelId) {
+        setActiveHotelId(initialHotelId);
+        XeniosStore.setActiveHotelId(initialHotelId);
+      }
+      if (initialRoomId) {
+        setActiveRoomNumber(initialRoomId);
+        XeniosStore.setActiveRoomId(initialRoomId);
+      }
     }
   }, [initialHotelId, initialRoomId]);
 
   useEffect(() => {
-    // 🏨 Auto-redirect if hotel management role is active or remembered
-    if (typeof window !== 'undefined') {
+    // 🏨 Auto-redirect if hotel management role is active on root app launch (never on explicit /stay/[hotelId]/[roomId] QR scan)
+    if (typeof window !== 'undefined' && !initialHotelId && !window.location.pathname.startsWith('/stay/')) {
       const appRole = localStorage.getItem('xenios_app_role');
       const isHotelLoggedIn = XeniosStore.isHotelPortalLoggedIn();
       if (appRole === 'hotel' || isHotelLoggedIn) {
@@ -134,8 +140,8 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     window.addEventListener('xenios_requests_updated', handleReqUpdate);
 
     const handleSessionUpdate = () => {
-      setActiveHotelId(XeniosStore.getActiveHotelId());
-      setActiveRoomNumber(XeniosStore.getActiveRoomId());
+      if (!initialHotelId) setActiveHotelId(XeniosStore.getActiveHotelId());
+      if (!initialRoomId) setActiveRoomNumber(XeniosStore.getActiveRoomId());
       const currentStoredLang = XeniosStore.getLanguage();
       if (currentStoredLang) setLang(currentStoredLang);
     };

@@ -26,16 +26,13 @@ export default function HotelLiveRequestsPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    // Subscribe to Cloud Firestore in real-time across all devices!
-    const unsubscribe = FirestoreService.subscribeToLiveRequests(currentHotel.id, (liveList) => {
+    // Subscribe to Cloud Firestore in real-time across all devices and units!
+    const unsubscribe = FirestoreService.subscribeToLiveRequests(null, (liveList) => {
       setRequests(liveList);
     });
 
     const handleLocalSync = () => {
-      const localList = XeniosStore.getRequests().filter(
-        (r) => !currentHotel.id || !r.hotelId || r.hotelId === currentHotel.id
-      );
-      setRequests(localList);
+      setRequests(XeniosStore.getRequests());
     };
     window.addEventListener('xenios_requests_updated', handleLocalSync);
 
@@ -182,8 +179,13 @@ export default function HotelLiveRequestsPage() {
                   )}
                   <div className="flex flex-wrap items-center gap-2 pr-14 sm:pr-0">
                     <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-mono font-bold text-xs border border-amber-300">
-                      Oda {req.roomNumber}
+                      Oda / Birim {req.roomNumber}
                     </span>
+                    {req.hotelName && (
+                      <span className="px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-800 font-semibold text-[11px] border border-amber-200">
+                        {req.hotelName}
+                      </span>
+                    )}
                     <strong className="text-sm font-bold text-zinc-900 dark:text-slate-100">{req.serviceTitle}</strong>
                     
                     {req.priority === 'acil' && (
