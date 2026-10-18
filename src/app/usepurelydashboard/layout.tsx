@@ -55,6 +55,8 @@ export default function UsePurelyDashboardLayout({
               font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
               font-weight: 400;
               line-height: 1.6;
+              max-width: 100vw;
+              overflow-x: hidden;
             }
             [data-comus-dashboard] .comus-serif {
               font-family: 'Cormorant Garamond', Georgia, serif;

@@ -401,19 +401,19 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-white p-5 rounded-3xl border border-amber-300 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-950 font-mono font-bold uppercase border border-amber-300">
+    <div className="w-full max-w-full min-w-0 overflow-x-hidden space-y-4 sm:space-y-6 pb-16">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-amber-300 shadow-xs min-w-0">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className="text-[10px] px-2.5 py-1 rounded-lg bg-amber-200/80 text-amber-950 font-mono font-bold uppercase border border-amber-300 whitespace-nowrap">
               WEB + MOBİL APP MERKEZİ YÖNETİM
             </span>
-            <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+            <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1 whitespace-nowrap">
               <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
               Firestore Canlı Senkron Aktif
             </span>
           </div>
-          <h1 className="text-xl font-bold font-serif text-zinc-900 dark:text-slate-100">
+          <h1 className="text-lg sm:text-xl font-bold font-serif text-zinc-900 dark:text-slate-100 leading-snug">
             İlan, Tedarikçi/İşletme, Mülk & Otel Yönetim Merkezi
           </h1>
           <p className="text-xs text-zinc-600 dark:text-slate-400">
@@ -425,7 +425,7 @@ export default function AdminPage() {
           <button
             onClick={handleSyncCloud}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             <span>{isSyncing ? 'Senkronize Ediliyor...' : 'Web & Mobil App Tümünü Senkronize Et'}</span>

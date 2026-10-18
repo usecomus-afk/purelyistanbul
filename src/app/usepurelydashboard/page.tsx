@@ -1279,7 +1279,7 @@ export default function UsePurelyDashboardPage() {
   return (
     <div
       data-comus-dashboard="true"
-      className="min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
+      className="min-h-screen w-full max-w-[100vw] overflow-x-hidden md:h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
     >
       {/* Desktop Sticky Left Sidebar (Independently Scrollable) */}
       <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-screen md:overflow-y-auto">
@@ -1302,10 +1302,10 @@ export default function UsePurelyDashboardPage() {
       {/* Main Scrollable Area */}
       <div
         id="dashboard-main-scroll"
-        className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto"
+        className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden md:h-screen md:overflow-y-auto"
       >
         {/* Top Sticky Header */}
-        <header className="sticky top-0 z-30 bg-[#F6F1E8]/95 backdrop-blur-md border-b border-[#C8C4B0] px-4 md:px-10 py-3 flex items-center justify-between gap-2">
+        <header className="sticky top-0 z-30 bg-[#F6F1E8]/95 backdrop-blur-md border-b border-[#C8C4B0] px-3 sm:px-4 md:px-10 py-2.5 sm:py-3 flex items-center justify-between gap-2 w-full max-w-full">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setMobileNavOpen(true)}
@@ -1314,9 +1314,9 @@ export default function UsePurelyDashboardPage() {
             >
               <Menu className="w-4 h-4" />
             </button>
-            <div className="comus-badge whitespace-nowrap">
+            <div className="comus-badge whitespace-nowrap truncate">
               <span className="comus-badge-dot" />
-              <span className="sm:hidden">Canlı Senkron Aktif</span>
+              <span className="sm:hidden">Canlı Senkron</span>
               <span className="hidden sm:inline">Canlı Senkronizasyon Aktif</span>
             </div>
             <span className="hidden lg:inline text-xs text-[#6B6B55] truncate">
@@ -1330,11 +1330,11 @@ export default function UsePurelyDashboardPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handleCloudSync}
               disabled={isSyncing}
-              className="comus-btn-ghost text-xs py-2 px-3 whitespace-nowrap"
+              className="comus-btn-ghost text-xs py-2 px-2.5 sm:px-3 whitespace-nowrap"
               title="Tüm Kanalları Eşitle"
             >
               <RefreshCw
@@ -1347,7 +1347,7 @@ export default function UsePurelyDashboardPage() {
             <Link
               href="/"
               target="_blank"
-              className="comus-btn-primary text-xs py-2 px-3 sm:px-4 whitespace-nowrap"
+              className="comus-btn-primary text-xs py-2 px-2.5 sm:px-4 whitespace-nowrap"
             >
               <Globe className="w-3.5 h-3.5 shrink-0" />
               <span>Web Vitrini ↗</span>
@@ -1356,12 +1356,12 @@ export default function UsePurelyDashboardPage() {
         </header>
 
         {/* Main Content Container */}
-        <main className="flex-1 px-4 sm:px-6 md:px-10 py-8 max-w-6xl w-full mx-auto space-y-10">
+        <main className="flex-1 px-3.5 sm:px-6 md:px-10 py-5 sm:py-8 max-w-6xl w-full min-w-0 overflow-x-hidden mx-auto space-y-6 sm:space-y-10">
           {/* =========================================================
               TAB 1: GENEL BAKIŞ (OVERVIEW)
           ========================================================= */}
           {activeTab === "overview" && (
-            <div className="space-y-10">
+            <div className="space-y-6 sm:space-y-10 min-w-0">
               {/* Comus Hero Banner */}
               <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#C8C4B0]">
                 <div className="space-y-2">
