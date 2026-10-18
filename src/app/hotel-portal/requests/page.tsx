@@ -380,21 +380,21 @@ export default function HotelLiveRequestsPage() {
         }}
       >
         <div className="relative flex-1 min-w-0">
-          <Search className="w-4 h-4 text-zinc-600 absolute left-3 top-2.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-zinc-600 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Birim no, hizmet adı veya not ara..."
-            className="w-full box-border pl-9 pr-3 py-2 text-xs bg-white/75 border border-amber-300/80 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full flex-1 min-w-0 box-border pl-9 pr-3 py-2 text-[16px] md:text-sm bg-white/75 border border-amber-300/80 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
 
-        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto box-border">
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="w-full sm:w-auto min-w-0 text-xs bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer"
+            className="w-full sm:w-auto min-w-0 text-[16px] md:text-sm bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer box-border"
           >
             <option value="all">Tüm Departmanlar</option>
             <option value="Housekeeping">Housekeeping</option>
@@ -407,7 +407,7 @@ export default function HotelLiveRequestsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full sm:w-auto min-w-0 text-xs bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer"
+            className="w-full sm:w-auto min-w-0 text-[16px] md:text-sm bg-white/75 border border-amber-300/80 text-zinc-800 font-medium rounded-xl px-2.5 py-2 focus:outline-none cursor-pointer box-border"
           >
             <option value="all">Tüm Durumlar</option>
             <option value="pending">Bekleyenler</option>

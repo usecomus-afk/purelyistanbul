@@ -99,19 +99,19 @@ export default function HotelRoomsPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="luxury-service-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
+      <div className="luxury-service-card w-full max-w-full box-border overflow-hidden flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl">
+        <div className="relative flex-1 min-w-0">
+          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Birim no veya misafir adı ara..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            className="w-full flex-1 min-w-0 box-border pl-9 pr-4 py-2 text-[16px] md:text-sm bg-amber-50/40 border border-amber-200 rounded-xl text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
           {['all', 'occupied', 'clean', 'cleaning', 'reserved'].map((st) => (
             <button
               key={st}

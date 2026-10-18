@@ -299,15 +299,15 @@ export default function HotelReportsPage() {
   ];
 
   return (
-    <div className="space-y-6 pb-16 text-zinc-900 dark:text-slate-100">
+    <div className="w-full max-w-full min-w-0 box-border overflow-x-hidden space-y-6 pb-16 text-zinc-900 dark:text-slate-100">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4 w-full max-w-full box-border">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="golden-pill-badge text-[10px] text-[#2C1E0F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">{currentHotel.name}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-amber-700" />
+            <BarChart3 className="w-6 h-6 text-amber-700 shrink-0" />
             <span>Raporlar, Misafir Folyo & Analitik</span>
           </h1>
           <p className="text-xs text-zinc-600 mt-0.5">
@@ -315,7 +315,7 @@ export default function HotelReportsPage() {
           </p>
         </div>
 
-        <div className="golden-pill-badge flex items-center gap-2 p-1.5 px-3 rounded-full text-xs font-bold text-[#2C1E0F] self-start sm:self-auto">
+        <div className="golden-pill-badge flex items-center gap-2 p-1.5 px-3 rounded-full text-xs font-bold text-[#2C1E0F] self-start sm:self-auto shrink-0">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Canlı Folyo & Veri Akışı</span>
         </div>
@@ -324,11 +324,11 @@ export default function HotelReportsPage() {
       {/* ===================================================================== */}
       {/* MİSAFİR FOLYO & BİRİM HESABI / ONLİNE ÖDEME TAKİP MASASI              */}
       {/* ===================================================================== */}
-      <div className="luxury-service-card p-5 sm:p-6 rounded-3xl space-y-5">
+      <div className="luxury-service-card w-full max-w-full box-border overflow-hidden p-4 sm:p-6 rounded-3xl space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[rgba(230,185,75,0.45)] pb-4">
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <div className="golden-pill-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[#2C1E0F] text-[10px] font-bold uppercase tracking-wider">
-              <Receipt className="w-3.5 h-3.5 text-amber-800" />
+              <Receipt className="w-3.5 h-3.5 text-amber-800 shrink-0" />
               <span>Misafir Folyo & Ödeme Takibi</span>
             </div>
             <h2 className="text-base sm:text-lg font-bold font-serif text-zinc-900 dark:text-slate-100">
@@ -341,12 +341,12 @@ export default function HotelReportsPage() {
         </div>
 
         {/* 4 Guest Folio KPI Summary Boxes */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 w-full max-w-full box-border">
           {/* 1. Toplam Folyo Hacmi */}
-          <div className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1">
-            <div className="flex items-center justify-between text-xs text-zinc-600">
-              <span className="font-bold text-zinc-800">Toplam Ücretli İşlem</span>
-              <Wallet className="w-4 h-4 text-amber-700" />
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1 min-w-0">
+            <div className="flex items-center justify-between text-xs text-zinc-600 gap-1">
+              <span className="font-bold text-zinc-800 truncate">Toplam Ücretli İşlem</span>
+              <Wallet className="w-4 h-4 text-amber-700 shrink-0" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-zinc-900">
               {folioTotals.totalTRY > 0 ? `${folioTotals.totalTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
@@ -358,10 +358,10 @@ export default function HotelReportsPage() {
           </div>
 
           {/* 2. Online Ödeme Yapanlar */}
-          <div className="p-4 rounded-2xl bg-emerald-50/75 backdrop-blur-[18px] border border-emerald-200 space-y-1">
-            <div className="flex items-center justify-between text-xs text-emerald-900">
-              <span className="font-bold">Online Ödeme Yapanlar</span>
-              <CreditCard className="w-4 h-4 text-emerald-700" />
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/75 backdrop-blur-[18px] border border-emerald-200 space-y-1 min-w-0">
+            <div className="flex items-center justify-between text-xs text-emerald-900 gap-1">
+              <span className="font-bold truncate">Online Ödeme Yapanlar</span>
+              <CreditCard className="w-4 h-4 text-emerald-700 shrink-0" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-emerald-900">
               {folioTotals.onlineTRY > 0 ? `${folioTotals.onlineTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
@@ -373,10 +373,10 @@ export default function HotelReportsPage() {
           </div>
 
           {/* 3. Birim Folyosunda Bekleyen */}
-          <div className="p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1">
-            <div className="flex items-center justify-between text-xs text-amber-900">
-              <span className="font-bold">Birim Hesabı (Folyo)</span>
-              <Receipt className="w-4 h-4 text-amber-700" />
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-[1.5px] border-[rgba(230,185,75,0.55)] space-y-1 min-w-0">
+            <div className="flex items-center justify-between text-xs text-amber-900 gap-1">
+              <span className="font-bold truncate">Birim Hesabı (Folyo)</span>
+              <Receipt className="w-4 h-4 text-amber-700 shrink-0" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-amber-900">
               {folioTotals.folioTRY > 0 ? `${folioTotals.folioTRY.toLocaleString('tr-TR')} ₺` : '0 ₺'}
@@ -388,10 +388,10 @@ export default function HotelReportsPage() {
           </div>
 
           {/* 4. Aktif Folyo Birimi */}
-          <div className="p-4 rounded-2xl bg-sky-50/75 backdrop-blur-[18px] border border-sky-200 space-y-1">
-            <div className="flex items-center justify-between text-xs text-sky-900">
-              <span className="font-bold">Folyo Açık Birim Sayısı</span>
-              <DoorOpen className="w-4 h-4 text-sky-700" />
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-sky-50/75 backdrop-blur-[18px] border border-sky-200 space-y-1 min-w-0">
+            <div className="flex items-center justify-between text-xs text-sky-900 gap-1">
+              <span className="font-bold truncate">Folyo Açık Birim Sayısı</span>
+              <DoorOpen className="w-4 h-4 text-sky-700 shrink-0" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-sky-900">
               {roomSummaries.length} Birim
@@ -404,24 +404,24 @@ export default function HotelReportsPage() {
 
         {/* Birim Bazlı Folyo Özet Kartları (Tıklanınca Birimi Filtreler) */}
         {roomSummaries.length > 0 && (
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
-                <DoorOpen className="w-4 h-4 text-amber-700" />
-                <span>Birim Bazlı Folyo Özeti (Detay için birime tıklayın)</span>
+          <div className="space-y-2.5 w-full max-w-full box-border">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold text-zinc-800 flex items-center gap-1.5 min-w-0">
+                <DoorOpen className="w-4 h-4 text-amber-700 shrink-0" />
+                <span className="truncate">Birim Bazlı Folyo Özeti (Detay için birime tıklayın)</span>
               </span>
               {selectedRoomFilter !== 'all' && (
                 <button
                   type="button"
                   onClick={() => setSelectedRoomFilter('all')}
-                  className="text-[11px] font-bold text-amber-800 hover:underline cursor-pointer"
+                  className="text-[11px] font-bold text-amber-800 hover:underline cursor-pointer shrink-0"
                 >
                   Tüm Birimleri Göster
                 </button>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 w-full max-w-full box-border">
               {roomSummaries.map((rm) => {
                 const isSelected = selectedRoomFilter === rm.roomNumber;
                 return (
@@ -431,7 +431,7 @@ export default function HotelReportsPage() {
                     onClick={() =>
                       setSelectedRoomFilter(isSelected ? 'all' : rm.roomNumber)
                     }
-                    className={`p-3.5 rounded-2xl border text-left active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex flex-col justify-between gap-2 ${
+                    className={`p-3.5 rounded-2xl border text-left active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer flex flex-col justify-between gap-2 min-w-0 ${
                       isSelected
                         ? 'bg-[rgba(240,195,70,0.42)] border-[rgba(220,175,50,0.85)] ring-2 ring-amber-500/30 shadow-xs'
                         : 'bg-[rgba(245,215,130,0.22)] hover:bg-[rgba(245,215,130,0.32)] border-[rgba(230,185,75,0.55)]'
@@ -474,8 +474,8 @@ export default function HotelReportsPage() {
         )}
 
         {/* Filter Bar: Unit Selector, Payment Method Filter, Search */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2 border-t border-zinc-100">
-          <div className="flex flex-wrap items-center gap-1.5">
+        <div className="w-full max-w-full box-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2 border-t border-zinc-100">
+          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setPaymentFilter('all')}
@@ -496,7 +496,7 @@ export default function HotelReportsPage() {
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              <CreditCard className="w-3.5 h-3.5" />
+              <CreditCard className="w-3.5 h-3.5 shrink-0" />
               <span>Online Ödeme Yapanlar ({folioTotals.onlineCount})</span>
             </button>
             <button
@@ -508,27 +508,27 @@ export default function HotelReportsPage() {
                   : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
               }`}
             >
-              <Receipt className="w-3.5 h-3.5" />
+              <Receipt className="w-3.5 h-3.5 shrink-0" />
               <span>Birim Hesabı / Folyo ({folioTotals.folioCount})</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 sm:w-56">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="w-full max-w-full flex items-center gap-2 overflow-hidden px-1 box-border sm:w-auto">
+            <div className="relative flex-1 min-w-0 sm:w-56">
+              <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={folioSearch}
                 onChange={(e) => setFolioSearch(e.target.value)}
                 placeholder="Birim no, sipariş veya #kod ara..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-xs text-zinc-900 focus:outline-none focus:border-amber-600"
+                className="w-full flex-1 min-w-0 pl-8 pr-3 py-2 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-[16px] md:text-sm text-zinc-900 focus:outline-none focus:border-amber-600 box-border"
               />
             </div>
 
             <select
               value={selectedRoomFilter}
               onChange={(e) => setSelectedRoomFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-xs font-bold text-zinc-800 focus:outline-none"
+              className="shrink-0 max-w-[138px] sm:max-w-none px-2.5 py-2 rounded-xl border border-[#D8CBB8] bg-[#FAF8F4] text-[16px] md:text-sm whitespace-nowrap font-bold text-zinc-800 focus:outline-none box-border"
             >
               <option value="all">Tüm Birimler</option>
               {roomSummaries.map((r) => (
