@@ -254,7 +254,7 @@ export function RestaurantReservationModal({
       FirestoreService.addBooking(newBooking);
       NotificationService.notifyRestaurantReservation(newBooking, specialNotes);
 
-      XeniosStore.addRequest({
+      FirestoreService.addRequest({
         hotelId: hotel.id,
         hotelName: hotel.name,
         roomNumber,

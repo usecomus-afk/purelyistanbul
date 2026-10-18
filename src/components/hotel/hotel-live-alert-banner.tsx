@@ -2,18 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { ServiceRequest } from '@/lib/types';
-import { HotelAudioNotification, HotelAudioNotificationPrefs, shouldReceiveStaffRequestAlerts } from '@/lib/hotel-audio-notification';
-import { XeniosStore } from '@/lib/store';
+import {
+  HotelAudioNotification,
+  HotelAudioNotificationPrefs,
+  shouldReceiveStaffRequestAlerts,
+  shouldShowInPageStaffBanner,
+} from '@/lib/hotel-audio-notification';
 import { 
   BellRing, 
   Volume2, 
   VolumeX, 
   X, 
   ArrowRight, 
-  Sparkles, 
   AlertTriangle,
-  CheckCircle2,
-  Clock
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -36,7 +37,7 @@ export function HotelLiveAlertBanner() {
     };
 
     const handlePopupBanner = (e: Event) => {
-      if (!shouldReceiveStaffRequestAlerts()) return;
+      if (!shouldShowInPageStaffBanner()) return;
       const customEvent = e as CustomEvent<ServiceRequest>;
       const req = customEvent.detail;
       if (!req) return;
@@ -69,7 +70,7 @@ export function HotelLiveAlertBanner() {
     }
   };
 
-  if (!activeAlert || !shouldReceiveStaffRequestAlerts()) return null;
+  if (!activeAlert || !shouldShowInPageStaffBanner()) return null;
 
   const isUrgent = activeAlert.priority === 'acil';
 

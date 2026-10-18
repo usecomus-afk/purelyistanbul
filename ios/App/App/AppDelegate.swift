@@ -10,11 +10,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private var silentAudioPlayer: AVAudioPlayer?
     private var requestPollTimer: Timer?
     private var bgTask: UIBackgroundTaskIdentifier = .invalid
-    private var hasSeededInitialRequests = false
     private var isPolling = false
 
-    static var notifiedRequestIds = Set<String>()
+    private static let notifiedStorageKey = "xenios_ios_native_notified_ids_v3"
+    private static let notifiedInitKey = "xenios_ios_native_notified_init_v3"
     private static let lockQueue = DispatchQueue(label: "com.usecomus.olympus.notifiedIds")
+
+    static var notifiedRequestIds: Set<String> = {
+        let saved = UserDefaults.standard.stringArray(forKey: notifiedStorageKey) ?? []
+        return Set(saved)
+    }()
+
+    static func isInitialSeedDone() -> Bool {
+        return lockQueue.sync {
+            return UserDefaults.standard.bool(forKey: notifiedInitKey)
+        }
+    }
+
+    static func markInitialSeedDone() {
+        lockQueue.sync {
+            UserDefaults.standard.set(true, forKey: notifiedInitKey)
+        }
+    }
 
     static func markIfNew(_ id: String) -> Bool {
         return lockQueue.sync {
@@ -22,6 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return false
             }
             notifiedRequestIds.insert(id)
+            let arr = Array(notifiedRequestIds.suffix(400))
+            UserDefaults.standard.set(arr, forKey: notifiedStorageKey)
             return true
         }
     }
@@ -51,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let sampleRate: UInt32 = 8000
         let numChannels: UInt16 = 1
         let bitsPerSample: UInt16 = 16
-        let numSamples: UInt32 = sampleRate // 1 second of silence
+        let numSamples: UInt32 = sampleRate // 1 second of 1-LSB inaudible signal
         let dataSize: UInt32 = numSamples * UInt32(numChannels) * UInt32(bitsPerSample / 8)
         let chunkSize: UInt32 = 36 + dataSize
         let byteRate: UInt32 = sampleRate * UInt32(numChannels) * UInt32(bitsPerSample / 8)
@@ -73,11 +92,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         withUnsafeBytes(of: bitsPerSample.littleEndian) { data.append(contentsOf: $0) }
         data.append("data".data(using: .ascii)!)
         withUnsafeBytes(of: dataSize.littleEndian) { data.append(contentsOf: $0) }
-        data.append(Data(count: Int(dataSize)))
+        var pcm = Data(capacity: Int(dataSize))
+        for i in 0..<Int(numSamples) {
+            let sample: Int16 = (i % 2 == 0) ? 1 : -1
+            withUnsafeBytes(of: sample.littleEndian) { pcm.append(contentsOf: $0) }
+        }
+        data.append(pcm)
         return data
     }
 
-    private func startSilentBackgroundKeepAlive() {
+    func startSilentBackgroundKeepAlive() {
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
@@ -87,7 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let wavData = buildSilentWavData()
                 let player = try AVAudioPlayer(data: wavData, fileTypeHint: AVFileType.wav.rawValue)
                 player.numberOfLoops = -1
-                player.volume = 0.0
+                player.volume = 0.01
                 player.prepareToPlay()
                 player.play()
                 self.silentAudioPlayer = player
@@ -99,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    private func startFirestoreRequestWatcher() {
+    func startFirestoreRequestWatcher() {
         requestPollTimer?.invalidate()
         let timer = Timer(timeInterval: 3.0, repeats: true) { [weak self] _ in
             self?.pollFirestoreServiceRequests()
@@ -109,7 +133,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         pollFirestoreServiceRequests()
     }
 
-    private func pollFirestoreServiceRequests() {
+    func pollFirestoreServiceRequests() {
         guard !isPolling else { return }
         guard let url = URL(string: "https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery") else {
             return
@@ -125,7 +149,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             "structuredQuery": [
                 "from": [["collectionId": "service_requests"]],
                 "orderBy": [["field": ["fieldPath": "createdAt"], "direction": "DESCENDING"]],
-                "limit": 20
+                "limit": 40
             ]
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: queryBody, options: [])
@@ -139,13 +163,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            let isFirstPoll = !self.hasSeededInitialRequests
-            self.hasSeededInitialRequests = true
+            let isFirstEverPoll = !AppDelegate.isInitialSeedDone()
+            if isFirstEverPoll {
+                AppDelegate.markInitialSeedDone()
+            }
             let isoFormatter = ISO8601DateFormatter()
             isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
             let fallbackFormatter = ISO8601DateFormatter()
 
-            for row in rows {
+            for row in rows.reversed() {
                 guard let doc = row["document"] as? [String: Any],
                       let fields = doc["fields"] as? [String: [String: Any]] else {
                     continue
@@ -159,20 +185,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
 
                 let status = (fields["status"]?["stringValue"] as? String) ?? "pending"
-                let isActiveStatus = status != "completed" && status != "cancelled"
+                let isActiveStatus = status == "pending"
                 let roomNumber = (fields["roomNumber"]?["stringValue"] as? String) ?? "101"
                 let hotelName = (fields["hotelName"]?["stringValue"] as? String) ?? "Purely Istanbul"
                 let serviceTitle = (fields["serviceTitle"]?["stringValue"] as? String) ?? "Oda Hizmeti Talebi"
                 let notes = (fields["notes"]?["stringValue"] as? String) ?? ""
                 let priority = (fields["priority"]?["stringValue"] as? String) ?? "standart"
                 let createdAtStr = (fields["createdAt"]?["stringValue"] as? String) ?? ""
+                let createdDate = isoFormatter.date(from: createdAtStr) ?? fallbackFormatter.date(from: createdAtStr)
+                let ageSeconds = createdDate != nil ? Date().timeIntervalSince(createdDate!) : 999999.0
 
-                if isFirstPoll {
-                    // On initial launch, only notify if the request was created in the last 20 seconds
-                    let createdDate = isoFormatter.date(from: createdAtStr) ?? fallbackFormatter.date(from: createdAtStr)
-                    let isVeryRecent = createdDate != nil && Date().timeIntervalSince(createdDate!) < 20.0
-                    _ = AppDelegate.markIfNew(reqId)
-                    if isVeryRecent && isActiveStatus {
+                if isFirstEverPoll {
+                    let isRecentOnFirstBoot = ageSeconds < 180.0
+                    if AppDelegate.markIfNew(reqId) && isRecentOnFirstBoot && isActiveStatus {
                         let isUrgent = priority == "acil"
                         let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")
@@ -180,7 +205,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         AppDelegate.deliverLocalNotification(id: reqId, title: title, subtitle: hotelName, body: body)
                     }
                 } else {
-                    if isActiveStatus && AppDelegate.markIfNew(reqId) {
+                    let isWithinActiveWindow = ageSeconds < 1800.0
+                    if AppDelegate.markIfNew(reqId) && isWithinActiveWindow && isActiveStatus {
                         let isUrgent = priority == "acil"
                         let title = isUrgent ? "🚨 ACİL TALEP: Oda \(roomNumber)" : "🛎️ Yeni Sipariş / Talep: Oda \(roomNumber)"
                         let cleanNotes = notes.replacingOccurrences(of: "\n", with: " ")

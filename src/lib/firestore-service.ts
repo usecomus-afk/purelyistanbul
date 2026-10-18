@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner } from './types';
 import { XeniosStore } from './store';
+import { HotelAudioNotification, shouldReceiveStaffRequestAlerts } from './hotel-audio-notification';
 import { normalizeCategoryLabel, type CategoryConfig } from './marketplace/categories';
 import {
   experienceToMarketplaceListing,
@@ -376,111 +377,208 @@ export const FirestoreService = {
     };
   },
 
-  // 🛎️ LIVE ROOM REQUESTS WITH REALTIME FIRESTORE LISTENER
+  // 🛎️ LIVE ROOM REQUESTS WITH REALTIME FIRESTORE LISTENER + 3s REST POLLER
   subscribeToLiveRequests(
     hotelId: string | null,
     onUpdate: (requests: ServiceRequest[]) => void
   ): Unsubscribe {
+    const processRawList = (rawItems: ServiceRequest[]) => {
+      const deletedIds = typeof window !== 'undefined' ? XeniosStore.getDeletedRequestIds() : new Set<string>();
+      const statusOverrides = typeof window !== 'undefined' ? XeniosStore.getRequestStatusOverrides() : {};
+      const list: ServiceRequest[] = [];
+
+      for (const rawData of rawItems) {
+        const docId = rawData?.id;
+        if (!docId || deletedIds.has(docId) || docId.includes('test') || docId.includes('demo')) continue;
+        if (!rawData?.serviceTitle && !rawData?.serviceKey) continue;
+        const item: ServiceRequest = { ...rawData, id: docId };
+        if (statusOverrides[docId]) {
+          item.status = statusOverrides[docId];
+        }
+        list.push(item);
+      }
+
+      const filtered = hotelId
+        ? list.filter((r) => !r.hotelId || r.hotelId === hotelId)
+        : list;
+
+      filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      if (typeof window !== 'undefined') {
+        const allowStaffAlert = shouldReceiveStaffRequestAlerts();
+        if (allowStaffAlert) {
+          const nowMs = Date.now();
+          const alreadyInitialized = HotelAudioNotification.isNotifiedStorageInitialized();
+
+          if (!alreadyInitialized) {
+            HotelAudioNotification.ensureNotifiedStorageInitialized();
+            // Sort oldest-first when firing alerts so newest shows on top
+            const chronological = [...list].sort(
+              (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+            for (const item of chronological) {
+              const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
+              const isRecentOnFirstBoot = createdMs > 0 && nowMs - createdMs < 180_000;
+              seenRemoteRequestIds.add(item.id);
+              if (isRecentOnFirstBoot && item.status === 'pending' && !HotelAudioNotification.hasNotified(item.id)) {
+                if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
+                  HotelAudioNotification.triggerGuestRequestAlert(item);
+                }
+              } else {
+                HotelAudioNotification.markNotified(item.id);
+              }
+            }
+          } else {
+            const chronological = [...list].sort(
+              (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+            for (const item of chronological) {
+              seenRemoteRequestIds.add(item.id);
+              if (!HotelAudioNotification.hasNotified(item.id)) {
+                const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
+                const isWithinActiveWindow = createdMs > 0 && nowMs - createdMs < 30 * 60 * 1000;
+                if (isWithinActiveWindow && item.status === 'pending') {
+                  if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
+                    HotelAudioNotification.triggerGuestRequestAlert(item);
+                  }
+                } else if (!isWithinActiveWindow || item.status === 'completed' || item.status === 'cancelled') {
+                  HotelAudioNotification.markNotified(item.id);
+                }
+              }
+            }
+          }
+        }
+
+        XeniosStore.syncRequestsFromRemote(filtered);
+      }
+
+      onUpdate(filtered);
+    };
+
+    let isRestPolling = false;
+    const pollViaRest = async () => {
+      if (isRestPolling) return;
+      isRestPolling = true;
+      try {
+        const res = await fetch(
+          'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store',
+            body: JSON.stringify({
+              structuredQuery: {
+                from: [{ collectionId: COLLECTIONS.REQUESTS }],
+                orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+                limit: 60,
+              },
+            }),
+          }
+        );
+        if (!res.ok) return;
+        const rows = await res.json();
+        if (!Array.isArray(rows)) return;
+        const parsed: ServiceRequest[] = [];
+        for (const row of rows) {
+          const docObj = row?.document;
+          const fields = docObj?.fields;
+          if (!fields) continue;
+          const docName = String(docObj.name || '');
+          const fallbackId = docName.split('/').pop() || '';
+          const id = fields.id?.stringValue || fallbackId;
+          if (!id) continue;
+          parsed.push({
+            id,
+            hotelId: fields.hotelId?.stringValue || 'hotel-heritage-1',
+            hotelName: fields.hotelName?.stringValue || 'Purely Istanbul Partner Hotel',
+            roomNumber: fields.roomNumber?.stringValue || '101',
+            serviceKey: fields.serviceKey?.stringValue || 'service',
+            serviceTitle: fields.serviceTitle?.stringValue || 'Oda Hizmeti',
+            notes: fields.notes?.stringValue || '',
+            status: (fields.status?.stringValue as ServiceRequest['status']) || 'pending',
+            department: (fields.department?.stringValue as ServiceRequest['department']) || 'Housekeeping',
+            stage: (fields.stage?.stringValue as ServiceRequest['stage']) || 'pending',
+            priority: (fields.priority?.stringValue as ServiceRequest['priority']) || 'standart',
+            createdAt: fields.createdAt?.stringValue || new Date().toISOString(),
+            updatedAt: fields.updatedAt?.stringValue || fields.createdAt?.stringValue || new Date().toISOString(),
+          });
+        }
+        processRawList(parsed);
+      } catch {
+        // Ignore transient network errors during background/foreground transitions
+      } finally {
+        isRestPolling = false;
+      }
+    };
+
+    const unsubs: Array<() => void> = [];
+
+    if (typeof window !== 'undefined') {
+      pollViaRest();
+      const pollInterval = window.setInterval(pollViaRest, 3000);
+      const onWake = () => {
+        pollViaRest();
+      };
+      window.addEventListener('focus', onWake);
+      window.addEventListener('pageshow', onWake);
+      window.addEventListener('online', onWake);
+      const onVis = () => {
+        if (document.visibilityState === 'visible') {
+          pollViaRest();
+        }
+      };
+      document.addEventListener('visibilitychange', onVis);
+
+      unsubs.push(() => {
+        window.clearInterval(pollInterval);
+        window.removeEventListener('focus', onWake);
+        window.removeEventListener('pageshow', onWake);
+        window.removeEventListener('online', onWake);
+        document.removeEventListener('visibilitychange', onVis);
+      });
+    }
+
     if (!db || !isFirebaseConfigured) {
-      // Fallback: poll local store and return unbind
       const handler = () => {
         const reqs = XeniosStore.getRequests();
-        const filtered = hotelId ? reqs.filter(r => !r.hotelId || r.hotelId === hotelId) : reqs;
+        const filtered = hotelId ? reqs.filter((r) => !r.hotelId || r.hotelId === hotelId) : reqs;
         onUpdate(filtered);
       };
-      window.addEventListener('xenios_requests_updated', handler);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('xenios_requests_updated', handler);
+        unsubs.push(() => window.removeEventListener('xenios_requests_updated', handler));
+      }
       handler();
-      return () => window.removeEventListener('xenios_requests_updated', handler);
+      return () => unsubs.forEach((u) => u());
     }
 
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
-      // Query without composite index requirement so it never throws missing index error
       const q = query(colRef, limit(200));
 
-      return onSnapshot(q, (snapshot) => {
-        const deletedIds = typeof window !== 'undefined' ? XeniosStore.getDeletedRequestIds() : new Set<string>();
-        const statusOverrides = typeof window !== 'undefined' ? XeniosStore.getRequestStatusOverrides() : {};
-        const list: ServiceRequest[] = [];
-        snapshot.forEach((d) => {
-          if (deletedIds.has(d.id) || d.id.includes('test')) return;
-          const rawData = d.data() as any;
-          if (!rawData?.serviceTitle && !rawData?.serviceKey) return;
-          const item: ServiceRequest = { id: d.id, ...rawData };
-          if (statusOverrides[d.id]) {
-            item.status = statusOverrides[d.id];
-          }
-          list.push(item);
-        });
-
-        // Filter by hotelId if specified
-        const filtered = hotelId
-          ? list.filter((r) => !r.hotelId || r.hotelId === hotelId)
-          : list;
-
-        // Sort descending by createdAt
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        // Detect newly arrived remote requests reliably across all listeners
-        if (typeof window !== 'undefined') {
-          const w = window as any;
-          const isNativeApp =
-            !!w.Capacitor?.isNativePlatform?.() ||
-            !!w.webkit?.messageHandlers?.bridge ||
-            !!w.__PURELY_NATIVE_VIDEO_SPLASH_V6__;
-          const p = window.location.pathname || '';
-          const isStaffRoute =
-            p.startsWith('/hotel-portal') ||
-            p.startsWith('/usepurelydashboard') ||
-            p.startsWith('/live-requests') ||
-            p.startsWith('/admin') ||
-            p.startsWith('/dashboard') ||
-            p.startsWith('/pilot');
-          const allowStaffAlert = isNativeApp || isStaffRoute;
-
-          const nowMs = Date.now();
-          if (!initialSnapshotSeeded) {
-            initialSnapshotSeeded = true;
-            list.forEach((item) => {
-              const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
-              const isJustCreated = createdMs > 0 && nowMs - createdMs < 20000;
-              seenRemoteRequestIds.add(item.id);
-              if (allowStaffAlert && isJustCreated && item.status === 'pending') {
-                if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
-                  window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
-                }
-              }
-            });
-          } else {
-            list.forEach((item) => {
-              if (!seenRemoteRequestIds.has(item.id)) {
-                seenRemoteRequestIds.add(item.id);
-                if (allowStaffAlert && item.status === 'pending') {
-                  if (!hotelId || !item.hotelId || item.hotelId === hotelId) {
-                    window.dispatchEvent(new CustomEvent('xenios_request_created', { detail: item }));
-                  }
-                }
-              }
-            });
-          }
-
-          XeniosStore.syncRequestsFromRemote(filtered);
+      const unsubSnapshot = onSnapshot(
+        q,
+        (snapshot) => {
+          const items: ServiceRequest[] = [];
+          snapshot.forEach((d) => {
+            const rawData = d.data() as any;
+            items.push({ id: d.id, ...rawData });
+          });
+          processRawList(items);
+        },
+        (err) => {
+          console.error('Firestore onSnapshot error:', err);
+          pollViaRest();
         }
-
-        onUpdate(filtered);
-      }, (err) => {
-        console.error("Firestore onSnapshot error:", err);
-        const reqs = XeniosStore.getRequests();
-        const filtered = hotelId ? reqs.filter(r => !r.hotelId || r.hotelId === hotelId) : reqs;
-        onUpdate(filtered);
-      });
+      );
+      unsubs.push(unsubSnapshot);
     } catch (e) {
-      console.error("Firestore subscription failed, using local store:", e);
-      const reqs = XeniosStore.getRequests();
-      const filtered = hotelId ? reqs.filter(r => !r.hotelId || r.hotelId === hotelId) : reqs;
-      onUpdate(filtered);
-      return () => {};
+      console.error('Firestore subscription failed, relying on REST poller:', e);
     }
+
+    return () => {
+      unsubs.forEach((u) => u());
+    };
   },
 
   async addRequest(req: Omit<ServiceRequest, 'id' | 'createdAt' | 'updatedAt'>): Promise<ServiceRequest> {
@@ -490,18 +588,20 @@ export const FirestoreService = {
     });
     seenRemoteRequestIds.add(local.id);
 
+    const nowIso = new Date().toISOString();
     const payload = stripUndefined({
       ...local,
       status: local.status || 'pending',
-      updatedAt: new Date().toISOString()
+      updatedAt: nowIso,
     });
 
     const saveViaRest = async () => {
       try {
         await fetch(
-          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests?documentId=${encodeURIComponent(local.id)}`,
+          `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(local.id)}`,
           {
-            method: 'POST',
+            method: 'PATCH',
+            keepalive: true,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               fields: {
@@ -517,18 +617,22 @@ export const FirestoreService = {
                 stage: { stringValue: String(local.stage || 'pending') },
                 priority: { stringValue: String(local.priority || 'standart') },
                 createdAt: { stringValue: String(local.createdAt) },
-                updatedAt: { stringValue: new Date().toISOString() },
+                updatedAt: { stringValue: nowIso },
               },
             }),
           }
         );
       } catch (restErr) {
-        console.warn("Firestore REST fallback error:", restErr);
+        console.warn('Firestore REST upsert error:', restErr);
       }
     };
 
+    // Fire REST PATCH (with keepalive: true) immediately in parallel with Firebase SDK setDoc
+    // so orders from a Home Screen QR PWA reach Firestore in <150ms even if the user switches apps immediately.
+    const restPromise = saveViaRest();
+
     if (!db || !isFirebaseConfigured) {
-      await saveViaRest();
+      await restPromise;
       return local;
     }
 
@@ -536,11 +640,11 @@ export const FirestoreService = {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
       await Promise.race([
         setDoc(doc(colRef, local.id), payload),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 3000)),
+        restPromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 2500)),
       ]);
-    } catch (e) {
-      console.warn("Firestore SDK save error/timeout, using REST fallback:", e);
-      await saveViaRest();
+    } catch {
+      await restPromise;
     }
     return local;
   },

@@ -135,6 +135,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self?.splashPlayerLayer = nil
             container.removeFromSuperview()
             self?.splashContainer = nil
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.startSilentBackgroundKeepAlive()
+                appDelegate.pollFirestoreServiceRequests()
+            }
+        }
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.applicationWillResignActive(UIApplication.shared)
+        }
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.applicationDidEnterBackground(UIApplication.shared)
+        }
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.applicationWillEnterForeground(UIApplication.shared)
+        }
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.applicationDidBecomeActive(UIApplication.shared)
         }
     }
 
@@ -146,3 +174,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 }
+

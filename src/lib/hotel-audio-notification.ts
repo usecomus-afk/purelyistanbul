@@ -23,7 +23,7 @@ interface XeniosNotificationPluginType {
 const XeniosNotifications = registerPlugin<XeniosNotificationPluginType>('XeniosNotifications');
 
 const STORAGE_KEY = 'xenios_hotel_audio_notification_prefs';
-const NOTIFIED_IDS_KEY = 'xenios_notified_request_ids';
+const NOTIFIED_IDS_KEY = 'xenios_staff_notified_req_ids_v3';
 
 const DEFAULT_PREFS: HotelAudioNotificationPrefs = {
   soundEnabled: true,
@@ -60,45 +60,168 @@ export function isStaffManagementRoute(pathname?: string): boolean {
   );
 }
 
+export function isGuestConciergeRoute(pathname?: string): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = pathname ?? window.location.pathname ?? '';
+  return p.startsWith('/stay/') || p === '/stay' || p.startsWith('/guest');
+}
+
 /**
  * Returns true ONLY inside the Native iOS App (built for accommodation providers)
  * or on web management portals (/hotel-portal, /usepurelydashboard, /live-requests).
  * Returns false on the QR Guest PWA (/stay/[hotelId]/[roomId], /guest) and public web!
  */
-export function shouldReceiveStaffRequestAlerts(): boolean {
+export function shouldReceiveStaffRequestAlerts(pathname?: string): boolean {
   if (typeof window === 'undefined') return false;
+  if (isStaffManagementRoute(pathname)) return true;
   if (isNativeHostApp()) return true;
-  if (isStaffManagementRoute()) return true;
   return false;
+}
+
+/**
+ * The in-page dark popup banner ("YENİ MİSAFİR TALEBİ ... Talebi İncele ->")
+ * must ONLY appear on staff management screens (/hotel-portal, /usepurelydashboard, etc.),
+ * NEVER on top of the Guest Hotel interface (/stay/..., /guest, or /).
+ */
+export function shouldShowInPageStaffBanner(pathname?: string): boolean {
+  if (typeof window === 'undefined') return false;
+  return isStaffManagementRoute(pathname);
 }
 
 class HotelAudioNotificationService {
   private audioCtx: AudioContext | null = null;
   private notifiedRequestIds: Set<string> = new Set();
+  private keepAliveAudioEl: HTMLAudioElement | null = null;
+  private keepAliveStarted = false;
+
+  private syncNotifiedFromStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      const rawLocal = localStorage.getItem(NOTIFIED_IDS_KEY);
+      if (rawLocal) {
+        const arr: string[] = JSON.parse(rawLocal);
+        if (Array.isArray(arr)) arr.forEach((id) => this.notifiedRequestIds.add(id));
+      }
+      const rawSession = sessionStorage.getItem(NOTIFIED_IDS_KEY);
+      if (rawSession) {
+        const arr: string[] = JSON.parse(rawSession);
+        if (Array.isArray(arr)) arr.forEach((id) => this.notifiedRequestIds.add(id));
+      }
+    } catch {}
+  }
 
   public hasNotified(requestId?: string): boolean {
     if (!requestId) return false;
     if (this.notifiedRequestIds.has(requestId)) return true;
-    if (typeof window !== 'undefined') {
-      try {
-        const raw = sessionStorage.getItem(NOTIFIED_IDS_KEY);
-        if (raw) {
-          const arr: string[] = JSON.parse(raw);
-          arr.forEach((id) => this.notifiedRequestIds.add(id));
-        }
-      } catch {}
-    }
+    this.syncNotifiedFromStorage();
     return this.notifiedRequestIds.has(requestId);
   }
 
   public markNotified(requestId?: string) {
     if (!requestId) return;
+    this.syncNotifiedFromStorage();
     this.notifiedRequestIds.add(requestId);
     if (typeof window !== 'undefined') {
       try {
-        const arr = Array.from(this.notifiedRequestIds).slice(-200);
-        sessionStorage.setItem(NOTIFIED_IDS_KEY, JSON.stringify(arr));
+        const arr = Array.from(this.notifiedRequestIds).slice(-300);
+        const serialized = JSON.stringify(arr);
+        localStorage.setItem(NOTIFIED_IDS_KEY, serialized);
+        sessionStorage.setItem(NOTIFIED_IDS_KEY, serialized);
       } catch {}
+    }
+  }
+
+  public isNotifiedStorageInitialized(): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+      return localStorage.getItem(NOTIFIED_IDS_KEY) !== null;
+    } catch {
+      return false;
+    }
+  }
+
+  public ensureNotifiedStorageInitialized() {
+    if (typeof window === 'undefined') return;
+    try {
+      if (localStorage.getItem(NOTIFIED_IDS_KEY) === null) {
+        const arr = Array.from(this.notifiedRequestIds).slice(-300);
+        localStorage.setItem(NOTIFIED_IDS_KEY, JSON.stringify(arr));
+      }
+    } catch {}
+  }
+
+  /**
+   * Builds a 1-second 8kHz 16-bit mono WAV with 1-LSB non-zero amplitude
+   * so iOS WKWebView / mediaserverd keeps the native app process awake in the background
+   * when the hotel manager switches to another app or locks the screen.
+   */
+  private buildKeepAliveWavDataUri(): string {
+    const sampleRate = 8000;
+    const numSamples = sampleRate;
+    const dataSize = numSamples * 2;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+    const writeStr = (offset: number, str: string) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, 'data');
+    view.setUint32(40, dataSize, true);
+    for (let i = 0; i < numSamples; i++) {
+      view.setInt16(44 + i * 2, i % 2 === 0 ? 1 : -1, true);
+    }
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return `data:audio/wav;base64,${btoa(binary)}`;
+  }
+
+  public startNativeWebViewKeepAlive() {
+    if (typeof window === 'undefined' || !shouldReceiveStaffRequestAlerts()) return;
+
+    const activateKeepAlive = () => {
+      try {
+        if (!this.keepAliveAudioEl) {
+          const audio = new Audio(this.buildKeepAliveWavDataUri());
+          audio.loop = true;
+          audio.volume = 0.01;
+          (audio as any).playsInline = true;
+          audio.setAttribute('playsinline', 'true');
+          this.keepAliveAudioEl = audio;
+        }
+        if (this.keepAliveAudioEl.paused) {
+          this.keepAliveAudioEl.play().catch(() => {});
+        }
+        const ctx = this.getAudioContext();
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+      } catch {}
+    };
+
+    activateKeepAlive();
+
+    if (!this.keepAliveStarted) {
+      this.keepAliveStarted = true;
+      window.addEventListener('touchstart', activateKeepAlive, { passive: true });
+      window.addEventListener('click', activateKeepAlive, { passive: true });
+      document.addEventListener('visibilitychange', () => {
+        if (shouldReceiveStaffRequestAlerts()) {
+          activateKeepAlive();
+        }
+      });
     }
   }
 
@@ -327,32 +450,54 @@ class HotelAudioNotificationService {
 
     const isUrgent = req.priority === 'acil';
     const prefs = this.getPreferences();
+    const showStaffBanner = shouldShowInPageStaffBanner();
 
-    // 1. Play sound chime
-    if (prefs.soundEnabled) {
+    // 1. Play sound chime (always on staff routes, or in native app when enabled)
+    if (prefs.soundEnabled && (showStaffBanner || isNativeHostApp())) {
       const soundType = isUrgent ? 'urgent_chime' : prefs.selectedSound;
       this.play(soundType);
     }
 
-    // 2. Dispatch event for on-screen live banner / modal
-    window.dispatchEvent(new CustomEvent('xenios_hotel_live_request_popup', { detail: req }));
+    // 2. Dispatch event for on-screen live banner / modal ONLY on staff management routes
+    if (showStaffBanner) {
+      window.dispatchEvent(new CustomEvent('xenios_hotel_live_request_popup', { detail: req }));
+    }
 
     // 3. Trigger Native iOS Local Notification (Banner, Lock Screen, Sound)
-    if (prefs.systemNotificationEnabled) {
+    if (prefs.systemNotificationEnabled !== false) {
       try {
         const title = isUrgent
           ? `🚨 ACİL TALEP: Oda ${req.roomNumber}`
-          : `🛎️ Yeni Talep: Oda ${req.roomNumber}`;
-        const body = `${req.serviceTitle}${req.notes ? ` · ${req.notes.replace(/\s+/g, ' ')}` : ''}`;
+          : `🛎️ Yeni Sipariş / Talep: Oda ${req.roomNumber}`;
+        const cleanNotes = req.notes ? req.notes.replace(/\s+/g, ' ').trim() : '';
+        const body = `${req.serviceTitle}${cleanNotes ? ` · ${cleanNotes}` : ''}`;
+        const subtitle = req.hotelName || 'Purely Istanbul';
 
         if (isNativeHostApp()) {
-          await XeniosNotifications.scheduleNotification({
-            id: req.id,
-            title,
-            subtitle: req.hotelName || 'Purely Istanbul',
-            body,
-          });
-        } else if ('Notification' in window && Notification.permission === 'granted') {
+          let scheduled = false;
+          try {
+            await XeniosNotifications.scheduleNotification({
+              id: req.id,
+              title,
+              subtitle,
+              body,
+            });
+            scheduled = true;
+          } catch {
+            // Fallback to direct Capacitor Plugins bridge if available
+          }
+          if (!scheduled) {
+            const w = window as any;
+            if (w.Capacitor?.Plugins?.XeniosNotifications?.scheduleNotification) {
+              await w.Capacitor.Plugins.XeniosNotifications.scheduleNotification({
+                id: req.id,
+                title,
+                subtitle,
+                body,
+              });
+            }
+          }
+        } else if (showStaffBanner && 'Notification' in window && Notification.permission === 'granted') {
           new Notification(title, {
             body,
             icon: '/icon.png',
@@ -366,3 +511,4 @@ class HotelAudioNotificationService {
 }
 
 export const HotelAudioNotification = new HotelAudioNotificationService();
+
