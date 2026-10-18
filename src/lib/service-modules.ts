@@ -108,7 +108,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
     fields: [
       { key: 'urgency', label: 'Aciliyet Derecesi', type: 'select', options: ['Standart', 'Acil'], default: 'Standart' },
       { key: 'reason', label: 'Temizlik Nedeni', type: 'select', options: ['Genel Temizlik', 'Kahvaltı Sonrası Toparlama', 'Acil Kirlilik / Dökülme', 'Koku Şikayeti', 'Diğer'], default: 'Genel Temizlik' },
-      { key: 'roomState', label: 'Oda Durumu', type: 'select', options: ['Oda Boş', 'Oda Dolu (Misafir İçeride)'], default: 'Oda Boş' },
+      { key: 'roomState', label: 'Durum', type: 'select', options: ['Boş', 'Dolu (Misafir İçeride)'], default: 'Boş' },
       { key: 'note', label: 'Özel Not', type: 'textarea', optional: true },
       {
         key: 'expectedTime', label: 'Beklenen Zaman', type: 'display',
@@ -371,7 +371,8 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
       { key: 'requestedTime', label: 'İstenen Çıkış Saati', type: 'select', options: ['14:00', '15:00', '16:00', '18:00 (Gün Sonu)'], default: '14:00' },
       { key: 'feeInfo', label: 'Ek Ücret Bilgisi', type: 'display', compute: () => "14:00'e kadar ücretsiz, sonrası oda ücretinin %25'i yansıtılır (Onaya tabidir)." },
       { key: 'note', label: 'Not (Opsiyonel)', type: 'textarea', optional: true }
-    ]
+    ],
+    pricingDefaults: { lateCheckoutFee: 800 }
   },
 
   extendStay: {
@@ -388,7 +389,7 @@ export const SERVICE_MODULES: Record<string, ServiceModuleConfig> = {
     negativeStageIds: ['rejected'],
     fields: [
       { key: 'extensionUnit', label: 'Uzatma Süresi (Gece/Gün)', type: 'select', options: ['1 Gece', '2 Gece', '3 Gece', '1 Hafta'], default: '1 Gece' },
-      { key: 'roomPreference', label: 'Oda Durumu (Aynı/Farklı)', type: 'select', options: ['Aynı Odada Kalmak İstiyorum', 'Farklı Odaya Geçebilirim'], default: 'Aynı Odada Kalmak İstiyorum' },
+      { key: 'roomPreference', label: 'Durum (Aynı/Farklı)', type: 'select', options: ['Aynı Kalmak İstiyorum', 'Farklıya Geçebilirim'], default: 'Aynı Kalmak İstiyorum' },
       {
         key: 'feeEstimate', label: 'Ücret Hesaplaması', type: 'display',
         compute: (d, pricing) => {
@@ -497,7 +498,90 @@ export function resolvePricing(config: ServiceModuleConfig, overrides?: Record<s
 
 /** Merges cockpit-managed content (option list) overrides for one field; falls back to shipped options. */
 export function resolveFieldOptions(field: ServiceField, overrides?: Record<string, string[]>): string[] {
-  return overrides?.[field.key] ?? field.options ?? [];
+  const raw = overrides?.[field.key] ?? field.options ?? [];
+  const legacyMap: Record<string, string> = {
+    'Oda Boş': 'Boş',
+    'Oda Dolu (Misafir İçeride)': 'Dolu (Misafir İçeride)',
+    'Aynı Odada Kalmak İstiyorum': 'Aynı Kalmak İstiyorum',
+    'Farklı Odaya Geçebilirim': 'Farklıya Geçebilirim',
+  };
+  return raw.map((opt) => legacyMap[opt] || opt);
+}
+
+/**
+ * Computes the numeric payable amount and currency for any paid service module.
+ * Returns null if the service is complimentary / has 0 fee.
+ */
+export function computeServiceModulePayableAmount(
+  config: ServiceModuleConfig,
+  details: Record<string, any>,
+  pricing: Record<string, number> = {}
+): { amount: number; currency: string } | null {
+  const effective = resolvePricing(config, pricing);
+
+  switch (config.key) {
+    case 'breakfast': {
+      const perPerson = effective[details.breakfastType] ?? 300;
+      const count = Math.max(Number(details.guestCount) || 1, 1);
+      const amount = Math.round(perPerson * count);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'roomservice': {
+      const items: string[] = Array.isArray(details.menuItems) ? details.menuItems : [];
+      const qty = Math.max(Number(details.quantity) || 1, 1);
+      const unitTotal = items.reduce((sum, i) => sum + (effective[i] ?? 150), 0);
+      const amount = Math.round(unitTotal * qty);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'minibar': {
+      const items: string[] = Array.isArray(details.drinkSelection) ? details.drinkSelection : [];
+      const qty = Math.max(Number(details.quantity) || 1, 1);
+      const brandMultiplier = details.brand === 'Premium' ? (effective.premiumMultiplierPercent ?? 150) / 100 : 1;
+      const unitTotal = items.reduce((sum, i) => sum + (effective[i] ?? 50), 0) || 50;
+      const amount = Math.round(unitTotal * qty * brandMultiplier);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'laundry': {
+      const items: string[] = Array.isArray(details.itemType) ? details.itemType : [];
+      const count = Math.max(items.length, 1);
+      const perItemPrice = effective[details.serviceType] ?? 40;
+      const ironFee = details.ironingRequested ? (effective.ironFeePerItem ?? 20) * count : 0;
+      const amount = Math.round(perItemPrice * count + ironFee);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'extendStay': {
+      const nightsMap: Record<string, number> = { '1 Gece': 1, '2 Gece': 2, '3 Gece': 3, '1 Hafta': 7 };
+      const nights = nightsMap[details.extensionUnit] ?? 1;
+      const rate = effective.nightlyRate ?? 3200;
+      const amount = Math.round(nights * rate);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'lateCheckout': {
+      if (!details.requestedTime || details.requestedTime === '14:00') {
+        return null;
+      }
+      const mult = details.requestedTime === '18:00 (Gün Sonu)' ? 1.5 : 1;
+      const amount = Math.round((effective.lateCheckoutFee ?? 800) * mult);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'taxi': {
+      const pct = effective[details.vehicleType] ?? 100;
+      const m = pct / 100;
+      const base = details.vehicleType === 'Standart Sarı Taksi'
+        ? (effective.baseMin ?? 180)
+        : Math.round(((effective.baseMin ?? 180) + (effective.baseMax ?? 650)) / 2);
+      const amount = Math.round(base * m);
+      return amount > 0 ? { amount, currency: 'TRY' } : null;
+    }
+    case 'linens': {
+      const fee = effective.fee ?? 0;
+      return fee > 0 ? { amount: Math.round(fee), currency: 'TRY' } : null;
+    }
+    default: {
+      const fee = effective.fee ?? 0;
+      return fee > 0 ? { amount: Math.round(fee), currency: 'TRY' } : null;
+    }
+  }
 }
 
 /** The request's live operational status: derived from its module workflow stage when available. */
