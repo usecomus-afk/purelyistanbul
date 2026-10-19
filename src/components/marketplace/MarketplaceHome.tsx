@@ -35,7 +35,7 @@ import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-li
 import { FirestoreService } from "@/lib/firestore-service";
 import { XeniosStore } from "@/lib/store";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
-import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
+import { MarketplaceCategoryIcon } from "@/components/marketplace/MarketplaceCategoryIcon";
 import { toast } from "sonner";
 
 type DurationBucket = "" | "short" | "half" | "full";
@@ -369,7 +369,7 @@ export function MarketplaceHome() {
                           {filterCategory === c.key ? (
                             <Check className="w-5 h-5 text-terracotta" strokeWidth={2.5} />
                           ) : (
-                            <LuxuryCategoryIcon categoryKey={c.key || c.label} className="w-7 h-7" />
+                            <MarketplaceCategoryIcon categoryKey={c.key || c.label} className="w-7 h-7" />
                           )}
                         </div>
                         <span

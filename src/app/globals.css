@@ -197,6 +197,44 @@ p {
   box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.1);
 }
 
+/* Web Marketplace Exclusive: Pure White Category Frame with Gilded Antique Gold Border */
+.marketplace-category-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid #D4AF37;
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 175, 55, 0.22),
+    0 6px 18px -4px rgba(138, 99, 32, 0.12);
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.marketplace-category-card:hover {
+  background: #FFFFFF;
+  border-color: #B88930;
+  box-shadow:
+    inset 0 0 0 1px rgba(184, 137, 48, 0.35),
+    0 10px 24px -4px rgba(138, 99, 32, 0.18);
+}
+
+.marketplace-category-card:active {
+  transform: scale(0.985);
+}
+
+.marketplace-category-card-active {
+  background: #FFFFFF;
+  border: 1.75px solid #AA7C11;
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 175, 55, 0.48),
+    0 10px 26px -4px rgba(138, 99, 32, 0.24);
+}
+
+.marketplace-gilded-plinth {
+  background: #FFFFFF;
+  border: 1.5px solid #D4AF37;
+  box-shadow: 0 4px 12px 0 rgba(138, 99, 32, 0.12);
+}
+
 /* Golden Capsule / Pill Badge ("İŞLETME & YÖNETİCİ PROFİLİ" style) */
 .golden-pill-badge {
   background: rgba(240, 195, 70, 0.35);

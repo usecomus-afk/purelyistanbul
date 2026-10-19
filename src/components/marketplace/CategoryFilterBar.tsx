@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { MARKETPLACE_CATEGORIES, type MarketplaceCategory } from "@/lib/marketplace/categories";
-import { LuxuryCategoryIcon } from "@/components/guest/luxury-category-icon";
+import { MarketplaceCategoryIcon } from "@/components/marketplace/MarketplaceCategoryIcon";
 
 interface CategoryFilterBarProps {
   value: string;
@@ -49,22 +49,24 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
                 onClick={() => handleSelect(c)}
                 aria-pressed={isSelected}
                 className={`flex flex-col items-center justify-between gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[86px] sm:w-auto sm:min-w-[92px] rounded-[20px] px-2 py-2.5 ${
-                  isSelected ? "category-3d-module category-3d-module-active" : "category-3d-module"
+                  isSelected
+                    ? "marketplace-category-card marketplace-category-card-active"
+                    : "marketplace-category-card"
                 }`}
               >
                 <span className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-200">
                   {hasCustomIcon && c.icon ? (
-                    <span className="relative w-11 h-11 rounded-full gilded-icon-plinth flex items-center justify-center p-1.5">
+                    <span className="relative w-11 h-11 rounded-full marketplace-gilded-plinth flex items-center justify-center p-1.5">
                       <Image
                         src={c.icon}
                         alt=""
                         fill
                         unoptimized={!c.icon.startsWith("/")}
-                        className="object-contain p-1.5 drop-shadow-[0_2px_3px_rgba(92,64,18,0.35)]"
+                        className="object-contain p-1.5 drop-shadow-[0_2px_3px_rgba(92,64,18,0.25)]"
                       />
                     </span>
                   ) : (
-                    <LuxuryCategoryIcon
+                    <MarketplaceCategoryIcon
                       categoryKey={c.key || displayLabel}
                       className="w-12 h-12 sm:w-14 sm:h-14"
                     />
