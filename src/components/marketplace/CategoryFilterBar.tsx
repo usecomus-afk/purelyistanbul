@@ -54,29 +54,29 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
                     : "marketplace-category-card"
                 }`}
               >
-                <span className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-200">
+                <span className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center group-hover:scale-[1.04] transition-transform duration-200">
                   {hasCustomIcon && c.icon ? (
-                    <span className="relative w-11 h-11 rounded-full marketplace-gilded-plinth flex items-center justify-center p-1.5">
+                    <span className="relative w-10 h-10 rounded-full marketplace-gilded-plinth flex items-center justify-center p-1.5">
                       <Image
                         src={c.icon}
                         alt=""
                         fill
                         unoptimized={!c.icon.startsWith("/")}
-                        className="object-contain p-1.5 drop-shadow-[0_2px_3px_rgba(92,64,18,0.25)]"
+                        className="object-contain p-1.5"
                       />
                     </span>
                   ) : (
                     <MarketplaceCategoryIcon
                       categoryKey={c.key || displayLabel}
-                      className="w-12 h-12 sm:w-14 sm:h-14"
+                      className="w-9 h-9 sm:w-10 sm:h-10"
                     />
                   )}
                 </span>
                 <span
-                  className={`text-[10.5px] sm:text-[11px] tracking-tight text-center leading-[1.18] w-full line-clamp-2 transition-colors ${
+                  className={`text-[10.5px] sm:text-[11px] tracking-tight text-center leading-[1.2] w-full line-clamp-2 transition-colors ${
                     isSelected
-                      ? "text-[#5C3D0E] font-bold"
-                      : "text-[#2A2116] font-semibold group-hover:text-[#6E4912]"
+                      ? "text-[#5C3D0E] font-semibold"
+                      : "text-[#3D3122] font-medium group-hover:text-[#6E4912]"
                   }`}
                 >
                   {displayLabel}

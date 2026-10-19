@@ -327,14 +327,14 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50 grayscale'
               }`}
             >
-              {/* Fine Line-Art 3D Metallic Gold/Bronze Icon */}
+              {/* Minimal Modern Monoline Icon */}
               <div className="luxury-category-icon-stage shrink-0 flex items-center justify-center relative z-10">
-                {renderServiceVisual(item, "w-[78px] h-[78px] sm:w-24 sm:h-24")}
+                {renderServiceVisual(item, "w-11 h-11 sm:w-12 sm:h-12")}
               </div>
 
-              {/* Clean Bold Modern Sans-Serif Card Label */}
+              {/* Clean Modern Sans-Serif Card Label */}
               <div className="w-full px-1 relative z-10">
-                <span className="luxury-category-title text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] leading-[1.18] block">
+                <span className="luxury-category-title text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] leading-[1.22] block">
                   {serviceTitle === 'Late Check-out Request' ? (
                     <>
                       Late Check-out

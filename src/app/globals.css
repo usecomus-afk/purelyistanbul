@@ -256,22 +256,16 @@ p {
     0 6px 16px 0 rgba(24, 18, 10, 0.10);
 }
 
-/* 3D Raised Convex Foreground Stage for Category Icons (Kabarıklık Formu) */
+/* Clean Minimal Foreground Stage for Category Icons */
 .luxury-category-icon-stage {
   position: relative;
   background: transparent;
-  filter:
-    drop-shadow(0 4px 6px rgba(36, 24, 8, 0.22))
-    drop-shadow(0 1px 2px rgba(212, 164, 68, 0.18));
   transform: translateZ(0);
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), filter 0.28s ease;
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .group:hover .luxury-category-icon-stage {
-  transform: translateY(-2.5px) scale(1.07);
-  filter:
-    drop-shadow(0 7px 10px rgba(36, 24, 8, 0.28))
-    drop-shadow(0 2px 5px rgba(224, 176, 80, 0.26));
+  transform: translateY(-1.5px) scale(1.04);
 }
 
 /* Crisp Modern Sans-Serif Category Typography on Transparent Glass */
@@ -315,24 +309,20 @@ p {
   box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Web Marketplace Exclusive: Pure White Category Frame with Gilded Antique Gold Border */
+/* Web Marketplace Exclusive: Pure White Category Frame with Soft Gilded Border */
 .marketplace-category-card {
   background: #FFFFFF;
-  border-radius: 20px;
-  border: 1.5px solid #D4AF37;
-  box-shadow:
-    inset 0 0 0 1px rgba(212, 175, 55, 0.22),
-    0 6px 18px -4px rgba(138, 99, 32, 0.12);
+  border-radius: 18px;
+  border: 1px solid rgba(196, 160, 82, 0.55);
+  box-shadow: 0 4px 14px -4px rgba(138, 99, 32, 0.08);
   transition: all 0.18s ease;
   position: relative;
 }
 
 .marketplace-category-card:hover {
   background: #FFFFFF;
-  border-color: #B88930;
-  box-shadow:
-    inset 0 0 0 1px rgba(184, 137, 48, 0.35),
-    0 10px 24px -4px rgba(138, 99, 32, 0.18);
+  border-color: rgba(176, 136, 54, 0.8);
+  box-shadow: 0 6px 18px -4px rgba(138, 99, 32, 0.13);
 }
 
 .marketplace-category-card:active {
@@ -341,16 +331,14 @@ p {
 
 .marketplace-category-card-active {
   background: #FFFFFF;
-  border: 1.75px solid #AA7C11;
-  box-shadow:
-    inset 0 0 0 1px rgba(212, 175, 55, 0.48),
-    0 10px 26px -4px rgba(138, 99, 32, 0.24);
+  border: 1.5px solid #9E782F;
+  box-shadow: 0 6px 20px -4px rgba(138, 99, 32, 0.16);
 }
 
 .marketplace-gilded-plinth {
   background: #FFFFFF;
-  border: 1.5px solid #D4AF37;
-  box-shadow: 0 4px 12px 0 rgba(138, 99, 32, 0.12);
+  border: 1px solid rgba(196, 160, 82, 0.55);
+  box-shadow: 0 2px 8px 0 rgba(138, 99, 32, 0.08);
 }
 
 /* Golden Capsule / Pill Badge ("İŞLETME & YÖNETİCİ PROFİLİ" style) */

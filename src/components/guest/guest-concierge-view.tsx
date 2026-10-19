@@ -541,25 +541,25 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 }}
                 className="luxury-category-card px-3 py-3.5 flex flex-col items-center text-center justify-center gap-2.5 min-h-[136px] sm:min-h-[154px] group relative cursor-pointer"
               >
-                {/* 3D Embossed Smoked Glass & Luminous Champagne-Gold Category Icon */}
+                {/* Minimal Modern Monoline Category Icon */}
                 <div className="luxury-category-icon-stage shrink-0 flex items-center justify-center relative z-10">
                   {cat.customIcon ? (
-                    <div className="w-[78px] h-[78px] sm:w-24 sm:h-24 rounded-full luxury-category-plinth flex items-center justify-center p-2.5">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full luxury-category-plinth flex items-center justify-center p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={cat.customIcon}
                         alt={cat.key}
-                        className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(226,178,88,0.35)]"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                   ) : (
-                    <LuxuryCategoryIcon categoryKey={cat.catKey || cat.rawKey} className="w-[78px] h-[78px] sm:w-24 sm:h-24" />
+                    <LuxuryCategoryIcon categoryKey={cat.catKey || cat.rawKey} className="w-11 h-11 sm:w-12 sm:h-12" />
                   )}
                 </div>
 
-                {/* Warm Pearl-Ivory to Champagne-Gold Modern Geometric Sans-Serif Category Title */}
+                {/* Clean Modern Geometric Sans-Serif Category Title */}
                 <div className="w-full px-1 relative z-10">
-                  <span className="luxury-category-title text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] leading-[1.18] block">
+                  <span className="luxury-category-title text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] leading-[1.22] block">
                     {cat.key}
                   </span>
                 </div>
