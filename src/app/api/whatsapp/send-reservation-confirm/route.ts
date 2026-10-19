@@ -19,7 +19,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const textResult = await WhatsAppService.sendTextMessage(phone, message, true);
+    const guestTemplate = process.env.WHATSAPP_TEMPLATE_GUEST_MESSAGE || '';
+    const textResult = guestTemplate
+      ? await WhatsAppService.sendTemplateMessage(phone, guestTemplate, [message])
+      : await WhatsAppService.sendTextMessage(phone, message, true);
+
+    if (!textResult.success) {
+      const metaError = textResult.details?.error;
+      return NextResponse.json({
+        success: false,
+        error: `WhatsApp mesajı gönderilemedi: ${
+          typeof metaError === 'string' ? metaError : metaError?.message || 'Meta API hatası'
+        }`,
+        textResult,
+      });
+    }
 
     let locationResult = null;
     if (

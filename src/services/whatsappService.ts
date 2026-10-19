@@ -69,6 +69,114 @@ export class WhatsAppService {
   }
 
   /**
+   * Meta yalnızca son 24 saat içinde size yazmış kişilere serbest metin teslim eder.
+   * Bu pencere dışındaki (işletme başlatmalı) mesajlar, Meta'da ONAYLI bir şablonla gönderilmelidir;
+   * aksi halde API 200 döner ama mesaj sessizce düşer (hata 131047 webhook ile gelir).
+   */
+  static getTemplateConfig() {
+    return {
+      language: process.env.WHATSAPP_TEMPLATE_LANG || 'tr',
+      orderAlert: process.env.WHATSAPP_TEMPLATE_ORDER_ALERT || '',
+      reservationConfirm: process.env.WHATSAPP_TEMPLATE_RESERVATION_CONFIRM || '',
+    };
+  }
+
+  /** Şablon parametreleri satır sonu / tab / 4+ boşluk içeremez. */
+  static sanitizeTemplateParam(value: string): string {
+    const clean = String(value ?? '')
+      .replace(/[\r\n\t]+/g, ' · ')
+      .replace(/ {4,}/g, '   ')
+      .trim();
+    return (clean || '-').slice(0, 1000);
+  }
+
+  /**
+   * Onaylı Meta şablonu ile mesaj gönderir (24 saat penceresi dışında çalışan tek yöntem).
+   */
+  static async sendTemplateMessage(
+    phone: string,
+    templateName: string,
+    bodyParams: string[],
+    language?: string
+  ): Promise<WhatsAppSendResult> {
+    const formattedPhone = this.formatPhoneNumber(phone);
+    const { token, phoneId, isLive, senderNumber } = this.getCredentials();
+    const lang = language || this.getTemplateConfig().language;
+
+    if (!isLive || !formattedPhone) {
+      return {
+        success: false,
+        message_id: '',
+        recipient_phone: formattedPhone,
+        status: 'FAILED',
+        sender_number: senderNumber,
+        details: { error: 'WhatsApp API yapılandırılmamış veya telefon numarası geçersiz.' },
+      };
+    }
+
+    try {
+      const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: formattedPhone,
+          type: 'template',
+          template: {
+            name: templateName,
+            language: { code: lang },
+            components: bodyParams.length
+              ? [
+                  {
+                    type: 'body',
+                    parameters: bodyParams.map((p) => ({
+                      type: 'text',
+                      text: this.sanitizeTemplateParam(p),
+                    })),
+                  },
+                ]
+              : [],
+          },
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        return {
+          success: true,
+          message_id: data.messages?.[0]?.id || `wamid_${Date.now()}`,
+          recipient_phone: formattedPhone,
+          status: 'SENT',
+          sender_number: senderNumber,
+          details: data,
+        };
+      }
+      console.error('[WHATSAPP TEMPLATE API] Error response:', response.status, data);
+      return {
+        success: false,
+        message_id: '',
+        recipient_phone: formattedPhone,
+        status: 'FAILED',
+        sender_number: senderNumber,
+        details: { error: data?.error?.message || `HTTP ${response.status}`, ...data },
+      };
+    } catch (err: any) {
+      console.warn('[WHATSAPP TEMPLATE API] Network error:', err);
+      return {
+        success: false,
+        message_id: '',
+        recipient_phone: formattedPhone,
+        status: 'FAILED',
+        sender_number: senderNumber,
+        details: { error: err?.message },
+      };
+    }
+  }
+
+  /**
    * Normalizes a Turkish or international phone number to Meta Graph API E.164 digits (e.g. "905321635520").
    */
   static formatPhoneNumber(phone: string): string {
@@ -191,9 +299,28 @@ export class WhatsAppService {
       .join('\n');
 
     const results: WhatsAppSendResult[] = [];
+    const { orderAlert: orderTemplate } = this.getTemplateConfig();
 
     for (const formattedPhone of recipients) {
+      if (isLive && orderTemplate) {
+        // Şablon değişkenleri: {{1}} Tesis, {{2}} Birim, {{3}} Talep, {{4}} Öncelik, {{5}} Not, {{6}} Talep Kodu
+        results.push(
+          await this.sendTemplateMessage(formattedPhone, orderTemplate, [
+            reqData.hotelName || 'Purely Istanbul Partner',
+            unitLabel,
+            reqData.serviceTitle,
+            isUrgent ? 'ACİL' : 'Standart',
+            [cleanNotes, paymentLine.replace(/\*/g, '').trim()].filter(Boolean).join(' · ') || '-',
+            shortCode ? `#${shortCode}` : '-',
+          ])
+        );
+        continue;
+      }
+
       if (isLive) {
+        console.warn(
+          '[WHATSAPP 0850 API] WHATSAPP_TEMPLATE_ORDER_ALERT tanımlı değil — serbest metin yalnızca alıcı son 24 saatte 0850 hattına yazdıysa teslim edilir.'
+        );
         try {
           const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
             method: 'POST',
@@ -374,6 +501,16 @@ ${details.locationAddress ? `_${details.locationAddress}_` : ''}
 Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
 
     if (isLive) {
+      const { reservationConfirm } = this.getTemplateConfig();
+      if (reservationConfirm) {
+        // Şablon değişkenleri: {{1}} Misafir, {{2}} Tesis, {{3}} Detay (deneyim/tarih/kod)
+        return this.sendTemplateMessage(formattedPhone, reservationConfirm, [
+          details.guestName,
+          `${details.hotelName} (Birim ${details.roomNumber})`,
+          `${details.experienceTitle} · ${details.bookingDate} ${details.bookingTime} · Onay Kodu: ${details.confirmationCode}`,
+        ]);
+      }
+
       try {
         const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
           method: 'POST',
@@ -393,8 +530,8 @@ Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
           })
         });
 
+        const data = await response.json().catch(() => ({}));
         if (response.ok) {
-          const data = await response.json();
           const msgId = data.messages?.[0]?.id || `wamid_${Date.now()}`;
           return {
             success: true,
@@ -405,8 +542,25 @@ Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
             details: data
           };
         }
-      } catch (err) {
-        console.warn('[WHATSAPP API] Live dispatch error, falling back to simulation:', err);
+        console.error('[WHATSAPP API] Booking confirmation failed:', response.status, data);
+        return {
+          success: false,
+          message_id: '',
+          recipient_phone: formattedPhone,
+          status: 'FAILED',
+          sender_number: senderNumber,
+          details: { error: data?.error?.message || `HTTP ${response.status}`, ...data }
+        };
+      } catch (err: any) {
+        console.warn('[WHATSAPP API] Live dispatch error:', err);
+        return {
+          success: false,
+          message_id: '',
+          recipient_phone: formattedPhone,
+          status: 'FAILED',
+          sender_number: senderNumber,
+          details: { error: err?.message }
+        };
       }
     }
 

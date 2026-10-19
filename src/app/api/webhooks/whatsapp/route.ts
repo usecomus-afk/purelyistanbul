@@ -204,6 +204,16 @@ export async function POST(req: Request) {
       const changes = Array.isArray(entry?.changes) ? entry.changes : [];
       for (const change of changes) {
         const value = change?.value || {};
+        const statuses = Array.isArray(value?.statuses) ? value.statuses : [];
+        for (const st of statuses) {
+          if (st?.status === 'failed') {
+            const errs = Array.isArray(st?.errors) ? st.errors : [];
+            console.error(
+              `[WHATSAPP DELIVERY FAILED] to=${st?.recipient_id} wamid=${st?.id}`,
+              errs.map((e: any) => `${e?.code} ${e?.title} — ${e?.error_data?.details || e?.message || ''}`).join(' | ')
+            );
+          }
+        }
         const messages = Array.isArray(value?.messages) ? value.messages : [];
 
         for (const msg of messages) {
