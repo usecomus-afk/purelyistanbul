@@ -2,7 +2,7 @@
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
+import { Footer } from "@/components/marketplace/Footer";
 import { marketplaceFont } from "@/lib/marketplace/font";
 
 /**
@@ -18,7 +18,7 @@ export default function MarketplaceLayout({ children }: { children: React.ReactN
         <div>
           {children}
         </div>
-        <MarketplaceFooter />
+        <Footer />
       </div>
     </AuthProvider>
   );

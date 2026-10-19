@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 
 const AGREEMENT_VERSION = "2026-09-v1";
 
@@ -13,7 +12,6 @@ export default function MarketplaceAccountPage() {
   return (
     <Suspense fallback={<div className="p-8 text-sm text-ink-muted">Loading account...</div>}>
       <MarketplaceAccountForm />
-      <MarketplaceFooter />
     </Suspense>
   );
 }
@@ -222,7 +220,7 @@ function MarketplaceAccountForm() {
               <span>
                 I have read and agree to the{" "}
                 <Link href="/marketplace/legal/privacy-policy" className="underline text-ink hover:text-terracotta">
-                  Privacy Policy (UK GDPR &amp; KVKK)
+                  Privacy Policy (GDPR &amp; KVKK)
                 </Link>
                 .
               </span>

@@ -1,5 +1,2 @@
-import { permanentRedirect } from "next/navigation";
+export { metadata, default } from "../terms-of-service/page";
 
-export default function LegacyHizmetKosullariRedirect() {
-  permanentRedirect("/marketplace/legal/terms-of-service");
-}

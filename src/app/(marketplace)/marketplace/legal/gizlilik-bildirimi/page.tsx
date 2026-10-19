@@ -1,5 +1,2 @@
-import { permanentRedirect } from "next/navigation";
+export { metadata, default } from "../privacy-policy/page";
 
-export default function LegacyGizlilikBildirimiRedirect() {
-  permanentRedirect("/marketplace/legal/privacy-policy");
-}

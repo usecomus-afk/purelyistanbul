@@ -55,9 +55,13 @@ export function isRestaurantExperience(
 }
 
 export function isRestaurantListing(
-  listing: Pick<MarketplaceListing, 'id' | 'reservationOnly'>
+  listing: Pick<MarketplaceListing, 'id' | 'reservationOnly' | 'category'>
 ): boolean {
-  return Boolean(listing.reservationOnly || listing.id?.startsWith('rest-'));
+  return Boolean(
+    listing.reservationOnly ||
+      listing.category === 'dining-guide' ||
+      listing.id?.startsWith('rest-')
+  );
 }
 
 export function experienceToMarketplaceListing(exp: Experience, index = 0): MarketplaceListing {
@@ -80,7 +84,7 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
     type: exp.listingType === 'stay' ? 'stay' : 'experience',
     title: loc.title,
     description: loc.agentNote || loc.desc || loc.title,
-    category: getExperienceCategoryKey(exp),
+    category: isRestaurant ? 'dining-guide' : getExperienceCategoryKey(exp),
     district: (loc.location || 'Istanbul').replace(/İstanbul Genel/gi, 'Istanbul-Wide'),
     coords: exp.coords,
     pricing: {
@@ -88,6 +92,10 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
       currency: (exp.currency === '₺' ? 'TRY' : exp.currency === '€' ? 'EUR' : exp.currency === '$' ? 'USD' : exp.currency || 'EUR') as any
     },
     reservationOnly: isRestaurant,
+    cuisine: loc.cuisine || exp.cuisine,
+    phone: exp.phone,
+    website: exp.website,
+    providerLabel: loc.provider || exp.provider,
     capacity: exp.capacity || exp.availableSlots || 10,
     amenities: loc.specialties || exp.features || [],
     images: [{ url: coverImageUrl, path: coverImageUrl }],

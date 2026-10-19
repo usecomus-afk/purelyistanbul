@@ -17,15 +17,13 @@ export default function DistanceSalesAgreementPage() {
     <LegalPageShell
       eyebrow="Legal & Trust"
       title="Distance Sales Agreement & Pre-Information Disclosure"
-      intro="This Distance Sales Agreement and Pre-Contractual Information Form is executed electronically pursuant to the Turkish Consumer Protection Law No. 6502, the Distance Contracts Regulation (Mesafeli Sözleşmeler Yönetmeliği), Law No. 6563 on the Regulation of Electronic Commerce, and the UK Consumer Rights Act 2015."
+      intro="This Distance Sales Agreement and Pre-Contractual Information Form is executed electronically pursuant to the Turkish Consumer Protection Law No. 6502, the Distance Contracts Regulation (Mesafeli Sözleşmeler Yönetmeliği), and Law No. 6563 on the Regulation of Electronic Commerce."
     >
       <section>
         <h2>1. Parties &amp; Platform Intermediary Disclosure</h2>
         <p>
           <strong>Platform Intermediary Service Provider:</strong> {CORPORATE_CONFIG.legalEntityName} (
-          {CORPORATE_CONFIG.ukEntityName}, {CORPORATE_CONFIG.companyRegNo}), registered at{" "}
-          {CORPORATE_CONFIG.registeredAddress} (Tax Office: {CORPORATE_CONFIG.taxOffice}, Tax ID:{" "}
-          {CORPORATE_CONFIG.taxId}, MERSİS: {CORPORATE_CONFIG.mersisNo}, Email: {CORPORATE_CONFIG.contactEmail}, Phone:{" "}
+          {CORPORATE_CONFIG.registeredAddress}, Email: {CORPORATE_CONFIG.contactEmail}, Phone:{" "}
           {CORPORATE_CONFIG.contactPhone}).
         </p>
         <p>
@@ -119,8 +117,7 @@ export default function DistanceSalesAgreementPage() {
           <strong>{CORPORATE_CONFIG.contactEmail}</strong> or via WhatsApp Concierge at{" "}
           <strong>{CORPORATE_CONFIG.contactPhone}</strong>. For formal consumer disputes, Turkish Consumer Arbitration
           Committees (Tüketici Hakem Heyetleri) and Istanbul (Çağlayan) Consumer Courts have jurisdiction alongside
-          applicable mandatory consumer protections of the Guest&apos;s country of residence (including UK consumer
-          law).
+          applicable mandatory consumer protections of the Guest&apos;s country of residence.
         </p>
       </section>
     </LegalPageShell>

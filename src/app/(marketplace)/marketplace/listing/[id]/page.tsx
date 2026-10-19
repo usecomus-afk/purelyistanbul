@@ -16,11 +16,14 @@ import {
   Navigation,
   ChevronDown,
   ExternalLink,
+  Compass,
+  Phone,
+  Globe,
+  Utensils,
 } from "lucide-react";
 import { watchListing, bumpListingStat } from "@/lib/marketplace/listings";
 import { isRestaurantListing } from "@/lib/marketplace/seed-listings";
 import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
 interface ItineraryStep {
@@ -50,46 +53,48 @@ function buildExperienceDetails(listing: MarketplaceListing): StructuredExperien
 
   if (isRestaurantListing(listing)) {
     return {
-      cancellationBadge: "Complimentary Table Reservation · Free modification or cancellation",
-      durationLabel: "1.5 – 3 Hours (Dining)",
+      cancellationBadge: "Comus Curated Dining Guide · Informational Venue Profile",
+      durationLabel: listing.cuisine || "Istanbul Gastronomy Landmark",
       itinerary: [
         {
-          time: "Step 1",
-          title: "Table Reservation Request",
+          time: "Highlight 1",
+          title: "Culinary Identity & Atmosphere",
           detail:
-            "Select your preferred dining date, seating time, and guest count. Our concierge confirms your table directly with the restaurant.",
+            listing.description ||
+            "Hand-selected by Comus as one of Istanbul's standout culinary landmarks for authentic local and contemporary Anatolian gastronomy.",
         },
         {
-          time: "Step 2",
-          title: "Priority Host Desk Welcome",
+          time: "Highlight 2",
+          title: "Signature Dishes & Tasting Notes",
           detail:
-            "Arrive at the restaurant and present your reservation name at the host desk for priority table seating.",
+            baseAmenities.length > 0
+              ? `Notable specialties include ${baseAmenities.join(", ")}.`
+              : "Seasonal menu crafted with fresh local Anatolian and Aegean ingredients.",
         },
         {
-          time: "Step 3",
-          title: "Authentic Dining Experience",
+          time: "Highlight 3",
+          title: "Direct Venue Reservations & Etiquette",
           detail:
-            "Enjoy the restaurant's menu and signature dishes at official local menu prices with zero reservation or booking fees.",
+            "This entry is part of the non-commercial Comus Curated Dining Guide. Guests may contact the restaurant directly via phone or official website for table availability.",
         },
       ],
       included: Array.from(
         new Set([
           ...baseAmenities,
-          "Complimentary priority table reservation",
-          "Zero reservation or booking fees",
-          "24/7 WhatsApp Concierge assistance for seating or dietary notes",
+          "Featured in the independent Comus Curated Dining Guide",
+          "Verified Istanbul address, neighborhood context & GPS coordinates",
+          "Direct restaurant phone & official website reference",
         ])
       ),
       excluded: [
-        "Food and beverages ordered at the restaurant (settled directly at the venue)",
-        "Private hotel-to-restaurant transfer (available upon request)",
-        "Discretionary service gratuities",
+        "Not a commercial ticketed listing — Purely Istanbul does not sell tickets or collect payments for this venue",
+        "Table reservations and dining bills are arranged directly with the restaurant",
       ],
       meetingPoint: {
         locationName: `${listing.title} — ${listing.district}`,
-        meetingTimeNote: "Please arrive on time for your reserved seating window (tables are held for 15 minutes).",
+        meetingTimeNote: "Advance direct reservation with the restaurant is recommended, especially for evening seating.",
         pickupDetails:
-          "Your confirmed table reservation details and direct Google Maps pin are shared upon reservation submission.",
+          "Use the official phone number, website, or Google Maps pin on this page to reach the venue directly.",
         coordinates: listing.coords ?? { lat: 41.0151, lng: 28.9795 },
         mapQuery: `${encodeURIComponent(listing.title)}+${encodeURIComponent(listing.district || "Istanbul")}`,
       },
@@ -363,7 +368,7 @@ function buildExperienceDetails(listing: MarketplaceListing): StructuredExperien
         locationName: "Istanbul Airport (IST) Gate 14 / Sabiha Gökçen (SAW) Column 9 — Or Hotel Lobby",
         meetingTimeNote: "Chauffeur tracks your flight live and waits up to 60 minutes after landing.",
         pickupDetails:
-          "You will receive your chauffeur's name, license plate, and exact exit gate instructions via WhatsApp 12 hours before pickup.",
+          "You will receive your chauffeur's name, vehicle details, and exact exit gate instructions via WhatsApp 12 hours before pickup.",
         coordinates: listing.coords ?? { lat: 41.2608, lng: 28.7418 },
         mapQuery: "Istanbul+Airport+Arrivals+Exit+14",
       },
@@ -431,7 +436,7 @@ function buildExperienceDetails(listing: MarketplaceListing): StructuredExperien
       {
         time: "00:00",
         title: "Welcome & Concierge Check-In",
-        detail: `Arrive at the designated ${listing.district} venue or meeting point for a personal welcome from our certified host.`,
+        detail: `Arrive at the designated ${listing.district} venue or meeting point for a personal welcome from our certified local specialist.`,
       },
       {
         time: "00:30",
@@ -443,7 +448,7 @@ function buildExperienceDetails(listing: MarketplaceListing): StructuredExperien
         time: "01:45",
         title: "Hospitality Refreshments & Local Insights",
         detail:
-          "Enjoy traditional Turkish refreshments while your host shares insider recommendations for the surrounding neighborhood.",
+          "Enjoy traditional Turkish refreshments while your specialist shares insider recommendations for the surrounding neighborhood.",
       },
     ],
     included: Array.from(
@@ -463,7 +468,7 @@ function buildExperienceDetails(listing: MarketplaceListing): StructuredExperien
       locationName: `${listing.district || "Beyoğlu / Sultanahmet"}, Istanbul`,
       meetingTimeNote: "Please arrive 15 minutes prior to your confirmed experience time.",
       pickupDetails:
-        "Exact meeting coordinates, host contact number, and door-to-door directions are sent upon reservation confirmation.",
+        "Exact meeting coordinates, coordinator contact number, and door-to-door directions are sent upon reservation confirmation.",
       coordinates: listing.coords ?? { lat: 41.0151, lng: 28.9795 },
       mapQuery: `${encodeURIComponent(listing.district || "Beyoglu")}+Istanbul`,
     },
@@ -476,7 +481,6 @@ export default function ListingDetailPage() {
   const [listing, setListing] = useState<MarketplaceListing | null | undefined>(undefined);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [reservationTime, setReservationTime] = useState("19:30");
   const [guests, setGuests] = useState(2);
   const [activeTab, setActiveTab] = useState<"itinerary" | "inclusions" | "meeting">("itinerary");
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
@@ -508,12 +512,9 @@ export default function ListingDetailPage() {
 
   if (listing === null || !details) {
     return (
-      <>
-        <div className="max-w-6xl mx-auto px-5 md:px-8 py-16 text-center">
-          <p className="text-sm text-ink-muted">This experience could not be found or is no longer active.</p>
-        </div>
-        <MarketplaceFooter />
-      </>
+      <div className="max-w-6xl mx-auto px-5 md:px-8 py-16 text-center">
+        <p className="text-sm text-ink-muted">This experience could not be found or is no longer active.</p>
+      </div>
     );
   }
 
@@ -534,7 +535,6 @@ export default function ListingDetailPage() {
       checkIn,
       checkOut,
       guests: String(guests),
-      ...(isRestaurant ? { time: reservationTime } : {}),
     });
     router.push(`/marketplace/listing/${listing!.id}/book?${params.toString()}`);
   }
@@ -559,12 +559,20 @@ export default function ListingDetailPage() {
             data-testid="cancellation-policy-badge"
             className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3.5 py-1 text-[12px] font-semibold text-emerald-800"
           >
-            <CalendarCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" strokeWidth={2} />
+            {isRestaurant ? (
+              <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" strokeWidth={2} />
+            ) : (
+              <CalendarCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" strokeWidth={2} />
+            )}
             {details.cancellationBadge}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-sand-card border border-sand-border px-3 py-1 text-[12px] font-medium text-ink-muted">
-            <Clock className="w-3.5 h-3.5 text-terracotta shrink-0" strokeWidth={1.75} />
-            Duration: {details.durationLabel}
+            {isRestaurant ? (
+              <Utensils className="w-3.5 h-3.5 text-terracotta shrink-0" strokeWidth={1.75} />
+            ) : (
+              <Clock className="w-3.5 h-3.5 text-terracotta shrink-0" strokeWidth={1.75} />
+            )}
+            {isRestaurant ? details.durationLabel : `Duration: ${details.durationLabel}`}
           </span>
         </div>
 
@@ -609,23 +617,31 @@ export default function ListingDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
           <div className="space-y-8">
             <div className="flex flex-wrap items-center gap-2 text-[13.5px] text-ink-muted border-b border-sand-border/70 pb-6">
-              <Users className="w-4 h-4 text-terracotta" strokeWidth={1.75} />
-              <span>
-                Up to {listing.capacity} guests ·{" "}
-                {isRestaurant
-                  ? "Curated Istanbul Restaurant"
-                  : listing.type === "stay"
-                    ? "Boutique Stay"
-                    : "Verified Local Experience"}
-                {listing.category
-                  ? ` · ${categoryConfigs.find((c) => c.key === listing.category)?.label ?? listing.category}`
-                  : ""}
-              </span>
+              {isRestaurant ? (
+                <>
+                  <Compass className="w-4 h-4 text-terracotta" strokeWidth={1.75} />
+                  <span>
+                    Comus Curated Dining Guide · Informational Gastronomy Profile
+                    {listing.providerLabel ? ` · ${listing.providerLabel}` : ""}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Users className="w-4 h-4 text-terracotta" strokeWidth={1.75} />
+                  <span>
+                    Up to {listing.capacity} guests ·{" "}
+                    {listing.type === "stay" ? "Boutique Stay" : "Verified Local Experience"}
+                    {listing.category
+                      ? ` · ${categoryConfigs.find((c) => c.key === listing.category)?.label ?? listing.category}`
+                      : ""}
+                  </span>
+                </>
+              )}
             </div>
 
             <div>
               <h2 className="font-luxury-serif text-[19px] font-semibold text-ink mb-3">
-                {isRestaurant ? "About This Restaurant" : "About This Experience"}
+                {isRestaurant ? "About This Culinary Landmark" : "About This Experience"}
               </h2>
               <p className="text-[14.5px] text-ink-muted leading-relaxed whitespace-pre-line">
                 {listing.description || "Verified local experience curated by Purely Istanbul."}
@@ -643,7 +659,7 @@ export default function ListingDetailPage() {
                     : "bg-white border border-sand-border text-ink-muted hover:text-ink"
                 }`}
               >
-                {isRestaurant ? "Reservation Steps" : "Full Itinerary"}
+                {isRestaurant ? "Culinary Highlights" : "Full Itinerary"}
               </button>
               <button
                 type="button"
@@ -654,7 +670,7 @@ export default function ListingDetailPage() {
                     : "bg-white border border-sand-border text-ink-muted hover:text-ink"
                 }`}
               >
-                What&apos;s Included &amp; Excluded
+                {isRestaurant ? "Specialties & Guide Notes" : "What's Included & Excluded"}
               </button>
               <button
                 type="button"
@@ -669,7 +685,7 @@ export default function ListingDetailPage() {
               </button>
             </div>
 
-            {/* ACCORDION 1: Full Itinerary */}
+            {/* ACCORDION 1: Full Itinerary / Culinary Highlights */}
             <section
               id="section-itinerary"
               className="rounded-2xl border border-sand-border bg-white overflow-hidden shadow-[0_2px_12px_rgba(11,25,44,0.03)]"
@@ -682,10 +698,10 @@ export default function ListingDetailPage() {
               >
                 <div>
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-terracotta block">
-                    {isRestaurant ? "How It Works" : "Chronological Schedule"}
+                    {isRestaurant ? "Comus Editorial Notes" : "Chronological Schedule"}
                   </span>
                   <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">
-                    {isRestaurant ? "Reservation & Dining Flow" : "Full Itinerary"}
+                    {isRestaurant ? "Culinary Highlights & Visiting Guide" : "Full Itinerary"}
                   </h2>
                 </div>
                 <ChevronDown
@@ -726,10 +742,10 @@ export default function ListingDetailPage() {
               >
                 <div>
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-terracotta block">
-                    {isRestaurant ? "Specialties & Reservation Benefits" : "Transparent Package Breakdown"}
+                    {isRestaurant ? "Signature Dishes & Guide Scope" : "Transparent Package Breakdown"}
                   </span>
                   <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">
-                    What&apos;s Included &amp; Excluded
+                    {isRestaurant ? "Specialties & Guide Notes" : "What's Included & Excluded"}
                   </h2>
                 </div>
                 <ChevronDown
@@ -744,7 +760,7 @@ export default function ListingDetailPage() {
                   <div className="rounded-xl bg-emerald-50/50 border border-emerald-200/70 p-4">
                     <h3 className="text-[13px] font-semibold uppercase tracking-wider text-emerald-900 mb-3 flex items-center gap-1.5">
                       <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.25} />
-                      <span>✓ Included</span>
+                      <span>{isRestaurant ? "✓ Signature Highlights" : "✓ Included"}</span>
                     </h3>
                     <ul className="space-y-2.5 text-[13.5px] text-ink">
                       {details.included.map((item) => (
@@ -759,7 +775,7 @@ export default function ListingDetailPage() {
                   <div className="rounded-xl bg-rose-50/40 border border-rose-200/70 p-4">
                     <h3 className="text-[13px] font-semibold uppercase tracking-wider text-rose-900 mb-3 flex items-center gap-1.5">
                       <X className="w-4 h-4 text-rose-600" strokeWidth={2.25} />
-                      <span>✕ Not Included</span>
+                      <span>{isRestaurant ? "✕ Non-Commercial Notice" : "✕ Not Included"}</span>
                     </h3>
                     <ul className="space-y-2.5 text-[13.5px] text-ink-muted">
                       {details.excluded.map((item) => (
@@ -816,7 +832,7 @@ export default function ListingDetailPage() {
 
                     <div className="rounded-xl bg-sand-bg/70 border border-sand-border p-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-terracotta mb-1 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" /> {isRestaurant ? "Seating Policy" : "Check-In & Arrival Window"}
+                        <Clock className="w-3.5 h-3.5" /> {isRestaurant ? "Visiting Note" : "Check-In & Arrival Window"}
                       </p>
                       <p className="font-semibold text-ink">{details.meetingPoint.meetingTimeNote}</p>
                       <p className="text-xs text-ink-muted mt-1">{details.meetingPoint.pickupDetails}</p>
@@ -837,7 +853,9 @@ export default function ListingDetailPage() {
                   <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
                     <span className="text-xs text-ink-muted flex items-center gap-1.5">
                       <Navigation className="w-3.5 h-3.5 text-terracotta" />
-                      Exact Google Maps pin and host WhatsApp contact are included in your reservation confirmation.
+                      {isRestaurant
+                        ? "Direct Google Maps coordinates provided for independent navigation."
+                        : "Exact Google Maps pin and coordinator WhatsApp contact are included in your reservation confirmation."}
                     </span>
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${details.meetingPoint.coordinates.lat},${details.meetingPoint.coordinates.lng}`}
@@ -876,38 +894,91 @@ export default function ListingDetailPage() {
           <div className="lg:self-start lg:sticky lg:top-28">
             <div className="rounded-3xl border border-sand-border bg-white shadow-[0_4px_24px_rgba(11,25,44,0.07)] p-6 space-y-5">
               {isRestaurant ? (
-                <div>
-                  <span className="inline-block text-[11px] font-semibold uppercase tracking-widest text-terracotta mb-0.5">
-                    Complimentary Concierge Booking
-                  </span>
-                  <p className="font-luxury-serif text-[21px] font-semibold text-ink">
-                    Table Reservation
-                  </p>
-                </div>
-              ) : (
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-[19px]">
-                    <span className="font-semibold text-ink">
-                      {listing.pricing.basePrice.toLocaleString("en-GB")} {listing.pricing.currency}
-                    </span>{" "}
-                    <span className="text-[13.5px] text-ink-muted">/ {priceUnit}</span>
-                  </p>
-                </div>
-              )}
+                <>
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-terracotta mb-1">
+                      <Compass className="w-3.5 h-3.5" strokeWidth={2} />
+                      Comus Curated Dining Guide
+                    </span>
+                    <p className="font-luxury-serif text-[21px] font-semibold text-ink">
+                      Venue Guide &amp; Direct Contact
+                    </p>
+                    <p className="text-[12.5px] text-ink-muted leading-relaxed mt-1.5">
+                      Featured in the Comus Curated Dining Guide as a price-free editorial recommendation. Purely
+                      Istanbul does not sell tickets or charge booking fees for this restaurant.
+                    </p>
+                  </div>
 
-              {/* Cancellation Policy Badge inside Booking Widget */}
-              <div className="rounded-xl bg-emerald-50/80 border border-emerald-200 px-3.5 py-2.5 flex items-start gap-2.5">
-                <CalendarCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" strokeWidth={2} />
-                <div className="text-[11.5px] leading-snug text-emerald-950">
-                  {isRestaurant ? (
-                    <>
-                      <p className="font-semibold">No upfront payment or booking fee</p>
-                      <p className="text-emerald-800/80 mt-0.5">
-                        Direct table reservation · Free cancellation anytime
-                      </p>
-                    </>
-                  ) : (
-                    <>
+                  <div className="rounded-2xl bg-sand-bg/80 border border-sand-border p-4 space-y-3 text-[13px]">
+                    {listing.cuisine && (
+                      <div>
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
+                          Cuisine &amp; Style
+                        </span>
+                        <span className="font-semibold text-ink">{listing.cuisine}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="block text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
+                        Location &amp; Address
+                      </span>
+                      <span className="font-medium text-ink">{listing.district}</span>
+                    </div>
+                    {listing.phone && (
+                      <div>
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
+                          Direct Restaurant Phone
+                        </span>
+                        <a
+                          href={`tel:${listing.phone.replace(/\s+/g, "")}`}
+                          className="inline-flex items-center gap-1.5 font-semibold text-terracotta hover:underline mt-0.5"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>{listing.phone}</span>
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {listing.website && (
+                      <a
+                        href={listing.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-ink text-white font-semibold py-3 px-4 text-[13.5px] hover:bg-terracotta transition"
+                      >
+                        <Globe className="w-4 h-4" />
+                        <span>Official Website &amp; Menu</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${details.meetingPoint.coordinates.lat},${details.meetingPoint.coordinates.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-sand-border bg-white text-ink font-semibold py-2.5 px-4 text-[13px] hover:border-terracotta hover:text-terracotta transition"
+                    >
+                      <MapPin className="w-4 h-4 text-terracotta" />
+                      <span>Open in Google Maps</span>
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-[19px]">
+                      <span className="font-semibold text-ink">
+                        {listing.pricing.basePrice.toLocaleString("en-GB")} {listing.pricing.currency}
+                      </span>{" "}
+                      <span className="text-[13.5px] text-ink-muted">/ {priceUnit}</span>
+                    </p>
+                  </div>
+
+                  {/* Cancellation Policy Badge inside Booking Widget */}
+                  <div className="rounded-xl bg-emerald-50/80 border border-emerald-200 px-3.5 py-2.5 flex items-start gap-2.5">
+                    <CalendarCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" strokeWidth={2} />
+                    <div className="text-[11.5px] leading-snug text-emerald-950">
                       <p className="font-semibold">{details.cancellationBadge}</p>
                       <p className="text-emerald-800/80 mt-0.5">
                         100% refund via Stripe ·{" "}
@@ -915,104 +986,74 @@ export default function ListingDetailPage() {
                           View policy
                         </Link>
                       </p>
-                    </>
+                    </div>
+                  </div>
+
+                  {listing.type === "stay" ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
+                        <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Check-in</span>
+                        <input
+                          type="date"
+                          value={checkIn}
+                          onChange={(e) => setCheckIn(e.target.value)}
+                          className="w-full text-[12.5px] outline-none mt-0.5"
+                        />
+                      </label>
+                      <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
+                        <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Check-out</span>
+                        <input
+                          type="date"
+                          value={checkOut}
+                          onChange={(e) => setCheckOut(e.target.value)}
+                          className="w-full text-[12.5px] outline-none mt-0.5"
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
+                      <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Preferred Date</span>
+                      <input
+                        type="date"
+                        value={checkIn}
+                        onChange={(e) => setCheckIn(e.target.value)}
+                        className="w-full text-[12.5px] outline-none mt-0.5"
+                      />
+                    </label>
                   )}
-                </div>
-              </div>
 
-              {listing.type === "stay" ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
-                    <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Check-in</span>
+                  <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
+                    <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Guests</span>
                     <input
-                      type="date"
-                      value={checkIn}
-                      onChange={(e) => setCheckIn(e.target.value)}
+                      type="number"
+                      min={1}
+                      max={listing.capacity}
+                      value={guests}
+                      onChange={(e) => setGuests(Number(e.target.value))}
                       className="w-full text-[12.5px] outline-none mt-0.5"
                     />
                   </label>
-                  <label className="border border-sand-border rounded-xl px-3.5 py-2.5">
-                    <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Check-out</span>
-                    <input
-                      type="date"
-                      value={checkOut}
-                      onChange={(e) => setCheckOut(e.target.value)}
-                      className="w-full text-[12.5px] outline-none mt-0.5"
-                    />
-                  </label>
-                </div>
-              ) : (
-                <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
-                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">
-                    {isRestaurant ? "Reservation Date" : "Preferred Date"}
-                  </span>
-                  <input
-                    type="date"
-                    value={checkIn}
-                    onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full text-[12.5px] outline-none mt-0.5"
-                  />
-                </label>
-              )}
 
-              {isRestaurant && (
-                <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
-                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Preferred Time</span>
-                  <select
-                    value={reservationTime}
-                    onChange={(e) => setReservationTime(e.target.value)}
-                    className="w-full text-[12.5px] outline-none mt-0.5 bg-transparent"
+                  <button
+                    onClick={handleReserve}
+                    disabled={!checkIn || (listing.type === "stay" && !checkOut)}
+                    className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40 cursor-pointer"
                   >
-                    <option value="12:30">12:30 (Lunch)</option>
-                    <option value="13:30">13:30 (Lunch)</option>
-                    <option value="18:00">18:00 (Early Dinner)</option>
-                    <option value="19:00">19:00 (Dinner)</option>
-                    <option value="19:30">19:30 (Dinner)</option>
-                    <option value="20:00">20:00 (Dinner)</option>
-                    <option value="20:30">20:30 (Dinner)</option>
-                    <option value="21:00">21:00 (Late Dinner)</option>
-                    <option value="21:30">21:30 (Late Dinner)</option>
-                  </select>
-                </label>
-              )}
+                    Request Reservation
+                  </button>
 
-              <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
-                <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Guests</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={listing.capacity}
-                  value={guests}
-                  onChange={(e) => setGuests(Number(e.target.value))}
-                  className="w-full text-[12.5px] outline-none mt-0.5"
-                />
-              </label>
-
-              <button
-                onClick={handleReserve}
-                disabled={!checkIn || (listing.type === "stay" && !checkOut)}
-                className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40 cursor-pointer"
-              >
-                {isRestaurant ? "Create Reservation" : "Request Reservation"}
-              </button>
-
-              {isRestaurant ? (
-                <p className="text-[12px] text-ink-muted text-center pt-2 border-t border-sand-border/70">
-                  Complimentary table reservation — no listing or booking fees apply.
-                </p>
-              ) : (
-                <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
-                  <span>Estimated Total</span>
-                  <span className="font-semibold text-ink">
-                    {total.toLocaleString("en-GB")} {listing.pricing.currency}
-                  </span>
-                </div>
+                  <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
+                    <span>Estimated Total</span>
+                    <span className="font-semibold text-ink">
+                      {total.toLocaleString("en-GB")} {listing.pricing.currency}
+                    </span>
+                  </div>
+                </>
               )}
             </div>
           </div>
         </div>
       </div>
-      <MarketplaceFooter />
     </>
   );
 }

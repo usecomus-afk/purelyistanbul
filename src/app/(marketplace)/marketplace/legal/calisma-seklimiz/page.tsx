@@ -1,5 +1,2 @@
-import { permanentRedirect } from "next/navigation";
+export { metadata, default } from "../how-we-work/page";
 
-export default function LegacyCalismaSeklimizRedirect() {
-  permanentRedirect("/marketplace/legal/how-we-work");
-}

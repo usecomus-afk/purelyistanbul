@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
-import { CORPORATE_CONFIG } from "@/lib/marketplace/corporate-config";
 
 export const metadata: Metadata = {
   title: "How We Work | Purely Istanbul",
@@ -16,7 +15,7 @@ export default function HowWeWorkPage() {
     <LegalPageShell
       eyebrow="Legal & Trust"
       title="How We Work"
-      intro={`${CORPORATE_CONFIG.ukEntityName} (${CORPORATE_CONFIG.companyRegNo}) is a hospitality technology SaaS and curated city companion created to end predatory tourist traps and bridge discerning travelers directly to Istanbul's authentic heart.`}
+      intro="Purely Istanbul is a hospitality technology platform and curated city companion created to keep travelers away from tourist traps and connect them directly to Istanbul's authentic heart."
     >
       <section>
         <h2>Curated Excellence Across 10 Active Categories</h2>

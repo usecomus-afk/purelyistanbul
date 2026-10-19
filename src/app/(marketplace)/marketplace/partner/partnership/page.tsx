@@ -5,7 +5,6 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitContactMessage } from "@/lib/marketplace/firestore";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 
 export default function PartnerPartnershipPage() {
   const { user } = useAuth();
@@ -36,74 +35,71 @@ export default function PartnerPartnershipPage() {
   }
 
   return (
-    <>
-      <div className="max-w-2xl mx-auto px-5 md:px-8 py-14 md:py-20">
-        <Link href="/" className="text-[13px] text-ink-muted hover:text-ink transition">
-          ← Back to Marketplace
-        </Link>
+    <div className="max-w-2xl mx-auto px-5 md:px-8 py-14 md:py-20">
+      <Link href="/" className="text-[13px] text-ink-muted hover:text-ink transition">
+        ← Back to Marketplace
+      </Link>
 
-        <p className="mt-8 text-[12px] font-semibold tracking-wide uppercase text-terracotta">
-          For Boutique Hotels &amp; Property Managers
+      <p className="mt-8 text-[12px] font-semibold tracking-wide uppercase text-terracotta">
+        For Boutique Hotels &amp; Property Managers
+      </p>
+      <h1 className="mt-2 font-luxury-serif text-2xl md:text-[34px] font-semibold tracking-tight text-ink">
+        Hospitality &amp; Marketplace Partnership
+      </h1>
+      <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
+        A digital hospitality and guest concierge ecosystem built for Boutique Hotels, Professional Property Managers, and local partners dedicated to Istanbul.
+      </p>
+
+      <section className="mt-10">
+        <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">
+          In-Room Digital Concierge &amp; Curated Experiences
+        </h2>
+        <p className="text-[14.5px] leading-relaxed text-ink-muted">
+          Provide your guests with a branded in-room QR operating system powered by Comus, connecting them seamlessly to housekeeping services and curated local experiences across Istanbul.
         </p>
-        <h1 className="mt-2 font-luxury-serif text-2xl md:text-[34px] font-semibold tracking-tight text-ink">
-          Hospitality &amp; Marketplace Partnership
-        </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
-          A digital hospitality and guest concierge ecosystem built for Boutique Hotels, Professional Property Managers, and local partners dedicated to Istanbul.
-        </p>
+      </section>
 
-        <section className="mt-10">
-          <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">
-            In-Room Digital Concierge &amp; Curated Experiences
-          </h2>
-          <p className="text-[14.5px] leading-relaxed text-ink-muted">
-            Provide your guests with a branded in-room QR operating system powered by Comus, connecting them seamlessly to housekeeping services and curated local experiences across Istanbul.
-          </p>
-        </section>
+      <section className="mt-8">
+        <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">Platform Capabilities</h2>
+        <ul className="space-y-2 text-[14.5px] text-ink-muted [&_li]:pl-5 [&_li]:relative [&_li]:before:content-['—'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-terracotta">
+          <li>Room-specific QR access for instant guest onboarding without downloading an app.</li>
+          <li>Automated Wi-Fi connection, housekeeping requests, and real-time room management.</li>
+          <li>Centralized management panel for guest requests and curated Istanbul experiences.</li>
+        </ul>
+      </section>
 
-        <section className="mt-8">
-          <h2 className="font-luxury-serif text-[18px] font-semibold text-ink mb-3">Platform Capabilities</h2>
-          <ul className="space-y-2 text-[14.5px] text-ink-muted [&_li]:pl-5 [&_li]:relative [&_li]:before:content-['—'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-terracotta">
-            <li>Room-specific QR access for instant guest onboarding without downloading an app.</li>
-            <li>Automated Wi-Fi connection, housekeeping requests, and real-time room management.</li>
-            <li>Centralized management panel for guest requests and curated Istanbul experiences.</li>
-          </ul>
-        </section>
-
-        <form onSubmit={handleSubmit} className="mt-10 space-y-3 max-w-md">
-          <input
-            type="text"
-            required
-            placeholder="Boutique Hotel / Property Management Brand"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
-          />
-          <input
-            type="email"
-            required
-            placeholder="Work Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
-          />
-          <input
-            type="text"
-            placeholder="Website or Property Link"
-            value={channel}
-            onChange={(e) => setChannel(e.target.value)}
-            className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
-          />
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-full bg-ink text-white font-semibold py-2.5 text-sm hover:bg-terracotta transition disabled:opacity-60"
-          >
-            {submitting ? "Submitting..." : "Apply for SaaS & Revenue Partnership"}
-          </button>
-        </form>
-      </div>
-      <MarketplaceFooter />
-    </>
+      <form onSubmit={handleSubmit} className="mt-10 space-y-3 max-w-md">
+        <input
+          type="text"
+          required
+          placeholder="Boutique Hotel / Property Management Brand"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+        />
+        <input
+          type="email"
+          required
+          placeholder="Work Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+        />
+        <input
+          type="text"
+          placeholder="Website or Property Link"
+          value={channel}
+          onChange={(e) => setChannel(e.target.value)}
+          className="w-full rounded-xl border border-sand-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+        />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full rounded-full bg-ink text-white font-semibold py-2.5 text-sm hover:bg-terracotta transition disabled:opacity-60"
+        >
+          {submitting ? "Submitting..." : "Apply for SaaS & Revenue Partnership"}
+        </button>
+      </form>
+    </div>
   );
 }

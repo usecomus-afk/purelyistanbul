@@ -30,7 +30,7 @@ export default function TermsOfServicePage() {
     <LegalPageShell
       eyebrow="Legal & Trust"
       title="Terms of Service"
-      intro={`${CORPORATE_CONFIG.ukEntityName} (${CORPORATE_CONFIG.companyRegNo}) and ${CORPORATE_CONFIG.legalEntityName} (MERSİS No: ${CORPORATE_CONFIG.mersisNo}, ${CORPORATE_CONFIG.taxOffice}, Tax ID: ${CORPORATE_CONFIG.taxId}) operate an independent hospitality technology and digital concierge marketplace platform. Purely Istanbul is a technology provider and electronic commerce intermediary, not a travel agency, tour operator, or transportation carrier.`}
+      intro={`${CORPORATE_CONFIG.legalEntityName} operates an independent hospitality technology and digital concierge marketplace platform. Purely Istanbul is a technology provider and electronic commerce intermediary, not a travel agency, tour operator, or transportation carrier.`}
     >
       <section>
         <h2>1. Platform Scope &amp; 10 Curated Categories</h2>
@@ -76,20 +76,13 @@ export default function TermsOfServicePage() {
       </section>
 
       <section>
-        <h2>4. Corporate Registration &amp; Official Contact</h2>
+        <h2>4. Official Contact &amp; Guest Care</h2>
         <ul>
           <li>
-            <strong>Commercial Title:</strong> {CORPORATE_CONFIG.legalEntityName} / {CORPORATE_CONFIG.ukEntityName}
+            <strong>Platform:</strong> {CORPORATE_CONFIG.legalEntityName}
           </li>
           <li>
-            <strong>Registration &amp; MERSİS:</strong> {CORPORATE_CONFIG.companyRegNo} · MERSİS:{" "}
-            {CORPORATE_CONFIG.mersisNo}
-          </li>
-          <li>
-            <strong>Tax Office &amp; Tax ID:</strong> {CORPORATE_CONFIG.taxOffice} · {CORPORATE_CONFIG.taxId}
-          </li>
-          <li>
-            <strong>Registered Office Address:</strong> {CORPORATE_CONFIG.registeredAddress}
+            <strong>Location:</strong> {CORPORATE_CONFIG.registeredAddress}
           </li>
           <li>
             <strong>Official Contact:</strong> {CORPORATE_CONFIG.contactEmail} · {CORPORATE_CONFIG.contactPhone}
@@ -99,3 +92,4 @@ export default function TermsOfServicePage() {
     </LegalPageShell>
   );
 }
+

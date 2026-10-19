@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarCheck, Heart, ImageOff, Star } from "lucide-react";
+import { Compass, Heart, ImageOff, Star } from "lucide-react";
 import { isRestaurantListing } from "@/lib/marketplace/seed-listings";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
@@ -62,9 +62,9 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
 
           <div className="flex items-center justify-between gap-2">
             {isRestaurant ? (
-              <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-terracotta group-hover:underline">
-                <CalendarCheck className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
-                Reserve a Table
+              <span className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-terracotta group-hover:underline">
+                <Compass className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                Comus Dining Guide
               </span>
             ) : (
               <p className="text-[13.5px] text-ink-muted">

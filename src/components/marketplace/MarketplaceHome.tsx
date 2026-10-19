@@ -28,10 +28,10 @@ import { toggleFavorite, watchUserFavoriteIds } from "@/lib/marketplace/favorite
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { CategoryShelf } from "@/components/marketplace/CategoryShelf";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
+import { Footer } from "@/components/marketplace/Footer";
 import { MARKETPLACE_CATEGORIES, isRemovedCategory, resolveCategoryParam } from "@/lib/marketplace/categories";
 import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
-import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
+import { SEED_LISTINGS, getLiveCatalogListings, isRestaurantListing } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
 import { XeniosStore } from "@/lib/store";
 import type { GroupType, MarketplaceListing } from "@/lib/marketplace/types";
@@ -554,7 +554,9 @@ export function MarketplaceHome() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="font-luxury-serif text-xl sm:text-2xl font-semibold text-ink">
-                  {categoryConfigs.find((c) => c.key === filterCategory)?.label}
+                  {filterCategory === "dining-guide"
+                    ? "Comus Curated Dining Guide"
+                    : categoryConfigs.find((c) => c.key === filterCategory)?.label}
                 </h2>
               </div>
               <button
@@ -597,7 +599,7 @@ export function MarketplaceHome() {
                     : c.subtitle
                 }
                 icon={c.icon}
-                listings={withCover.filter((l) => l.category === c.key)}
+                listings={withCover.filter((l) => l.category === c.key && !isRestaurantListing(l))}
                 favoriteIds={favoriteIds}
                 onToggleFavorite={handleToggleFavorite}
                 onTitleClick={() => {
@@ -613,6 +615,20 @@ export function MarketplaceHome() {
                 }}
               />
             ))}
+
+          <CategoryShelf
+            id="shelf-dining-guide"
+            title="Comus Curated Dining Guide"
+            subtitle="An independent, price-free informational guide to Istanbul's finest culinary landmarks, Michelin-starred tables, and historic lokantas — curated by Comus."
+            icon="Utensils"
+            listings={withCover.filter((l) => isRestaurantListing(l))}
+            favoriteIds={favoriteIds}
+            onToggleFavorite={handleToggleFavorite}
+            onTitleClick={() => {
+              setFilterCategory("dining-guide");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
         </div>
       )}
 
@@ -693,7 +709,7 @@ export function MarketplaceHome() {
         </div>
       </section>
 
-      <MarketplaceFooter />
+      <Footer />
     </>
   );
 }

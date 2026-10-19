@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { LegalPageShell } from "@/components/marketplace/LegalPageShell";
 import { CORPORATE_CONFIG } from "@/lib/marketplace/corporate-config";
-import { Phone, Mail, Clock, MapPin, HeartHandshake, Building2 } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, HeartHandshake } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Guest Care & Corporate Impressum | Purely Istanbul",
+  title: "Contact Guest Care | Purely Istanbul",
   description:
-    "24/7 WhatsApp Concierge, Guest Care support, and official corporate registration (Impressum) for Purely Istanbul.",
+    "24/7 WhatsApp Concierge and Guest Care support for Purely Istanbul.",
   alternates: {
     canonical: "https://www.purelyistanbul.com/marketplace/contact",
   },
@@ -32,7 +32,7 @@ const CHANNELS = [
   },
   {
     icon: MapPin,
-    label: "Local Operations & Registered Office",
+    label: "Local Operations",
     value: CORPORATE_CONFIG.registeredAddress,
   },
   {
@@ -73,48 +73,7 @@ export default function ContactPage() {
           </li>
         ))}
       </ul>
-
-      {/* Official Corporate Impressum & Legal Disclosure */}
-      <div className="mt-10 rounded-2xl border border-sand-border bg-white p-6 shadow-[0_2px_16px_rgba(11,25,44,0.04)]">
-        <div className="flex items-center gap-2.5 mb-3">
-          <Building2 className="w-4 h-4 text-terracotta shrink-0" strokeWidth={1.75} />
-          <h2 className="!mb-0 text-[16px] font-luxury-serif font-semibold text-ink">
-            Corporate Impressum &amp; Legal Disclosure
-          </h2>
-        </div>
-        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-[13px] mt-4">
-          <div>
-            <dt className="font-semibold text-ink">Registered Legal Entity (Commercial Title)</dt>
-            <dd className="text-ink-muted mt-0.5">
-              {CORPORATE_CONFIG.legalEntityName} ({CORPORATE_CONFIG.ukEntityName})
-            </dd>
-          </div>
-          <div>
-            <dt className="font-semibold text-ink">Registered Office Address</dt>
-            <dd className="text-ink-muted mt-0.5">{CORPORATE_CONFIG.registeredAddress}</dd>
-          </div>
-          <div>
-            <dt className="font-semibold text-ink">Tax Office &amp; Tax ID / MERSİS No</dt>
-            <dd className="text-ink-muted mt-0.5">
-              {CORPORATE_CONFIG.taxOffice} · Tax ID: {CORPORATE_CONFIG.taxId} · MERSİS: {CORPORATE_CONFIG.mersisNo}
-            </dd>
-          </div>
-          <div>
-            <dt className="font-semibold text-ink">UK Registration &amp; Regulatory Status</dt>
-            <dd className="text-ink-muted mt-0.5">
-              {CORPORATE_CONFIG.companyRegNo} · {CORPORATE_CONFIG.etbisStatusLabel}
-            </dd>
-          </div>
-          <div>
-            <dt className="font-semibold text-ink">Official Contact Email</dt>
-            <dd className="text-ink-muted mt-0.5">{CORPORATE_CONFIG.contactEmail}</dd>
-          </div>
-          <div>
-            <dt className="font-semibold text-ink">Official Concierge &amp; Support Line</dt>
-            <dd className="text-ink-muted mt-0.5">{CORPORATE_CONFIG.contactPhone}</dd>
-          </div>
-        </dl>
-      </div>
     </LegalPageShell>
   );
 }
+

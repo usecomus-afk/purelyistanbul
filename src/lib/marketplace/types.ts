@@ -101,8 +101,12 @@ export interface MarketplaceListing {
     currency: string;
     cleaningFee?: number;
   };
-  /** True for curated restaurants that only accept table reservations without a listing price. */
+  /** True for curated restaurants that belong to the price-free Comus Curated Dining Guide. */
   reservationOnly?: boolean;
+  cuisine?: string;
+  phone?: string;
+  website?: string;
+  providerLabel?: string;
   capacity: number;
   amenities: string[];
   /** Arama filtresi: hangi katılım tipleri için uygun (tek/çift/grup). */

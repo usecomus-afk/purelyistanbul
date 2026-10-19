@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 
 interface LegalPageShellProps {
   eyebrow?: string;
@@ -11,30 +10,27 @@ interface LegalPageShellProps {
 
 export function LegalPageShell({ eyebrow, title, intro, children }: LegalPageShellProps) {
   return (
-    <>
-      <div className="max-w-3xl mx-auto px-5 md:px-8 py-14 md:py-20">
-        <Link href="/" className="text-[13px] text-ink-muted hover:text-ink transition">
-          ← Back to Marketplace
-        </Link>
+    <div className="max-w-3xl mx-auto px-5 md:px-8 py-14 md:py-20">
+      <Link href="/" className="text-[13px] text-ink-muted hover:text-ink transition">
+        ← Back to Marketplace
+      </Link>
 
-        {eyebrow && (
-          <p className="mt-8 text-[12px] font-semibold tracking-wide uppercase text-terracotta">{eyebrow}</p>
-        )}
-        <h1
-          className={`font-luxury-serif text-2xl md:text-[34px] font-semibold tracking-tight text-ink ${
-            eyebrow ? "mt-2" : "mt-8"
-          }`}
-        >
-          {title}
-        </h1>
-        {intro && <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">{intro}</p>}
+      {eyebrow && (
+        <p className="mt-8 text-[12px] font-semibold tracking-wide uppercase text-terracotta">{eyebrow}</p>
+      )}
+      <h1
+        className={`font-luxury-serif text-2xl md:text-[34px] font-semibold tracking-tight text-ink ${
+          eyebrow ? "mt-2" : "mt-8"
+        }`}
+      >
+        {title}
+      </h1>
+      {intro && <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">{intro}</p>}
 
-        <div className="mt-10 space-y-10 text-[14.5px] leading-relaxed text-ink [&_h2]:font-luxury-serif [&_h2]:text-[18px] [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:mb-3 [&_p]:text-ink-muted [&_p+p]:mt-3 [&_ul]:mt-3 [&_ul]:space-y-2 [&_ul]:text-ink-muted [&_li]:pl-5 [&_li]:relative [&_li]:before:content-['—'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-terracotta [&_strong]:text-ink [&_strong]:font-semibold">
-          {children}
-        </div>
+      <div className="mt-10 space-y-10 text-[14.5px] leading-relaxed text-ink [&_h2]:font-luxury-serif [&_h2]:text-[18px] [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:mb-3 [&_p]:text-ink-muted [&_p+p]:mt-3 [&_ul]:mt-3 [&_ul]:space-y-2 [&_ul]:text-ink-muted [&_li]:pl-5 [&_li]:relative [&_li]:before:content-['—'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-terracotta [&_strong]:text-ink [&_strong]:font-semibold">
+        {children}
       </div>
-      <MarketplaceFooter />
-    </>
+    </div>
   );
 }
 

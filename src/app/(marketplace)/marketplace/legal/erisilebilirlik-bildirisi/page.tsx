@@ -1,5 +1,2 @@
-import { permanentRedirect } from "next/navigation";
+export { metadata, default } from "../accessibility/page";
 
-export default function LegacyErisilebilirlikRedirect() {
-  permanentRedirect("/marketplace/legal/accessibility");
-}

@@ -1,5 +1,2 @@
-import { permanentRedirect } from "next/navigation";
+export { metadata, default } from "../contact/page";
 
-export default function LegacyIletisimRedirect() {
-  permanentRedirect("/marketplace/contact");
-}
