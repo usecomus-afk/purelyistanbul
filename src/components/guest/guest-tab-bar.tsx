@@ -333,7 +333,7 @@ export function GuestTabBar({
 
   return (
     <nav
-      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-in-out backdrop-blur-xl border-t border-[#DFD8CA] after:content-[''] after:absolute after:left-0 after:right-0 after:top-full after:h-[50px] after:bg-[#EAE5DC] ${
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-in-out backdrop-blur-xl border-t border-[rgba(224,184,102,0.52)] after:content-[''] after:absolute after:left-0 after:right-0 after:top-full after:h-[50px] after:bg-white/25 after:backdrop-blur-xl ${
         isHidden ? 'is-hidden translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 pointer-events-auto'
       }`}
       style={{
@@ -344,9 +344,12 @@ export function GuestTabBar({
         width: '100%',
         maxWidth: '100vw',
         zIndex: 99999,
-        background: 'linear-gradient(180deg, rgba(245, 242, 236, 0.96) 0%, rgba(234, 229, 220, 0.98) 100%)',
-        borderTop: '1px solid #DFD8CA',
-        boxShadow: '0 -6px 22px rgba(32, 26, 18, 0.08)',
+        background:
+          'linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(248, 238, 218, 0.38) 100%)',
+        backdropFilter: 'blur(18px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(18px) saturate(140%)',
+        borderTop: '1px solid rgba(224, 184, 102, 0.52)',
+        boxShadow: 'inset 0 1.5px 2px rgba(255, 255, 255, 0.72), 0 -8px 26px rgba(32, 26, 18, 0.08)',
         transform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
         WebkitTransform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
         transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease'
@@ -373,9 +376,9 @@ export function GuestTabBar({
               <div
                 className={`transition-all duration-300 flex items-center justify-center relative ${
                   isComusTrigger
-                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7] via-[#F5E6C8] to-[#E2C285] border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.32),inset_0_1px_2px_rgba(255,255,255,0.95)]'
+                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7]/70 via-[#F5E6C8]/65 to-[#E2C285]/60 backdrop-blur-md border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.28),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                     : isActive
-                      ? 'w-11 h-11 rounded-full bg-gradient-to-b from-[#FDFCF9] to-[#F0EAE0] border-[1.5px] border-[#C9AE82] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.16),inset_0_1px_2px_rgba(255,255,255,1)]'
+                      ? 'w-11 h-11 rounded-full bg-white/38 backdrop-blur-md border-[1.5px] border-[rgba(224,184,102,0.68)] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                       : 'w-10 h-10 text-[#1E1E1E]'
                 }`}
               >

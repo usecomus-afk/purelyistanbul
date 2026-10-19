@@ -48,10 +48,10 @@ export function MarketplaceHeader() {
 
   return (
     <header
-      className={`sticky top-0 inset-x-0 z-40 w-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] pt-[max(0.15rem,env(safe-area-inset-top))] ${
+      className={`sticky top-0 inset-x-0 z-40 w-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] pt-[max(0.15rem,env(safe-area-inset-top))] backdrop-blur-xl ${
         scrolled
-          ? "bg-sand-bg/98 backdrop-blur-md shadow-[0_1px_0_0_rgba(11,25,44,0.08)]"
-          : "bg-sand-bg border-b border-sand-border/50"
+          ? "bg-white/45 border-b border-white/65 shadow-[0_4px_24px_rgba(11,25,44,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.8)]"
+          : "bg-white/32 border-b border-white/55 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.75)]"
       } ${
         hideBar
           ? "-translate-y-full opacity-0 pointer-events-none"

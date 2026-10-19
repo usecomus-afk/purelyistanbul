@@ -58,7 +58,7 @@ export function MarketplaceFooter() {
   }
 
   return (
-    <footer className="border-t border-sand-border mt-16 bg-sand-bg">
+    <footer className="border-t border-white/70 mt-16 bg-white/35 backdrop-blur-xl shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.8),0_-8px_30px_rgba(11,25,44,0.04)]">
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-14 grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-10">
         <div>
           <h3 className="text-[13px] font-semibold text-ink mb-4 uppercase tracking-wider">
