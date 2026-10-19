@@ -45,6 +45,21 @@ export function getExperienceCategoryKey(exp: Pick<Experience, 'category' | 'cat
   return getCategoryCode(exp.category);
 }
 
+export function isRestaurantExperience(
+  exp: Pick<Experience, 'id' | 'categoryTag' | 'cuisine'>
+): boolean {
+  if (exp.id?.startsWith('rest-')) return true;
+  if (exp.cuisine) return true;
+  const tag = (exp.categoryTag || '').toLowerCase();
+  return tag.includes('restaurant') || tag.includes('restoran');
+}
+
+export function isRestaurantListing(
+  listing: Pick<MarketplaceListing, 'id' | 'reservationOnly'>
+): boolean {
+  return Boolean(listing.reservationOnly || listing.id?.startsWith('rest-'));
+}
+
 export function experienceToMarketplaceListing(exp: Experience, index = 0): MarketplaceListing {
   const loc = getLocalizedExperience(exp, 'en');
   const isDefaultSeed = rawExperiences.some((r: any) => r.id === exp.id);
@@ -57,6 +72,7 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
 
   const fakeDate = new Date();
   fakeDate.setMinutes(fakeDate.getMinutes() - index * 60);
+  const isRestaurant = isRestaurantExperience(exp);
 
   return {
     id: exp.id,
@@ -66,10 +82,12 @@ export function experienceToMarketplaceListing(exp: Experience, index = 0): Mark
     description: loc.agentNote || loc.desc || loc.title,
     category: getExperienceCategoryKey(exp),
     district: (loc.location || 'Istanbul').replace(/İstanbul Genel/gi, 'Istanbul-Wide'),
+    coords: exp.coords,
     pricing: {
-      basePrice: Number(exp.price) || 0,
+      basePrice: isRestaurant ? 0 : Number(exp.price) || 0,
       currency: (exp.currency === '₺' ? 'TRY' : exp.currency === '€' ? 'EUR' : exp.currency === '$' ? 'USD' : exp.currency || 'EUR') as any
     },
+    reservationOnly: isRestaurant,
     capacity: exp.capacity || exp.availableSlots || 10,
     amenities: loc.specialties || exp.features || [],
     images: [{ url: coverImageUrl, path: coverImageUrl }],

@@ -101,6 +101,8 @@ export interface MarketplaceListing {
     currency: string;
     cleaningFee?: number;
   };
+  /** True for curated restaurants that only accept table reservations without a listing price. */
+  reservationOnly?: boolean;
   capacity: number;
   amenities: string[];
   /** Arama filtresi: hangi katılım tipleri için uygun (tek/çift/grup). */

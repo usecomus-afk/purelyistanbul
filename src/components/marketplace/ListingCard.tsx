@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ImageOff, Star } from "lucide-react";
+import { CalendarCheck, Heart, ImageOff, Star } from "lucide-react";
+import { isRestaurantListing } from "@/lib/marketplace/seed-listings";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
 
 interface ListingCardProps {
@@ -12,6 +13,7 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCardProps) {
+  const isRestaurant = isRestaurantListing(listing);
   const priceUnit = listing.type === "stay" ? "night" : "guest";
   const rating = listing.rating?.score ?? 4.9;
   const reviewCount = listing.rating?.reviewCount ?? 0;
@@ -59,13 +61,20 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
           </p>
 
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[13.5px] text-ink-muted">
-              <span className="font-semibold text-ink">
-                {currencySymbol}
-                {listing.pricing.basePrice.toLocaleString("en-GB")}
-              </span>{" "}
-              / {priceUnit}
-            </p>
+            {isRestaurant ? (
+              <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-terracotta group-hover:underline">
+                <CalendarCheck className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                Reserve a Table
+              </span>
+            ) : (
+              <p className="text-[13.5px] text-ink-muted">
+                <span className="font-semibold text-ink">
+                  {currencySymbol}
+                  {listing.pricing.basePrice.toLocaleString("en-GB")}
+                </span>{" "}
+                / {priceUnit}
+              </p>
+            )}
 
             {reviewCount > 0 && (
               <div className="flex items-center gap-1 text-ink">

@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { watchListing, bumpListingStat } from "@/lib/marketplace/listings";
+import { isRestaurantListing } from "@/lib/marketplace/seed-listings";
 import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
 import type { MarketplaceListing } from "@/lib/marketplace/types";
@@ -46,6 +47,54 @@ interface StructuredExperienceDetails {
 function buildExperienceDetails(listing: MarketplaceListing): StructuredExperienceDetails {
   const cat = listing.category || "cat-1";
   const baseAmenities = listing.amenities && listing.amenities.length > 0 ? listing.amenities : [];
+
+  if (isRestaurantListing(listing)) {
+    return {
+      cancellationBadge: "Complimentary Table Reservation · Free modification or cancellation",
+      durationLabel: "1.5 – 3 Hours (Dining)",
+      itinerary: [
+        {
+          time: "Step 1",
+          title: "Table Reservation Request",
+          detail:
+            "Select your preferred dining date, seating time, and guest count. Our concierge confirms your table directly with the restaurant.",
+        },
+        {
+          time: "Step 2",
+          title: "Priority Host Desk Welcome",
+          detail:
+            "Arrive at the restaurant and present your reservation name at the host desk for priority table seating.",
+        },
+        {
+          time: "Step 3",
+          title: "Authentic Dining Experience",
+          detail:
+            "Enjoy the restaurant's menu and signature dishes at official local menu prices with zero reservation or booking fees.",
+        },
+      ],
+      included: Array.from(
+        new Set([
+          ...baseAmenities,
+          "Complimentary priority table reservation",
+          "Zero reservation or booking fees",
+          "24/7 WhatsApp Concierge assistance for seating or dietary notes",
+        ])
+      ),
+      excluded: [
+        "Food and beverages ordered at the restaurant (settled directly at the venue)",
+        "Private hotel-to-restaurant transfer (available upon request)",
+        "Discretionary service gratuities",
+      ],
+      meetingPoint: {
+        locationName: `${listing.title} — ${listing.district}`,
+        meetingTimeNote: "Please arrive on time for your reserved seating window (tables are held for 15 minutes).",
+        pickupDetails:
+          "Your confirmed table reservation details and direct Google Maps pin are shared upon reservation submission.",
+        coordinates: listing.coords ?? { lat: 41.0151, lng: 28.9795 },
+        mapQuery: `${encodeURIComponent(listing.title)}+${encodeURIComponent(listing.district || "Istanbul")}`,
+      },
+    };
+  }
 
   if (cat === "cat-1") {
     return {
@@ -427,7 +476,8 @@ export default function ListingDetailPage() {
   const [listing, setListing] = useState<MarketplaceListing | null | undefined>(undefined);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(1);
+  const [reservationTime, setReservationTime] = useState("19:30");
+  const [guests, setGuests] = useState(2);
   const [activeTab, setActiveTab] = useState<"itinerary" | "inclusions" | "meeting">("itinerary");
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     itinerary: true,
@@ -467,6 +517,7 @@ export default function ListingDetailPage() {
     );
   }
 
+  const isRestaurant = isRestaurantListing(listing);
   const gallery = listing.images.length > 0 ? listing.images : [];
   const priceUnit = listing.type === "stay" ? "night" : "guest";
   const nights =
@@ -483,6 +534,7 @@ export default function ListingDetailPage() {
       checkIn,
       checkOut,
       guests: String(guests),
+      ...(isRestaurant ? { time: reservationTime } : {}),
     });
     router.push(`/marketplace/listing/${listing!.id}/book?${params.toString()}`);
   }
@@ -560,7 +612,11 @@ export default function ListingDetailPage() {
               <Users className="w-4 h-4 text-terracotta" strokeWidth={1.75} />
               <span>
                 Up to {listing.capacity} guests ·{" "}
-                {listing.type === "stay" ? "Boutique Stay" : "Verified Local Experience"}
+                {isRestaurant
+                  ? "Curated Istanbul Restaurant"
+                  : listing.type === "stay"
+                    ? "Boutique Stay"
+                    : "Verified Local Experience"}
                 {listing.category
                   ? ` · ${categoryConfigs.find((c) => c.key === listing.category)?.label ?? listing.category}`
                   : ""}
@@ -568,7 +624,9 @@ export default function ListingDetailPage() {
             </div>
 
             <div>
-              <h2 className="font-luxury-serif text-[19px] font-semibold text-ink mb-3">About This Experience</h2>
+              <h2 className="font-luxury-serif text-[19px] font-semibold text-ink mb-3">
+                {isRestaurant ? "About This Restaurant" : "About This Experience"}
+              </h2>
               <p className="text-[14.5px] text-ink-muted leading-relaxed whitespace-pre-line">
                 {listing.description || "Verified local experience curated by Purely Istanbul."}
               </p>
@@ -585,7 +643,7 @@ export default function ListingDetailPage() {
                     : "bg-white border border-sand-border text-ink-muted hover:text-ink"
                 }`}
               >
-                Full Itinerary
+                {isRestaurant ? "Reservation Steps" : "Full Itinerary"}
               </button>
               <button
                 type="button"
@@ -607,7 +665,7 @@ export default function ListingDetailPage() {
                     : "bg-white border border-sand-border text-ink-muted hover:text-ink"
                 }`}
               >
-                Departure &amp; Meeting Point
+                {isRestaurant ? "Restaurant Location" : "Departure & Meeting Point"}
               </button>
             </div>
 
@@ -624,9 +682,11 @@ export default function ListingDetailPage() {
               >
                 <div>
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-terracotta block">
-                    Chronological Schedule
+                    {isRestaurant ? "How It Works" : "Chronological Schedule"}
                   </span>
-                  <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">Full Itinerary</h2>
+                  <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">
+                    {isRestaurant ? "Reservation & Dining Flow" : "Full Itinerary"}
+                  </h2>
                 </div>
                 <ChevronDown
                   className={`w-5 h-5 text-ink-muted transition-transform ${
@@ -666,7 +726,7 @@ export default function ListingDetailPage() {
               >
                 <div>
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-terracotta block">
-                    Transparent Package Breakdown
+                    {isRestaurant ? "Specialties & Reservation Benefits" : "Transparent Package Breakdown"}
                   </span>
                   <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">
                     What&apos;s Included &amp; Excluded
@@ -730,7 +790,7 @@ export default function ListingDetailPage() {
                     Logistics &amp; GPS Coordinates
                   </span>
                   <h2 className="font-luxury-serif text-[19px] font-semibold text-ink">
-                    Departure &amp; Meeting Point
+                    {isRestaurant ? "Restaurant Address & Map" : "Departure & Meeting Point"}
                   </h2>
                 </div>
                 <ChevronDown
@@ -745,7 +805,7 @@ export default function ListingDetailPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13.5px]">
                     <div className="rounded-xl bg-sand-bg/70 border border-sand-border p-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-terracotta mb-1 flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5" /> Designated Meeting Point
+                        <MapPin className="w-3.5 h-3.5" /> {isRestaurant ? "Restaurant Address" : "Designated Meeting Point"}
                       </p>
                       <p className="font-semibold text-ink">{details.meetingPoint.locationName}</p>
                       <p className="text-xs text-ink-muted mt-1 font-mono">
@@ -756,7 +816,7 @@ export default function ListingDetailPage() {
 
                     <div className="rounded-xl bg-sand-bg/70 border border-sand-border p-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-terracotta mb-1 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" /> Check-In &amp; Arrival Window
+                        <Clock className="w-3.5 h-3.5" /> {isRestaurant ? "Seating Policy" : "Check-In & Arrival Window"}
                       </p>
                       <p className="font-semibold text-ink">{details.meetingPoint.meetingTimeNote}</p>
                       <p className="text-xs text-ink-muted mt-1">{details.meetingPoint.pickupDetails}</p>
@@ -777,7 +837,7 @@ export default function ListingDetailPage() {
                   <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
                     <span className="text-xs text-ink-muted flex items-center gap-1.5">
                       <Navigation className="w-3.5 h-3.5 text-terracotta" />
-                      Exact Google Maps pin and host WhatsApp contact are included in your booking voucher.
+                      Exact Google Maps pin and host WhatsApp contact are included in your reservation confirmation.
                     </span>
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${details.meetingPoint.coordinates.lat},${details.meetingPoint.coordinates.lng}`}
@@ -815,26 +875,48 @@ export default function ListingDetailPage() {
 
           <div className="lg:self-start lg:sticky lg:top-28">
             <div className="rounded-3xl border border-sand-border bg-white shadow-[0_4px_24px_rgba(11,25,44,0.07)] p-6 space-y-5">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[19px]">
-                  <span className="font-semibold text-ink">
-                    {listing.pricing.basePrice.toLocaleString("en-GB")} {listing.pricing.currency}
-                  </span>{" "}
-                  <span className="text-[13.5px] text-ink-muted">/ {priceUnit}</span>
-                </p>
-              </div>
+              {isRestaurant ? (
+                <div>
+                  <span className="inline-block text-[11px] font-semibold uppercase tracking-widest text-terracotta mb-0.5">
+                    Complimentary Concierge Booking
+                  </span>
+                  <p className="font-luxury-serif text-[21px] font-semibold text-ink">
+                    Table Reservation
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-[19px]">
+                    <span className="font-semibold text-ink">
+                      {listing.pricing.basePrice.toLocaleString("en-GB")} {listing.pricing.currency}
+                    </span>{" "}
+                    <span className="text-[13.5px] text-ink-muted">/ {priceUnit}</span>
+                  </p>
+                </div>
+              )}
 
               {/* Cancellation Policy Badge inside Booking Widget */}
               <div className="rounded-xl bg-emerald-50/80 border border-emerald-200 px-3.5 py-2.5 flex items-start gap-2.5">
                 <CalendarCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" strokeWidth={2} />
                 <div className="text-[11.5px] leading-snug text-emerald-950">
-                  <p className="font-semibold">{details.cancellationBadge}</p>
-                  <p className="text-emerald-800/80 mt-0.5">
-                    100% refund via Stripe ·{" "}
-                    <Link href="/marketplace/legal/cancellation-refund" className="underline font-medium">
-                      View policy
-                    </Link>
-                  </p>
+                  {isRestaurant ? (
+                    <>
+                      <p className="font-semibold">No upfront payment or booking fee</p>
+                      <p className="text-emerald-800/80 mt-0.5">
+                        Direct table reservation · Free cancellation anytime
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-semibold">{details.cancellationBadge}</p>
+                      <p className="text-emerald-800/80 mt-0.5">
+                        100% refund via Stripe ·{" "}
+                        <Link href="/marketplace/legal/cancellation-refund" className="underline font-medium">
+                          View policy
+                        </Link>
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -861,13 +943,36 @@ export default function ListingDetailPage() {
                 </div>
               ) : (
                 <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
-                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Preferred Date</span>
+                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">
+                    {isRestaurant ? "Reservation Date" : "Preferred Date"}
+                  </span>
                   <input
                     type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
                     className="w-full text-[12.5px] outline-none mt-0.5"
                   />
+                </label>
+              )}
+
+              {isRestaurant && (
+                <label className="block border border-sand-border rounded-xl px-3.5 py-2.5">
+                  <span className="block text-[10px] tracking-wide uppercase text-ink-muted">Preferred Time</span>
+                  <select
+                    value={reservationTime}
+                    onChange={(e) => setReservationTime(e.target.value)}
+                    className="w-full text-[12.5px] outline-none mt-0.5 bg-transparent"
+                  >
+                    <option value="12:30">12:30 (Lunch)</option>
+                    <option value="13:30">13:30 (Lunch)</option>
+                    <option value="18:00">18:00 (Early Dinner)</option>
+                    <option value="19:00">19:00 (Dinner)</option>
+                    <option value="19:30">19:30 (Dinner)</option>
+                    <option value="20:00">20:00 (Dinner)</option>
+                    <option value="20:30">20:30 (Dinner)</option>
+                    <option value="21:00">21:00 (Late Dinner)</option>
+                    <option value="21:30">21:30 (Late Dinner)</option>
+                  </select>
                 </label>
               )}
 
@@ -886,17 +991,23 @@ export default function ListingDetailPage() {
               <button
                 onClick={handleReserve}
                 disabled={!checkIn || (listing.type === "stay" && !checkOut)}
-                className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40"
+                className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40 cursor-pointer"
               >
-                Request Reservation
+                {isRestaurant ? "Create Reservation" : "Request Reservation"}
               </button>
 
-              <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
-                <span>Estimated Total</span>
-                <span className="font-semibold text-ink">
-                  {total.toLocaleString("en-GB")} {listing.pricing.currency}
-                </span>
-              </div>
+              {isRestaurant ? (
+                <p className="text-[12px] text-ink-muted text-center pt-2 border-t border-sand-border/70">
+                  Complimentary table reservation — no listing or booking fees apply.
+                </p>
+              ) : (
+                <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
+                  <span>Estimated Total</span>
+                  <span className="font-semibold text-ink">
+                    {total.toLocaleString("en-GB")} {listing.pricing.currency}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
