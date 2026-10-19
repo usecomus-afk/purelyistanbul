@@ -4,8 +4,8 @@ import { Language } from '@/lib/types';
 import { useState } from 'react';
 
 const langs: { code: Language; flag: string; label: string }[] = [
-  { code: 'tr', flag: '🇹🇷', label: 'TR' },
   { code: 'en', flag: '🇬🇧', label: 'EN' },
+  { code: 'tr', flag: '🇹🇷', label: 'TR' },
   { code: 'ar', flag: '🇸🇦', label: 'AR' },
   { code: 'ru', flag: '🇷🇺', label: 'RU' },
   { code: 'de', flag: '🇩🇪', label: 'DE' },
