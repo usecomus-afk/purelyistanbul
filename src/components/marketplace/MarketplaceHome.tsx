@@ -270,43 +270,43 @@ export function MarketplaceHome() {
   return (
     <>
       {/* Hero — Map & Skyline */}
-      <section className="relative w-full bg-sand-bg flex flex-col justify-end pt-6 sm:pt-8">
-        <div className="absolute inset-0 z-0 overflow-hidden">
+      <section className="relative w-full bg-sand-bg flex flex-col items-center justify-center pt-5 pb-2 md:pt-7 md:pb-3 lg:pt-8 lg:pb-4">
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <Image
             src="/images/marketplace-hero.webp"
             alt="Purely Istanbul Map"
             fill
             preload={true}
             sizes="100vw"
-            className="object-cover opacity-25 mix-blend-multiply"
+            className="object-cover opacity-20 md:opacity-25 mix-blend-multiply"
             style={{ objectPosition: "50% 0%" }}
           />
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-sand-bg via-sand-bg/80 to-transparent" />
-          <div className="absolute left-1/2 bottom-[5%] -translate-x-1/2 w-[90%] max-w-[800px] h-[50%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
-          <div className="absolute left-1/2 bottom-[10%] -translate-x-1/2 w-[80%] max-w-[600px] h-[40%] bg-sand-bg rounded-[100%] blur-2xl opacity-100" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-sand-bg via-sand-bg/95 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-12 bg-sand-bg" />
+          <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-sand-bg/75 to-transparent" />
+          <div className="absolute left-1/2 bottom-[4%] -translate-x-1/2 w-[88%] max-w-[760px] h-[56%] bg-sand-bg rounded-[100%] blur-3xl opacity-100" />
+          <div className="absolute left-1/2 bottom-[8%] -translate-x-1/2 w-[76%] max-w-[580px] h-[46%] bg-sand-bg rounded-[100%] blur-2xl opacity-100" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-sand-bg via-sand-bg/90 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-6 bg-sand-bg" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[380px] mx-auto px-6 flex justify-center pointer-events-none pt-2 sm:pt-4 pb-2">
+        <div className="relative z-10 w-52 max-w-[220px] sm:w-64 sm:max-w-[270px] md:w-80 md:max-w-[340px] lg:w-full lg:max-w-[440px] xl:max-w-[460px] mx-auto flex flex-col items-center justify-center pointer-events-none">
           <Image
             src="/images/skyline-drawing-transparent.png"
-            alt="Purely Istanbul — Nothing but Istanbul"
-            width={600}
-            height={320}
+            alt="Purely Istanbul — nothing but İstanbul."
+            width={640}
+            height={360}
             preload={true}
-            className="w-full h-auto object-contain brightness-0 opacity-100 drop-shadow-2xl"
+            className="w-full h-auto object-contain brightness-0 opacity-100 drop-shadow-sm"
           />
         </div>
       </section>
 
       {/* Category Filter Bar */}
-      <div className="relative z-20 mt-1 sm:mt-2">
+      <div className="relative z-20 mt-2 md:mt-3 lg:mt-4">
         <CategoryFilterBar value={category} onChange={setCategory} categories={visibleCategories} />
       </div>
 
       {/* Search Bar */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-5 md:px-8 pt-7 pb-4 text-center">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-5 md:px-8 pt-5 pb-3 text-center">
         <div className="flex items-center justify-between gap-3 w-full mx-auto rounded-full border border-sand-border bg-white shadow-[0_4px_24px_rgba(11,25,44,0.04)] p-1.5 pl-5">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <Search className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />

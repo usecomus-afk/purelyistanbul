@@ -30,7 +30,7 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
   }
 
   return (
-    <div className="sticky top-[84px] z-30 w-full bg-sand-bg/92 backdrop-blur-md border-b border-sand-border/60 py-3.5">
+    <div className="sticky top-[72px] z-30 w-full bg-sand-bg/92 backdrop-blur-md border-b border-sand-border/60 py-2.5 sm:py-3">
       <div className="w-full max-w-6xl mx-auto px-3 sm:px-6">
         <div
           className="flex items-stretch gap-2.5 sm:gap-2.5 overflow-x-auto pt-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:justify-between"

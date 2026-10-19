@@ -44,7 +44,7 @@ export default function RootPage() {
     <AuthProvider>
       <div className={`min-h-screen bg-sand-bg text-ink ${marketplaceFont.className}`}>
         <MarketplaceHeader />
-        <div className="pt-[80px]">
+        <div>
           <MarketplaceHome />
         </div>
       </div>
