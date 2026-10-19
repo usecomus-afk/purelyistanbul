@@ -38,7 +38,7 @@ export function LuxuryCategoryIcon({
             height="23"
             rx="3.5"
             transform="rotate(-8 16 16)"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.25"
           />
@@ -56,8 +56,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Top Highlight */}
           <path
             d="M15.5 24.4H48.5"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF6D6"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -126,11 +126,11 @@ export function LuxuryCategoryIcon({
             width="24"
             height="14"
             rx="2.5"
-            fill={`url(#${goldFillId})`}
-            stroke={`url(#${bronzeGradId})`}
+            fill={`url(#${champagneFillId})`}
+            stroke={`url(#${strokeGradId})`}
             strokeWidth="1.3"
           />
-          <circle cx="34.5" cy="43" r="2.2" fill={`url(#${pearlFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.1" />
+          <circle cx="34.5" cy="43" r="2.2" fill={`url(#${goldFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.1" />
           <line x1="39.5" y1="41.2" x2="47.5" y2="41.2" stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" strokeLinecap="round" />
           <line x1="39.5" y1="44.8" x2="45.5" y2="44.8" stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" strokeLinecap="round" />
           {/* Museum Steps Base */}
@@ -159,7 +159,7 @@ export function LuxuryCategoryIcon({
           {/* Inner Metallic Gold Shield Bevel */}
           <path
             d="M32 16.2L19 21.2V31.2C19 39.6 24.6 45.8 32 48.6C39.4 45.8 45 39.6 45 31.2V21.2L32 16.2Z"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.2"
             strokeLinejoin="round"
@@ -193,14 +193,14 @@ export function LuxuryCategoryIcon({
             cx="32"
             cy="33"
             r="13"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.2"
           />
           {/* Classic Handset Receiver Inside */}
           <path
             d="M25.5 27.5C24.5 29.5 25.5 33.5 28.5 36.5C31.5 39.5 35.5 40.5 37.5 39.5L39.5 37.5C40.2 36.8 40.2 35.8 39.5 35.1L37.2 33.5C36.5 33 35.5 33.2 34.8 33.8L33.8 34.8C32.2 34 30.8 32.6 30 31L31 30C31.6 29.3 31.8 28.3 31.3 27.6L29.7 25.3C29 24.6 28 24.6 27.3 25.3L25.5 27.5Z"
-            fill={`url(#${pearlFillId})`}
+            fill={`url(#${goldFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.25"
             strokeLinejoin="round"
@@ -293,8 +293,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Top Edge */}
           <path
             d="M19.5 15.4H40.5"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF6D6"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -303,7 +303,7 @@ export function LuxuryCategoryIcon({
             cx="30"
             cy="27.5"
             r="6.5"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.25"
           />
@@ -322,8 +322,8 @@ export function LuxuryCategoryIcon({
           />
           <path
             d="M39.8 41.5L42 43.8L46.5 39"
-            stroke="#5C3F10"
-            strokeWidth="1.35"
+            stroke={`url(#${strokeGradId})`}
+            strokeWidth="1.4"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -349,7 +349,7 @@ export function LuxuryCategoryIcon({
           {/* Cabin Roof */}
           <path
             d="M17.5 31.5L22.5 21.5H41.5L46.5 31.5H17.5Z"
-            fill={`url(#${champagneFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.4"
             strokeLinejoin="round"
@@ -358,13 +358,13 @@ export function LuxuryCategoryIcon({
           {/* Car Body */}
           <path
             d="M11 36C11 33.5 13 31.5 15.5 31.5H48.5C51 31.5 53 33.5 53 36V42.5C53 43.6 52.1 44.5 51 44.5H13C11.9 44.5 11 43.6 11 42.5V36Z"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${champagneFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.45"
           />
           {/* Wheels */}
-          <circle cx="19.5" cy="44.5" r="4.2" fill={`url(#${champagneFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
-          <circle cx="44.5" cy="44.5" r="4.2" fill={`url(#${champagneFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
+          <circle cx="19.5" cy="44.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
+          <circle cx="44.5" cy="44.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
         </g>
       );
     }
@@ -413,8 +413,8 @@ export function LuxuryCategoryIcon({
           {/* Dome Specular Highlight */}
           <path
             d="M22.8 30.2C23.8 25.4 26.8 22 30.5 21.2"
-            stroke="#FFFDF6"
-            strokeOpacity="0.94"
+            stroke="#FFF8E2"
+            strokeOpacity="0.92"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -432,8 +432,8 @@ export function LuxuryCategoryIcon({
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.25"
           />
-          <circle cx="22.5" cy="40.5" r="1.8" fill={`url(#${pearlFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" />
-          <circle cx="41.5" cy="40.5" r="1.8" fill={`url(#${pearlFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" />
+          <circle cx="22.5" cy="40.5" r="1.8" fill={`url(#${goldFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" />
+          <circle cx="41.5" cy="40.5" r="1.8" fill={`url(#${goldFillId})`} stroke={`url(#${bronzeGradId})`} strokeWidth="1.15" />
           {/* Plinth Base Line */}
           <line x1="9.5" y1="49.2" x2="54.5" y2="49.2" stroke={`url(#${strokeGradId})`} strokeWidth="1.45" strokeLinecap="round" />
         </g>
@@ -447,7 +447,7 @@ export function LuxuryCategoryIcon({
           {/* Wine Goblet Bowl */}
           <path
             d="M44.5 16.5C44.5 22.5 41 25.5 41 30.5C41 34.4 43.8 37 47.2 37C50.6 37 53.4 34.4 53.4 30.5C53.4 25.5 49.9 22.5 49.9 16.5H44.5Z"
-            fill={`url(#${champagneFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.35"
             strokeLinejoin="round"
@@ -477,8 +477,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Highlight Arc */}
           <path
             d="M16.8 39C18 34.8 21.2 31.8 25.2 31"
-            stroke="#FFFDF6"
-            strokeOpacity="0.94"
+            stroke="#FFF8E2"
+            strokeOpacity="0.88"
             strokeWidth="1.2"
             strokeLinecap="round"
           />
@@ -517,7 +517,7 @@ export function LuxuryCategoryIcon({
             strokeLinejoin="round"
           />
           {/* Head & Torso */}
-          <circle cx="32" cy="23.2" r="2.5" fill={`url(#${champagneFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.3" />
+          <circle cx="32" cy="23.2" r="2.5" fill={`url(#${pearlFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.3" />
           {/* Raised Right Arm & Lowered Left Arm */}
           <path
             d="M17.5 21.5L26.5 27.5H37.5L46.5 24.5"
@@ -537,8 +537,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Skirt Highlight */}
           <path
             d="M28.2 31.2L17.5 46.2"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -568,7 +568,7 @@ export function LuxuryCategoryIcon({
           {/* Rear Boutique Gift Bag */}
           <path
             d="M28.5 22.5H49.5L51.5 47.5C51.6 48.9 50.5 50 49.1 50H30.5"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.35"
             strokeLinejoin="round"
@@ -590,8 +590,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Top Edge */}
           <path
             d="M15.8 28.8H35.2"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -651,8 +651,8 @@ export function LuxuryCategoryIcon({
           {/* Hull Specular Line */}
           <path
             d="M13.5 34.6H51"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.88"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -688,14 +688,14 @@ export function LuxuryCategoryIcon({
           />
           <path
             d="M32 27.5C26.5 26.5 22.5 22.5 22 18.5C26 18.8 29.5 21.5 32 27.5Z"
-            fill={`url(#${champagneFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.25"
             strokeLinejoin="round"
           />
           <path
             d="M32 27.5C37.5 26.5 41.5 22.5 42 18.5C38 18.8 34.5 21.5 32 27.5Z"
-            fill={`url(#${champagneFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.25"
             strokeLinejoin="round"
@@ -711,8 +711,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Top Rim */}
           <path
             d="M17.2 34.6H46.8"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.88"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -756,8 +756,8 @@ export function LuxuryCategoryIcon({
           {/* Specular Top Highlight */}
           <path
             d="M16 25.8H48"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
@@ -783,12 +783,12 @@ export function LuxuryCategoryIcon({
             cx="32"
             cy="36.5"
             r="5.2"
-            fill={`url(#${pearlFillId})`}
+            fill={`url(#${champagneFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.25"
           />
           {/* Flash & Sparkle Star */}
-          <circle cx="45.5" cy="28.5" r="1.3" fill="#9E742B" />
+          <circle cx="45.5" cy="28.5" r="1.3" fill="#F5D98E" />
           <path
             d="M49 12C49 14.5 49.8 15.3 52.3 15.3C49.8 15.3 49 16.1 49 18.6C49 16.1 48.2 15.3 45.7 15.3C48.2 15.3 49 14.5 49 12Z"
             fill={`url(#${goldFillId})`}
@@ -815,7 +815,7 @@ export function LuxuryCategoryIcon({
           {/* Executive Sedan Roof & Windows */}
           <path
             d="M17.5 34.5L22.5 25.5H41.5L46.5 34.5H17.5Z"
-            fill={`url(#${champagneFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${strokeGradId})`}
             strokeWidth="1.35"
             strokeLinejoin="round"
@@ -831,16 +831,16 @@ export function LuxuryCategoryIcon({
           {/* Specular Chassis Highlight */}
           <path
             d="M14 36.6H50"
-            stroke="#FFFDF6"
-            strokeOpacity="0.92"
+            stroke="#FFF8E2"
+            strokeOpacity="0.85"
             strokeWidth="1.15"
             strokeLinecap="round"
           />
           {/* Front & Rear 3D Wheels */}
           <circle cx="19.5" cy="46.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
-          <circle cx="19.5" cy="46.5" r="1.4" fill="#7A5618" />
+          <circle cx="19.5" cy="46.5" r="1.4" fill="#141C2B" />
           <circle cx="44.5" cy="46.5" r="4.2" fill={`url(#${goldFillId})`} stroke={`url(#${strokeGradId})`} strokeWidth="1.4" />
-          <circle cx="44.5" cy="46.5" r="1.4" fill="#7A5618" />
+          <circle cx="44.5" cy="46.5" r="1.4" fill="#141C2B" />
         </g>
       );
     }
@@ -880,14 +880,14 @@ export function LuxuryCategoryIcon({
             cx="32.5"
             cy="34"
             r="8"
-            fill={`url(#${goldFillId})`}
+            fill={`url(#${pearlFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.2"
           />
           {/* Culinary Star Emblem in Center */}
           <path
             d="M32.5 29.5C32.5 32.2 33.3 33 36 33C33.3 33 32.5 33.8 32.5 36.5C32.5 33.8 31.7 33 29 33C31.7 33 32.5 32.2 32.5 29.5Z"
-            fill={`url(#${pearlFillId})`}
+            fill={`url(#${goldFillId})`}
             stroke={`url(#${bronzeGradId})`}
             strokeWidth="1.1"
           />
@@ -946,60 +946,117 @@ export function LuxuryCategoryIcon({
       aria-hidden="true"
     >
       <defs>
-        {/* Fine Antique Gold Contour Stroke */}
-        <linearGradient id={strokeGradId} x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
+        {/* Luminous 3D Crowned Champagne-to-Amber Gold Primary Contour Stroke */}
+        <linearGradient id={strokeGradId} x1="8" y1="6" x2="54" y2="56" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#7A571D" />
-          <stop offset="28%" stopColor="#AD802E" />
-          <stop offset="52%" stopColor="#CFA346" />
-          <stop offset="76%" stopColor="#936A21" />
+          <stop offset="25%" stopColor="#AD802E" />
+          <stop offset="52%" stopColor="#D6A848" />
+          <stop offset="78%" stopColor="#936A21" />
           <stop offset="100%" stopColor="#5C3F10" />
         </linearGradient>
 
-        {/* Delicate Antique Gold Filigree & Interior Engraving Stroke */}
-        <linearGradient id={bronzeGradId} x1="14" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+        {/* Warm 3D Embossed Golden-Amber Interior Filigree Stroke */}
+        <linearGradient id={bronzeGradId} x1="12" y1="8" x2="52" y2="54" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#8F6724" />
-          <stop offset="50%" stopColor="#C2943B" />
+          <stop offset="50%" stopColor="#C8983E" />
           <stop offset="100%" stopColor="#6B4A15" />
         </linearGradient>
 
-        {/* 3D Raised Antique Gold Leaf Surface Fill */}
-        <linearGradient id={goldFillId} x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFDF6" />
-          <stop offset="22%" stopColor="#F7E29F" />
-          <stop offset="55%" stopColor="#DFB456" />
-          <stop offset="82%" stopColor="#BA892C" />
-          <stop offset="100%" stopColor="#8E6319" />
+        {/* 3D Convex Domed Bullion Gold Accent Fill */}
+        <linearGradient id={goldFillId} x1="10" y1="8" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFDF6" stopOpacity="0.98" />
+          <stop offset="22%" stopColor="#F7E29F" stopOpacity="0.95" />
+          <stop offset="55%" stopColor="#DFB456" stopOpacity="0.92" />
+          <stop offset="82%" stopColor="#BA892C" stopOpacity="0.90" />
+          <stop offset="100%" stopColor="#8E6319" stopOpacity="0.92" />
         </linearGradient>
 
-        {/* Soft 3D Satin Champagne-Antique Gold Body Fill */}
-        <linearGradient id={champagneFillId} x1="12" y1="14" x2="50" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFEFA" />
-          <stop offset="35%" stopColor="#F9EBC8" />
-          <stop offset="72%" stopColor="#E5C274" />
-          <stop offset="100%" stopColor="#C2943B" />
+        {/* 3D Convex Satin Champagne-Gold Body Fill */}
+        <linearGradient id={champagneFillId} x1="12" y1="10" x2="50" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFEFA" stopOpacity="0.95" />
+          <stop offset="35%" stopColor="#F9EBC8" stopOpacity="0.90" />
+          <stop offset="72%" stopColor="#E5C274" stopOpacity="0.88" />
+          <stop offset="100%" stopColor="#C2943B" stopOpacity="0.90" />
         </linearGradient>
 
-        {/* Warm Pearl-Gold Inner Relief Surface Fill */}
-        <linearGradient id={pearlFillId} x1="16" y1="14" x2="48" y2="50" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="55%" stopColor="#FDF6E4" />
-          <stop offset="100%" stopColor="#EDD69F" />
+        {/* 3D Convex Warm Pearl-Gold Inner Relief Surface Fill */}
+        <linearGradient id={pearlFillId} x1="14" y1="12" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.96" />
+          <stop offset="55%" stopColor="#FDF6E4" stopOpacity="0.90" />
+          <stop offset="100%" stopColor="#EDD69F" stopOpacity="0.88" />
         </linearGradient>
 
-        {/* Sculpted 3D Forward-Embossed ("3D Öne Doğru Kabartılmış") Antique Gold Bas-Relief Filter */}
-        <filter id={shadowFilterId} x="-28%" y="-28%" width="156%" height="162%" filterUnits="userSpaceOnUse">
-          {/* 1. Crisp Top-Left Specular Gold Catchlight */}
-          <feDropShadow dx="-0.65" dy="-0.85" stdDeviation="0.2" floodColor="#FFFDF7" floodOpacity="0.96" />
-          {/* 2. Solid 3D Antique Gold Extrusion Wall (Forward Relief Step 1) */}
-          <feDropShadow dx="0.6" dy="0.95" stdDeviation="0.15" floodColor="#9A6E23" floodOpacity="0.88" />
-          {/* 3. Deep Burnished Antique Gold Bevel (Forward Relief Step 2) */}
-          <feDropShadow dx="1.25" dy="1.95" stdDeviation="0.32" floodColor="#5E400E" floodOpacity="0.72" />
-          {/* 4. Soft Forward-Floating Ambient Elevation Shadow */}
-          <feDropShadow dx="0" dy="4.2" stdDeviation="2.3" floodColor="#3A2607" floodOpacity="0.34" />
+        {/* 3D Sculpted Pillow-Relief, Physical Extrusion Bevel & Foreground Elevation Filter */}
+        <filter id={shadowFilterId} x="-35%" y="-35%" width="170%" height="180%" filterUnits="userSpaceOnUse">
+          {/* 1. 3D Convex Pillow Heightmap & Top-Left Specular Dome Sheen */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.35" result="domeBlur" />
+          <feSpecularLighting
+            in="domeBlur"
+            surfaceScale="3.8"
+            specularConstant="1.15"
+            specularExponent="22"
+            lightingColor="#FFF8E2"
+            result="domeSpecular"
+          >
+            <fePointLight x="16" y="8" z="38" />
+          </feSpecularLighting>
+          <feComposite in="domeSpecular" in2="SourceAlpha" operator="in" result="clippedSpecular" />
+          <feComposite
+            in="SourceGraphic"
+            in2="clippedSpecular"
+            operator="arithmetic"
+            k1="0"
+            k2="1"
+            k3="0.55"
+            k4="0"
+            result="convexSurface"
+          />
+
+          {/* 2. Top-Left Razor Specular Rim Catchlight (Üst Kabartma Işık Kırılması) */}
+          <feOffset in="SourceAlpha" dx="-0.5" dy="-0.75" result="topRimOffset" />
+          <feFlood floodColor="#FFFDF5" floodOpacity="0.9" result="topRimColor" />
+          <feComposite in="topRimColor" in2="topRimOffset" operator="in" result="topRimHighlight" />
+
+          {/* 3. Multi-Step 3D Physical Extrusion Side-Walls (3B Kabartma Et Kalınlığı) */}
+          <feOffset in="SourceAlpha" dx="0.4" dy="1.05" result="extOffset1" />
+          <feFlood floodColor="#9A6B1E" floodOpacity="0.96" result="extColor1" />
+          <feComposite in="extColor1" in2="extOffset1" operator="in" result="extrudeWall1" />
+
+          <feOffset in="SourceAlpha" dx="0.75" dy="2.0" result="extOffset2" />
+          <feFlood floodColor="#5C3C0A" floodOpacity="0.96" result="extColor2" />
+          <feComposite in="extColor2" in2="extOffset2" operator="in" result="extrudeWall2" />
+
+          <feOffset in="SourceAlpha" dx="1.05" dy="2.85" result="extOffset3" />
+          <feFlood floodColor="#2B1A04" floodOpacity="0.92" result="extColor3" />
+          <feComposite in="extColor3" in2="extOffset3" operator="in" result="extrudeWall3" />
+
+          {/* 4. Warm Golden Luminescence Halo */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="haloBlur" />
+          <feOffset in="haloBlur" dx="0" dy="1.2" result="haloOffset" />
+          <feFlood floodColor="#ECB956" floodOpacity="0.32" result="haloColor" />
+          <feComposite in="haloColor" in2="haloOffset" operator="in" result="goldenHalo" />
+
+          {/* 5. Foreground Cast Shadow on Transparent Glass */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="castBlur" />
+          <feOffset in="castBlur" dx="0.5" dy="4.2" result="castOffset" />
+          <feFlood floodColor="#2E1D06" floodOpacity="0.38" result="castColor" />
+          <feComposite in="castColor" in2="castOffset" operator="in" result="deepCastShadow" />
+
+          {/* 6. Merge All 3D Relief & Elevation Layers Bottom-to-Top */}
+          <feMerge>
+            <feMergeNode in="deepCastShadow" />
+            <feMergeNode in="goldenHalo" />
+            <feMergeNode in="extrudeWall3" />
+            <feMergeNode in="extrudeWall2" />
+            <feMergeNode in="extrudeWall1" />
+            <feMergeNode in="topRimHighlight" />
+            <feMergeNode in="convexSurface" />
+          </feMerge>
         </filter>
       </defs>
 
-      <g strokeWidth="1.35">
+      {/* Main 3D Embossed & Extruded Category Icon Group */}
+      <g strokeWidth="1.45" transform="translate(0, -0.8)">
         {renderPaths()}
       </g>
     </svg>

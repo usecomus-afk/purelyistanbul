@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Hotel, Language, XeniosUser } from '@/lib/types';
@@ -65,6 +65,113 @@ export function HotelHeader({
   const [isGuestSelfKbsEnabled, setIsGuestSelfKbsEnabled] = useState<boolean>(() =>
     XeniosStore.getGuestSelfKbsEnabled(hotel?.id)
   );
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const touchStartYRef = useRef<number | null>(null);
+  const ignoreScrollUntilRef = useRef(0);
+
+  useEffect(() => {
+    setIsHeaderHidden(false);
+    lastScrollYRef.current = 0;
+    ignoreScrollUntilRef.current = Date.now() + 550;
+  }, [activeTab]);
+
+  useEffect(() => {
+    const getScrollY = (target?: EventTarget | null) => {
+      if (
+        target instanceof HTMLElement &&
+        target.id === 'guest-scroll-container' &&
+        target.scrollTop > 0
+      ) {
+        return target.scrollTop;
+      }
+      return (
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
+    };
+
+    const handleScroll = (e: Event) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      const rawY = getScrollY(e.target);
+      const maxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      const currentY = Math.max(0, Math.min(rawY, maxScroll > 0 ? maxScroll : rawY));
+      const prevY = lastScrollYRef.current;
+      const diff = currentY - prevY;
+
+      if (Math.abs(diff) < 6) return;
+
+      if (diff > 0) {
+        // Aşağı kaydırırken üstteki Header gizlenir
+        setIsHeaderHidden(true);
+      } else if (diff < 0) {
+        // Yukarı kaydırırken üstteki Header açılır
+        setIsHeaderHidden(false);
+      }
+
+      lastScrollYRef.current = currentY;
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        touchStartYRef.current = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      if (touchStartYRef.current === null || e.touches.length !== 1) return;
+      const currentTouchY = e.touches[0].clientY;
+      const deltaY = touchStartYRef.current - currentTouchY; // > 0 means scrolling down, < 0 means scrolling up
+
+      if (Math.abs(deltaY) < 14) return;
+
+      if (deltaY > 0) {
+        // Aşağı kaydırırken üstteki Header gizlenir
+        setIsHeaderHidden(true);
+        touchStartYRef.current = currentTouchY;
+      } else if (deltaY < 0) {
+        // Yukarı kaydırırken üstteki Header açılır
+        setIsHeaderHidden(false);
+        touchStartYRef.current = currentTouchY;
+      }
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      if (Math.abs(e.deltaY) < 8) return;
+      if (e.deltaY > 0) {
+        setIsHeaderHidden(true);
+      } else if (e.deltaY < 0) {
+        setIsHeaderHidden(false);
+      }
+    };
+
+    const handleTabReset = () => {
+      setIsHeaderHidden(false);
+      lastScrollYRef.current = 0;
+      ignoreScrollUntilRef.current = Date.now() + 550;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    window.addEventListener('xenios_tab_changed', handleTabReset);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, { capture: true } as EventListenerOptions);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('xenios_tab_changed', handleTabReset);
+    };
+  }, []);
 
   useEffect(() => {
     setUser(XeniosStore.getUser());
@@ -118,8 +225,17 @@ export function HotelHeader({
     toast.info("Oturum kapatıldı.");
   };
 
+  const hideBar = isHeaderHidden && !showHotelModal && !showPwaModal && !showCheckinModal && !showUserDropdown;
+
   return (
-    <header className="pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.35rem))] pb-1 px-3.5 sm:px-4 w-full max-w-full box-border relative z-40 transition-colors duration-300 bg-transparent border-b-transparent">
+    <>
+    <header
+      className={`sticky top-0 pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.35rem))] pb-1.5 px-3.5 sm:px-4 w-full max-w-full box-border z-40 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] bg-transparent border-b-transparent ${
+        hideBar
+          ? '-translate-y-full opacity-0 pointer-events-none'
+          : 'translate-y-0 opacity-100 pointer-events-auto'
+      }`}
+    >
       <div className="max-w-4xl mx-auto w-full max-w-full box-border flex flex-col items-center justify-center gap-2">
         
         {/* Centered Logo/Name — Hotel Name ONLY on Hotel page; PURELY ISTANBUL on all other pages */}
@@ -209,6 +325,7 @@ export function HotelHeader({
           )}
         </div>
       </div>
+    </header>
       {/* FULL HOTEL & WI-FI DETAILS MODAL (Tıklanınca Açılan Pencere) */}
       {showHotelModal && (
         <div 
@@ -406,6 +523,6 @@ export function HotelHeader({
           onClose={() => setShowCheckinModal(false)}
         />
       )}
-    </header>
+    </>
   );
 }

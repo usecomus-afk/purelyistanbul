@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
 import { LayoutGrid } from 'lucide-react';
@@ -157,6 +157,10 @@ export function GuestTabBar({
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
   const [shouldShow, setShouldShow] = useState(true);
   const [shouldShowDark, setShouldShowDark] = useState(true);
+  const [isFooterScrollHidden, setIsFooterScrollHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const touchStartYRef = useRef<number | null>(null);
+  const ignoreScrollUntilRef = useRef(0);
 
   useEffect(() => {
     const isCockpit = pathname?.startsWith('/cockpit') || pathname?.startsWith('/hotel-portal');
@@ -165,7 +169,11 @@ export function GuestTabBar({
 
   // Sync prop changes
   useEffect(() => {
-    if (propActiveTab) setCurrentTab(propActiveTab);
+    if (propActiveTab) {
+      setCurrentTab(propActiveTab);
+      setIsFooterScrollHidden(false);
+      ignoreScrollUntilRef.current = Date.now() + 550;
+    }
   }, [propActiveTab]);
 
   useEffect(() => {
@@ -176,10 +184,14 @@ export function GuestTabBar({
     }
   }, [propLang]);
 
-  // Global event listeners
+  // Global event & scroll direction listeners
   useEffect(() => {
     const handleTabEvent = (e: any) => {
-      if (e.detail?.tab) setCurrentTab(e.detail.tab);
+      if (e.detail?.tab) {
+        setCurrentTab(e.detail.tab);
+        setIsFooterScrollHidden(false);
+        ignoreScrollUntilRef.current = Date.now() + 550;
+      }
     };
     const handleLangEvent = (e: any) => {
       if (e.detail?.lang) setCurrentLang(e.detail.lang);
@@ -188,13 +200,97 @@ export function GuestTabBar({
       setShouldShowDark(e.detail?.isOpen ? false : true);
     };
 
+    const getScrollY = (target?: EventTarget | null) => {
+      if (
+        target instanceof HTMLElement &&
+        target.id === 'guest-scroll-container' &&
+        target.scrollTop > 0
+      ) {
+        return target.scrollTop;
+      }
+      return (
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
+    };
+
+    const handleScroll = (e: Event) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      const rawY = getScrollY(e.target);
+      const maxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      const currentY = Math.max(0, Math.min(rawY, maxScroll > 0 ? maxScroll : rawY));
+      const prevY = lastScrollYRef.current;
+      const diff = currentY - prevY;
+
+      if (Math.abs(diff) < 6) return;
+
+      if (diff > 0) {
+        // Aşağı kaydırırken alttaki Footer açık kalır / açılır
+        setIsFooterScrollHidden(false);
+      } else if (diff < 0) {
+        // Yukarı kaydırırken alttaki Footer gizlenir
+        setIsFooterScrollHidden(true);
+      }
+
+      lastScrollYRef.current = currentY;
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        touchStartYRef.current = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      if (touchStartYRef.current === null || e.touches.length !== 1) return;
+      const currentTouchY = e.touches[0].clientY;
+      const deltaY = touchStartYRef.current - currentTouchY; // > 0 means scrolling down, < 0 means scrolling up
+
+      if (Math.abs(deltaY) < 14) return;
+
+      if (deltaY > 0) {
+        // Aşağı kaydırırken alttaki Footer açılır
+        setIsFooterScrollHidden(false);
+        touchStartYRef.current = currentTouchY;
+      } else if (deltaY < 0) {
+        // Yukarı kaydırırken alttaki Footer gizlenir
+        setIsFooterScrollHidden(true);
+        touchStartYRef.current = currentTouchY;
+      }
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Date.now() < ignoreScrollUntilRef.current) return;
+      if (Math.abs(e.deltaY) < 8) return;
+      if (e.deltaY > 0) {
+        setIsFooterScrollHidden(false);
+      } else if (e.deltaY < 0) {
+        setIsFooterScrollHidden(true);
+      }
+    };
+
     window.addEventListener('xenios_tab_changed', handleTabEvent);
     window.addEventListener('xenios_lang_changed', handleLangEvent);
     window.addEventListener('xenios_modal_state', handleModalEvent);
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       window.removeEventListener('xenios_tab_changed', handleTabEvent);
       window.removeEventListener('xenios_lang_changed', handleLangEvent);
       window.removeEventListener('xenios_modal_state', handleModalEvent);
+      window.removeEventListener('scroll', handleScroll, { capture: true } as EventListenerOptions);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('wheel', handleWheel);
     };
   }, []);
 
@@ -209,6 +305,8 @@ export function GuestTabBar({
 
   const handleTabClick = (tabId: TabId) => {
     setCurrentTab(tabId);
+    setIsFooterScrollHidden(false);
+    ignoreScrollUntilRef.current = Date.now() + 550;
     onTabChange?.(tabId);
 
     if (typeof window !== 'undefined') {
@@ -231,7 +329,7 @@ export function GuestTabBar({
 
   if (!shouldShow) return null;
 
-  const isHidden = !shouldShowDark;
+  const isHidden = !shouldShowDark || isFooterScrollHidden;
 
   return (
     <nav
@@ -249,9 +347,9 @@ export function GuestTabBar({
         background: 'linear-gradient(180deg, rgba(245, 242, 236, 0.96) 0%, rgba(234, 229, 220, 0.98) 100%)',
         borderTop: '1px solid #DFD8CA',
         boxShadow: '0 -6px 22px rgba(32, 26, 18, 0.08)',
-        transform: isHidden ? 'translateY(100%)' : 'translateY(0)',
-        WebkitTransform: isHidden ? 'translateY(100%)' : 'translateY(0)',
-        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease-in-out'
+        transform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
+        WebkitTransform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
+        transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease'
       }}
     >
       <div className="max-w-md mx-auto flex items-center justify-around relative z-10">

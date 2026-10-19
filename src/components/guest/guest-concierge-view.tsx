@@ -517,7 +517,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           </div>
         )}
 
-        {/* TAB 3: Category Catalog View — Identical Luxury Visual Style to Hotel Services Page */}
+        {/* TAB 3: Category Catalog View — Smoked Midnight-Navy & Champagne-Gold Translucent Glass Style */}
         {activeTab === 'categories' && (
           <div className="relative z-10 w-full max-w-full box-border grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1 sm:p-4 mx-0">
             {categoryShowcase.map((cat, idx) => (
@@ -539,17 +539,17 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
                 }}
-                className="luxury-service-card px-3 py-3.5 flex flex-col items-center text-center justify-center gap-2 min-h-[132px] sm:min-h-[150px] group relative cursor-pointer"
+                className="luxury-category-card px-3 py-3.5 flex flex-col items-center text-center justify-center gap-2.5 min-h-[136px] sm:min-h-[154px] group relative cursor-pointer"
               >
-                {/* 3D Gilded Embossed Icon (özel ikon yüklendiyse o gösterilir) */}
-                <div className="shrink-0 flex items-center justify-center group-hover:scale-[1.06] transition-transform duration-300 relative">
+                {/* 3D Embossed Smoked Glass & Luminous Champagne-Gold Category Icon */}
+                <div className="luxury-category-icon-stage shrink-0 flex items-center justify-center relative z-10">
                   {cat.customIcon ? (
-                    <div className="w-[78px] h-[78px] sm:w-24 sm:h-24 rounded-full gilded-icon-plinth flex items-center justify-center p-2.5">
+                    <div className="w-[78px] h-[78px] sm:w-24 sm:h-24 rounded-full luxury-category-plinth flex items-center justify-center p-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={cat.customIcon}
                         alt={cat.key}
-                        className="w-full h-full object-contain drop-shadow-[0_2px_3px_rgba(92,64,18,0.35)]"
+                        className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(226,178,88,0.35)]"
                       />
                     </div>
                   ) : (
@@ -557,9 +557,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   )}
                 </div>
 
-                {/* Clean Bold Modern Sans-Serif Card Label */}
-                <div className="w-full px-1">
-                  <span className="font-luxury-sans text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] text-[#221A0F] group-hover:text-[#5C3D0E] leading-[1.18] block transition-colors">
+                {/* Warm Pearl-Ivory to Champagne-Gold Modern Geometric Sans-Serif Category Title */}
+                <div className="w-full px-1 relative z-10">
+                  <span className="luxury-category-title text-[13.5px] sm:text-[15px] font-bold tracking-[-0.01em] leading-[1.18] block">
                     {cat.key}
                   </span>
                 </div>
