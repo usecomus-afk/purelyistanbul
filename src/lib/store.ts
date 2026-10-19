@@ -1639,6 +1639,8 @@ export const XeniosStore = {
         category: 'Kahvaltı',
         description: 'Ezine peyniri, Kars kaşarı, petek bal, kaymak, organik zeytin çeşitleri, tereyağı, domates, salatalık, menemen ve taze pişmiş simit.',
         ingredients: 'Yumurta, Peynir Çeşitleri, Bal, Kaymak, Zeytin, Tereyağı, Simit',
+        allergens: 'Gluten, Süt Ürünleri, Yumurta, Susam',
+        calories: 780,
         price: 24,
         currency: 'EUR',
         image: '/images/experiences/rest-3.jpg',
@@ -1653,6 +1655,8 @@ export const XeniosStore = {
         category: 'Ana Yemek',
         description: 'Közlenmiş arpacık soğan, ızgara kuşkonmaz ve trüf yağlı taze patates püresi eşliğinde 220gr dinlendirilmiş antrikot.',
         ingredients: '220gr Dana Antrikot, Trüf Yağı, Patates, Kuşkonmaz, Biberiye',
+        allergens: 'Süt Ürünleri (Tereyağı, Krema)',
+        calories: 690,
         price: 34,
         currency: 'EUR',
         image: '/images/experiences/rest-1.jpg',
@@ -1667,6 +1671,8 @@ export const XeniosStore = {
         category: 'Ana Yemek',
         description: 'Porçini ve istiridye mantarları, taze krema sosu, parmesan peyniri ve taze kekik yaprakları ile taze el açması makarna.',
         ingredients: 'Taze Makarna, Porçini Mantarı, Krema, Parmesan, Sarımsak',
+        allergens: 'Gluten, Yumurta, Süt Ürünleri (Krema, Parmesan)',
+        calories: 560,
         price: 21,
         currency: 'EUR',
         image: '/images/experiences/rest-9.jpg',
@@ -1681,6 +1687,8 @@ export const XeniosStore = {
         category: 'Atıştırmalık',
         description: 'Izgara tavuk göğsü, füme dana eti, haşlanmış yumurta, kaşar peyniri, domates, marul ve çıtır patates kızartması.',
         ingredients: 'Tost Ekmeği, Tavuk Göğsü, Füme Et, Yumurta, Patates',
+        allergens: 'Gluten, Yumurta, Süt Ürünleri, Hardal',
+        calories: 620,
         price: 16,
         currency: 'EUR',
         image: '/images/experiences/rest-6.jpg',
@@ -1695,6 +1703,8 @@ export const XeniosStore = {
         category: 'Tatlı',
         description: 'Taş fırında nar gibi kızartılmış karamelize kabuklu hakiki manda sütlü fırın sütlaç, kavrulmuş Giresun fındığı ile.',
         ingredients: 'Manda Sütü, Pirinç, Şeker, Giresun Fındığı, Vanilya',
+        allergens: 'Süt Ürünleri, Kuruyemiş (Fındık)',
+        calories: 380,
         price: 9,
         currency: 'EUR',
         image: '/images/experiences/rest-11.jpg',
@@ -1709,6 +1719,8 @@ export const XeniosStore = {
         category: 'İçecek',
         description: 'Antalya Finike bahçelerinden günlük taze sıkılmış %100 doğal katkısız portakal suyu.',
         ingredients: '%100 Doğal Portakal',
+        allergens: 'Alerjen İçermez (%100 Doğal)',
+        calories: 115,
         price: 7,
         currency: 'EUR',
         image: '/images/experiences/rest-15.jpg',
@@ -1735,10 +1747,15 @@ export const XeniosStore = {
       const stored = safeGet(`${STORAGE_KEYS.ROOM_SERVICE_MENU}_${targetHotelId}`);
       if (stored) {
         const parsed = JSON.parse(stored);
-        return parsed.map((item: any) => ({
-          ...item,
-          image: fixFoodImage(item)
-        }));
+        return parsed.map((item: any) => {
+          const fallback = defaultMenu.find(d => d.id === item.id);
+          return {
+            ...item,
+            allergens: item.allergens ?? fallback?.allergens ?? '',
+            calories: item.calories ?? fallback?.calories ?? undefined,
+            image: fixFoodImage(item)
+          };
+        });
       }
     } catch (e) {}
     

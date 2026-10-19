@@ -69,8 +69,10 @@ export default function HotelPortalServicesPage() {
   const [formCategory, setFormCategory]       = useState<RoomServiceMenuItem['category']>('Ana Yemek');
   const [formPrice, setFormPrice]             = useState<number | ''>(20);
   const [formPrepTime, setFormPrepTime]       = useState<number | ''>(15);
+  const [formCalories, setFormCalories]       = useState<number | ''>('');
   const [formDesc, setFormDesc]               = useState('');
   const [formIngredients, setFormIngredients] = useState('');
+  const [formAllergens, setFormAllergens]     = useState('');
   const [formImage, setFormImage]             = useState(PRESET_FOOD_IMAGES[0].path);
   const [formAvailable, setFormAvailable]     = useState(true);
 
@@ -170,8 +172,10 @@ export default function HotelPortalServicesPage() {
     setFormCategory('Ana Yemek');
     setFormPrice(22);
     setFormPrepTime(15);
+    setFormCalories('');
     setFormDesc('');
     setFormIngredients('');
+    setFormAllergens('');
     setFormImage(PRESET_FOOD_IMAGES[0].path);
     setFormAvailable(true);
     setUploadedUrl(null);
@@ -190,8 +194,10 @@ export default function HotelPortalServicesPage() {
     setFormCategory(item.category);
     setFormPrice(item.price);
     setFormPrepTime(item.preparationTimeMinutes || 15);
+    setFormCalories(item.calories !== undefined && item.calories !== '' ? Number(item.calories) || '' : '');
     setFormDesc(item.description);
     setFormIngredients(item.ingredients);
+    setFormAllergens(item.allergens || '');
     setFormImage(item.image);
     setFormAvailable(item.available);
     // if the saved image is a custom URL (not a preset), show it as uploaded
@@ -212,14 +218,16 @@ export default function HotelPortalServicesPage() {
     if (uploadProgress !== null) { toast.error('Görsel yükleniyor, lütfen bekleyin.'); return; }
 
     const payload = {
-      name:                 formName.trim(),
-      category:             formCategory,
-      price:                Number(formPrice),
+      name:                   formName.trim(),
+      category:               formCategory,
+      price:                  Number(formPrice),
       preparationTimeMinutes: Number(formPrepTime) || 15,
-      description:          formDesc.trim(),
-      ingredients:          formIngredients.trim(),
-      image:                formImage,
-      available:            formAvailable,
+      calories:               formCalories !== '' && Number(formCalories) > 0 ? Number(formCalories) : undefined,
+      description:            formDesc.trim(),
+      ingredients:            formIngredients.trim(),
+      allergens:              formAllergens.trim(),
+      image:                  formImage,
+      available:              formAvailable,
     };
 
     if (editingItem) {
@@ -384,12 +392,19 @@ export default function HotelPortalServicesPage() {
                       <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-slate-100 mt-1 leading-snug line-clamp-1" title={item.name}>
                         {item.name}
                       </h3>
-                      {item.preparationTimeMinutes && (
-                        <span className="text-[10px] text-zinc-600 flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3 text-amber-700" />
-                          <span>{item.preparationTimeMinutes} dk</span>
-                        </span>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                        {item.preparationTimeMinutes && (
+                          <span className="text-[10px] text-zinc-600 flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-amber-700" />
+                            <span>{item.preparationTimeMinutes} dk</span>
+                          </span>
+                        )}
+                        {item.calories !== undefined && item.calories !== '' && (
+                          <span className="text-[10px] font-semibold text-orange-800 bg-orange-50/90 border border-orange-200 px-2 py-0.5 rounded-full">
+                            🔥 {item.calories} kcal
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -398,6 +413,12 @@ export default function HotelPortalServicesPage() {
                   {item.ingredients && (
                     <div className="text-[10px] text-zinc-700 bg-[rgba(245,215,130,0.22)] p-2 rounded-xl border border-[rgba(230,185,75,0.55)] line-clamp-1">
                       <strong>İçindekiler:</strong> {item.ingredients}
+                    </div>
+                  )}
+
+                  {item.allergens && (
+                    <div className="text-[10px] text-amber-950 bg-amber-100/65 p-2 rounded-xl border border-amber-300/80 line-clamp-1">
+                      <strong>⚠️ Alerjen Bilgisi:</strong> {item.allergens}
                     </div>
                   )}
                 </div>
@@ -561,8 +582,8 @@ export default function HotelPortalServicesPage() {
                 </div>
               </div>
 
-              {/* Prep Time & Availability */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Prep Time, Calories & Availability */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="font-bold text-zinc-800 dark:text-slate-200 block">Hazırlık Süresi (Dk)</label>
                   <input
@@ -570,6 +591,16 @@ export default function HotelPortalServicesPage() {
                     value={formPrepTime}
                     onChange={e => setFormPrepTime(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="15"
+                    className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-zinc-800 dark:text-slate-200 block">Kalori Bilgisi (kcal)</label>
+                  <input
+                    type="number" min="0" step="5"
+                    value={formCalories}
+                    onChange={e => setFormCalories(e.target.value === '' ? '' : Number(e.target.value))}
+                    placeholder="Örn: 560"
                     className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs font-semibold text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                 </div>
@@ -583,7 +614,7 @@ export default function HotelPortalServicesPage() {
                       className="w-4 h-4 accent-amber-600 rounded cursor-pointer"
                     />
                     <label htmlFor="avail_chk" className="text-xs font-medium text-zinc-700 cursor-pointer">
-                      Siparişe Açık (Stokta Var)
+                      Siparişe Açık
                     </label>
                   </div>
                 </div>
@@ -603,7 +634,7 @@ export default function HotelPortalServicesPage() {
 
               {/* Ingredients */}
               <div className="space-y-1">
-                <label className="font-bold text-zinc-800 dark:text-slate-200 block">İçindekiler &amp; Malzemeler (Alerjen Bilgisi İçin)</label>
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">İçindekiler &amp; Malzemeler</label>
                 <input
                   type="text"
                   value={formIngredients}
@@ -611,6 +642,63 @@ export default function HotelPortalServicesPage() {
                   placeholder="Örn: Balık, Zeytinyağı, Sarımsak, Roka, Limon"
                   className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                 />
+              </div>
+
+              {/* Allergens */}
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-800 dark:text-slate-200 block">
+                  Alerjen Bilgisi (Misafir Ekranında Gösterilir)
+                </label>
+                <input
+                  type="text"
+                  value={formAllergens}
+                  onChange={e => setFormAllergens(e.target.value)}
+                  placeholder="Örn: Gluten, Süt Ürünleri, Yumurta, Kuruyemiş (Fındık)"
+                  className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs text-zinc-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                />
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
+                  {[
+                    'Gluten',
+                    'Süt Ürünleri',
+                    'Yumurta',
+                    'Kuruyemiş (Fındık/Ceviz)',
+                    'Susam',
+                    'Soya',
+                    'Balık / Deniz Ürünleri',
+                    'Hardal',
+                    'Alerjen İçermez',
+                  ].map(tag => {
+                    const currentTags = formAllergens
+                      .split(',')
+                      .map(t => t.trim())
+                      .filter(Boolean);
+                    const isActive = currentTags.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          if (tag === 'Alerjen İçermez') {
+                            setFormAllergens(isActive ? '' : 'Alerjen İçermez');
+                            return;
+                          }
+                          const filtered = currentTags.filter(t => t !== 'Alerjen İçermez');
+                          const next = isActive
+                            ? filtered.filter(t => t !== tag)
+                            : [...filtered, tag];
+                          setFormAllergens(next.join(', '));
+                        }}
+                        className={`px-2.5 py-1 rounded-full text-[10.5px] font-semibold border transition cursor-pointer ${
+                          isActive
+                            ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
+                            : 'bg-amber-50/70 text-amber-950 border-amber-200 hover:bg-amber-100'
+                        }`}
+                      >
+                        {isActive ? `✓ ${tag}` : `+ ${tag}`}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* ── IMAGE SECTION ─────────────────────────────────────────── */}

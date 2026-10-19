@@ -26,6 +26,9 @@ interface Props {
 const ROOM_SERVICE_UI_I18N: Record<Language, {
   title: string;
   min: string;
+  kcal: string;
+  allergensLabel: string;
+  quickAllergens: string[];
   add: string;
   empty: string;
   placeOrder: string;
@@ -39,10 +42,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   tr: {
     title: 'Kahvaltı & Yeme-İçme Menüsü',
     min: 'dk',
+    kcal: 'kcal',
+    allergensLabel: 'Alerjenler',
+    quickAllergens: ['Glutensiz', 'Laktozsuz', 'Kuruyemiş Alerjisi', 'Yumurta Alerjisi'],
     add: 'Ekle',
     empty: 'Bu kategoride ürün bulunmuyor.',
     placeOrder: 'Siparişi Ver',
-    noteLabel: 'Sipariş Notunuz',
+    noteLabel: 'Sipariş & Alerjen Notunuz',
     notePlaceholder: 'Özel isteğiniz, pişirme derecesi veya alerji notunuzu yazabilirsiniz...',
     orderReceivedTitle: 'Siparişiniz Alındı!',
     orderServiceLabel: 'Kahvaltı & Yeme-İçme',
@@ -59,10 +65,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   en: {
     title: 'In-Room Dining Menu',
     min: 'min',
+    kcal: 'kcal',
+    allergensLabel: 'Allergens',
+    quickAllergens: ['Gluten-Free', 'Lactose-Free', 'Nut Allergy', 'Egg Allergy'],
     add: 'Add',
     empty: 'No items available in this category.',
     placeOrder: 'Place Order',
-    noteLabel: 'Order Note',
+    noteLabel: 'Order & Allergy Note',
     notePlaceholder: 'Add any special requests, cooking preferences, or allergy notes...',
     orderReceivedTitle: 'Order Received!',
     orderServiceLabel: 'In-Room Dining',
@@ -79,10 +88,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   ar: {
     title: 'قائمة خدمة الغرف',
     min: 'دقيقة',
+    kcal: 'سعرة',
+    allergensLabel: 'مسببات الحساسية',
+    quickAllergens: ['خالٍ من الغلوتين', 'خالٍ من اللاكتوز', 'حساسية المكسرات', 'حساسية البيض'],
     add: 'إضافة',
     empty: 'لا توجد عناصر متاحة في هذه الفئة.',
     placeOrder: 'إتمام الطلب',
-    noteLabel: 'ملاحظة الطلب',
+    noteLabel: 'ملاحظة الطلب والحساسية',
     notePlaceholder: 'أضف أي طلبات خاصة أو تفضيلات الطهي أو ملاحظات الحساسية...',
     orderReceivedTitle: 'تم استلام طلبك!',
     orderServiceLabel: 'خدمة الغرف',
@@ -99,10 +111,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   ru: {
     title: 'Меню обслуживания в номере',
     min: 'мин',
+    kcal: 'ккал',
+    allergensLabel: 'Аллергены',
+    quickAllergens: ['Без глютена', 'Без лактозы', 'Аллергия на орехи', 'Аллергия на яйца'],
     add: 'Добавить',
     empty: 'В этой категории нет блюд.',
     placeOrder: 'Оформить заказ',
-    noteLabel: 'Примечание к заказу',
+    noteLabel: 'Примечание и аллергии',
     notePlaceholder: 'Укажите особые пожелания, степень прожарки или аллергии...',
     orderReceivedTitle: 'Ваш заказ принят!',
     orderServiceLabel: 'Обслуживание в номере',
@@ -119,10 +134,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   de: {
     title: 'Zimmerservice-Menü',
     min: 'Min.',
+    kcal: 'kcal',
+    allergensLabel: 'Allergene',
+    quickAllergens: ['Glutenfrei', 'Laktosefrei', 'Nussallergie', 'Eiallergie'],
     add: 'Hinzufügen',
     empty: 'Keine Artikel in dieser Kategorie verfügbar.',
     placeOrder: 'Bestellung aufgeben',
-    noteLabel: 'Bestellnotiz',
+    noteLabel: 'Bestell- & Allergiehinweis',
     notePlaceholder: 'Besondere Wünsche, Garstufe oder Allergiehinweise hinzufügen...',
     orderReceivedTitle: 'Bestellung eingegangen!',
     orderServiceLabel: 'Zimmerservice',
@@ -139,10 +157,13 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   fr: {
     title: 'Menu Service d’Étage',
     min: 'min',
+    kcal: 'kcal',
+    allergensLabel: 'Allergènes',
+    quickAllergens: ['Sans gluten', 'Sans lactose', 'Allergie aux noix', 'Allergie aux œufs'],
     add: 'Ajouter',
     empty: 'Aucun article disponible dans cette catégorie.',
     placeOrder: 'Passer la commande',
-    noteLabel: 'Note de commande',
+    noteLabel: 'Note de commande & allergies',
     notePlaceholder: 'Ajoutez vos demandes spéciales, cuisson souhaitée ou allergies...',
     orderReceivedTitle: 'Commande reçue !',
     orderServiceLabel: 'Service d’Étage',
@@ -158,137 +179,167 @@ const ROOM_SERVICE_UI_I18N: Record<Language, {
   },
 };
 
-const MENU_ITEMS_I18N: Record<string, Partial<Record<Language, { name: string; description: string }>>> = {
+const MENU_ITEMS_I18N: Record<string, Partial<Record<Language, { name: string; description: string; allergens?: string }>>> = {
   'menu-item-1': {
     en: {
       name: 'Traditional Turkish Spread Breakfast',
       description: 'Ezine feta, aged Kars kashar, honeycomb, clotted cream, organic olives, butter, tomatoes, cucumbers, menemen, and freshly baked simit.',
+      allergens: 'Gluten, Dairy, Eggs, Sesame',
     },
     ar: {
       name: 'إفطار تركي تقليدي متنوع',
       description: 'جبن إزينه، جبن قشقوان قارص، عسل بالشمع، قشطة، زيتون عضوي، زبدة، طماطم، خيار، شكشوكة تركية (مينيمين) وسميت طازج.',
+      allergens: 'غلوتين، منتجات الألبان، بيض، سمسم',
     },
     ru: {
       name: 'Традиционный турецкий завтрак',
       description: 'Сыр Эзине, выдержанный кашар из Карса, сотовый мед, каймак, органические оливки, масло, томаты, огурцы, менемен и свежий симит.',
+      allergens: 'Глютен, молочные продукты, яйца, кунжут',
     },
     de: {
       name: 'Traditionelles türkisches Frühstück',
       description: 'Ezine-Schafskäse, gereifter Kars-Kaschkaval, Wabenhonig, Kaymak, Bio-Oliven, Butter, Tomaten, Gurken, Menemen und frischer Simit.',
+      allergens: 'Gluten, Milchprodukte, Eier, Sesam',
     },
     fr: {
       name: 'Petit-déjeuner traditionnel turc',
       description: 'Fromage Ezine, kashar affiné de Kars, miel en rayon, kaymak, olives bio, beurre, tomates, concombres, menemen et simit fraîchement cuit.',
+      allergens: 'Gluten, Produits laitiers, Œufs, Sésame',
     },
   },
   'menu-item-2': {
     en: {
       name: 'Grilled Ribeye & Truffle Mashed Potatoes',
       description: '220g dry-aged ribeye served with roasted shallots, grilled asparagus, and fresh mashed potatoes infused with truffle oil.',
+      allergens: 'Dairy (Butter, Cream)',
     },
     ar: {
       name: 'ريب آي مشوي مع بيوريه البطاطس بالكمأة',
       description: '220 غرام من لحم الريب آي المعتق يقدم مع الكراث المشوي والهليون المشوي وبيوريه البطاطس الطازجة بزيت الكمأة.',
+      allergens: 'منتجات الألبان (زبدة، كريمة)',
     },
     ru: {
       name: 'Рибай на гриле с трюфельным картофельным пюре',
       description: 'Выдержанный стейк рибай 220 г с запеченным шалотом, спаржей на гриле и нежным картофельным пюре с трюфельным маслом.',
+      allergens: 'Молочные продукты (сливочное масло, сливки)',
     },
     de: {
       name: 'Gegrilltes Entrecôte & Trüffel-Kartoffelpüree',
       description: '220g gereiftes Entrecôte mit gerösteten Schalotten, gegrilltem Spargel und frischem Kartoffelpüree mit Trüffelöl.',
+      allergens: 'Milchprodukte (Butter, Sahne)',
     },
     fr: {
       name: 'Entrecôte grillée & Purée de pommes de terre à la truffe',
       description: 'Entrecôte maturée de 220g accompagnée d’échalotes rôties, d’asperges grillées et d’une purée fraîche à l’huile de truffe.',
+      allergens: 'Produits laitiers (Beurre, Crème)',
     },
   },
   'menu-item-3': {
     en: {
       name: 'Handmade Wild Mushroom Fettuccine',
       description: 'Fresh handmade pasta with porcini and oyster mushrooms, creamy sauce, aged parmesan, and fresh thyme leaves.',
+      allergens: 'Gluten, Eggs, Dairy (Cream, Parmesan)',
     },
     ar: {
       name: 'فيتوتشيني يدوي بالفطر البري',
       description: 'معكرونة طازجة محضرة يدوياً مع فطر البورسيني والمحار، صلصة الكريمة الطازجة، جبن البارميزان وأوراق الزعتر الطازجة.',
+      allergens: 'غلوتين، بيض، منتجات الألبان (كريمة، بارميزان)',
     },
     ru: {
       name: 'Домашние феттуччине с лесными грибами',
       description: 'Свежая паста ручной работы с белыми грибами и вешенками в сливочном соусе с пармезаном и свежим тимьяном.',
+      allergens: 'Глютен, яйца, молочные продукты (сливки, пармезан)',
     },
     de: {
       name: 'Hausgemachte Waldpilz-Fettuccine',
       description: 'Frische handgemachte Pasta mit Steinpilzen und Austernpilzen, feiner Rahmsauce, Parmesan und frischem Thymian.',
+      allergens: 'Gluten, Eier, Milchprodukte (Sahne, Parmesan)',
     },
     fr: {
       name: 'Fettuccine maison aux champignons sauvages',
       description: 'Pâtes fraîches faites maison aux cèpes et pleurotes, sauce crémeuse, parmesan affiné et feuilles de thym frais.',
+      allergens: 'Gluten, Œufs, Produits laitiers (Crème, Parmesan)',
     },
   },
   'menu-item-4': {
     en: {
       name: 'Xenios Gourmet Club Sandwich',
       description: 'Grilled chicken breast, smoked beef, boiled egg, kashar cheese, tomato, crisp lettuce, and golden french fries.',
+      allergens: 'Gluten, Eggs, Dairy, Mustard',
     },
     ar: {
       name: 'كلوب ساندويتش غورميه',
       description: 'صدر دجاج مشوي، لحم بقري مدخن، بيض مسلوق، جبن قشقوان، طماطم، خس مقرمش وبطاطس مقلية ذهبية.',
+      allergens: 'غلوتين، بيض، منتجات الألبان، خردل',
     },
     ru: {
       name: 'Гурмэ клаб-сэндвич Xenios',
       description: 'Куриная грудка на гриле, копченая говядина, яйцо, сыр кашар, томаты, хрустящий салат и картофель фри.',
+      allergens: 'Глютен, яйца, молочные продукты, горчица',
     },
     de: {
       name: 'Xenios Gourmet Club-Sandwich',
       description: 'Gegrillte Hähnchenbrust, geräuchertes Rindfleisch, Ei, Kaschkaval-Käse, Tomate, Salat und knusprige Pommes frites.',
+      allergens: 'Gluten, Eier, Milchprodukte, Senf',
     },
     fr: {
       name: 'Club Sandwich Gourmet Xenios',
       description: 'Blanc de poulet grillé, bœuf fumé, œuf dur, fromage kashar, tomate, laitue croquante et frites dorées.',
+      allergens: 'Gluten, Œufs, Produits laitiers, Moutarde',
     },
   },
   'menu-item-5': {
     en: {
       name: 'Traditional Baked Rice Pudding & Hazelnuts',
       description: 'Stone-oven caramelized water buffalo milk rice pudding topped with roasted Giresun hazelnuts.',
+      allergens: 'Dairy, Tree Nuts (Hazelnuts)',
     },
     ar: {
       name: 'أرز بالحليب بالفرن مع البندق',
       description: 'أرز بالحليب التقليدي المخبوز في الفرن الحجري بحليب الجاموس الأصلي مع بندق غيرسون المحمص.',
+      allergens: 'منتجات الألبان، مكسرات (بندق)',
     },
     ru: {
       name: 'Традиционный запеченный рисовый пудинг с фундуком',
       description: 'Запеченный в каменной печи сютлач на буйволином молоке с карамельной корочкой и обжаренным гиресунским фундуком.',
+      allergens: 'Молочные продукты, орехи (фундук)',
     },
     de: {
       name: 'Traditioneller gebackener Milchreis & Haselnüsse',
       description: 'Im Steinofen karamellisierter Büffelmilch-Milchreis (Fırın Sütlaç) mit gerösteten Giresun-Haselnüssen.',
+      allergens: 'Milchprodukte, Schalenfrüchte (Haselnüsse)',
     },
     fr: {
       name: 'Riz au lait traditionnel au four & Noisettes',
       description: 'Riz au lait de bufflonne caramélisé au four en pierre, garni de noisettes torréfiées de Giresun.',
+      allergens: 'Produits laitiers, Fruits à coque (Noisettes)',
     },
   },
   'menu-item-6': {
     en: {
       name: 'Freshly Squeezed Mediterranean Orange Juice',
       description: '100% pure, additive-free daily squeezed orange juice from Finike orchards in Antalya.',
+      allergens: 'Allergen-Free (100% Natural)',
     },
     ar: {
       name: 'عصير برتقال متوسطي طازج',
       description: 'عصير برتقال طبيعي 100% خالٍ من الإضافات معصور يومياً من بساتين فينيكي في أنطاليا.',
+      allergens: 'خالٍ من مسببات الحساسية (طبيعي 100%)',
     },
     ru: {
       name: 'Свежевыжатый средиземноморский апельсиновый сок',
       description: '100% натуральный свежевыжатый сок из отборных апельсинов садов Финике в Анталье.',
+      allergens: 'Без аллергенов (100% натуральный)',
     },
     de: {
       name: 'Frisch gepresster mediterraner Orangensaft',
       description: 'Täglich frisch gepresster 100% natürlicher Orangensaft aus den Gärten von Finike in Antalya.',
+      allergens: 'Allergenfrei (100% Natürlich)',
     },
     fr: {
       name: 'Jus d’orange méditerranéen fraîchement pressé',
       description: 'Jus d’orange 100 % naturel sans additifs, pressé quotidiennement à partir des orangers de Finike à Antalya.',
+      allergens: 'Sans allergènes (100 % naturel)',
     },
   },
 };
@@ -338,6 +389,13 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   const getLocalizedItemDesc = (item: RoomServiceMenuItem) => {
     if (safeLang === 'tr') return item.description;
     return MENU_ITEMS_I18N[item.id]?.[safeLang]?.description || item.description;
+  };
+
+  const getLocalizedItemAllergens = (item: RoomServiceMenuItem) => {
+    if (safeLang === 'tr') return item.allergens || '';
+    const preset = MENU_ITEMS_I18N[item.id]?.[safeLang]?.allergens;
+    if (preset) return preset;
+    return item.allergens || '';
   };
 
   const addToCart = (id: string) => {
@@ -493,6 +551,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
           const qty = getQuantity(item.id);
           const itemName = getLocalizedItemName(item);
           const itemDesc = getLocalizedItemDesc(item);
+          const itemAllergens = getLocalizedItemAllergens(item);
           return (
             <div key={item.id} className="luxury-service-card p-3.5 flex gap-3.5 transition-all">
               {/* Image placeholder if none */}
@@ -520,10 +579,23 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
                   {itemDesc}
                 </p>
 
-                {item.preparationTimeMinutes && (
-                  <div className="flex items-center gap-1 mt-1.5 text-[10px] text-[#6B5A48] font-medium">
-                    <Clock className="w-3 h-3 text-[#8E7252]" />
-                    ~{item.preparationTimeMinutes} {ui.min}
+                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                  {item.preparationTimeMinutes && (
+                    <div className="flex items-center gap-1 text-[10px] text-[#6B5A48] font-medium">
+                      <Clock className="w-3 h-3 text-[#8E7252]" />
+                      ~{item.preparationTimeMinutes} {ui.min}
+                    </div>
+                  )}
+                  {item.calories !== undefined && item.calories !== '' && (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#6E4912] bg-[rgba(245,215,130,0.38)] border border-[rgba(220,175,50,0.6)] px-2 py-0.5 rounded-full">
+                      🔥 ~{item.calories} {ui.kcal}
+                    </span>
+                  )}
+                </div>
+
+                {itemAllergens && (
+                  <div className="mt-1.5 text-[10px] text-[#4A3820] bg-[rgba(255,250,238,0.65)] border border-[rgba(220,175,50,0.5)] px-2 py-1 rounded-xl leading-snug">
+                    <span className="font-bold text-[#7D5E2A]">⚠️ {ui.allergensLabel}:</span> {itemAllergens}
                   </div>
                 )}
 
@@ -562,11 +634,41 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
       {/* Floating Cart Footer with Guest Note Input & Online Payment Choice */}
       {cartCount > 0 && (
         <div className="absolute bottom-0 left-0 right-0 max-h-[55vh] overflow-y-auto px-3.5 pt-3 pb-4 sm:p-4 bg-[#F7F3EA]/98 backdrop-blur-md border-t border-[#D8CBB8] shadow-[0_-10px_28px_rgba(28,22,14,0.12)] z-30 space-y-2.5">
-          <div className="bg-[#FAF8F4] border border-[#C4B8A4] rounded-2xl px-3 py-2 shadow-2xs">
-            <label className="flex items-center gap-1.5 font-luxury-sans text-[11px] font-bold text-[#5C4938] mb-1">
+          <div className="bg-[#FAF8F4] border border-[#C4B8A4] rounded-2xl px-3 py-2 shadow-2xs space-y-1.5">
+            <label className="flex items-center gap-1.5 font-luxury-sans text-[11px] font-bold text-[#5C4938]">
               <MessageSquareText className="w-3.5 h-3.5 text-[#8E7252]" />
               <span>{ui.noteLabel}</span>
             </label>
+            <div className="flex flex-wrap gap-1">
+              {ui.quickAllergens.map(tag => {
+                const isSelected = orderNote.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      if (isSelected) {
+                        setOrderNote(
+                          orderNote
+                            .replace(new RegExp(`\\s*,?\\s*${tag}`, 'g'), '')
+                            .replace(/^,\s*/, '')
+                            .trim()
+                        );
+                      } else {
+                        setOrderNote(orderNote.trim() ? `${orderNote.trim()}, ${tag}` : tag);
+                      }
+                    }}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#8E7252] text-white border-[#7D5E2A]'
+                        : 'bg-[#F3EDE2] text-[#5C4938] border-[#D8CBB8] hover:bg-[#EAE0CE]'
+                    }`}
+                  >
+                    {isSelected ? `✓ ${tag}` : `+ ${tag}`}
+                  </button>
+                );
+              })}
+            </div>
             <textarea
               value={orderNote}
               onChange={(e) => setOrderNote(e.target.value)}

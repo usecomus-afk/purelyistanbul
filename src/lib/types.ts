@@ -380,6 +380,8 @@ export interface RoomServiceMenuItem {
   category: 'Kahvaltı' | 'Başlangıç' | 'Ana Yemek' | 'Tatlı' | 'İçecek' | 'Atıştırmalık' | 'Gece Menüsü';
   description: string;
   ingredients: string;
+  allergens?: string;
+  calories?: number | string;
   price: number;
   currency: string;
   image: string;
