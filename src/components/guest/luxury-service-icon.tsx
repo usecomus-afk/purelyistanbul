@@ -15,7 +15,7 @@ interface LuxuryServiceIconProps {
  */
 export function LuxuryServiceIcon({
   serviceKey,
-  className = "w-11 h-11 sm:w-12 sm:h-12",
+  className = "w-[62px] h-[62px] sm:w-[74px] sm:h-[74px]",
 }: LuxuryServiceIconProps) {
   const normalizedKey = (serviceKey || "").trim();
   const strokeColor = "#7D5E28";
@@ -219,7 +219,7 @@ export function LuxuryServiceIcon({
   return (
     <div className={`relative flex items-center justify-center select-none ${className}`}>
       <svg
-        viewBox="0 0 24 24"
+        viewBox="2.2 2.2 19.6 19.6"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full relative z-10"
@@ -227,7 +227,7 @@ export function LuxuryServiceIcon({
       >
         <g
           stroke={strokeColor}
-          strokeWidth="1.35"
+          strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"
         >

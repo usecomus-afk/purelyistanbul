@@ -329,12 +329,12 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
             >
               {/* Minimal Modern Monoline Icon */}
               <div className="luxury-category-icon-stage shrink-0 flex items-center justify-center relative z-10">
-                {renderServiceVisual(item, "w-11 h-11 sm:w-12 sm:h-12")}
+                {renderServiceVisual(item, "w-[62px] h-[62px] sm:w-[74px] sm:h-[74px]")}
               </div>
 
               {/* Clean Modern Sans-Serif Card Label */}
-              <div className="w-full px-1 relative z-10">
-                <span className="luxury-category-title text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] leading-[1.22] block">
+              <div className="w-full px-1 shrink-0 relative z-10">
+                <span className="luxury-category-title text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] leading-[1.18] block">
                   {serviceTitle === 'Late Check-out Request' ? (
                     <>
                       Late Check-out

@@ -15,7 +15,7 @@ interface LuxuryCategoryIconProps {
  */
 export function LuxuryCategoryIcon({
   categoryKey,
-  className = "w-11 h-11 sm:w-12 sm:h-12",
+  className = "w-[64px] h-[64px] sm:w-[76px] sm:h-[76px]",
 }: LuxuryCategoryIconProps) {
   const key = (categoryKey || "").toLowerCase();
   const strokeColor = "#7D5E28";
@@ -313,7 +313,7 @@ export function LuxuryCategoryIcon({
 
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="2.2 2.2 19.6 19.6"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -321,7 +321,7 @@ export function LuxuryCategoryIcon({
     >
       <g
         stroke={strokeColor}
-        strokeWidth="1.35"
+        strokeWidth="1.25"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
