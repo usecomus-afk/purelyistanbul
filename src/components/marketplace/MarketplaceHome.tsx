@@ -55,23 +55,23 @@ const DURATION_OPTIONS: { key: DurationBucket; label: string }[] = [
 const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Clear & Direct",
+    title: "Clear & Direct (Transparent)",
     description:
-      "Clear experience details, local context, and straightforward digital booking across Istanbul.",
+      "Closed to surprises, open to Istanbul. We don't just give you fancy words; we provide clear experience details and the city's true local context. You know exactly where you're going and what you'll experience from the very beginning, and you can secure your spot in seconds with our easy digital booking platform.",
     icon: ShieldCheck,
   },
   {
     number: "02",
-    title: "Genuine Hospitality",
+    title: "Genuine Hospitality (Welcoming)",
     description:
-      "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
+      "True hospitality isn't just about a smiling face; it's about ensuring you have an absolutely wonderful time in this city. We set out to offer you a seamless, attentive, and sincere companionship throughout your Istanbul journey. That’s exactly why we brought Comus to life—your specially trained, Gemini-based AI guide. Plus, we don't want to bother you with downloading apps; we designed it as a highly practical mobile web app that you can start using instantly just by tapping \"add to home screen.\"",
     icon: HeartHandshake,
   },
   {
     number: "03",
-    title: "Hyper-Local & Sincere",
+    title: "Hyper-Local and Intimate (Sincere)",
     description:
-      "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
+      "\"Only Istanbul.\" We haven't expanded to other cities; we have no intention of being everywhere. We are only in Istanbul, and to always provide the best, we will continue to say \"Only Istanbul.\" This city is captivating, but let's admit, as it turns into a massive metropolis, it has corners that lose their sparkle. While it is home to wonderful local artisans and shopkeepers, it's also possible to encounter weary faces in the crowds. Our sole purpose is to host Istanbul’s guests in a manner worthy of this city; presenting them with what is good, beautiful, and valuable, while protecting these treasures and helping them flourish.",
     icon: Compass,
   },
 ];
@@ -621,10 +621,10 @@ export function MarketplaceHome() {
         <div className="rounded-3xl border border-sand-border bg-white p-6 sm:p-10 md:p-12 shadow-[0_8px_36px_rgba(11,25,44,0.05)]">
           <div className="max-w-3xl">
             <h2 className="font-luxury-serif text-2xl sm:text-3xl md:text-4xl font-semibold text-ink tracking-tight leading-tight">
-              Honored Guests, Never Walking Wallets.
+              &lsquo;Tanrı Misafiri&rsquo;: The True Spirit of Istanbul
             </h2>
             <p className="mt-4 text-sm sm:text-base text-ink leading-relaxed font-medium">
-              &ldquo;At Purely Istanbul, we believe every traveler should experience Istanbul not as a walking wallet, but as an honored guest (&apos;Tanrı Misafiri&apos;). We replace anxiety with authenticity through radical transparency, pre-vetted local partners, and direct accountability.&rdquo;
+              We will never let you feel like a &ldquo;walking wallet&rdquo; while exploring Istanbul. Rooted in our centuries-old belief of the &ldquo;Guest of God&rdquo; (Tanrı Misafiri), we see you as the honored guest of this city. Alongside the trusted locals we work with, we remove all the question marks and anxieties from your journey, replacing them with trust, transparency, and the pure Istanbul experience.
             </p>
           </div>
 
@@ -669,24 +669,14 @@ export function MarketplaceHome() {
             </span>
           </div>
 
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
               <div className="w-10 h-10 rounded-xl bg-[#D47A43]/20 border border-[#D47A43]/40 flex items-center justify-center mb-4">
                 <Compass className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
               </div>
-              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">The Genesis</h3>
+              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">Who Are We?</h3>
               <p className="text-[13.5px] text-white/75 leading-relaxed">
-                Created by proud Istanbul locals, <span translate="no" className="notranslate">Purely Istanbul</span> was born to end predatory tourist traps and bridge discerning world travelers directly to the city&apos;s authentic heart.
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
-              <div className="w-10 h-10 rounded-xl bg-[#D47A43]/20 border border-[#D47A43]/40 flex items-center justify-center mb-4">
-                <QrCode className="w-5 h-5 text-[#D47A43]" strokeWidth={1.75} />
-              </div>
-              <h3 className="font-luxury-serif text-lg font-semibold text-white mb-2">Seamless Guest Access</h3>
-              <p className="text-[13.5px] text-white/75 leading-relaxed">
-                Whether booking online or connecting via an in-room smart QR stand at a partner boutique hotel, guests enjoy instant access to vetted city excursions and guest services without downloading an app.
+                <span translate="no" className="notranslate">Purely Istanbul</span> was created by the proud locals of this city for one single purpose: to keep you completely away from tourist traps and navigate you directly to the true heart of Istanbul. With us, you experience the city not as a tourist, but as a local.
               </p>
             </div>
 
@@ -699,43 +689,6 @@ export function MarketplaceHome() {
                 Every experience is hand-selected and operated by licensed TÜRSAB Group A agencies, certified D2 luxury fleets, and time-honored Istanbul artisans at transparent local rates.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION: For Boutique Hotels & Property Managers */}
-      <section className="max-w-6xl mx-auto px-5 md:px-8 py-8">
-        <div className="rounded-3xl border border-sand-border bg-white p-6 sm:p-10 md:p-12 shadow-[0_8px_36px_rgba(11,25,44,0.05)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-          <div className="max-w-2xl space-y-3">
-            <span className="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/15 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink">
-              <Building2 className="w-3.5 h-3.5 text-terracotta" />
-              For Boutique Hotels &amp; Property Managers
-            </span>
-            <h2 className="font-luxury-serif text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
-              Zero Setup Fees, Zero Extra Work.
-            </h2>
-            <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-              Enhance your guest satisfaction with a branded in-room concierge experience, streamline guest requests, and earn passive ancillary revenue on every city experience booked by your guests.
-            </p>
-            <p className="text-xs sm:text-sm font-medium text-terracotta">
-              Custom in-room acrylic stands provided to verified partners with zero upfront friction.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
-            <Link
-              href="/marketplace/partner/extranet"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-ink hover:bg-terracotta text-white font-semibold px-6 py-3 text-sm transition"
-            >
-              For Boutique Hotels &amp; Property Managers
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/marketplace/partner/register"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-sand-border hover:border-ink text-ink font-semibold px-6 py-3 text-sm transition"
-            >
-              Apply as a Verified Partner
-            </Link>
           </div>
         </div>
       </section>

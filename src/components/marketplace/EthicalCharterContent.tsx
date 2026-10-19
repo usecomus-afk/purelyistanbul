@@ -4,23 +4,23 @@ import { ShieldCheck, HeartHandshake, Compass, ArrowRight } from "lucide-react";
 export const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Clear & Direct",
+    title: "Clear & Direct (Transparent)",
     description:
-      "Clear experience details, local context, and straightforward digital booking across Istanbul.",
+      "Closed to surprises, open to Istanbul. We don't just give you fancy words; we provide clear experience details and the city's true local context. You know exactly where you're going and what you'll experience from the very beginning, and you can secure your spot in seconds with our easy digital booking platform.",
     icon: ShieldCheck,
   },
   {
     number: "02",
-    title: "Genuine Hospitality",
+    title: "Genuine Hospitality (Welcoming)",
     description:
-      "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
+      "True hospitality isn't just about a smiling face; it's about ensuring you have an absolutely wonderful time in this city. We set out to offer you a seamless, attentive, and sincere companionship throughout your Istanbul journey. That’s exactly why we brought Comus to life—your specially trained, Gemini-based AI guide. Plus, we don't want to bother you with downloading apps; we designed it as a highly practical mobile web app that you can start using instantly just by tapping \"add to home screen.\"",
     icon: HeartHandshake,
   },
   {
     number: "03",
-    title: "Hyper-Local & Sincere",
+    title: "Hyper-Local and Intimate (Sincere)",
     description:
-      "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
+      "\"Only Istanbul.\" We haven't expanded to other cities; we have no intention of being everywhere. We are only in Istanbul, and to always provide the best, we will continue to say \"Only Istanbul.\" This city is captivating, but let's admit, as it turns into a massive metropolis, it has corners that lose their sparkle. While it is home to wonderful local artisans and shopkeepers, it's also possible to encounter weary faces in the crowds. Our sole purpose is to host Istanbul’s guests in a manner worthy of this city; presenting them with what is good, beautiful, and valuable, while protecting these treasures and helping them flourish.",
     icon: Compass,
   },
 ];
@@ -35,11 +35,11 @@ export function EthicalCharterContent() {
       {/* Hero Narrative */}
       <div className="mt-8 rounded-3xl border border-sand-border bg-white p-8 md:p-12 shadow-[0_12px_36px_-16px_rgba(11,25,44,0.08)]">
         <h1 className="font-luxury-serif text-3xl sm:text-4xl md:text-[42px] font-semibold tracking-tight text-ink leading-[1.15]">
-          Transparent, Hospitable, and Sincerely Local.
+          &lsquo;Tanrı Misafiri&rsquo;: The True Spirit of Istanbul
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-ink leading-relaxed max-w-3xl font-medium">
-          &ldquo;At <span translate="no" className="notranslate">Purely Istanbul</span>, we believe every traveler should experience Istanbul as an honored guest (&lsquo;Tanrı Misafiri&rsquo;) with authentic local guidance and curated city experiences.&rdquo;
+          We will never let you feel like a &ldquo;walking wallet&rdquo; while exploring Istanbul. Rooted in our centuries-old belief of the &ldquo;Guest of God&rdquo; (Tanrı Misafiri), we see you as the honored guest of this city. Alongside the trusted locals we work with, we remove all the question marks and anxieties from your journey, replacing them with trust, transparency, and the pure Istanbul experience.
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export function EthicalCharterContent() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {GUIDING_PILLARS.map((pillar) => {
             const Icon = pillar.icon;
             return (
@@ -87,20 +87,13 @@ export function EthicalCharterContent() {
           services across Istanbul&apos;s finest neighborhoods.
         </p>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
-            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">The Genesis</h3>
+            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">Who Are We?</h3>
             <p className="text-sm text-slate-200 leading-relaxed">
-              Created by proud Istanbul locals, Purely Istanbul was born to end predatory tourist traps and bridge
-              discerning world travelers directly to the city&apos;s authentic heart.
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6">
-            <h3 className="font-luxury-serif text-lg font-semibold text-[#D47A43] mb-2">Seamless Guest Access</h3>
-            <p className="text-sm text-slate-200 leading-relaxed">
-              Whether discovering experiences online or connecting from a partner boutique hotel, guests enjoy direct
-              access to vetted local artisans, captains, and culinary masters without hidden markups.
+              Purely Istanbul was created by the proud locals of this city for one single purpose: to keep you
+              completely away from tourist traps and navigate you directly to the true heart of Istanbul. With us, you
+              experience the city not as a tourist, but as a local.
             </p>
           </div>
 
