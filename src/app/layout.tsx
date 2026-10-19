@@ -6,14 +6,33 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.purelyistanbul.com"),
   title: "Purely Istanbul — Nothing but Istanbul | Curated Experiences & Local Marketplace",
   description:
-    "Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, and vetted local services across Istanbul.",
+    "Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, traditional hammams, artisan bazaar shopping, and vetted local services across Istanbul.",
+  alternates: {
+    canonical: "https://www.purelyistanbul.com",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://www.purelyistanbul.com",
+    siteName: "Purely Istanbul",
+    title: "Purely Istanbul — Nothing but Istanbul | Curated Experiences & Local Marketplace",
+    description:
+      "Discover pre-vetted Bosphorus cruises, historian-led walks, culinary trails, traditional hammam rituals, and curated artisan shopping in Istanbul with zero tourist markups.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Purely Istanbul — Nothing but Istanbul",
+    description:
+      "Curated local experiences, licensed Bosphorus charters, and 24/7 digital concierge services in Istanbul.",
+  },
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.png",
-    apple: "/apple-icon.png"
-  }
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

@@ -204,7 +204,13 @@ function MarketplaceAccountForm() {
                 checked={agreed.userAgreement}
                 onChange={(e) => setAgreed((a) => ({ ...a, userAgreement: e.target.checked }))}
               />
-              <span>I have read and agree to the Terms of Service.</span>
+              <span>
+                I have read and agree to the{" "}
+                <Link href="/marketplace/legal/terms-of-service" className="underline text-ink hover:text-terracotta">
+                  Terms of Service
+                </Link>
+                .
+              </span>
             </label>
             <label className="flex items-start gap-2">
               <input
@@ -213,7 +219,13 @@ function MarketplaceAccountForm() {
                 checked={agreed.privacyPolicy}
                 onChange={(e) => setAgreed((a) => ({ ...a, privacyPolicy: e.target.checked }))}
               />
-              <span>I have read and agree to the Privacy Notice (UK GDPR &amp; KVKK).</span>
+              <span>
+                I have read and agree to the{" "}
+                <Link href="/marketplace/legal/privacy-policy" className="underline text-ink hover:text-terracotta">
+                  Privacy Policy (UK GDPR &amp; KVKK)
+                </Link>
+                .
+              </span>
             </label>
             <label className="flex items-start gap-2">
               <input
@@ -222,7 +234,16 @@ function MarketplaceAccountForm() {
                 checked={agreed.distanceSales}
                 onChange={(e) => setAgreed((a) => ({ ...a, distanceSales: e.target.checked }))}
               />
-              <span>I have read and agree to the Marketplace Booking Terms.</span>
+              <span>
+                I have read and agree to the{" "}
+                <Link
+                  href="/marketplace/legal/distance-sales-agreement"
+                  className="underline text-ink hover:text-terracotta"
+                >
+                  Distance Sales Agreement
+                </Link>
+                .
+              </span>
             </label>
             <label className="flex items-start gap-2">
               <input
@@ -231,7 +252,16 @@ function MarketplaceAccountForm() {
                 checked={agreed.preInfoForm}
                 onChange={(e) => setAgreed((a) => ({ ...a, preInfoForm: e.target.checked }))}
               />
-              <span>I acknowledge the Pre-Booking Disclosure Form.</span>
+              <span>
+                I acknowledge the{" "}
+                <Link
+                  href="/marketplace/legal/cancellation-refund"
+                  className="underline text-ink hover:text-terracotta"
+                >
+                  Cancellation &amp; Refund Policy
+                </Link>
+                .
+              </span>
             </label>
           </div>
         )}

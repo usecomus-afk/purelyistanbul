@@ -120,7 +120,7 @@ export default function ExtranetGirisiPage() {
                 >
                   Forgot Password?
                 </button>
-                <Link href="/marketplace/partner/kayit" className="font-semibold text-terracotta hover:underline">
+                <Link href="/marketplace/partner/register" className="font-semibold text-terracotta hover:underline">
                   Request Partner Onboarding →
                 </Link>
               </div>

@@ -16,9 +16,16 @@ function isCustomUploadedIcon(icon?: string): boolean {
 }
 
 export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CATEGORIES }: CategoryFilterBarProps) {
-  function handleSelect(key: string) {
-    onChange(key);
-    const target = document.getElementById(key === "all" ? "shelves-top" : `shelf-${key}`);
+  function handleSelect(c: MarketplaceCategory) {
+    onChange(c.key);
+    if (typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("category", c.slug || c.key);
+        window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+      } catch {}
+    }
+    const target = document.getElementById(c.key === "all" ? "shelves-top" : `shelf-${c.key}`);
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -32,10 +39,14 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
           {categories.map((c) => {
             const isSelected = value === c.key;
             const hasCustomIcon = isCustomUploadedIcon(c.icon);
+            const displayLabel = c.key === "cat-8" ? "Curated Artisan & Bazaar Shopping" : c.label;
             return (
               <button
                 key={c.key}
-                onClick={() => handleSelect(c.key)}
+                type="button"
+                data-category-key={c.key}
+                data-category-slug={c.slug || c.key}
+                onClick={() => handleSelect(c)}
                 aria-pressed={isSelected}
                 className={`flex flex-col items-center justify-between gap-1.5 group cursor-pointer shrink-0 sm:flex-1 w-[86px] sm:w-auto sm:min-w-[92px] rounded-[20px] px-2 py-2.5 ${
                   isSelected ? "category-3d-module category-3d-module-active" : "category-3d-module"
@@ -54,7 +65,7 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
                     </span>
                   ) : (
                     <LuxuryCategoryIcon
-                      categoryKey={c.key || c.label}
+                      categoryKey={c.key || displayLabel}
                       className="w-12 h-12 sm:w-14 sm:h-14"
                     />
                   )}
@@ -66,7 +77,7 @@ export function CategoryFilterBar({ value, onChange, categories = MARKETPLACE_CA
                       : "text-[#2A2116] font-semibold group-hover:text-[#6E4912]"
                   }`}
                 >
-                  {c.label}
+                  {displayLabel}
                 </span>
               </button>
             );

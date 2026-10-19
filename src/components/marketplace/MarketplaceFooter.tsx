@@ -3,28 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ShieldCheck, X } from "lucide-react";
+import { ShieldCheck, QrCode, Building2, Phone, Mail, MapPin, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitContactMessage } from "@/lib/marketplace/firestore";
+import { CORPORATE_CONFIG } from "@/lib/marketplace/corporate-config";
 
 const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Legal & Governance",
     links: [
-      { label: "Privacy Notice", href: "/marketplace/legal/gizlilik-bildirimi" },
-      { label: "Terms of Service", href: "/marketplace/legal/hizmet-kosullari" },
-      { label: "Accessibility Statement", href: "/marketplace/legal/erisilebilirlik-bildirisi" },
-      { label: "How We Work", href: "/marketplace/legal/calisma-seklimiz" },
+      { label: "Privacy Policy", href: "/marketplace/legal/privacy-policy" },
+      { label: "Terms of Service", href: "/marketplace/legal/terms-of-service" },
+      { label: "Distance Sales Agreement", href: "/marketplace/legal/distance-sales-agreement" },
+      { label: "Cancellation & Refund Policy", href: "/marketplace/legal/cancellation-refund" },
+      { label: "Accessibility Statement", href: "/marketplace/legal/accessibility" },
+      { label: "How We Work", href: "/marketplace/legal/how-we-work" },
     ],
   },
   {
     title: "For Boutique Hotels & Property Managers",
     links: [
       { label: "For Boutique Hotels & Property Managers", href: "/marketplace/partner/extranet" },
-      { label: "Partner Support & Onboarding", href: "/marketplace/partner/yardim" },
-      { label: "Register Certified Experience / Service", href: "/marketplace/partner/kayit" },
-      { label: "Boutique Hotel Partnership", href: "/marketplace/partner/istirak" },
+      { label: "Partner Support & Onboarding", href: "/marketplace/partner/support" },
+      { label: "Register Certified Experience / Service", href: "/marketplace/partner/register" },
+      { label: "Boutique Hotel Partnership", href: "/marketplace/partner/partnership" },
     ],
   },
 ];
@@ -72,11 +75,21 @@ export function MarketplaceFooter() {
             </li>
             <li>
               <Link
-                href="/marketplace/iletisim"
+                href="/marketplace/contact"
                 className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
               >
-                Contact Guest Care & Support
+                Contact Guest Care &amp; Support
               </Link>
+            </li>
+            <li>
+              <a
+                href={CORPORATE_CONFIG.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[13px] text-ink-muted hover:text-terracotta hover:underline underline-offset-2 transition"
+              >
+                WhatsApp Concierge ({CORPORATE_CONFIG.contactPhone})
+              </a>
             </li>
             <li>
               <button
@@ -109,16 +122,88 @@ export function MarketplaceFooter() {
         ))}
       </div>
 
-      {/* Mandatory Regulatory Compliance Footer & Legal Disclaimer */}
-      <div className="max-w-6xl mx-auto px-5 md:px-8 pb-8">
+      {/* Mandatory Regulatory Compliance Footer, Corporate Impressum & ETBİS Badge Container */}
+      <div className="max-w-6xl mx-auto px-5 md:px-8 pb-8 space-y-4">
         <div className="rounded-2xl border border-sand-border bg-white/80 p-5 sm:p-6 shadow-[0_2px_12px_rgba(11,25,44,0.03)]">
           <div className="flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-terracotta shrink-0 mt-0.5" strokeWidth={1.75} />
             <div className="text-[12px] sm:text-[12.5px] text-ink-muted leading-relaxed">
               <p className="font-semibold text-ink mb-1">Marketplace &amp; Fulfillment Notice:</p>
               <p>
-                <span translate="no" className="notranslate">Purely Istanbul</span> is a curated marketplace and digital concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions, historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this platform are fulfilled and operated exclusively by independent, legally certified third-party businesses (including licensed TÜRSAB Group A travel agencies and authorized transportation fleets under the laws of the Republic of Turkey).
+                <span translate="no" className="notranslate">Purely Istanbul</span> is a curated marketplace and digital
+                concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions,
+                historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this
+                platform are fulfilled and operated exclusively by independent, legally certified third-party businesses
+                (including licensed TÜRSAB Group A travel agencies and authorized D2 transportation fleets under the
+                laws of the Republic of Türkiye).
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Official Corporate Impressum & ETBİS Verification Slot */}
+        <div className="rounded-2xl border border-sand-border bg-white/90 p-5 sm:p-6 shadow-[0_2px_12px_rgba(11,25,44,0.03)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-2 text-[12px] text-ink-muted leading-relaxed flex-1">
+            <div className="flex items-center gap-2 text-ink font-semibold text-[12.5px]">
+              <Building2 className="w-4 h-4 text-terracotta shrink-0" strokeWidth={1.75} />
+              <span>Corporate Impressum &amp; Statutory Disclosure</span>
+            </div>
+            <p>
+              <strong className="text-ink">Commercial Title:</strong> {CORPORATE_CONFIG.legalEntityName} ·{" "}
+              {CORPORATE_CONFIG.ukEntityName} ({CORPORATE_CONFIG.companyRegNo})
+            </p>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-terracotta shrink-0" />
+                <strong className="text-ink">Registered Office:</strong> {CORPORATE_CONFIG.registeredAddress}
+              </span>
+              <span>
+                <strong className="text-ink">Tax Office &amp; ID:</strong> {CORPORATE_CONFIG.taxOffice} ·{" "}
+                {CORPORATE_CONFIG.taxId} · <strong className="text-ink">MERSİS:</strong> {CORPORATE_CONFIG.mersisNo}
+              </span>
+            </p>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <a
+                href={`mailto:${CORPORATE_CONFIG.contactEmail}`}
+                className="inline-flex items-center gap-1.5 hover:text-terracotta transition"
+              >
+                <Mail className="w-3.5 h-3.5 text-terracotta shrink-0" />
+                <strong className="text-ink">Email:</strong> {CORPORATE_CONFIG.contactEmail}
+              </a>
+              <a
+                href={CORPORATE_CONFIG.contactPhoneHref}
+                className="inline-flex items-center gap-1.5 hover:text-terracotta transition"
+              >
+                <Phone className="w-3.5 h-3.5 text-terracotta shrink-0" />
+                <strong className="text-ink">Phone / WhatsApp Concierge:</strong> {CORPORATE_CONFIG.contactPhone}
+              </a>
+            </p>
+          </div>
+
+          {/* Dedicated ETBİS QR Code Badge Container */}
+          <div
+            id="etbis-badge-container"
+            data-testid="etbis-badge-slot"
+            className="shrink-0 w-full sm:w-auto rounded-xl border border-sand-border bg-sand-bg/70 px-4 py-3 flex items-center gap-3.5"
+          >
+            <div
+              className="w-12 h-12 rounded-lg border border-sand-border bg-white flex flex-col items-center justify-center text-ink shrink-0 shadow-2xs"
+              aria-label="ETBİS QR Verification Slot"
+            >
+              <QrCode className="w-6 h-6 text-ink" strokeWidth={1.6} />
+              <span className="text-[8px] font-bold tracking-widest uppercase text-terracotta mt-0.5">ETBİS</span>
+            </div>
+            <div className="text-[11px] leading-snug text-ink-muted">
+              <p className="font-semibold text-ink">ETBİS Registered E-Commerce</p>
+              <p>Republic of Türkiye Ministry of Trade</p>
+              <a
+                href={CORPORATE_CONFIG.etbisVerifyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10.5px] font-medium text-terracotta hover:underline inline-block mt-0.5"
+              >
+                Electronic Commerce Information System →
+              </a>
             </div>
           </div>
         </div>

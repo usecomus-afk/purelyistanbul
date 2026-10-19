@@ -4,21 +4,21 @@ import { ShieldCheck, HeartHandshake, Compass, ArrowRight } from "lucide-react";
 export const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Clear & Direct (Şeffaf)",
+    title: "Clear & Direct",
     description:
       "Clear experience details, local context, and straightforward digital booking across Istanbul.",
     icon: ShieldCheck,
   },
   {
     number: "02",
-    title: "Genuine Hospitality (Misafirperver)",
+    title: "Genuine Hospitality",
     description:
       "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
     icon: HeartHandshake,
   },
   {
     number: "03",
-    title: "Hyper-Local & Sincere (Samimi)",
+    title: "Hyper-Local & Sincere",
     description:
       "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
     icon: Compass,
@@ -118,7 +118,7 @@ export function EthicalCharterContent() {
             Need assistance during your stay in Istanbul? Our dedicated guest care team is here to help.
           </p>
           <Link
-            href="/marketplace/iletisim"
+            href="/marketplace/contact"
             className="inline-flex items-center gap-2 rounded-full bg-[#D47A43] hover:bg-[#c06832] text-white text-xs font-semibold px-5 py-2.5 transition"
           >
             <span>Contact Guest Care</span>

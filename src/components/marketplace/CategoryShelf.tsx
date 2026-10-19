@@ -8,6 +8,7 @@ import type { MarketplaceListing } from "@/lib/marketplace/types";
 interface CategoryShelfProps {
   id: string;
   title: string;
+  subtitle?: string;
   icon?: string;
   listings: MarketplaceListing[];
   favoriteIds: Set<string>;
@@ -15,7 +16,15 @@ interface CategoryShelfProps {
   onTitleClick?: () => void;
 }
 
-export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavorite, onTitleClick }: CategoryShelfProps) {
+export function CategoryShelf({
+  id,
+  title,
+  subtitle,
+  listings,
+  favoriteIds,
+  onToggleFavorite,
+  onTitleClick,
+}: CategoryShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -30,7 +39,6 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    // İlk render'da kontrol et
     updateArrows();
     const ro = new ResizeObserver(updateArrows);
     ro.observe(el);
@@ -55,7 +63,7 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
 
   return (
     <section id={id} style={{ scrollMarginTop: 180 }} className="py-7 border-b border-sand-border/40 last:border-b-0">
-      {/* Başlık */}
+      {/* Section Header */}
       <div className="flex items-center justify-between mb-4 px-5 md:px-8 max-w-6xl mx-auto">
         <div>
           <div className="flex items-baseline gap-3">
@@ -75,6 +83,11 @@ export function CategoryShelf({ id, title, listings, favoriteIds, onToggleFavori
               </button>
             )}
           </div>
+          {subtitle && (
+            <p className="text-[13px] sm:text-[14px] text-ink-muted mt-1 leading-snug italic">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* Arrow buttons — shown only when overflow exists */}

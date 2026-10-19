@@ -29,7 +29,7 @@ import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CategoryFilterBar } from "@/components/marketplace/CategoryFilterBar";
 import { CategoryShelf } from "@/components/marketplace/CategoryShelf";
 import { MarketplaceFooter } from "@/components/marketplace/MarketplaceFooter";
-import { MARKETPLACE_CATEGORIES, isRemovedCategory } from "@/lib/marketplace/categories";
+import { MARKETPLACE_CATEGORIES, isRemovedCategory, resolveCategoryParam } from "@/lib/marketplace/categories";
 import { useCategoryConfigs } from "@/lib/marketplace/use-category-configs";
 import { SEED_LISTINGS, getLiveCatalogListings } from "@/lib/marketplace/seed-listings";
 import { FirestoreService } from "@/lib/firestore-service";
@@ -55,21 +55,21 @@ const DURATION_OPTIONS: { key: DurationBucket; label: string }[] = [
 const GUIDING_PILLARS = [
   {
     number: "01",
-    title: "Clear & Direct (Şeffaf)",
+    title: "Clear & Direct",
     description:
       "Clear experience details, local context, and straightforward digital booking across Istanbul.",
     icon: ShieldCheck,
   },
   {
     number: "02",
-    title: "Genuine Hospitality (Misafirperver)",
+    title: "Genuine Hospitality",
     description:
       "Inspired by the timeless Turkish hosting tradition, with attentive guest support throughout your stay.",
     icon: HeartHandshake,
   },
   {
     number: "03",
-    title: "Hyper-Local & Sincere (Samimi)",
+    title: "Hyper-Local & Sincere",
     description:
       "\"Nothing but Istanbul.\" We don't stretch across 100 cities. We know every cobble of Galata, every tea garden in Kadıköy, and every historical secret of Sultanahmet.",
     icon: Compass,
@@ -146,6 +146,19 @@ export function MarketplaceHome() {
     const unsub = watchUserFavoriteIds(user.uid, setFavoriteIds);
     return () => unsub();
   }, [user]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const resolved = resolveCategoryParam(params.get("category"));
+        if (resolved) {
+          setCategory(resolved);
+          setFilterCategory(resolved);
+        }
+      } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     const refreshCatalog = () => {
@@ -577,13 +590,25 @@ export function MarketplaceHome() {
               <CategoryShelf
                 key={c.key}
                 id={`shelf-${c.key}`}
-                title={c.label}
+                title={c.key === "cat-8" ? "Curated Artisan & Bazaar Shopping" : c.label}
+                subtitle={
+                  c.key === "cat-8"
+                    ? "Authentic craftsmanship, private bazaar access, and bespoke atelier visits"
+                    : c.subtitle
+                }
                 icon={c.icon}
                 listings={withCover.filter((l) => l.category === c.key)}
                 favoriteIds={favoriteIds}
                 onToggleFavorite={handleToggleFavorite}
                 onTitleClick={() => {
                   setFilterCategory(c.key);
+                  if (typeof window !== "undefined") {
+                    try {
+                      const url = new URL(window.location.href);
+                      url.searchParams.set("category", c.slug || c.key);
+                      window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+                    } catch {}
+                  }
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
               />
@@ -706,7 +731,7 @@ export function MarketplaceHome() {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/marketplace/partner/kayit"
+              href="/marketplace/partner/register"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-sand-border hover:border-ink text-ink font-semibold px-6 py-3 text-sm transition"
             >
               Apply as a Verified Partner

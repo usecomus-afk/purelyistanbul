@@ -126,19 +126,19 @@ export function MarketplaceHeader() {
                           <span>For Boutique Hotels & Property Managers</span>
                         </Link>
                       )}
-                      <Link href="/marketplace/partner/kayit" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
+                      <Link href="/marketplace/partner/register" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
                         <span>Register Certified Experience</span>
                       </Link>
-                      <Link href="/marketplace/partner/istirak" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
+                      <Link href="/marketplace/partner/partnership" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
                         <span>Hotel &amp; Partner Network</span>
                       </Link>
                     </div>
 
                     <div className="py-1 border-b border-sand-border/60">
-                      <Link href="/marketplace/iletisim" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
-                        <span>Guest Care & Support</span>
+                      <Link href="/marketplace/contact" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
+                        <span>Guest Care &amp; Support</span>
                       </Link>
-                      <Link href="/marketplace/legal/calisma-seklimiz" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
+                      <Link href="/marketplace/legal/how-we-work" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-sand-bg transition rounded-xl mx-1">
                         <span>How We Work</span>
                       </Link>
                     </div>
