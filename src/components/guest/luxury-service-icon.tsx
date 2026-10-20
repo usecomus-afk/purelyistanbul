@@ -11,7 +11,7 @@ interface LuxuryServiceIconProps {
  * Minimal, refined, modern monoline icons for In-Room Services (Konaklama).
  * - Clean 24x24 architectural geometry
  * - Calm antique-bronze stroke (#7D5E28) with whisper-soft warm ivory tint
- * - Zero cartoon clip-art details, zero heavy 3D extrusion filters
+ * - Subtle minimalist 3D: soft gradient volume, thin extrusion offset and gentle drop shadow
  */
 export function LuxuryServiceIcon({
   serviceKey,
@@ -19,7 +19,8 @@ export function LuxuryServiceIcon({
 }: LuxuryServiceIconProps) {
   const normalizedKey = (serviceKey || "").trim();
   const strokeColor = "#7D5E28";
-  const softFill = "rgba(255, 251, 242, 0.55)";
+  const uid = React.useId().replace(/:/g, "");
+  const softFill = `url(#${uid}-fill)`;
 
   const renderPaths = () => {
     switch (normalizedKey) {
@@ -225,8 +226,34 @@ export function LuxuryServiceIcon({
         className="w-full h-full relative z-10"
         aria-hidden="true"
       >
+        <defs>
+          <linearGradient id={`${uid}-fill`} gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21">
+            <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.98" />
+            <stop offset="0.55" stopColor="#F7ECD3" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#DFC187" stopOpacity="0.9" />
+          </linearGradient>
+          <linearGradient id={`${uid}-stroke`} gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21">
+            <stop offset="0" stopColor="#B08A45" />
+            <stop offset="1" stopColor="#6B4E1F" />
+          </linearGradient>
+          <filter id={`${uid}-shadow`} x="-30%" y="-30%" width="170%" height="180%">
+            <feDropShadow dx="0" dy="0.8" stdDeviation="0.65" floodColor="#5A3F14" floodOpacity="0.34" />
+          </filter>
+        </defs>
         <g
-          stroke={strokeColor}
+          transform="translate(0.45 0.7)"
+          stroke="#8A6A32"
+          strokeOpacity="0.42"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.55"
+        >
+          {renderPaths()}
+        </g>
+        <g
+          filter={`url(#${uid}-shadow)`}
+          stroke={`url(#${uid}-stroke)`}
           strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"

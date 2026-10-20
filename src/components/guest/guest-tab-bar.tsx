@@ -329,7 +329,7 @@ export function GuestTabBar({
 
   if (!shouldShow) return null;
 
-  const isHidden = !shouldShowDark || isFooterScrollHidden;
+  const isHidden = !shouldShowDark || (isFooterScrollHidden && currentTab !== 'categories');
 
   return (
     <nav

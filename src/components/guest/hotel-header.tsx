@@ -225,7 +225,7 @@ export function HotelHeader({
     toast.info("Oturum kapatıldı.");
   };
 
-  const hideBar = isHeaderHidden && !showHotelModal && !showPwaModal && !showCheckinModal && !showUserDropdown;
+  const hideBar = isHeaderHidden && activeTab !== 'categories' && !showHotelModal && !showPwaModal && !showCheckinModal && !showUserDropdown;
 
   return (
     <>
