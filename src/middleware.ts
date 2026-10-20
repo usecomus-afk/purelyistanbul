@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Global Host Redirect Middleware
- * Redirects purelyistanbul.co, purelyistanbul.co.uk and any non-canonical domains
+ * Redirects purelyistanbul.uk, purelyistanbul.co.uk, purelyistanbul.co and any non-canonical domains
  * directly to https://purelyistanbul.com while preserving query parameters and pathnames.
  */
 export function middleware(request: NextRequest) {
@@ -16,10 +16,12 @@ export function middleware(request: NextRequest) {
 
   // Alternative domains that should permanently redirect to purelyistanbul.com
   const redirectDomains = [
-    'purelyistanbul.co',
-    'www.purelyistanbul.co',
+    'purelyistanbul.uk',
+    'www.purelyistanbul.uk',
     'purelyistanbul.co.uk',
     'www.purelyistanbul.co.uk',
+    'purelyistanbul.co',
+    'www.purelyistanbul.co',
     'www.purelyistanbul.com',
   ];
 
