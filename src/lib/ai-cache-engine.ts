@@ -84,83 +84,59 @@ export function getInstantKnowledgeAnswer(
 ): { reply: string; recommendations: Array<{ title: string; category: string; location: string }> } | null {
   const norm = normalizeQuery(query);
 
-  // 1. Wi-Fi / Internet Questions
-  if (norm.includes('wifi') || norm.includes('wi-fi') || norm.includes('internet') || norm.includes('sifre') || norm.includes('şifre') || norm.includes('password')) {
+  // 1-3. Tesise özel bilgiler (Wi-Fi, kahvaltı, giriş/çıkış saatleri)
+  // Bu bilgiler her tesiste farklıdır ve burada doğrulanmış veri yoktur; sabit saat/şifre UYDURMAK yerine
+  // misafiri dürüstçe resepsiyona yönlendiririz.
+  const isWifi = norm.includes('wifi') || norm.includes('wi-fi') || norm.includes('internet') || norm.includes('sifre') || norm.includes('şifre') || norm.includes('password');
+  const isBreakfast = norm.includes('kahvalti') || norm.includes('kahvaltı') || norm.includes('breakfast') || norm.includes('frühstück') || norm.includes('petit dejeuner') || norm.includes('فطور') || norm.includes('завтрак');
+  const isCheckout = norm.includes('cikis') || norm.includes('çıkış') || norm.includes('checkout') || norm.includes('check out') || norm.includes('gec cikis') || norm.includes('geç çıkış') || norm.includes('выезд') || norm.includes('مغادرة');
+  if (isWifi || isBreakfast || isCheckout) {
+    const topicTr = isWifi ? 'Wi-Fi bilgileri' : isBreakfast ? 'kahvaltı saatleri' : 'giriş/çıkış saatleri';
+    const topicEn = isWifi ? 'Wi-Fi details' : isBreakfast ? 'breakfast hours' : 'check-in/check-out times';
+    const place = hotelName || '';
     const replies: Record<string, string> = {
-      tr: `Otelimiz ${hotelName} bünyesinde tüm oda ve ortak alanlarda yüksek hızlı ücretsiz Wi-Fi hizmeti bulunmaktadır. Ağ adı ve şifrenize ekranın üst kısmındaki "Otel & Wi-Fi Bilgisi" kartına tıklayarak hemen erişebilirsiniz.`,
-      en: `Complimentary high-speed Wi-Fi is available across all rooms and public areas at ${hotelName}. You can view the network name and copy the password directly by tapping the "Hotel & Wi-Fi Info" bar at the top of your screen.`,
-      ar: `يتوفر إنترنت واي فاي عالي السرعة مجاناً في جميع الغرف والمرافق في ${hotelName}. يمكنك عرض كلمة المرور ونسخها مباشرة من بطاقة معلومات الفندق والواي فاي أعلى الشاشة.`,
-      ru: `В отеле ${hotelName} доступен бесплатный высокоскоростной Wi-Fi во всех номерах. Вы можете посмотреть имя сети и скопировать пароль в верхней карточке "Инфо об отеле и Wi-Fi".`,
-      de: `Kostenloses Highspeed-WLAN steht Ihnen in allen Zimmern und öffentlichen Bereichen des ${hotelName} zur Verfügung. Die Zugangsdaten können Sie direkt oben in der Leiste einsehen.`,
-      fr: `Une connexion Wi-Fi haut débit gratuite est disponible dans toutes les chambres de ${hotelName}. Vous pouvez consulter les identifiants en haut de votre écran.`
+      tr: `${place ? `${place} için ` : ''}${topicTr} konusunda elimde doğrulanmış bir bilgi yok; yanlış bilgi vermemek için tahmin yürütmüyorum. En doğru bilgiyi resepsiyon verecektir. Bir talebiniz varsa "Oda İçi Hizmetler" menüsünden de iletebilirsiniz.`,
+      en: `I don't have verified ${topicEn}${place ? ` for ${place}` : ''}, and I'd rather not guess. Reception will give you the accurate information. You can also send a request via the in-room services menu.`,
+      ar: `لا تتوفر لدي معلومات مؤكدة حول هذا الموضوع${place ? ` في ${place}` : ''}، ولا أريد التخمين. سيزودك مكتب الاستقبال بالمعلومات الدقيقة.`,
+      ru: `У меня нет проверенной информации по этому вопросу${place ? ` для ${place}` : ''}, и я не хочу гадать. Точную информацию вам даст стойка регистрации.`,
+      de: `Dazu habe ich${place ? ` für ${place}` : ''} keine verifizierten Informationen und möchte nicht raten. Die Rezeption gibt Ihnen gerne die genaue Auskunft.`,
+      fr: `Je n'ai pas d'information vérifiée à ce sujet${place ? ` pour ${place}` : ''} et je préfère ne pas deviner. La réception vous donnera l'information exacte.`
     };
     return {
       reply: replies[language] || replies.en,
-      recommendations: [{ title: `${hotelName} Oda & Wi-Fi Rehberi`, category: "Otel Hizmeti", location: hotelDistrict }]
-    };
-  }
-
-  // 2. Breakfast Questions
-  if (norm.includes('kahvalti') || norm.includes('kahvaltı') || norm.includes('breakfast') || norm.includes('frühstück') || norm.includes('petit dejeuner') || norm.includes('فطور') || norm.includes('завтрак')) {
-    const replies: Record<string, string> = {
-      tr: `${hotelName} bünyesinde zengin açık büfe Türk ve dünya kahvaltısı her sabah 07:30 – 10:30 saatleri arasında ana restoranda servis edilmektedir. Odanıza kahvaltı servisi için "Otel Hizmetleri" sekmesinden 1 tıkla talep oluşturabilirsiniz.`,
-      en: `At ${hotelName}, a rich open buffet Turkish and international breakfast is served every morning from 07:30 to 10:30 in the main restaurant. You can also order breakfast to your room via the "Hotel Services" tab.`,
-      ar: `يقدم بوفيه إفطار تركي وعالمي مفتوح يومياً في ${hotelName} من الساعة 07:30 حتى 10:30 صباحاً في المطعم الرئيسي. يمكنك أيضاً طلب الإفطار إلى غرفتك من تبويب خدمات الفندق.`,
-      ru: `В ${hotelName} богатый завтрак "шведский стол" сервируется каждое утро с 07:30 до 10:30 в главном ресторане. Вы также можете заказать завтрак в номер в разделе "Услуги отеля".`,
-      de: `Im ${hotelName} wird jeden Morgen von 07:30 bis 10:30 Uhr ein reichhaltiges Frühstücksbuffet serviert. Zimmerservice ist über den Reiter "Hotelservices" bestellbar.`,
-      fr: `À ${hotelName}, un buffet de petit-déjeuner complet est servi chaque matin de 07h30 à 10h30. Vous pouvez également commander en chambre via l'onglet "Services Hôtel".`
-    };
-    return {
-      reply: replies[language] || replies.en,
-      recommendations: [{ title: "Zengin Açık Büfe Kahvaltı", category: "Gastronomi", location: hotelDistrict }]
-    };
-  }
-
-  // 3. Checkout / Late Checkout Questions
-  if (norm.includes('cikis') || norm.includes('çıkış') || norm.includes('checkout') || norm.includes('check out') || norm.includes('gec cikis') || norm.includes('geç çıkış') || norm.includes('выезд') || norm.includes('مغادرة')) {
-    const replies: Record<string, string> = {
-      tr: `Standart çıkış saatimiz 12:00'dir. Müsaitlik durumuna göre saat 14:00'e kadar geç çıkış talebinde bulunmak için "Otel Hizmetleri" sekmesindeki "Geç Çıkış Talebi" modülünü kullanabilir veya resepsiyonumuza danışabilirsiniz.`,
-      en: `Our standard check-out time is 12:00 PM. Late check-out until 02:00 PM is subject to availability and can be requested via the "Late Check-out" button in the Hotel Services tab.`,
-      ar: `وقت تسجيل المغادرة القياسي هو الساعة 12:00 ظهراً. يمكنك طلب تسجيل مغادرة متأخر حتى الساعة 14:00 حسب الإمكانية عبر تبويب خدمات الفندق.`,
-      ru: `Стандартное время выезда — 12:00. Поздний выезд до 14:00 возможен при наличии мест через кнопку "Поздний выезд" в услугах отеля.`,
-      de: `Die reguläre Check-out-Zeit ist 12:00 Uhr. Einen Late Check-out bis 14:00 Uhr können Sie im Bereich "Hotelservices" anfragen.`,
-      fr: `L'heure de départ standard est 12h00. Un départ tardif jusqu'à 14h00 peut être demandé via l'onglet "Services Hôtel".`
-    };
-    return {
-      reply: replies[language] || replies.en,
-      recommendations: [{ title: "Geç Çıkış Hizmeti", category: "Otel Hizmeti", location: hotelDistrict }]
+      recommendations: []
     };
   }
 
   // 4. Istanbulkart / Transit Pass Questions
   if (norm.includes('istanbulkart') || norm.includes('istanbul kart') || norm.includes('metro kart') || norm.includes('akbil') || norm.includes('toplu tasima')) {
     const replies: Record<string, string> = {
-      tr: `İstanbulkart, şehrimizdeki tüm metro, tramvay, Marmaray, metrobüs ve şehir hatları vapurlarında geçerlidir. Fiziksel kartı en yakın tramvay/metro istasyonu biletmatiklerinden temin edebilir veya "Rehber" sekmemizdeki resmi bağlantıdan dijital yükleme yapabilirsiniz.`,
-      en: `Istanbulkart is the official public transit card valid across all metro, tram, Marmaray, and ferry lines. You can purchase physical cards from yellow ticket kiosks at nearby stations or top up online via the link in our "City Guide" tab.`,
-      ar: `بطاقة إسطنبول كارت صالحة في جميع خطوط المترو والترام والسفن. يمكنك شراء البطاقة من أجهزة المحطات أو إعادة الشحن عبر رابط دليل المدينة.`,
+      tr: `İstanbulkart; metro, tramvay, Marmaray, metrobüs ve şehir hatları vapurlarında kullanılan toplu taşıma kartıdır. Kartı istasyonlardaki bilet makinelerinden alıp yükleyebilirsiniz. Güncel ücretleri makinede veya resmi İstanbulkart kaynaklarında kontrol edin; "yardım" bahanesiyle yaklaşan kişilere kart ya da para vermeyin.`,
+      en: `Istanbulkart is the public transit card used on metro, tram, Marmaray, metrobus and city ferries. You can buy and top it up at ticket machines in stations. Check current fares at the machine or on official Istanbulkart sources, and never hand your card or cash to strangers offering "help".`,
+      ar: `بطاقة إسطنبول كارت صالحة في خطوط المترو والترام والسفن. يمكنك شراؤها وشحنها من أجهزة التذاكر في المحطات. تحقق من الأسعار الحالية على الجهاز.`,
       ru: `Istanbulkart действует на всех линиях метро, трамваев и паромов. Купить карту можно в автоматах Biletmatik на станциях.`,
       de: `Die Istanbulkart gilt für alle U-Bahnen, Straßenbahnen und Fähren. Erhältlich an den gelben Automaten aller Stationen.`,
       fr: `L'Istanbulkart est valable sur tous les métros, tramways et ferries. Achat possible aux bornes de chaque station.`
     };
     return {
       reply: replies[language] || replies.en,
-      recommendations: [{ title: "İstanbulkart Resmi Başvuru & Yükleme", category: "Ulaşım", location: "Tüm İstanbul" }]
+      recommendations: []
     };
   }
 
   // 5. Tourist Rights / Fraud / Complaint Desk
   if (norm.includes('sikayet') || norm.includes('şikayet') || norm.includes('dolandirildim') || norm.includes('dolandırıldım') || norm.includes('fazla para') || norm.includes('hakem masasi') || norm.includes('hakem masası') || norm.includes('complaint') || norm.includes('scam') || norm.includes('ombudsman')) {
     const replies: Record<string, string> = {
-      tr: `purelyİstanbul olarak misafirlerimizin güvenliğini en üst düzeyde koruyoruz! "Rehber" sekmesinde yer alan "purelyİstanbul Misafir Kalkanı & Turist Hakem Masası" üzerinden taksi, esnaf veya işletme şikayetlerinizi fiş/fatura ile doğrudan iletebilirsiniz. Kimliğiniz gizli tutularak resmi bildirim süreci başlatılır.`,
-      en: `As purelyİstanbul, your safety is our top priority! Through our "Guest Shield & Tourist Ombudsman Desk" located in the "Guide" tab, you can officially submit disputes regarding taxis or vendors with receipt evidence while keeping your identity 100% private.`,
-      ar: `سلامتكم هي أولويتنا في purelyİstanbul! من خلال "درع حماية النزلاء وديوان المظالم" في تبويب الدليل، يمكنك تقديم أي شكوى رسمية بشأن التاكسي أو المتاجر بأمان تام وهوية محمية.`,
-      ru: `Ваша безопасность — наш приоритет! В разделе "Гид" доступен "Щит защиты гостей", где можно подать официальную жалобу на такси или магазин с сохранением конфиденциальности.`,
-      de: `Ihre Sicherheit steht an erster Stelle! Über den "Gästeschutz & Tourismus-Ombudsmann" im Reiter "Führer" können Sie Beschwerden sicher und anonym einreichen.`,
-      fr: `Votre sécurité est notre priorité ! Via le "Bouclier Invités" dans l'onglet "Guide", vous pouvez signaler tout litige de manière totalement confidentielle.`
+      tr: `Bunu yaşadığınız için üzgünüm. Uygulamadaki "Hakem Masası" sayfasından yaşadığınız sorunu fiş/fatura veya fotoğrafla birlikte iletebilirsiniz. Acil bir durum varsa 112'yi arayın; turist olarak yaşadığınız sorunlarda Turizm Polisi'ne de başvurabilirsiniz.`,
+      en: `I'm sorry this happened. You can report it with a receipt or photo through the "Complaint Desk" page in the app. In an emergency call 112; you can also contact the Tourism Police.`,
+      ar: `نأسف لما حدث. يمكنك تقديم شكوى مع الإيصال أو صورة عبر صفحة "مكتب الشكاوى" في التطبيق. في حالات الطوارئ اتصل بالرقم 112، ويمكنك أيضاً التواصل مع شرطة السياحة.`,
+      ru: `Сожалеем о случившемся. Вы можете подать жалобу с чеком или фото через раздел «Жалобы» в приложении. В экстренной ситуации звоните 112; также можно обратиться в туристическую полицию.`,
+      de: `Das tut mir leid. Sie können den Vorfall mit Beleg oder Foto über die Seite „Beschwerdestelle" in der App melden. Im Notfall wählen Sie 112; außerdem können Sie sich an die Touristenpolizei wenden.`,
+      fr: `Désolé pour cette situation. Vous pouvez la signaler avec un reçu ou une photo via la page « Réclamations » de l'application. En cas d'urgence, appelez le 112 ; vous pouvez aussi contacter la police touristique.`
     };
     return {
       reply: replies[language] || replies.en,
-      recommendations: [{ title: "purelyİstanbul Turist Hakem Masası & Misafir Kalkanı", category: "Güvenlik & Haklar", location: "Merkez Masası" }]
+      recommendations: []
     };
   }
 

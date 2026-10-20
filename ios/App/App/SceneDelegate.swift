@@ -85,6 +85,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "purelyNotify")
         bridgeVC.webView?.configuration.userContentController.add(notifyScriptHandler, name: "purelyNotify")
 
+        // 100% Native feel: disable text selection and iOS long-press browser callout menus
+        let nativeTouchCSS = """
+        * {
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        input, textarea, [contenteditable="true"] {
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
+        }
+        """
+        let disableCalloutScript = WKUserScript(
+            source: "var s = document.createElement('style'); s.innerHTML = `\(nativeTouchCSS)`; document.head ? document.head.appendChild(s) : document.addEventListener('DOMContentLoaded', function(){ document.head.appendChild(s); });",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+        bridgeVC.webView?.configuration.userContentController.addUserScript(disableCalloutScript)
+
         let videoURL = Bundle.main.url(forResource: "splash-intro", withExtension: "mp4", subdirectory: "public/videos")
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 

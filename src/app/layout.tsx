@@ -7,6 +7,22 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.purelyistanbul.com"),
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-video-preview": -1,
+      "max-image-preview": "none",
+      "max-snippet": -1,
+    },
+  },
+  other: {
+    robots: "noindex, nofollow, noarchive",
+  },
   title: "Purely Istanbul — Nothing but Istanbul | Curated Experiences & Local Marketplace",
   description:
     "Your curated city companion for authentic Bosphorus cruises, historic walks, culinary trails, traditional hammams, artisan bazaar shopping, and vetted local services across Istanbul.",

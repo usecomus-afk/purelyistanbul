@@ -1896,10 +1896,9 @@ export const XeniosStore = {
       if (stored) return JSON.parse(stored);
     } catch (e) {}
     return {
-      travelStyle: 'couple',
-      budgetLevel: 'luxury',
-      interests: ['Boğaz Turları', 'Tarih', 'Gastronomi', 'Hamam', 'Yatırım', 'Medikal Estetik'],
-      dietaryRestrictions: ['Helal', 'Deniz Ürünleri'],
+      // Misafir anketi doldurmadan hiçbir tercih/alerji/diyet varsayılmaz.
+      interests: [],
+      dietaryRestrictions: [],
       kvkkConsent: false
     };
   },
@@ -1954,64 +1953,36 @@ export const XeniosStore = {
       }
     } catch (e) {}
 
-    // Default Initial State for Alex Mercer
+    // Varsayılan boş profil — misafir hakkında bilgi uydurulmaz
     return {
-      guest_id: 'usr_alex_304',
-      first_name: 'Alex',
-      last_name: 'Mercer',
+      guest_id: 'guest_anonymous',
+      first_name: '',
+      last_name: '',
       hotel_info: {
         hotel_id: this.getActiveHotelId(),
-        hotel_name: 'Pera Palace Hotel',
+        hotel_name: '',
         room_number: this.getActiveRoomId(),
-        district: 'Beyoğlu',
-        location: { lat: 41.0312, lng: 28.9744 }
+        district: '',
+        location: { lat: 0, lng: 0 }
       },
       guest_profile_survey: surveyProfile,
       know_me_profile: {
-        travel_purpose: 'HEALTH_AESTHETICS',
+        travel_purpose: 'LEISURE',
         interests: {
           aesthetic_and_wellness: {
-            interested: true,
-            sub_categories: ['HYDRAFACIAL', 'SPA_MASSAGE', 'HAMMAM', 'BOTOX_FILLERS']
+            interested: false,
+            sub_categories: []
           },
-          gastronomy: true,
-          bosphorus_tours: true,
+          gastronomy: false,
+          bosphorus_tours: false,
           real_estate_investment: false,
           nightlife_pubcrawl: false
         },
-        budget_tier: surveyProfile.budgetLevel === 'economy' ? 'BUDGET' : surveyProfile.budgetLevel === 'moderate' ? 'MODERATE' : 'LUXURY'
+        budget_tier: surveyProfile.budgetLevel === 'economy' ? 'BUDGET' : surveyProfile.budgetLevel === 'luxury' ? 'LUXURY' : 'MODERATE'
       },
-      viewed_listings_history: [
-        {
-          listing_id: 'exp-1',
-          title: 'Tarihi Cağaloğlu Hamamı Masaj & Kese',
-          category: 'Kültür & Hamam',
-          district: 'Sultanahmet',
-          viewed_at: new Date(Date.now() - 3600000).toISOString()
-        },
-        {
-          listing_id: 'exp-aesthetic-1',
-          title: 'Quartz Clinique – Nişantaşı Glow & Fraksiyonel Cilt Yenileme',
-          category: 'Medikal Estetik',
-          district: 'Nişantaşı / Şişli',
-          viewed_at: new Date(Date.now() - 1800000).toISOString()
-        }
-      ],
+      viewed_listings_history: [],
       blacklisted_offers: [],
-      booked_itinerary: [
-        {
-          booking_id: 'bk_sample_01',
-          title: 'Mega Lüfer Sunset Dinner Cruise',
-          category: 'Boğaz & Tekne',
-          location_name: 'Kabataş İskelesi',
-          district: 'Beyoğlu',
-          location_coordinates: { lat: 41.0365, lng: 28.9895 },
-          date: '2026-08-24',
-          start_time: '19:30',
-          end_time: '22:30',
-          status: 'CONFIRMED'
-        }
-      ]
+      booked_itinerary: []
     };
   },
 

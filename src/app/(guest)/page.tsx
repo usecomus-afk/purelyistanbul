@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Capacitor } from "@capacitor/core";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DemoSandboxBanner } from "@/components/marketplace/DemoSandboxBanner";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 import { MarketplaceHome } from "@/components/marketplace/MarketplaceHome";
 import { GuestConciergeView } from "@/components/guest/guest-concierge-view";
@@ -43,6 +44,7 @@ export default function RootPage() {
   return (
     <AuthProvider>
       <div className={`min-h-screen bg-sand-bg text-ink ${marketplaceFont.className}`}>
+        <DemoSandboxBanner />
         <MarketplaceHeader />
         <div>
           <MarketplaceHome />

@@ -1,8 +1,11 @@
 import { GoogleGenAI, Type, type FunctionDeclaration } from '@google/genai';
-import verifiedPlacesData from '@/data/purely_verified_places.json';
-import rawHotels from '@/data/hotels.json';
-import rawProperties from '@/data/properties.json';
-import { Hotel, InRoomServiceItem, PropertyListing } from '@/lib/types';
+import { InRoomServiceItem } from '@/lib/types';
+import { COMUS_PERSONA_PROMPT } from '@/prompts/comusSystemPrompt';
+import {
+  formatCatalogForPrompt,
+  getPublishedListings,
+  searchPublishedListings,
+} from '@/services/comusListingCatalog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -45,8 +48,8 @@ NAME, PURPOSE & CONVERSATION CONTINUITY RULES (CRITICAL):
 2. REAL-TIME INVENTORY & TOGGLE ENFORCEMENT (CRITICAL):
 - ALWAYS check activeServices in the [LIVE PROPERTY SNAPSHOT] before recommending in-stay comfort.
 - NEVER offer or promise a service listed in disabledServices or where isAvailableNow === false.
-- If a guest asks for an inactive or closed service (e.g. asks for breakfast at 14:00 or dry cleaning on Sunday when disabled), politely explain the current status:
-  "Şu an dairenize kahvaltı servis saatimiz (08:00 - 11:30) sona erdi; ancak yakınınızda harika bir yerel fırın/kafe önerebilirim veya yarın sabah için siparişinizi şimdiden oluşturabilirim."
+- If a guest asks for an inactive or closed service, politely explain the current status using ONLY the hours given in the snapshot (if no hours are given, do not state any hours), and offer to schedule it or refer them to reception.
+- NEVER state hours, prices, Wi-Fi details, check-in/check-out times or policies of the property unless they appear in the [LIVE PROPERTY SNAPSHOT]. If they are missing, say you don't have that information and refer the guest to reception.
 
 3. CONTINUOUS STAY ASSISTANCE (FROM 2ND MESSAGE ONWARD):
 - The opening welcome message has already been displayed to the guest in the chat interface.
@@ -63,19 +66,21 @@ When the guest requests any in-stay service:
 
 5. PRACTICAL TAXI TIPS & VERIFIED CURATION:
 - When asked about prices, taxis, or common tourist traps, provide official local norms via \`checkTaxiFare\` and practical tips (e.g. checking that the taximeter is turned on and checking banknote denominations).
-- Only recommend locations from the curated 4 districts (Fatih, Beyoğlu, Beşiktaş, Kadıköy) via \`searchVerifiedPlaces\`. Never hallucinate unverified businesses or fake entry fees.
-- Append relevant deep-link tags for booking verified city experiences:
-  - [action:explore_category, id:bosphorus]
-  - [action:explore_category, id:history]
-  - [action:explore_category, id:hammam]
-  - [action:explore_category, id:culinary]
-  - [action:explore_category, id:transfer]
+
+6. PLATFORM LISTINGS — LIVE CATALOG ONLY (CRITICAL):
+- Your ONLY knowledge of platform listings (tours, experiences, restaurants, stays, services offered on Purely Istanbul) is the [PUBLISHED LISTINGS] block below and the \`searchPublishedListings\` tool. Both reflect listings that are live right now.
+- NEVER mention, recommend or offer to book a platform listing that is not in that live data. Do not rely on any earlier memory of listings — it is outdated.
+- If no published listing fits (or none exist), say so honestly. You may still share general local knowledge as an Istanbulite, but do not present it as a bookable platform listing and do not invent prices, hours or availability.
+- Only append a deep-link tag ([action:explore_category, id:...]) when you actually present a matching published listing.
 - Keep responses concise (under 150-180 words), structured with clean bullet points.`;
 
 /**
  * Builds the full Gemini system_instruction with the injected [LIVE PROPERTY SNAPSHOT] JSON.
  */
-export function buildComusSystemInstruction(liveContext: PropertyLiveContext): string {
+export function buildComusSystemInstruction(
+  liveContext: PropertyLiveContext,
+  publishedListingsText: string = formatCatalogForPrompt([])
+): string {
   const dynamicInstruction = COMUS_SYSTEM_INSTRUCTION
     .replace(/\[propertyName\]/g, liveContext.propertyName)
     .replace(/unit:unitName/g, `unit:${liveContext.unitName}`);
@@ -97,7 +102,7 @@ Sen Comus'sun, ${liveContext.propertyName} adlı tesisin özel dijital asistanı
 
 4. OTEL İÇİ TALEPLERİN ÖNCELİĞİ: Misafirlerin havlu, temizlik, arıza veya ${hotelServices} gibi otel içi operasyonel talepleri her zaman en yüksek önceliğe sahiptir. Bu tür bir talep geldiğinde turistik öneri modüllerini tamamen devre dışı bırak ve sadece ilgili otel departmanına bilgi verildiğini net bir şekilde teyit et.`;
 
-  return `${dynamicInstruction}\n\n${coreRules}\n\n[LIVE PROPERTY SNAPSHOT: ${JSON.stringify(liveContext)}]`;
+  return `${COMUS_PERSONA_PROMPT}\n\n${dynamicInstruction}\n\n${coreRules}\n\n[PUBLISHED LISTINGS — şu an yayında olan ilanlar]\n${publishedListingsText}\n\n[LIVE PROPERTY SNAPSHOT: ${JSON.stringify(liveContext)}]`;
 }
 
 /**
@@ -207,8 +212,6 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
   key: string;
   title: string;
   defaultEnabled: boolean;
-  defaultHours?: string;
-  defaultPrice?: string;
   aliases?: string[];
 }> = [
   {
@@ -216,8 +219,6 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
     key: 'breakfast',
     title: 'Kahvaltı & Yeme-İçme',
     defaultEnabled: true,
-    defaultHours: '08:00 - 11:30',
-    defaultPrice: '300 ₺',
     aliases: ['roomservice'],
   },
   {
@@ -225,8 +226,6 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
     key: 'cleaning',
     title: 'Temizlik Talebi',
     defaultEnabled: true,
-    defaultHours: '09:00 - 18:00',
-    defaultPrice: 'Ücretsiz',
     aliases: ['extra_cleaning', 'housekeeping'],
   },
   {
@@ -234,8 +233,6 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
     key: 'technical',
     title: 'Teknik Destek',
     defaultEnabled: true,
-    defaultHours: '7/24',
-    defaultPrice: 'Ücretsiz',
     aliases: ['technical', 'support', 'ac', 'wifi'],
   },
   {
@@ -243,80 +240,66 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
     key: 'dnd',
     title: 'Rahatsız Etmeyin',
     defaultEnabled: true,
-    defaultHours: '7/24',
   },
   {
     id: 'linens',
     key: 'linens',
     title: 'Çarşaf & Nevresim',
     defaultEnabled: true,
-    defaultHours: '09:00 - 20:00',
   },
   {
     id: 'toiletries',
     key: 'toiletries',
     title: 'Banyo Bukleti',
     defaultEnabled: true,
-    defaultHours: '7/24',
   },
   {
     id: 'lateCheckout',
     key: 'lateCheckout',
     title: 'Geç Çıkış Talebi',
     defaultEnabled: true,
-    defaultHours: '08:00 - 12:00',
-    defaultPrice: "14:00'e kadar ücretsiz",
   },
   {
     id: 'extendStay',
     key: 'extendStay',
     title: 'Konaklama Uzatma',
     defaultEnabled: true,
-    defaultHours: '7/24',
-    defaultPrice: '3.200 ₺ / gece',
   },
   {
     id: 'towels',
     key: 'towels',
     title: 'Temiz Havlu',
     defaultEnabled: false,
-    defaultHours: '08:00 - 22:00',
   },
   {
     id: 'pillows',
     key: 'pillows',
     title: 'Ekstra Yastık',
     defaultEnabled: false,
-    defaultHours: '08:00 - 22:00',
   },
   {
     id: 'hygiene',
     key: 'hygiene',
     title: 'Hijyen & Bakım Seti',
     defaultEnabled: false,
-    defaultHours: '7/24',
   },
   {
     id: 'minibar',
     key: 'minibar',
     title: 'Mini Bar Dolumu',
     defaultEnabled: false,
-    defaultHours: '10:00 - 22:00',
   },
   {
     id: 'safe',
     key: 'safe',
     title: 'Kasa & Güvenlik',
     defaultEnabled: false,
-    defaultHours: '7/24',
   },
   {
     id: 'laundry',
     key: 'laundry',
     title: 'Çamaşırhane & Kuru Temizleme',
     defaultEnabled: false,
-    defaultHours: '08:00 - 20:00',
-    defaultPrice: '35 ₺ - 80 ₺',
     aliases: ['dry_cleaning'],
   },
   {
@@ -324,7 +307,6 @@ const DEFAULT_SERVICE_DEFINITIONS: Array<{
     key: 'taxi',
     title: 'Taksi & VIP Transfer',
     defaultEnabled: false,
-    defaultHours: '7/24',
   },
 ];
 
@@ -400,25 +382,13 @@ export async function fetchPropertyLiveContext({
     remoteProperty = await fetchFirestoreDoc('properties', cleanPropertyId);
   }
 
-  // 2. Fallback to seeded JSON catalogs if not yet written to Firestore
-  const seedHotels = rawHotels as Hotel[];
-  const seedProps = rawProperties as PropertyListing[];
-  const matchedSeedHotel =
-    seedHotels.find((h) => h.id === cleanPropertyId) ||
-    (fallbackHotelName
-      ? seedHotels.find((h) => h.name.toLowerCase() === fallbackHotelName.toLowerCase())
-      : undefined) ||
-    seedHotels[0];
-  const matchedSeedProp = seedProps.find((p) => p.id === cleanPropertyId);
-
+  // 2. Demo/seed JSON kataloglarına düşülmez — yalnızca Firestore ve istemcinin gönderdiği canlı bağlam kullanılır.
   const propertyName =
     remoteHotel?.name ||
     remoteProperty?.title ||
     clientLiveContext?.propertyName ||
     fallbackHotelName ||
-    matchedSeedHotel?.name ||
-    matchedSeedProp?.title ||
-    'Old City Heritage Hotel Istanbul';
+    'Konakladığınız tesis';
 
   const rawTypeStr =
     remoteHotel?.type ||
@@ -426,9 +396,7 @@ export async function fetchPropertyLiveContext({
     remoteProperty?.managementType ||
     clientLiveContext?.propertyType ||
     clientLiveContext?.rawPropertyType ||
-    matchedSeedHotel?.type ||
-    matchedSeedProp?.propertyType ||
-    'Butik Otel & Konak';
+    'hotel';
 
   const propertyType =
     clientLiveContext?.propertyType === 'apartment' || clientLiveContext?.propertyType === 'hotel'
@@ -439,16 +407,10 @@ export async function fetchPropertyLiveContext({
     remoteHotel?.district ||
     remoteProperty?.district ||
     clientLiveContext?.district ||
-    matchedSeedHotel?.district ||
-    matchedSeedProp?.district ||
-    'Sultanahmet / Fatih';
+    'İstanbul';
 
   const rooms: Array<{ id?: string; number?: string; type?: string }> =
-    Array.isArray(remoteHotel?.rooms)
-      ? remoteHotel.rooms
-      : Array.isArray(matchedSeedHotel?.rooms)
-        ? matchedSeedHotel.rooms
-        : [];
+    Array.isArray(remoteHotel?.rooms) ? remoteHotel.rooms : [];
 
   const matchedRoom = rooms.find(
     (r) => String(r.id) === cleanUnitId || String(r.number) === cleanUnitId
@@ -458,11 +420,10 @@ export async function fetchPropertyLiveContext({
     clientLiveContext?.unitName ||
     formatUnitName(cleanUnitId, propertyType, matchedRoom?.type);
 
-  const breakfastHours =
+  const breakfastHours: string | undefined =
     remoteHotel?.breakfastHours ||
     clientLiveContext?.breakfastHours ||
-    matchedSeedHotel?.breakfastHours ||
-    '08:00 - 11:30';
+    undefined;
 
   // 3. Resolve partner service toggles from Firestore `modules.inRoomServices` or client snapshot
   const remoteServices: InRoomServiceItem[] | undefined = Array.isArray(
@@ -488,7 +449,7 @@ export async function fetchPropertyLiveContext({
   for (const def of DEFAULT_SERVICE_DEFINITIONS) {
     let isEnabled = def.defaultEnabled;
     let customLabel = def.title;
-    let customPrice = def.defaultPrice;
+    let customPrice: string | undefined; // fiyat yalnızca tesis panelinde girildiyse gösterilir
 
     if (def.id === 'breakfast') {
       // Breakfast is active if either `breakfast` or `roomservice` ("Kahvaltı & Yeme-İçme") is enabled,
@@ -512,13 +473,11 @@ export async function fetchPropertyLiveContext({
       }
     }
 
-    const hours = def.id === 'breakfast' ? breakfastHours : def.defaultHours;
+    // Saat bilgisi yalnızca tesisin girdiği kahvaltı saatinden gelir; diğer hizmetler için saat uydurulmaz.
+    const hours = def.id === 'breakfast' ? breakfastHours : undefined;
 
     if (isEnabled) {
-      let isAvailableNow = isWithinIstanbulWorkingHours(hours);
-      if (def.id === 'laundry' && isIstanbulSunday()) {
-        isAvailableNow = false;
-      }
+      const isAvailableNow = isWithinIstanbulWorkingHours(hours);
       activeServices.push({
         id: def.id,
         title: customLabel,
@@ -548,7 +507,6 @@ export async function fetchPropertyLiveContext({
             id: item.key,
             title: item.label || item.key,
             isAvailableNow: true,
-            hours: '7/24',
             ...(item.price ? { price: `${item.price} ${item.currency || '₺'}` } : {}),
           });
         } else {
@@ -568,12 +526,12 @@ export async function fetchPropertyLiveContext({
   };
 }
 
-// Official İBB UKOME Taxi Tariff Constants (as specified)
+// İBB UKOME taksi tarifesi. Tarifeler periyodik olarak değiştiği için değerler ortam değişkeniyle güncellenebilir;
+// hesaplanan tutar her zaman YAKLAŞIK bir tahmindir, kesin tutarı taksimetre belirler.
 export const UKOME_TAXI_RATES = {
-  OPENING_TL: 30,
-  PER_KM_TL: 20,
-  MIN_FARE_TL: 100,
-  EUR_TO_TRY_RATE: 37.5,
+  OPENING_TL: Number(process.env.TAXI_OPENING_TL) || 30,
+  PER_KM_TL: Number(process.env.TAXI_PER_KM_TL) || 20,
+  MIN_FARE_TL: Number(process.env.TAXI_MIN_FARE_TL) || 100,
 } as const;
 
 export interface TaxiFareResult {
@@ -590,11 +548,7 @@ export interface TaxiFareResult {
     max: number;
     formatted: string;
   };
-  estimatedFareEUR: {
-    min: number;
-    max: number;
-    formatted: string;
-  };
+  disclaimer: string;
   tollsNote: string;
   antiScamChecklist: string[];
   actionTag: string;
@@ -634,8 +588,8 @@ export interface VerifiedPlace {
 
 /**
  * TOOL 1: checkTaxiFare({ origin, destination })
- * Uses official İBB UKOME taxi rates (Opening: 30 TL, Per Km: 20 TL, Min fare: 100 TL)
- * to compute accurate Turkish Lira and Euro equivalents.
+ * Uses the configured İBB UKOME taxi tariff (UKOME_TAXI_RATES, env-overridable)
+ * to compute an APPROXIMATE Turkish Lira estimate (not an exact fare).
  */
 export function checkTaxiFare({
   origin = 'Sultanahmet / Fatih',
@@ -688,8 +642,6 @@ export function checkTaxiFare({
     Math.round(rawMeteredTL * 1.25)
   );
 
-  const minEUR = Math.max(3, Math.round(minTL / UKOME_TAXI_RATES.EUR_TO_TRY_RATE));
-  const maxEUR = Math.max(minEUR + 1, Math.round(maxTL / UKOME_TAXI_RATES.EUR_TO_TRY_RATE));
 
   return {
     origin,
@@ -705,14 +657,11 @@ export function checkTaxiFare({
       max: maxTL,
       formatted: `${minTL} – ${maxTL} TL`,
     },
-    estimatedFareEUR: {
-      min: minEUR,
-      max: maxEUR,
-      formatted: `€${minEUR} – €${maxEUR}`,
-    },
+    disclaimer:
+      'Bu tutar yaklaşık bir tahmindir; tarife değişmiş olabilir, trafik ve rota tutarı etkiler. Kesin ücreti taksimetre gösterir.',
     tollsNote,
     antiScamChecklist: [
-      'Taksimetrenin açılışta 30 TL ile başladığından emin olun (İndi-bindi minimum 100 TL).',
+      'Binerken taksimetrenin açıldığından emin olun.',
       'Taksimetre açmadan "sabit fiyat" (flat rate) teklif eden sürücüleri kesinlikle reddedin.',
       '200 TL / 500 TL verirken parayı sesli söyleyerek uzatın (50 TL / 20 TL el çabukluğu hilesine dikkat edin).',
     ],
@@ -751,7 +700,7 @@ export function evaluateServiceAvailability(
       canonicalService,
       isActive: true,
       isAvailableNow: true,
-      hours: canonicalService === 'breakfast' ? '08:00 - 11:30' : '7/24',
+      hours: undefined,
       title: canonicalService,
     };
   }
@@ -794,8 +743,8 @@ export function evaluateServiceAvailability(
  */
 export async function createRoomTicket({
   unitId = 'Suite 101',
-  hotelId = 'hotel-heritage-1',
-  hotelName = 'Old City Heritage Hotel Istanbul',
+  hotelId = '',
+  hotelName = '',
   roomNumber,
   serviceType = 'maintenance',
   details = 'Guest requested immediate in-stay assistance via Comus.',
@@ -819,7 +768,7 @@ export async function createRoomTicket({
     const unitWordTr = liveContext?.propertyType === 'apartment' ? 'dairenize' : 'odanıza';
     const unavailableReason = !check.isActive
       ? `${resolvedPropertyName} bünyesinde "${check.title}" hizmeti şu an aktif değildir.`
-      : `Şu an ${unitWordTr} ${check.title.toLowerCase()} servis saatimiz (${check.hours || '08:00 - 11:30'}) sona erdi; ancak yakınınızda harika bir yerel alternatif önerebilirim veya yarın sabah için siparişinizi şimdiden oluşturabilirim.`;
+      : `Şu an ${unitWordTr} ${check.title.toLowerCase()} hizmeti${check.hours ? ` (servis saatleri: ${check.hours})` : ''} verilemiyor. İsterseniz uygun ilk zamana planlayabilir veya sizi resepsiyona yönlendirebilirim.`;
 
     return {
       ticketId: 'NONE',
@@ -924,75 +873,21 @@ export async function createRoomTicket({
 }
 
 /**
- * TOOL 3: searchVerifiedPlaces({ neighborhood, category, preference })
- * Queries local purely_verified_places.json containing ONLY vetted spots in
- * Fatih, Beyoğlu, Beşiktaş, and Kadıköy.
+ * TOOL 3: searchPublishedListings({ query, category, district })
+ * Platformda ŞU AN YAYINDA olan ilanlarda arama yapar (Firestore canlı katalog).
+ * Demo/sabit mekan listesi kullanılmaz; eşleşme yoksa boş döner.
  */
-export function searchVerifiedPlaces({
-  neighborhood,
-  category,
-  preference,
-}: {
-  neighborhood?: string;
+export async function searchPublishedListingsTool(args: {
+  query?: string;
   category?: string;
-  preference?: string;
-}): {
-  curatedDistricts: string[];
-  matches: VerifiedPlace[];
-  recommendedActionTag: string;
-} {
-  const allPlaces = verifiedPlacesData as VerifiedPlace[];
-  const normNeighborhood = (neighborhood || '').toLowerCase().trim();
-  const normCategory = (category || '').toLowerCase().trim();
-  const normPref = (preference || '').toLowerCase().trim();
-
-  let filtered = allPlaces.filter((place) => {
-    const matchDistrict =
-      !normNeighborhood ||
-      place.neighborhood.toLowerCase().includes(normNeighborhood) ||
-      place.subArea.toLowerCase().includes(normNeighborhood) ||
-      (normNeighborhood.includes('sultanahmet') && place.neighborhood === 'Fatih') ||
-      ((normNeighborhood.includes('galata') ||
-        normNeighborhood.includes('karaköy') ||
-        normNeighborhood.includes('cihangir') ||
-        normNeighborhood.includes('taksim')) &&
-        place.neighborhood === 'Beyoğlu') ||
-      (normNeighborhood.includes('moda') && place.neighborhood === 'Kadıköy') ||
-      ((normNeighborhood.includes('ortaköy') || normNeighborhood.includes('bebek')) &&
-        place.neighborhood === 'Beşiktaş');
-
-    const matchCategory =
-      !normCategory ||
-      place.category.toLowerCase().includes(normCategory) ||
-      place.tags.some((t) => t.toLowerCase().includes(normCategory));
-
-    const matchPref =
-      !normPref ||
-      place.name.toLowerCase().includes(normPref) ||
-      place.summary.toLowerCase().includes(normPref) ||
-      place.tags.some((t) => normPref.includes(t.toLowerCase()) || t.toLowerCase().includes(normPref));
-
-    return matchDistrict && (matchCategory || matchPref);
+  district?: string;
+}) {
+  return searchPublishedListings({
+    query: args.query,
+    category: args.category,
+    district: args.district,
+    limit: 5,
   });
-
-  if (filtered.length === 0) {
-    filtered = allPlaces.slice(0, 5);
-  }
-
-  let recommendedActionTag = '[action:explore_category, id:culinary]';
-  if (normCategory.includes('hammam') || normPref.includes('hamam') || normPref.includes('spa')) {
-    recommendedActionTag = '[action:explore_category, id:hammam]';
-  } else if (normCategory.includes('bosphorus') || normPref.includes('boğaz') || normPref.includes('sunset') || normPref.includes('tekne')) {
-    recommendedActionTag = '[action:explore_category, id:bosphorus]';
-  } else if (normCategory.includes('history') || normPref.includes('rota') || normPref.includes('route') || normPref.includes('han')) {
-    recommendedActionTag = '[action:explore_category, id:history]';
-  }
-
-  return {
-    curatedDistricts: ['Fatih', 'Beyoğlu', 'Beşiktaş', 'Kadıköy'],
-    matches: filtered.slice(0, 4),
-    recommendedActionTag,
-  };
 }
 
 /**
@@ -1002,7 +897,7 @@ export const COMUS_TOOL_DECLARATIONS: FunctionDeclaration[] = [
   {
     name: 'checkTaxiFare',
     description:
-      'Uses official İBB UKOME taxi rates (Opening: 30 TL, Per Km: 20 TL, Min fare: 100 TL) to compute accurate Turkish Lira and Euro equivalents between two locations in Istanbul.',
+      'Gives an APPROXIMATE metered taxi fare estimate in Turkish Lira between two Istanbul locations, based on the configured İBB UKOME tariff. Always present the result as an estimate and include the returned disclaimer; tariffs change and the meter shows the exact fare.',
     parameters: {
       type: Type.OBJECT,
       properties: {
@@ -1042,23 +937,23 @@ export const COMUS_TOOL_DECLARATIONS: FunctionDeclaration[] = [
     },
   },
   {
-    name: 'searchVerifiedPlaces',
+    name: 'searchPublishedListings',
     description:
-      'Queries local purely_verified_places.json containing only vetted spots in Fatih, Beyoğlu, Beşiktaş, and Kadıköy.',
+      'Searches ONLY the listings that are currently published on the Purely Istanbul platform (tours, experiences, restaurants, stays). Returns an empty list if nothing published matches — never invent listings.',
     parameters: {
       type: Type.OBJECT,
       properties: {
-        neighborhood: {
+        query: {
           type: Type.STRING,
-          description: 'One of the 4 verified districts: Fatih, Beyoğlu, Beşiktaş, or Kadıköy.',
+          description: 'Free-text guest need, e.g. "hamam", "boğaz turu", "kebap", "çocuk dostu".',
         },
         category: {
           type: Type.STRING,
-          description: 'Category filter: culinary, hammam, history, or bosphorus.',
+          description: 'Optional category keyword, e.g. restoran, tur, hamam, konaklama.',
         },
-        preference: {
+        district: {
           type: Type.STRING,
-          description: 'Specific guest preference such as breakfast, kebab, baklava, sunset, hidden-gem, or route.',
+          description: 'Optional Istanbul district/neighbourhood, e.g. Beyoğlu, Sultanahmet, Kadıköy.',
         },
       },
     },
@@ -1093,7 +988,7 @@ interface IncomingMessage {
 /**
  * Deterministic Zero-Hallucination Grounded Responder that directly respects
  * `liveContext` (`propertyType`, `propertyName`, `unitName`, `activeServices`, `disabledServices`)
- * and invokes `checkTaxiFare`, `createRoomTicket`, and `searchVerifiedPlaces` when upstream
+ * and invokes `checkTaxiFare`, `createRoomTicket`, and `searchPublishedListings` when upstream
  * LLM is unreachable.
  */
 async function buildToolGroundedResponse(
@@ -1125,22 +1020,18 @@ async function buildToolGroundedResponse(
     if (isTurkish) {
       return `**${liveContext.propertyName}**'deki konaklamanız boyunca şehirde karşılaşabileceğiniz yaygın turist tuzaklarına karşı işinize yarayacak 4 pratik ipucu:
 
-• **Taksimetre & Banknot Kontrolü:** İBB UKOME resmi tarifesine göre taksi açılışı **30 TL**, km başı **20 TL**, indi-bindi (minimum) **100 TL**'dir. Taksimetrenin açıldığından emin olun ve 200/500 TL gibi yüksek banknot verirken tutarı sesli belirtin.
+• **Taksimetre & Banknot Kontrolü:** Taksimetrenin açıldığından emin olun, sabit fiyat teklif edilirse kabul etmeyin ve 200/500 TL gibi yüksek banknot verirken tutarı sesli belirtin.
 • **"Yere Fırça Düşüren" Ayakkabı Boyacısı:** Galata, Karaköy veya Eminönü'nde önünüzde yürürken fırçasını düşüren boyacıyı uyarsanız, "teşekkür" bahanesiyle ayakkabınızı boyayıp yüksek ücret talep edebilir. Teşekkür edip yolunuza devam edin.
 • **İstiklal / Taksim Gece Kulübü Davetleri:** Sokakta yanınıza yaklaşıp "beraber bir şeyler içelim" diyen yabancıların yönlendirdiği mekanlara girmeyin (fahiş hesap tuzağıdır).
-• **Fiyatlı Menü Kontrolü:** Restorana oturmadan önce mutlaka fiyatları yazılı menüyü inceleyin; **Fatih, Beyoğlu, Beşiktaş ve Kadıköy**'deki önerdiğimiz yerel mekanları tercih edebilirsiniz.
-
-[action:explore_category, id:culinary]`;
+• **Fiyatlı Menü Kontrolü:** Restorana oturmadan önce mutlaka fiyatları yazılı menüyü inceleyin; menüde fiyat yoksa sipariş vermeden önce sorun.`;
     }
 
     return `During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), here are 4 practical tips to avoid common tourist traps in Istanbul:
 
-• **Taxi Meter & Banknote Check:** Official İBB UKOME rates are **30 TL opening**, **20 TL/km**, and **100 TL minimum fare**. Make sure the meter is turned on, and state the value of **200 TL or 500 TL** banknotes out loud when paying in cash.
+• **Taxi Meter & Banknote Check:** Make sure the meter is turned on and refuse flat-rate offers, and state the value of **200 TL or 500 TL** banknotes out loud when paying in cash.
 • **Dropped Shoe-Shiner Brush:** Around Galata Bridge or Sultanahmet, if a shoe-shiner drops his brush in front of you, politely decline any "free thank-you shine" as they will ask for a high fee afterward.
 • **Unsolicited Bar/Club Invites:** Avoid following strangers in Taksim/Beyoğlu who invite you for a "quick drink"—this is a common overcharging scheme.
-• **Check Printed Menus:** Always ask for a menu with clearly printed prices before ordering, or choose from our recommended spots in **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**.
-
-[action:explore_category, id:culinary]`;
+• **Check Printed Menus:** Always ask for a menu with clearly printed prices before ordering; if prices are missing, ask before you order.`;
   }
 
   // 2. Check if query is about Taxi Fare -> invoke Tool 1: checkTaxiFare()
@@ -1172,24 +1063,18 @@ async function buildToolGroundedResponse(
     const fare = checkTaxiFare({ origin: originMatch, destination: destMatch });
 
     if (isTurkish) {
-      return `**${liveContext.propertyName}** (${liveContext.unitName}) konaklamanızdan resmi **İBB UKOME** taksi tarifesine göre (**Açılış: ${fare.ukomeTariff.openingTL} TL**, **Km Başı: ${fare.ukomeTariff.perKmTL} TL**, **İndi-Bindi Min: ${fare.ukomeTariff.minFareTL} TL**) tahmini ücret:
+      return `${fare.origin} → ${fare.destination} arası (~${fare.estimatedDistanceKm} km) taksi için **yaklaşık** tahmin: **${fare.estimatedFareTL.formatted}**.
 
-• **Rota & Mesafe:** ${fare.origin} → ${fare.destination} (~${fare.estimatedDistanceKm} km)
-• **Tahmini Taksimetre Tutarı:** **${fare.estimatedFareTL.formatted}** (Yaklaşık **${fare.estimatedFareEUR.formatted}**)
-• **Geçiş Notu:** ${fare.tollsNote}
-• **Pratik İpucu:** Binmeden önce taksimetrenin açıldığını kontrol edin. Sabit fiyatlı, lisanslı VIP transfer tercih ederseniz aşağıdan inceleyebilirsiniz.
-
-${fare.actionTag}`;
+• **Not:** ${fare.disclaimer}
+• **Geçiş:** ${fare.tollsNote}
+• **Pratik İpucu:** Binmeden önce taksimetrenin açıldığını kontrol edin, sabit fiyat pazarlığını kabul etmeyin ve nakit öderken banknotu söyleyerek verin.`;
     }
 
-    return `From **${liveContext.propertyName}** (${liveContext.unitName}), based on official **İBB UKOME** metered taxi rates (**Opening: ${fare.ukomeTariff.openingTL} TL**, **Per Km: ${fare.ukomeTariff.perKmTL} TL**, **Minimum Fare: ${fare.ukomeTariff.minFareTL} TL**):
+    return `A **rough** taxi estimate for ${fare.origin} → ${fare.destination} (~${fare.estimatedDistanceKm} km): **${fare.estimatedFareTL.formatted}**.
 
-• **Route & Distance:** ${fare.origin} → ${fare.destination} (~${fare.estimatedDistanceKm} km)
-• **Estimated Metered Fare:** **${fare.estimatedFareTL.formatted}** (Approx. **${fare.estimatedFareEUR.formatted}**)
-• **Toll Note:** ${fare.tollsNote}
-• **Practical Tip:** Make sure the digital meter (*taksimetre*) is turned on when starting the ride, and state large banknotes (200/500 TL) out loud when paying.
-
-${fare.actionTag}`;
+• **Note:** This is only an estimate — tariffs change and traffic/route affect the fare. The meter shows the exact amount.
+• **Tolls:** ${fare.tollsNote}
+• **Practical Tip:** Make sure the meter (*taksimetre*) is on, refuse flat-rate offers, and say the banknote value out loud when paying.`;
   }
 
   // 3. Check if query is about In-Stay Service (Breakfast, Cleaning, Maintenance, Laundry)
@@ -1230,30 +1115,18 @@ ${fare.actionTag}`;
 
     // CRITICAL RULE 2 & 3: If service is in disabledServices or isAvailableNow === false, DO NOT emit action tag!
     if (!availability.isActive || !availability.isAvailableNow) {
-      const localSpots = searchVerifiedPlaces({
-        neighborhood: liveContext.district,
-        category: 'culinary',
-        preference: requestedService === 'breakfast' ? 'breakfast' : undefined,
-      });
-      const topSpot = localSpots.matches[0]?.name || 'Van Kahvaltı Evi (Cihangir)';
-
       if (isTurkish) {
-        if (requestedService === 'breakfast') {
-          const hrs = availability.hours || '08:00 - 11:30';
-          return availability.isActive
-            ? `Şu an ${unitTargetTr} kahvaltı servis saatimiz (**${hrs}**) sona erdi; ancak **${liveContext.propertyName}** yakınında harika bir yerel fırın/kafe (**${topSpot}**) önerebilirim veya yarın sabah için siparişinizi şimdiden oluşturabilirim.`
-            : `**${liveContext.propertyName}**'deki konaklamanız boyunca ${unitTargetTr} doğrudan kahvaltı servisimiz şu an kapalıdır; ancak yürüme mesafenizdeki **${topSpot}** gibi doğrulanmış yerel kahvaltı duraklarımızı önerebilirim.`;
+        if (requestedService === 'breakfast' && availability.isActive) {
+          const hrs = availability.hours || '';
+          return `Şu an ${unitTargetTr} kahvaltı servis saatimiz${hrs ? ` (**${hrs}**)` : ''} dışındayız. Dilerseniz yarın sabah için siparişinizi şimdiden oluşturabilirim; farklı bir talebiniz varsa resepsiyonumuz yardımcı olacaktır.`;
         }
-        return `**${liveContext.propertyName}**'deki konaklamanız boyunca **${availability.title}** hizmetimiz şu an aktif saatleri dışındadır veya geçici olarak kapalıdır (${availability.hours || 'Kapalı'}). Dilerseniz yarın için planlayabilir veya yakınınızdaki doğrulanmış yerel noktalarımız konusunda yardımcı olabilirim.`;
+        return `**${availability.title}** hizmeti şu an aktif saatleri dışında veya kapalı${availability.hours ? ` (${availability.hours})` : ''}. Dilerseniz uygun ilk zamana planlayabilirim ya da resepsiyonumuza yönlendirebilirim.`;
       }
-
-      if (requestedService === 'breakfast') {
-        const hrs = availability.hours || '08:00 - 11:30';
-        return availability.isActive
-          ? `Our doorstep breakfast service hours (**${hrs}**) to ${unitWordEn} at **${liveContext.propertyName}** have ended for today; however, I can recommend a wonderful local bakery/café nearby (**${topSpot}**) or schedule your breakfast order right now for tomorrow morning.`
-          : `During your stay at **${liveContext.propertyName}**, in-stay breakfast service is currently inactive; however, I would love to guide you to a verified local café nearby such as **${topSpot}**.`;
+      if (requestedService === 'breakfast' && availability.isActive) {
+        const hrs = availability.hours || '';
+        return `In-room breakfast service${hrs ? ` (**${hrs}**)` : ''} is closed right now. I can schedule your order for tomorrow morning, or reception can help with anything else.`;
       }
-      return `During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), **${availability.title}** is currently outside active service hours or unavailable. I would be happy to arrange a nearby local alternative or schedule it for the next available window.`;
+      return `**${availability.title}** is currently unavailable${availability.hours ? ` (${availability.hours})` : ''}. I can schedule it for the next available window, or reception can assist you.`;
     }
 
     const ticket = await createRoomTicket({
@@ -1285,88 +1158,39 @@ ${ticket.actionTag}`;
 ${ticket.actionTag}`;
   }
 
-  // 4. Check if query is about Daily Route / Itinerary
-  if (
-    q.includes('rota') ||
-    q.includes('itinerary') ||
-    q.includes('plan') ||
-    q.includes('bugün için')
-  ) {
-    const verified = searchVerifiedPlaces({ preference: 'route' });
-    if (isTurkish) {
-      return `**${liveContext.propertyName}**'deki konaklamanız boyunca turist kalabalıklarına girmeden, doğrulanmış 4 bölgemizi (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**) kapsayan bugünkü yerel rotanız:
-
-• **Sabah (Beyoğlu / Cihangir & Galata):** Güne **Van Kahvaltı Evi**'nde (Cihangir) gerçek serpme kahvaltıyla başlayın, ardından **Serdar-ı Ekrem Sokak** ve **Kamondo Merdivenleri**'nden Karaköy'e yürüyün.
-• **Öğle (Fatih / Tarihi Yarımada):** T1 tramvayıyla Sirkeci'ye geçip **Şehzade Cağ Kebap** veya **Tarihi Sultanahmet Köftecisi (1920)**'nde öğle yemeği yiyin; **Büyük Valide Han** avlusunda közde çay molası verin.
-• **Gün Batımı (Beşiktaş / Boğaz veya Kadıköy Moda):** Akşamüstü doğrulanmış kaptanlarımızla kalabalıksız bir **Boğaz gün batımı turuna** çıkın ya da vapurla **Moda Sahili**'ne geçin.
-
-[action:explore_category, id:bosphorus]`;
-    }
-
-    return `From **${liveContext.propertyName}** (${liveContext.unitName}), here is your crowd-free, authentic full-day Istanbul itinerary across our 4 verified districts (**Fatih, Beyoğlu, Beşiktaş, Kadıköy**):
-
-• **Morning (Beyoğlu — Cihangir & Galata):** Start with an artisanal spread at **Van Kahvaltı Evi**, then stroll down **Serdar-ı Ekrem Street** and the historic **Camondo Stairs** to Karaköy (${verified.matches.length} vetted spots nearby).
-• **Midday (Fatih — Historic Peninsula):** Ride the T1 tram to Sirkeci for lunch at **Şehzade Cağ Kebap** or **Tarihi Sultanahmet Köftecisi (1920)**, followed by hidden-courtyard tea at **Büyük Valide Han**.
-• **Golden Hour (Beşiktaş / Bosphorus or Kadıköy Moda):** Board a verified small-group **Bosphorus sunset yacht** or take the public ferry across to **Moda Pier** for sunset views.
-
-[action:explore_category, id:bosphorus]`;
-  }
-
-  // 5. Default / Nearby Authentic Places
-  const neighborhoodFilter =
-    q.includes('fatih') || q.includes('sultanahmet')
-      ? 'Fatih'
-      : q.includes('beyoğlu') || q.includes('galata') || q.includes('karaköy') || q.includes('cihangir')
-        ? 'Beyoğlu'
-        : q.includes('beşiktaş') || q.includes('ortaköy')
-          ? 'Beşiktaş'
-          : q.includes('kadıköy') || q.includes('moda')
-            ? 'Kadıköy'
-            : liveContext.district;
-
+  // 4. Platform ilanları — yalnızca ŞU AN YAYINDA olanlar (demo/sabit mekan listesi yok)
   const categoryFilter =
     q.includes('hamam') || q.includes('hammam') || q.includes('spa')
-      ? 'hammam'
+      ? 'hamam'
       : q.includes('boğaz') || q.includes('bosphorus') || q.includes('tekne') || q.includes('yacht')
-        ? 'bosphorus'
-        : undefined;
+        ? 'boğaz'
+        : q.includes('restoran') || q.includes('yemek') || q.includes('restaurant') || q.includes('food')
+          ? 'restoran'
+          : undefined;
 
-  const verifiedResult = searchVerifiedPlaces({
-    neighborhood: neighborhoodFilter,
-    category: categoryFilter,
-  });
+  const published = await searchPublishedListings({ query: userMessage, category: categoryFilter, limit: 4 });
 
-  if (isTurkish) {
-    const bulletLines = verifiedResult.matches
-      .map(
-        (p) =>
-          `• **${p.name} (${p.neighborhood} – ${p.subArea}):** ${p.summary} *(Rayiç: ${p.priceRangeTL} / ${p.priceRangeEUR})*`
-      )
-      .join('\n');
-
-    return `**${liveContext.propertyName}**'deki konaklamanız boyunca **Fatih, Beyoğlu, Beşiktaş ve Kadıköy** bölgelerinden seçtiğim yerel mekan önerilerim:
-
-${bulletLines}
-
-• **Pratik Not:** Önerdiğim bu mekanlar şeffaf menü ve yerel fiyatlarla hizmet veren bilinen noktalardır.
-
-${verifiedResult.recommendedActionTag}`;
+  if (published.matches.length === 0) {
+    return isTurkish
+      ? published.totalPublished === 0
+        ? 'Şu an platformumuzda yayında olan bir ilan bulunmuyor, bu yüzden size rezervasyon yapılabilecek bir seçenek sunamıyorum. Şehirle ilgili genel bir sorunuz varsa memnuniyetle yardımcı olurum; konaklamanızla ilgili konularda resepsiyonumuz da hizmetinizde.'
+        : 'Bu talebinize uyan, şu an yayında olan bir ilanımız yok. Uydurma bir öneri vermek istemem; isterseniz talebinizi biraz daha açın, ya da resepsiyonumuza danışabilirsiniz.'
+      : published.totalPublished === 0
+        ? 'There are no published listings on our platform right now, so I cannot offer a bookable option. I am happy to help with general questions about the city, and reception is always available.'
+        : 'I could not find a currently published listing that matches your request. Rather than guess, could you tell me a bit more — or reception can help.';
   }
 
-  const bulletLinesEn = verifiedResult.matches
-    .map(
-      (p) =>
-        `• **${p.name} (${p.neighborhood} – ${p.subArea}):** ${p.summary} *(Local norm: ${p.priceRangeTL} / ${p.priceRangeEUR})*`
-    )
+  const lines = published.matches
+    .map((l) => {
+      const meta = [l.category, l.district].filter(Boolean).join(' – ');
+      const price = l.price ? ` · ${l.price} ${l.currency || ''}`.trimEnd() : '';
+      return `• **${l.title}**${meta ? ` (${meta})` : ''}${price}${l.summary ? `: ${l.summary}` : ''}`;
+    })
     .join('\n');
 
-  return `During your stay at **${liveContext.propertyName}** (${liveContext.unitName}), here are my local recommendations curated from **Fatih, Beyoğlu, Beşiktaş, and Kadıköy**:
-
-${bulletLinesEn}
-
-• **Helpful Tip:** All spots above operate with clear printed menus and standard local prices.
-
-${verifiedResult.recommendedActionTag}`;
+  return isTurkish
+    ? `Platformumuzda şu an yayında olan ve talebinize uyan seçenekler:\n\n${lines}\n\nGüncel fiyat ve müsaitlik ilan sayfasında yer alır.`
+    : `Here are currently published listings on our platform that match your request:\n\n${lines}\n\nUp-to-date prices and availability are shown on each listing page.`;
 }
 
 export async function POST(req: Request) {
@@ -1399,7 +1223,7 @@ export async function POST(req: Request) {
       body.unit_id || body.roomNumber || body.unitId || '101'
     ).trim();
     const fallbackHotelName = String(
-      body.hotelName || 'Old City Heritage Hotel Istanbul'
+      body.hotelName || ''
     ).trim();
 
     if (!userMessage) {
@@ -1417,7 +1241,11 @@ export async function POST(req: Request) {
       clientLiveContext: body.clientLiveContext,
     });
 
-    const systemInstructionWithSnapshot = buildComusSystemInstruction(liveContext);
+    const publishedListings = await getPublishedListings();
+    const systemInstructionWithSnapshot = buildComusSystemInstruction(
+      liveContext,
+      formatCatalogForPrompt(publishedListings)
+    );
     const apiKey = resolveGeminiApiKey();
 
     const stream = new ReadableStream({
@@ -1483,11 +1311,11 @@ export async function POST(req: Request) {
                     details: args.details || userMessage,
                     liveContext,
                   });
-                } else if (call.name === 'searchVerifiedPlaces') {
-                  toolOutput = searchVerifiedPlaces({
-                    neighborhood: args.neighborhood || liveContext.district,
+                } else if (call.name === 'searchPublishedListings') {
+                  toolOutput = await searchPublishedListingsTool({
+                    query: args.query,
                     category: args.category,
-                    preference: args.preference,
+                    district: args.district,
                   });
                 }
 

@@ -76,20 +76,25 @@ export default function TermsOfServicePage() {
       </section>
 
       <section>
-        <h2>4. Official Contact &amp; Guest Care</h2>
+        <h2>4. Corporate Entity, Registration &amp; Official Contact</h2>
         <ul>
           <li>
-            <strong>Platform:</strong> {CORPORATE_CONFIG.legalEntityName}
+            <strong>Platform Operating Entity:</strong> {CORPORATE_CONFIG.legalEntityName}
           </li>
           <li>
-            <strong>Location:</strong> {CORPORATE_CONFIG.registeredAddress}
+            <strong>Company Registration:</strong> {CORPORATE_CONFIG.companyRegNo}
+          </li>
+          <li>
+            <strong>Location &amp; Address:</strong> {CORPORATE_CONFIG.registeredAddress}
           </li>
           <li>
             <strong>Official Contact:</strong> {CORPORATE_CONFIG.contactEmail} · {CORPORATE_CONFIG.contactPhone}
+          </li>
+          <li>
+            <strong>Regulatory Status:</strong> Platform operates in pre-launch sandbox mode. E-commerce intermediary activities subject to Law No. 6563 and Law No. 6502.
           </li>
         </ul>
       </section>
     </LegalPageShell>
   );
 }
-

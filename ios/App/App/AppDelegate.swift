@@ -63,15 +63,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     static func syncApnsTokenWithBackend(tokenHex: String, hotelId: String? = nil) {
-        guard !tokenHex.isEmpty,
-              let url = URL(string: "https://purelyistanbul.com/api/notifications/register-device") else {
-            return
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 10.0
-
+        guard !tokenHex.isEmpty else { return }
+        let endpointUrls = [
+            "https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app/api/notifications/register-device",
+            "https://purelyistanbul.com/api/notifications/register-device"
+        ]
         var payload: [String: Any] = [
             "deviceToken": tokenHex,
             "apnsToken": tokenHex,
@@ -81,8 +77,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let hotelId = hotelId, !hotelId.isEmpty {
             payload["hotelId"] = hotelId
         }
-        request.httpBody = try? JSONSerialization.data(withJSONObject: payload, options: [])
-        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: payload, options: []) else { return }
+
+        for urlString in endpointUrls {
+            guard let url = URL(string: urlString) else { continue }
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.timeoutInterval = 8.0
+            request.httpBody = httpBody
+            URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+        }
     }
 
     func clearNowPlayingAndDisableBackgroundAudio() {
@@ -171,7 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let docName = (doc["name"] as? String) ?? ""
                 let fallbackId = docName.components(separatedBy: "/").last ?? ""
                 let reqId = (fields["id"]?["stringValue"] as? String) ?? fallbackId
-                if reqId.isEmpty || reqId.contains("test") || reqId.contains("demo") {
+                if reqId.isEmpty {
                     continue
                 }
 

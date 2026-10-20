@@ -2,6 +2,7 @@ import { GuestProfile, TokenUsageInfo } from './types';
 import { UserPreferences, AiActionItem } from '@/types/comusAi';
 import { XeniosStore } from './store';
 import { buildInjectedComusSystemPrompt } from '@/prompts/comusSystemPrompt';
+import { formatCatalogForPrompt, getPublishedListings } from '@/services/comusListingCatalog';
 
 export interface ChatMessage {
   id: string;
@@ -56,7 +57,16 @@ async function callDirectGeminiRest(
       first_name: guestName,
       guest_profile_survey: guestProfile
     };
-    const systemPrompt = buildInjectedComusSystemPrompt(prefs, hotelName, hotelDistrict, roomNumber, lang, guestProfile);
+    const publishedListings = await getPublishedListings().catch(() => []);
+    const systemPrompt = buildInjectedComusSystemPrompt(
+      prefs,
+      hotelName,
+      hotelDistrict,
+      roomNumber,
+      lang,
+      guestProfile,
+      formatCatalogForPrompt(publishedListings)
+    );
 
     const contents: any[] = [];
     if (chatHistory && chatHistory.length > 0) {
@@ -101,106 +111,46 @@ async function callDirectGeminiRest(
   return null;
 }
 
+/**
+ * Gemini'ye ulaşılamadığında kullanılan dürüst yedek yanıt.
+ * Sabit/demo ilan, mekan, Wi-Fi şifresi veya saat UYDURMAZ; bilinmeyen tesis bilgisinde resepsiyona yönlendirir.
+ */
 export function generateSmartContextualFallback(
   userQuery: string,
   guestName: string,
   hotelName: string,
-  hotelDistrict: string,
-  roomNumber: string,
-  guestProfile?: GuestProfile
+  _hotelDistrict: string,
+  _roomNumber: string,
+  _guestProfile?: GuestProfile
 ): { reply: string; recs: any[]; actions: AiActionItem[] } {
   const q = userQuery.toLowerCase();
-  const allergies = guestProfile?.allergies || [];
-  const hasSeafoodAllergy = allergies.some(a => a.toLowerCase().includes('deniz') || a.toLowerCase().includes('seafood') || a.toLowerCase().includes('balık') || a.toLowerCase().includes('midye'));
-  const budget = guestProfile?.budgetLevel || 'luxury';
-  const isLuxury = budget === 'luxury';
+  const hello = guestName ? `${guestName}, ` : '';
+  const property = hotelName || 'tesisimiz';
 
-  let reply = '';
-  let recs: any[] = [];
-  let actions: AiActionItem[] = [];
+  const isPropertyQuestion =
+    /wifi|wi-fi|internet|şifre|kahvaltı|breakfast|çıkış|checkout|check-out|giriş|check-in|otopark|havuz|resepsiyon|oda|havlu|temizlik|arıza|klima/.test(q);
 
-  const isStreetFoodQuery = q.includes('sokak') || q.includes('büfe') || q.includes('ıslak hamburger') || q.includes('dürüm') || q.includes('kokoreç') || q.includes('atıştırmalık');
-  const isGeneralFoodQuery = q.includes('restoran') || q.includes('yemek') || q.includes('lokanta') || q.includes('nerede yenir') || q.includes('akşam yemeği') || q.includes('lezzet');
-
-  if (isStreetFoodQuery || (!isLuxury && isGeneralFoodQuery)) {
-    if (hasSeafoodAllergy) {
-      reply = `${guestName} Bey, İstanbul'un seçkin sokak lezzetlerinden alerjinize (**Deniz Ürünleri Hariç**) %100 uygun önerilerim:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu, Beyoğlu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🥩 **Tarihi Sultanahmet Köftecisi (1920 Orijinal Yeşil Tabela):** Gerçek geleneksel ızgara köfte ve piyaz.\n🍰 **Tarihi İnci Pastanesi:** Klasik profiterol ve tatlı molası.\n\n📌 *Not:* Bu ikonik sokak lezzeti mekanları hızlı servis konseptinde olduğu için rezervasyonla çalışmazlar; dilediğiniz zaman doğrudan gidip tadabilirsiniz. Dilerseniz en rahat yürüyüş rotanızı tarif edebilirim!`;
-      recs = [{ title: "Dürümzade & Taksim Lezzet Rotaları", category: "Sokak Lezzeti", location: "Beyoğlu" }];
-    } else {
-      reply = `${guestName} Bey, İstanbul sokak lezzetleri için önerilerim:\n\n🍔 **Kızılkayalar Büfe (Taksim Meydanı):** Meşhur ıslak hamburgerin orijinal adresi.\n🌯 **Dürümzade (Kalyoncu Kulluğu, Beyoğlu):** Odun ateşinde lavaşla hazırlanan efsanevi Adana & Urfa dürüm.\n🦪 **Midyeci Ahmet & Şampiyon Kokoreç (Balık Pazarı):** Çıtır ekmek arası kokoreç ve taze midye dolma.\n🥩 **Tarihi Sultanahmet Köftecisi (1920):** Izgara köfte ve piyaz.\n\n📌 *Not:* Bu sokak lezzeti durakları hızlı servis sunduğu için rezervasyonla çalışmazlar; dilediğiniz zaman doğrudan uğrayarak tadabilirsiniz. Dilerseniz en rahat yürüyüş rotasını çıkarabilirim!`;
-      recs = [{ title: "Dürümzade & Beyoğlu Lezzet Turu", category: "Sokak Lezzeti", location: "Beyoğlu" }];
-    }
-  } else if (isGeneralFoodQuery) {
-    if (hasSeafoodAllergy) {
-      reply = `${guestName} Bey, İstanbul'un en seçkin restoranlarından, sağlık ve alerji notunuza (**Deniz Ürünleri Hariç**) %100 uygun Lüks & VIP önerilerim:\n\n🍷 **Mikla (Pera / Beyoğlu):** Michelin yıldızlı çağdaş Anadolu mutfağı ve muhteşem panoramik manzara.\n🥩 **Sunset Grill & Bar (Ulus Parkı):** Boğaz manzarasına karşı seçkin ızgara etler, biftekler ve gurme dünya mutfağı.\n🏛️ **Neolokal (Karaköy SALT Galata):** Geleneksel Türk reçetelerinin şık fine-dining yorumu.\n🔥 **Mürver Restaurant (Karaköy):** Odun ateşinde pişen nefis et lezzetleri ve teras atmosferi.\n\nDilerseniz bu restoranlardan istediğiniz mekan için akşam masanızı concierge ekibimiz aracılığıyla anında organize edebilirim!`;
-      recs = [
-        { title: "Mikla Restaurant (Michelin Starred)", category: "Fine Dining", location: "Beyoğlu" },
-        { title: "Sunset Grill & Bar", category: "Lüks Restoran", location: "Ulus" }
-      ];
-      actions = [{
-        id: 'act_fine_dining',
-        type: 'BOOK_APPOINTMENT',
-        label: '🍷 Mikla / Sunset Masası Rezervasyonu İlet',
-        payload: { listing_id: 'exp-restaurant-1', service_title: 'Mikla / Sunset Fine Dining Masa Rezervasyonu', preferred_date: new Date().toISOString().split('T')[0], preferred_time: '20:00', booking_type: 'TABLE_RESERVATION' }
-      }];
-    } else {
-      reply = `${guestName} Bey, İstanbul'un en seçkin gurme lezzet duraklarından Lüks & VIP restoran önerilerim:\n\n🍷 **Mikla (Pera / Beyoğlu):** Michelin yıldızlı çağdaş Anadolu mutfağı ve teras manzarası.\n🌅 **Sunset Grill & Bar (Ulus):** Boğaz manzaralı seçkin ızgara ve uluslararası menü.\n🏛️ **Neolokal (Karaköy):** Tarihi dokuda modern Türk fine-dining deneyimi.\n🐟 **Villa Bosphorus / Park Fora:** Boğaz kıyısında gurme deniz ürünleri ve manzara.\n\nDilerseniz seçtiğiniz restoran için akşam masanızı concierge ekibimiz aracılığıyla anında organize edebilirim!`;
-      recs = [
-        { title: "Mikla Restaurant", category: "Fine Dining", location: "Beyoğlu" },
-        { title: "Sunset Grill & Bar", category: "Lüks Restoran", location: "Ulus" }
-      ];
-      actions = [{
-        id: 'act_fine_dining',
-        type: 'BOOK_APPOINTMENT',
-        label: '🍷 Fine Dining Masa Rezervasyonu İlet',
-        payload: { listing_id: 'exp-restaurant-1', service_title: 'Sunset Grill & Bar Masa Rezervasyonu', preferred_date: new Date().toISOString().split('T')[0], preferred_time: '20:00', booking_type: 'TABLE_RESERVATION' }
-      }];
-    }
-  } else if (q.includes('wifi') || q.includes('wi-fi') || q.includes('internet') || q.includes('şifre')) {
-    reply = `${guestName} Bey, odanızdaki (${hotelName}, Oda ${roomNumber}) yüksek hızlı misafir Wi-Fi ağı:\n\n📶 Ağ Adı (SSID): ${hotelName.split(' ')[0]}_Guest\n🔑 Şifre: purely2026!\n\nÜst bardaki Wi-Fi butonuna tıklayarak şifreyi tek dokunuşla kopyalayabilirsiniz.`;
-  } else if (q.includes('kahvaltı') || q.includes('breakfast')) {
-    reply = `${guestName} Bey, ${hotelName} bünyesinde açık büfe kahvaltı servisimiz her sabah 07:00 - 10:30 saatleri arasında ana restoran/teras katımızda sunulmaktadır. Ayrıca dilerseniz "Oda İçi Hizmetler" menümüzden odaya sıcak kahvaltı siparişi de verebilirsiniz.`;
-  } else if (q.includes('çıkış') || q.includes('checkout') || q.includes('check-out') || q.includes('saat kaç')) {
-    reply = `${guestName} Bey, otelimizde standart check-out saati 12:00'dir. Geç çıkış (Late Check-out) talebiniz veya bagaj emaneti için resepsiyonumuz (Dahili: 0) 7/24 memnuniyetle yardımcı olmaktadır.`;
-  } else if (q.includes('boğaz') || q.includes('tekne') || q.includes('yat') || q.includes('tur')) {
-    reply = `${guestName} Bey, İstanbul Boğazı'nı keşfetmek için harika bir gün! Sizin için gün batımı akşam yemeği turları veya özel yat kiralama seçeneklerini derledim:\n\n🚢 Bosphorus Sunset & Dinner Cruise (Kabataş Kalkışlı)\nSizin adınıza rezervasyon oluşturmamı ister misiniz?`;
-    recs = [{ title: "Bosphorus Sunset & Dinner Cruise", category: "Boğaz & Tekne", location: "Kabataş" }];
-    actions = [{
-      id: 'act_boat',
-      type: 'BOOK_APPOINTMENT',
-      label: '🚢 Boğaz Turu Rezervasyonu Yap',
-      payload: { listing_id: 'exp-2', service_title: 'Bosphorus Dinner Cruise', preferred_date: '2026-08-25', preferred_time: '18:30', booking_type: 'EXPERIENCE_TICKET' }
-    }];
-  } else if (q.includes('hamam') || q.includes('spa') || q.includes('masaj') || q.includes('rahatlatıcı') || q.includes('yoruldum')) {
-    reply = `${guestName} Bey, günün yorgunluğunu atmak için Cağaloğlu Hamamı veya otelimiz anlaşmalı spa merkezinde geleneksel köpük ve masaj seansları harika bir tercihtir. Sizin adınıza hemen randevu oluşturabilirim.`;
-    recs = [{ title: "Tarihi Cağaloğlu Hamamı", category: "Kültür & Spa", location: "Sultanahmet" }];
-    actions = [{
-      id: 'act_hamam',
-      type: 'BOOK_APPOINTMENT',
-      label: '🧖‍♂️ Cağaloğlu Hamamı Randevusu Al',
-      payload: { listing_id: 'exp-1', service_title: 'Tarihi Cağaloğlu Hamamı Masaj', preferred_date: '2026-08-25', preferred_time: '15:30', booking_type: 'EXPERIENCE_TICKET' }
-    }];
-  } else if (q.includes('estetik') || q.includes('cilt') || q.includes('botoks') || q.includes('klinik') || q.includes('saç')) {
-    reply = `${guestName} Bey, Nişantaşı ve Fulya aksındaki anlaşmalı A++ medikal estetik kliniklerimizde (Quartz Clinique vb.) Hydrafacial, medikal cilt bakımı ve uzman konsültasyonu için anında randevu planlayabilirim.`;
-    recs = [{ title: "Quartz Clinique – Nişantaşı Glow", category: "Medikal Estetik", location: "Nişantaşı" }];
-    actions = [{
-      id: 'act_quartz',
-      type: 'BOOK_APPOINTMENT',
-      label: '🪞 Quartz Clinique Randevusu Al',
-      payload: { listing_id: 'exp-aesthetic-1', service_title: 'Nişantaşı Glow Bakımı', preferred_date: '2026-08-25', preferred_time: '11:00', booking_type: 'AESTHETIC_APPOINTMENT' }
-    }];
-  } else if (q.includes('taksi') || q.includes('ulaşım') || q.includes('havalimanı') || q.includes('transfer') || q.includes('nasıl giderim')) {
-    reply = `${guestName} Bey, ${hotelName} (${hotelDistrict}) konumundan İstanbul Havalimanı veya Sabiha Gökçen Havalimanı'na VIP Mercedes Vito transferi ya da sarı taksi çağrısı için resepsiyonumuz ve concierge servisimiz anında hizmetinizdedir.`;
-    recs = [{ title: "Özel VIP Havalimanı Transferi", category: "Ulaşım", location: "Otel Kapısı" }];
-  } else {
-    reply = `${guestName} Bey, "${userQuery}" konusundaki sorunuzu aldım. İstanbul'da seçkin restoranlar, tarihi yarımada rotaları, Boğaz turları, Nişantaşı klinikleri ve size özel VIP deneyimler için dilediğiniz detayları sorabilirsiniz. Sizin adınıza hemen rezervasyon oluşturabilirim.`;
-    recs = [
-      { title: "Bosphorus Sunset Cruise", category: "Boğaz & Tekne", location: "Kabataş" },
-      { title: "Tarihi Cağaloğlu Hamamı", category: "Kültür & Spa", location: "Sultanahmet" }
-    ];
+  if (isPropertyQuestion) {
+    return {
+      reply: `${hello}bu konuda ${property} için elimde doğrulanmış bir bilgi yok, tahminde bulunmak istemem. En doğru bilgiyi resepsiyonumuz verecektir. Bir talebiniz varsa "Oda İçi Hizmetler" menüsünden de iletebilirsiniz.`,
+      recs: [],
+      actions: []
+    };
   }
 
-  return { reply, recs, actions };
+  if (/tuzak|dolandır|scam|taksi|taxi/.test(q)) {
+    return {
+      reply: `${hello}kısa birkaç yerel ipucu: taksiye binerken taksimetrenin açıldığından emin olun, sabit fiyat pazarlığını kabul etmeyin ve nakit öderken banknotun değerini sesli söyleyin. Sokakta tanışıp sizi bir bara ya da dükkana götürmek isteyenlere nazikçe "hayır" deyin.`,
+      recs: [],
+      actions: []
+    };
+  }
+
+  return {
+    reply: `${hello}şu an bağlantıda kısa bir gecikme var, bu yüzden sorunuza doğru bir yanıt veremiyorum. Birazdan tekrar deneyebilir ya da acil bir konu için resepsiyonumuza ulaşabilirsiniz.`,
+    recs: [],
+    actions: []
+  };
 }
 
 export async function askGeminiConcierge(
@@ -209,12 +159,12 @@ export async function askGeminiConcierge(
   hotelName: string,
   hotelDistrict: string,
   lang: string = 'tr',
-  roomNumber: string = '304',
+  roomNumber: string = '',
   userPreferences?: Partial<UserPreferences>,
   chatHistory?: ChatMessage[]
 ): Promise<ChatMessage> {
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const guestName = userPreferences?.first_name || 'Alex';
+  const guestName = userPreferences?.first_name || '';
 
   const userPrefsPayload: Partial<UserPreferences> = {
     ...userPreferences,

@@ -70,6 +70,7 @@ export function ExperienceCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
           
           <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap max-w-[70%]">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40">DEMO PREVIEW</span>
             <span className="golden-pill-badge font-luxury-sans px-2.5 py-1 rounded-full text-[10px] font-bold text-[#2C1E0F] backdrop-blur-[18px] shadow-xs">
               {getLocalizedTag()}
             </span>

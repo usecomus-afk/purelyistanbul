@@ -999,7 +999,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-5': {
     tr: {
-      title: 'Mikla Restaurant (1 Michelin Yıldızlı)',
+      title: 'Contemporary Fine Dining & Panoramic Rooftop',
       agentNote: 'Şef Mehmet Gürs imzalı, Haliç ve Boğaz manzaralı Michelin yıldızlı Yeni Anadolu Mutfağı.',
       provider: 'Michelin Star & Rooftop Fine Dining',
       cuisine: 'Yeni Anadolu Mutfağı (New Anatolian Cuisine)',
@@ -1007,7 +1007,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Mantı & Yoğurt Dondurması', 'İskenderun Karidesi', 'Trakya Kıvırcık Kuzusu'],
     },
     en: {
-      title: 'Mikla Restaurant (1 Michelin Star)',
+      title: 'Contemporary Fine Dining & Panoramic Rooftop',
       agentNote: 'Michelin-starred rooftop by Chef Mehmet Gürs celebrating New Anatolian cuisine with sweeping Golden Horn views.',
       provider: 'Michelin Star & Rooftop Fine Dining',
       cuisine: 'New Anatolian Cuisine',
@@ -1023,7 +1023,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['مانتي مع آيس كريم الزبادي', 'روبيان إسكندرون', 'لحم ضأن تراقيا'],
     },
     ru: {
-      title: 'Mikla Restaurant (1 звезда Michelin)',
+      title: 'Contemporary Fine Dining & Panoramic Rooftop',
       agentNote: 'Отмеченный звездой Michelin панорамный ресторан шефа Мехмета Гюрса, прославляющий Новую анатолийскую кухню.',
       provider: 'Звезда Michelin и панорамный Fine Dining',
       cuisine: 'Новая анатолийская кухня',
@@ -1031,7 +1031,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Манты с йогуртовым мороженым', 'Креветки Искендерун', 'Фракийский ягненок'],
     },
     de: {
-      title: 'Mikla Restaurant (1 Michelin-Stern)',
+      title: 'Contemporary Fine Dining & Panoramic Rooftop',
       agentNote: 'Mit einem Michelin-Stern ausgezeichnetes Rooftop-Restaurant von Chef Mehmet Gürs mit Neuer Anatolischer Küche.',
       provider: 'Michelin-Stern & Rooftop Fine Dining',
       cuisine: 'Neue Anatolische Küche',
@@ -1039,7 +1039,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Mantı & Joghurteis', 'İskenderun-Garnelen', 'Thrakisches Lamm'],
     },
     fr: {
-      title: 'Mikla Restaurant (1 Étoile Michelin)',
+      title: 'Contemporary Fine Dining & Panoramic Rooftop',
       agentNote: 'Rooftop étoilé Michelin du chef Mehmet Gürs célébrant la Nouvelle Cuisine Anatolienne face à la Corne d’Or.',
       provider: 'Étoile Michelin & Rooftop Gastronomique',
       cuisine: 'Nouvelle Cuisine Anatolienne',
@@ -1049,7 +1049,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-6': {
     tr: {
-      title: 'Pandeli Restaurant',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'Mısır Çarşısı girişinin üst katında, turkuaz İznik çinileriyle bezeli 120 yıllık efsanevi lezzet durağı.',
       provider: 'Tarihi Mutfak Mirası',
       cuisine: 'Klasik Osmanlı & İstanbul Mutfağı',
@@ -1057,7 +1057,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Patlıcanlı Börek', 'Hünkar Beğendi', 'Kağıtta Levrek'],
     },
     en: {
-      title: 'Pandeli Restaurant',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'Legendary 120-year-old turquoise-tiled culinary institution above the Spice Bazaar doorway.',
       provider: 'Historic Culinary Heritage (Michelin Bib Gourmand)',
       cuisine: 'Classic Ottoman & Old Istanbul Cuisine',
@@ -1065,7 +1065,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Eggplant Pastry (Börek)', 'Hünkar Beğendi', 'Sea Bass en Papillote'],
     },
     ar: {
-      title: 'مطعم باندلي التاريخي (Pandeli)',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'مؤسسة طهي أسطورية عمرها 120 عاماً مزينة بالبلاط الفيروزي فوق بوابة السوق المصري.',
       provider: 'تراث الطهي التاريخي',
       cuisine: 'المطبخ العثماني والإسطنبولي الكلاسيكي',
@@ -1073,7 +1073,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['بوريك بالباذنجان', 'هونكار بيغيندي', 'سمك القاروص بالورق'],
     },
     ru: {
-      title: 'Pandeli Restaurant',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'Легендарный 120-летний ресторан с бирюзовыми изразцами над главным входом в Египетский базар.',
       provider: 'Историческое кулинарное наследие',
       cuisine: 'Классическая османская и стамбульская кухня',
@@ -1081,7 +1081,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Бёрек с баклажанами', 'Хюнкяр Бегенди', 'Сибас в пергаменте'],
     },
     de: {
-      title: 'Pandeli Restaurant',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'Legendäre, 120 Jahre alte kulinarische Institution mit türkisfarbenen Fliesen über dem Eingang des Gewürzbasars.',
       provider: 'Historisches Kulinarisches Erbe',
       cuisine: 'Klassische Osmanische & Istanbuler Küche',
@@ -1089,7 +1089,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Auberginen-Börek', 'Hünkar Beğendi', 'Wolfsbarsch im Pergament'],
     },
     fr: {
-      title: 'Pandeli Restaurant',
+      title: 'Spice Bazaar Historic Ottoman Lunch',
       agentNote: 'Institution culinaire légendaire de 120 ans aux faïences turquoise située au-dessus de l’entrée du Bazar aux Épices.',
       provider: 'Patrimoine Culinaire Historique',
       cuisine: 'Cuisine Classique Ottomane & Stambouliote',
@@ -1099,7 +1099,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-7': {
     tr: {
-      title: 'Neolokal (1 Michelin & Yeşil Yıldız)',
+      title: 'Anatolian Neo-Heritage Gastronomy',
       agentNote: 'SALT Galata’nın terasında Şef Maksut Aşkar yönetiminde sürdürülebilir Anadolu mutfak mirası.',
       provider: 'Sürdürülebilir Fine Dining & Sanat',
       cuisine: 'Modernize Edilmiş Anadolu Mirası',
@@ -1107,7 +1107,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Ördek Katmer', 'Anne Mantısı', 'Topik & Tahinli Füzyon'],
     },
     en: {
-      title: 'Neolokal (1 Michelin Star & Green Star)',
+      title: 'Anatolian Neo-Heritage Gastronomy',
       agentNote: 'Michelin Star & Green Star dining by Chef Maksut Aşkar atop SALT Galata, honoring sustainable Anatolian traditions.',
       provider: 'Sustainable Fine Dining & Art',
       cuisine: 'Modernized Anatolian Culinary Heritage',
@@ -1123,7 +1123,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['كاتمر البط', 'مانتي تقليدي مبتكر', 'توبيك بالطحينة'],
     },
     ru: {
-      title: 'Neolokal (Звезда Michelin и Зеленая звезда)',
+      title: 'Anatolian Neo-Heritage Gastronomy',
       agentNote: 'Ресторан шефа Максута Ашкара на крыше SALT Galata, удостоенный звезды Michelin за бережное отношение к традициям Анатолии.',
       provider: 'Устойчивая высокая кухня и искусство',
       cuisine: 'Современное наследие Анатолии',
@@ -1131,7 +1131,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Катмер с уткой', 'Авторские манты', 'Топик с тахини'],
     },
     de: {
-      title: 'Neolokal (1 Michelin-Stern & Grüner Stern)',
+      title: 'Anatolian Neo-Heritage Gastronomy',
       agentNote: 'Nachhaltige anatolische Spitzenküche von Chef Maksut Aşkar im historischen Gebäude von SALT Galata.',
       provider: 'Nachhaltiges Fine Dining & Kunst',
       cuisine: 'Modernisiertes Anatolisches Kulturerbe',
@@ -1139,7 +1139,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Enten-Katmer', 'Hausgemachte Mantı', 'Topik & Tahini-Fusion'],
     },
     fr: {
-      title: 'Neolokal (1 Étoile Michelin & Étoile Verte)',
+      title: 'Anatolian Neo-Heritage Gastronomy',
       agentNote: 'Table étoilée Michelin et Étoile Verte du chef Maksut Aşkar au sommet de SALT Galata célébrant le terroir anatolien.',
       provider: 'Haute Gastronomie Durable & Art',
       cuisine: 'Héritage Anatolien Modernisé',
@@ -1299,7 +1299,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-11': {
     tr: {
-      title: 'Sunset Grill & Bar',
+      title: 'Bosphorus View Charcoal Grill & Lounge',
       agentNote: 'Ulus Parkı’nda Boğaz Köprüsü manzarasına hakim, uluslararası ödüllü kavı ve sushi barıyla ikonik fine dining.',
       provider: 'Lüks Fine Dining & Sushi',
       cuisine: 'Akdeniz, Çağdaş Türk & Yeni Nesil Japon (Sushi)',
@@ -1307,7 +1307,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Black Cod Miso', 'Trüflü Ton Balığı Tartar', 'Izgara Kuzu Sırtı'],
     },
     en: {
-      title: 'Sunset Grill & Bar',
+      title: 'Bosphorus View Charcoal Grill & Lounge',
       agentNote: 'Iconic Ulus Park hilltop dining overlooking the Bosphorus Bridge with an acclaimed international cellar.',
       provider: 'Luxury Fine Dining & Sushi Bar',
       cuisine: 'Mediterranean, Contemporary Turkish & New Style Japanese',
@@ -1315,7 +1315,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Black Cod Miso', 'Truffle Tuna Tartare', 'Grilled Rack of Lamb'],
     },
     ar: {
-      title: 'صن سيت غريل آند بار (Sunset Grill & Bar)',
+      title: 'صن سيت غريل آند بار (Bosphorus View Charcoal Grill & Lounge)',
       agentNote: 'مطعم شهير على تلة حديقة أولوس يطل على جسر البوسفور ويقدم مأكولات متوسطية ويابانية فاخرة.',
       provider: 'مطعم فاخر وسوشي بار',
       cuisine: 'متوسطي وتركي معاصر وياباني فاخر',
@@ -1323,7 +1323,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['سمك القد الأسود بالميسو', 'تارتار التونة بالكمأة', 'ريش ضأن مشوية'],
     },
     ru: {
-      title: 'Sunset Grill & Bar',
+      title: 'Bosphorus View Charcoal Grill & Lounge',
       agentNote: 'Культовый ресторан на холме Улус-парка с панорамным видом на Босфорский мост и богатой винной картой.',
       provider: 'Люкс Fine Dining и суши-бар',
       cuisine: 'Средиземноморская, современная турецкая и японская кухня',
@@ -1331,7 +1331,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Черная треска мисо', 'Тартар из тунца с трюфелем', 'Каре ягненка на гриле'],
     },
     de: {
-      title: 'Sunset Grill & Bar',
+      title: 'Bosphorus View Charcoal Grill & Lounge',
       agentNote: 'Ikonisches Restaurant im Ulus-Park mit Blick auf die Bosporus-Brücke, Sushi-Bar und exzellentem Weinkeller.',
       provider: 'Luxus Fine Dining & Sushi',
       cuisine: 'Mediterran, Zeitgenössisch Türkisch & Japanisch',
@@ -1339,7 +1339,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Black Cod Miso', 'Trüffel-Thunfisch-Tatar', 'Gegrillter Lammrücken'],
     },
     fr: {
-      title: 'Sunset Grill & Bar',
+      title: 'Bosphorus View Charcoal Grill & Lounge',
       agentNote: 'Table iconique sur les hauteurs du parc d’Ulus face au pont du Bosphore avec bar à sushis et grande cave.',
       provider: 'Haute Gastronomie & Bar à Sushis',
       cuisine: 'Méditerranéenne, Turque Contemporaine & Japonaise',
@@ -1349,7 +1349,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-12': {
     tr: {
-      title: 'Mürver Restaurant',
+      title: 'Wood-Fired Rooftop Dining by the Golden Horn',
       agentNote: 'Tarihi Yarımada manzaralı terasta, açık odun ateşinde pişirilen deniz ürünleri ve et spesiyalleriyle Michelin tavsiyeli şef restoranı.',
       provider: 'Modern Izgara & Şef Restoranı',
       cuisine: 'Açık Ateşte Pişirme & Çağdaş Yerel Lezzetler',
@@ -1357,7 +1357,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Küllü Ahtapot', 'Fırınlanmış Dana İlik', 'Ağır Ateşte Kuzu Kol'],
     },
     en: {
-      title: 'Mürver Restaurant',
+      title: 'Wood-Fired Rooftop Dining by the Golden Horn',
       agentNote: 'Michelin-recommended open-fire and wood-smoked seafood & grill terrace overlooking the Historic Peninsula.',
       provider: 'Modern Open-Fire & Chef Restaurant',
       cuisine: 'Live-Fire Cooking & Contemporary Local Flavors',
@@ -1365,7 +1365,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Ash-Roasted Octopus', 'Wood-Fired Bone Marrow', 'Slow-Cooked Lamb Shoulder'],
     },
     ar: {
-      title: 'مطعم مورفير (Mürver Restaurant)',
+      title: 'مطعم مورفير (Wood-Fired Rooftop Dining by the Golden Horn)',
       agentNote: 'تراس موصى به من ميشلان يطل على شبه الجزيرة التاريخية ويشتهر بالمأكولات البحرية والمشويات على الحطب.',
       provider: 'مشويات حديثة على الحطب ومطعم شيف',
       cuisine: 'طهي على النار المفتوحة ونكهات محلية معاصرة',
@@ -1373,7 +1373,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['أخطبوط مشوي على الجمر', 'نخاع العظم بالفرن الحطبي', 'كتف ضأن مطهو ببطء'],
     },
     ru: {
-      title: 'Mürver Restaurant',
+      title: 'Wood-Fired Rooftop Dining by the Golden Horn',
       agentNote: 'Рекомендованный Michelin ресторан на террасе с видом на Старый город, где готовят морепродукты и мясо на живом огне.',
       provider: 'Современный гриль и авторский ресторан',
       cuisine: 'Блюда на открытом огне и локальные деликатесы',
@@ -1381,7 +1381,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Осьминог на углях', 'Запеченный костный мозг', 'Томленая лопатка ягненка'],
     },
     de: {
-      title: 'Mürver Restaurant',
+      title: 'Wood-Fired Rooftop Dining by the Golden Horn',
       agentNote: 'Vom Guide Michelin empfohlenes Terrassenrestaurant mit Küche über offenem Holzfeuer und Blick auf die Altstadt.',
       provider: 'Modernes Open-Fire- & Chef-Restaurant',
       cuisine: 'Offenes Holzfeuer & Zeitgenössische Lokale Küche',
@@ -1389,7 +1389,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['In Asche gegarter Oktopus', 'Gebackenes Rindermark', 'Geschmorte Lammschulter'],
     },
     fr: {
-      title: 'Mürver Restaurant',
+      title: 'Wood-Fired Rooftop Dining by the Golden Horn',
       agentNote: 'Terrasse recommandée par le Guide Michelin face à la péninsule historique, spécialisée dans la cuisson au feu de bois.',
       provider: 'Grill Moderne au Feu de Bois & Table de Chef',
       cuisine: 'Cuisson sur Flamme Vive & Saveurs Locales',
@@ -1399,7 +1399,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-13': {
     tr: {
-      title: 'Feriye Lokantası',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'Boğaz kıyısında restore edilmiş 19. yüzyıl Osmanlı saray karakol binasında seçkin Boğaziçi gastronomisi.',
       provider: 'Boğaz Kıyısı Fine Dining',
       cuisine: 'Modernize Edilmiş İstanbul & Boğaziçi Mutfağı',
@@ -1407,7 +1407,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['İsli Patlıcanlı Levrek', 'Kuzu Karsambaç', 'Deniz Mahsullü Güveç'],
     },
     en: {
-      title: 'Feriye — Bosphorus Palace Waterfront Dining',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'Waterfront gastronomy housed in a restored 19th-century Ottoman palace building on the Bosphorus shore.',
       provider: 'Bosphorus Waterfront Fine Dining',
       cuisine: 'Modernized Istanbul & Bosphorus Cuisine',
@@ -1415,7 +1415,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Sea Bass with Smoked Eggplant', 'Lamb Karsambaç', 'Seafood Casserole'],
     },
     ar: {
-      title: 'مطعم فيريه على البوسفور (Feriye)',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'تجربة طهي راقية على ضفاف البوسفور مباشرة داخل مبنى قصر عثماني مرمم يعود للقرن التاسع عشر.',
       provider: 'مطعم فاخر على ضفاف البوسفور',
       cuisine: 'مطبخ إسطنبول والبوسفور المعاصر',
@@ -1423,7 +1423,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['سمك القاروص مع الباذنجان المدخن', 'لحم ضأن كارسمباتش', 'طاجن المأكولات البحرية'],
     },
     ru: {
-      title: 'Feriye Lokantası',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'Высокая гастрономия на самом берегу Босфора в отреставрированном здании османского дворца XIX века.',
       provider: 'Fine Dining на берегу Босфора',
       cuisine: 'Современная стамбульская и босфорская кухня',
@@ -1431,7 +1431,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Сибас с копченым баклажаном', 'Ягненок Карсамбач', 'Гювеч из морепродуктов'],
     },
     de: {
-      title: 'Feriye Lokantası',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'Spitzengastronomie direkt am Bosporus-Ufer in einem restaurierten osmanischen Palastgebäude aus dem 19. Jahrhundert.',
       provider: 'Fine Dining direkt am Bosporus',
       cuisine: 'Modernisierte Istanbuler & Bosporus-Küche',
@@ -1439,7 +1439,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Wolfsbarsch mit Rauch-Aubergine', 'Lamm Karsambaç', 'Meeresfrüchte-Auflauf'],
     },
     fr: {
-      title: 'Feriye Lokantası',
+      title: 'Bosphorus Waterfront Ottoman Palace Dining',
       agentNote: 'Haute gastronomie au bord de l’eau dans un palais ottoman restauré du XIXe siècle sur la rive du Bosphore.',
       provider: 'Haute Gastronomie sur les Rives du Bosphore',
       cuisine: 'Cuisine d’Istanbul & du Bosphore Modernisée',
@@ -1449,7 +1449,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-14': {
     tr: {
-      title: 'Nicole Restaurant (1 Michelin Yıldızlı)',
+      title: "Artisanal Chef's Tasting Experience",
       agentNote: 'Beyoğlu’nda tarihi Fransisken manastırı terasında sunulan Michelin yıldızlı mevsimsel tadım menüsü.',
       provider: 'Michelin Star Boutique Fine Dining',
       cuisine: 'Fransız Teknikli Çağdaş Akdeniz',
@@ -1457,7 +1457,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Bıldırcın Dolması', 'Karadeniz Kalkanı', 'Mevsimsel Şef Tadım Menüsü'],
     },
     en: {
-      title: 'Nicole Restaurant (1 Michelin Star)',
+      title: "Artisanal Chef's Tasting Experience",
       agentNote: 'Michelin-starred seasonal tasting menu served on the historic Franciscan monastery terrace in Beyoğlu.',
       provider: 'Michelin Star Boutique Fine Dining',
       cuisine: 'Contemporary Mediterranean with French Technique',
@@ -1473,7 +1473,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['سمان محشي', 'سمك التربوت من البحر الأسود', 'قائمة تذوق الشيف الموسمية'],
     },
     ru: {
-      title: 'Nicole Restaurant (1 звезда Michelin)',
+      title: "Artisanal Chef's Tasting Experience",
       agentNote: 'Сезонное дегустационное меню со звездой Michelin на исторической террасе в Бейоглу.',
       provider: 'Бутик-ресторан со звездой Michelin',
       cuisine: 'Современная средиземноморская кухня с французской техникой',
@@ -1481,7 +1481,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Фаршированный перепел', 'Черноморский калкан', 'Сезонный сет от шефа'],
     },
     de: {
-      title: 'Nicole Restaurant (1 Michelin-Stern)',
+      title: "Artisanal Chef's Tasting Experience",
       agentNote: 'Saisonales Michelin-Sterne-Degustationsmenü auf der historischen Terrasse in Beyoğlu.',
       provider: 'Michelin-Stern Boutique Fine Dining',
       cuisine: 'Zeitgenössisch Mediterran mit Französischer Technik',
@@ -1489,7 +1489,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Gefüllte Wachtel', 'Schwarzmeer-Steinbutt', 'Saisonales Degustationsmenü'],
     },
     fr: {
-      title: 'Nicole Restaurant (1 Étoile Michelin)',
+      title: "Artisanal Chef's Tasting Experience",
       agentNote: 'Menu dégustation saisonnier étoilé Michelin servi sur la terrasse historique de Beyoğlu.',
       provider: 'Boutique Fine Dining Étoilé Michelin',
       cuisine: 'Méditerranéenne Contemporaine & Technique Française',
@@ -1749,7 +1749,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'rest-20': {
     tr: {
-      title: 'Tarihi Sultanahmet Köftecisi (1920)',
+      title: 'Historic Old City Meatball & Heritage Table',
       agentNote: '1920’den bu yana değişmeyen reçetesiyle efsanevi ızgara köfte ve piyaz sunan tarihi Sultanahmet klasiği.',
       provider: 'İkonik Tarihi Esnaf Lezzeti',
       cuisine: 'Asırlık Türk Köftesi & Piyaz',
@@ -1757,7 +1757,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Izgara Sultanahmet Köftesi', 'İspir Fasulyeli Piyaz', 'İrmik Helvası'],
     },
     en: {
-      title: 'Historic Sultanahmet Köftecisi (Est. 1920)',
+      title: 'Historic Old City Meatball & Heritage Table',
       agentNote: 'Sultanahmet’s historic 1920 culinary landmark serving its signature heritage grilled meatballs.',
       provider: 'Iconic 1920 Culinary Landmark',
       cuisine: 'Century-Old Turkish Grilled Meatballs & Piyaz',
@@ -1773,7 +1773,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['كفتة السلطان أحمد المشوية', 'سلطة فاصولياء إسبر (بياز)', 'حلاوة السميد'],
     },
     ru: {
-      title: 'Исторический Sultanahmet Köftecisi (с 1920 г.)',
+      title: 'Historic Old City Meatball & Heritage Table',
       agentNote: 'Кулинарная достопримечательность Султанахмета с 1920 года, знаменитая своими фирменными кёфте на гриле.',
       provider: 'Легендарное историческое заведение с 1920 г.',
       cuisine: 'Вековые традиции турецких кёфте и салата пияз',
@@ -1781,7 +1781,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Кёфте Султанахмет на гриле', 'Фасолевый салат Пияз', 'Манная халва'],
     },
     de: {
-      title: 'Historischer Sultanahmet Köftecisi (seit 1920)',
+      title: 'Historic Old City Meatball & Heritage Table',
       agentNote: 'Kulinarisches Wahrzeichen in Sultanahmet seit 1920, berühmt für seine traditionellen gegrillten Köfte.',
       provider: 'Kulinarisches Traditionslokal seit 1920',
       cuisine: 'Traditionelle Türkische Köfte & Bohnensalat (Piyaz)',
@@ -1789,7 +1789,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       specialties: ['Gegrillte Sultanahmet-Köfte', 'İspir-Bohnensalat (Piyaz)', 'Grieß-Halva'],
     },
     fr: {
-      title: 'Sultanahmet Köftecisi Historique (Fondé en 1920)',
+      title: 'Historic Old City Meatball & Heritage Table',
       agentNote: 'Institution culinaire historique de Sultanahmet depuis 1920 servant ses célèbres boulettes de viande grillées.',
       provider: 'Institution Culinaire Historique depuis 1920',
       cuisine: 'Köfte Turcs Centenaires & Salade Piyaz',
@@ -1799,7 +1799,7 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
   'exp-hammam-3': {
     tr: {
-      title: '16. Yüzyıl Kılıç Ali Paşa Hamamı Ritüeli',
+      title: 'Historic 16th-Century Marble Hammam Ritual',
       agentNote: 'Mimar Sinan’ın 1580 tarihli restore edilmiş muazzam kubbesi altında geleneksel kese, köpük ritüeli ve el yapımı şerbet ikramı.',
     },
     ar: {
@@ -1811,11 +1811,11 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
       agentNote: 'Отреставрированный купол 1580 года работы Мимара Синана: традиционный пилинг, пенный ритуал и домашний щербет.',
     },
     de: {
-      title: 'Kılıç Ali Paşa Hamam-Ritual aus dem 16. Jahrhundert',
+      title: 'Historic 16th-Century Marble Hammam Ritual',
       agentNote: 'Unter Mimar Sinans restaurierter Kuppel von 1580: traditionelles Peeling, Schaumritual und handgemachter Scherbett.',
     },
     fr: {
-      title: 'Rituel du Hammam Kılıç Ali Paşa du XVIe Siècle',
+      title: 'Historic 16th-Century Marble Hammam Ritual',
       agentNote: 'Sous le dôme restauré de 1580 signé Mimar Sinan : gommage traditionnel, rituel de mousse et sorbet artisanal.',
     },
   },

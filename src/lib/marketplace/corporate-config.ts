@@ -2,6 +2,9 @@ export const CORPORATE_CONFIG = {
   legalEntityName:
     process.env.NEXT_PUBLIC_COMPANY_NAME ||
     "Purely Istanbul",
+  companyRegNo:
+    process.env.NEXT_PUBLIC_COMPANY_REG_NO ||
+    "Purely Istanbul Ltd (Pre-registration Sandbox Staging / Company No: Pending Launch)",
   registeredAddress:
     process.env.NEXT_PUBLIC_COMPANY_ADDRESS ||
     "Beyoğlu, Istanbul, Türkiye",
@@ -17,4 +20,3 @@ export const CORPORATE_CONFIG = {
   tursabDisclosure:
     "All Regulated Travel & Tour Packages Fulfilled by Licensed TÜRSAB Group A Partner Agencies & D2-Certified Transport Operators",
 } as const;
-

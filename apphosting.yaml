@@ -73,3 +73,23 @@ env:
       - RUNTIME
 
 
+  - variable: APNS_KEY_ID
+    value: "2V9KGPMLD4"
+    availability:
+      - RUNTIME
+  - variable: APNS_TEAM_ID
+    value: "R8LQC6KZG8"
+    availability:
+      - RUNTIME
+  - variable: APNS_BUNDLE_ID
+    value: "com.usecomus.olympus.R8LQC6KZG8"
+    availability:
+      - RUNTIME
+  - variable: APNS_AUTH_KEY
+    value: "-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8zC1m9/OyAEQcAoc\nA2Ef/hHlI6WUi6fBR/Nwo3yAqmKgCgYIKoZIzj0DAQehRANCAATEcTwB8kM19+iS\n7Iucx6pUQk1QpSUHPAAA3zsu8i1tByqA5xRSNwfXTstJL0f4gRUcAxnX2VSWe3+G\nJ+6QwMxN\n-----END PRIVATE KEY-----"
+    availability:
+      - RUNTIME
+  - variable: APNS_USE_SANDBOX
+    value: "false"
+    availability:
+      - RUNTIME

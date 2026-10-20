@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.usecomus.olympus',
+  appId: 'com.usecomus.olympus.R8LQC6KZG8',
   appName: 'purelyİstanbul',
   webDir: 'public',
   server: {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ShieldCheck, X } from "lucide-react";
+import { ShieldCheck, Mail, Phone, MapPin, Building2, CheckCircle2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitContactMessage } from "@/lib/marketplace/firestore";
@@ -123,7 +123,7 @@ export function MarketplaceFooter() {
       </div>
 
       {/* Mandatory Regulatory Compliance Footer */}
-      <div className="max-w-6xl mx-auto px-5 md:px-8 pb-8">
+      <div className="max-w-6xl mx-auto px-5 md:px-8 pb-8 space-y-4">
         <div className="rounded-2xl border border-sand-border bg-white/80 p-5 sm:p-6 shadow-[0_2px_12px_rgba(11,25,44,0.03)]">
           <div className="flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-terracotta shrink-0 mt-0.5" strokeWidth={1.75} />
@@ -131,12 +131,50 @@ export function MarketplaceFooter() {
               <p className="font-semibold text-ink mb-1">Marketplace &amp; Fulfillment Notice:</p>
               <p>
                 <span translate="no" className="notranslate">Purely Istanbul</span> is a curated marketplace and digital
-                concierge platform, not a travel agency, tour operator, or transportation carrier. All excursions,
-                historical walking tours, boat cruises, wellness treatments, and private transfers displayed on this
-                platform are fulfilled and operated exclusively by independent, legally certified third-party businesses
-                (including licensed TÜRSAB Group A travel agencies and authorized D2 transportation fleets under the
-                laws of the Republic of Türkiye).
+                concierge platform, not a travel agency, tour operator, or transportation carrier. Platform is currently in pre-launch preview mode. All experiences and tours will be operated exclusively by legally certified, licensed TÜRSAB Group A travel agencies and licensed D2 transport fleets upon public commercial launch (pursuant to Turkish Law No. 1618 and the laws of the Republic of Türkiye).
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Impressum & Regulatory Verification Slot */}
+        <div className="rounded-2xl border border-sand-border/80 bg-white/70 p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 text-xs text-ink-muted">
+          <div className="space-y-1.5 max-w-xl">
+            <p className="font-semibold text-ink text-[12.5px] flex items-center gap-1.5">
+              <Building2 className="w-4 h-4 text-terracotta shrink-0" />
+              <span>Impressum &amp; Registered Contact</span>
+            </p>
+            <p className="leading-relaxed">
+              <strong>Entity:</strong> {CORPORATE_CONFIG.legalEntityName} · <strong>Address:</strong> {CORPORATE_CONFIG.registeredAddress}
+            </p>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-muted/90">
+              <span className="inline-flex items-center gap-1">
+                <Mail className="w-3.5 h-3.5 text-terracotta" />
+                <a href={`mailto:${CORPORATE_CONFIG.contactEmail}`} className="hover:underline text-ink">
+                  {CORPORATE_CONFIG.contactEmail}
+                </a>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Phone className="w-3.5 h-3.5 text-terracotta" />
+                <a href={CORPORATE_CONFIG.contactPhoneHref} className="hover:underline text-ink">
+                  {CORPORATE_CONFIG.contactPhone}
+                </a>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-terracotta" />
+                <span>Beyoğlu, Istanbul</span>
+              </span>
+            </p>
+          </div>
+
+          {/* Turkish Ministry of Commerce ETBİS Registration Slot */}
+          <div className="flex items-center gap-3 self-stretch md:self-auto justify-start border border-dashed border-sand-border/90 rounded-xl p-3 bg-sand-bg/40 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-sand-border/60 flex items-center justify-center text-ink-muted font-bold text-[10px]">
+              ETBİS
+            </div>
+            <div className="text-[11px] leading-tight">
+              <p className="font-semibold text-ink">ETBİS Doğrulama Alanı</p>
+              <p className="text-ink-muted/80">T.C. Ticaret Bakanlığı Kayıt Aşaması (Sandbox)</p>
             </div>
           </div>
         </div>
@@ -234,4 +272,3 @@ export function MarketplaceFooter() {
 }
 
 export { MarketplaceFooter as Footer };
-

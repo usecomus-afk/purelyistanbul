@@ -9,7 +9,7 @@ export {
   UKOME_TAXI_RATES,
   checkTaxiFare,
   createRoomTicket,
-  searchVerifiedPlaces,
+  searchPublishedListingsTool,
   type PropertyLiveContext,
 } from '@/app/api/comus/chat/route';
 

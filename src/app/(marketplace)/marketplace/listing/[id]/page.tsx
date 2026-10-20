@@ -555,6 +555,9 @@ export default function ListingDetailPage() {
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-10">
         {/* Top Cancellation Policy & Category Badges */}
         <div className="flex flex-wrap items-center gap-2.5 mb-3">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+            DEMO PREVIEW
+          </span>
           <span
             data-testid="cancellation-policy-badge"
             className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3.5 py-1 text-[12px] font-semibold text-emerald-800"
@@ -1034,13 +1037,20 @@ export default function ListingDetailPage() {
                     />
                   </label>
 
-                  <button
-                    onClick={handleReserve}
-                    disabled={!checkIn || (listing.type === "stay" && !checkOut)}
-                    className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[14px] hover:bg-terracotta transition disabled:opacity-40 cursor-pointer"
-                  >
-                    Request Reservation
-                  </button>
+                  <div className="relative group/disabled-btn">
+                    <button
+                      type="button"
+                      disabled
+                      aria-disabled="true"
+                      className="w-full rounded-full bg-sand-border/80 text-ink-muted/80 font-semibold py-3 text-[14px] cursor-not-allowed border border-sand-border transition"
+                      title="Direct online booking is currently disabled while the platform is in pre-launch preview mode."
+                    >
+                      Book Now (Preview Mode)
+                    </button>
+                    <p className="mt-2 text-center text-[11.5px] text-amber-900 bg-amber-50 border border-amber-200/80 rounded-xl px-3 py-2 leading-relaxed">
+                      ⚠️ Direct online booking is currently disabled while the platform is in pre-launch preview mode.
+                    </p>
+                  </div>
 
                   <div className="text-[13px] text-ink-muted flex justify-between pt-1 border-t border-sand-border/70">
                     <span>Estimated Total</span>

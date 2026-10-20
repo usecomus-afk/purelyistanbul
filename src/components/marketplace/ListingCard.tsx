@@ -38,6 +38,10 @@ export function ListingCard({ listing, isFavorite, onToggleFavorite }: ListingCa
             </div>
           )}
 
+          <span className="absolute top-2.5 left-2.5 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-black/65 backdrop-blur-md text-amber-300 border border-amber-400/30">
+            DEMO PREVIEW
+          </span>
+
           {onToggleFavorite && (
             <button
               onClick={(e) => {

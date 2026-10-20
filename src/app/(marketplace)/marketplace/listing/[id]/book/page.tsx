@@ -148,12 +148,18 @@ export default function BookingSummaryPage() {
           </div>
 
           <button
-            type="submit"
-            className="w-full rounded-full bg-ink text-white font-semibold py-3 text-[13.5px] hover:bg-terracotta transition flex items-center justify-center gap-2 cursor-pointer"
+            type="button"
+            disabled
+            aria-disabled="true"
+            className="w-full rounded-full bg-sand-border/80 text-ink-muted/80 font-semibold py-3 text-[13.5px] cursor-not-allowed flex items-center justify-center gap-2 border border-sand-border"
+            title="Direct online booking is currently disabled while the platform is in pre-launch preview mode."
           >
             <CalendarCheck className="w-4 h-4" strokeWidth={2} />
-            Submit Reservation Request
+            Reservation Disabled (Preview Mode)
           </button>
+          <p className="text-center text-[11.5px] text-amber-900 bg-amber-50 border border-amber-200/80 rounded-xl px-3 py-2 leading-relaxed">
+            ⚠️ Direct online booking is currently disabled while the platform is in pre-launch preview mode.
+          </p>
         </form>
       )}
 
