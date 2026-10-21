@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       const alertData: WhatsAppGuestRequestAlertDTO = requestAlert || {
         requestId: `test-${Date.now()}`,
         hotelId: 'hotel-heritage-1',
-        hotelName: 'Old City Heritage Hotel Istanbul',
+        hotelName: 'Old City Comus',
         roomNumber: '101',
         serviceKey: 'test',
         serviceTitle: 'WhatsApp 0850 Bildirim Hattı Testi',
@@ -39,8 +39,12 @@ export async function POST(req: Request) {
         department: 'Resepsiyon & Concierge',
         priority: 'standart',
       };
+      const recipients = await WhatsAppService.resolveHotelRecipients(
+        alertData.hotelId || 'hotel-heritage-1',
+        phone
+      );
       const res = await WhatsAppService.sendGuestRequestAlertWhatsApp(
-        phone || '+905325809676',
+        recipients,
         alertData
       );
       return NextResponse.json(res);

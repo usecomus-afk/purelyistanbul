@@ -1,11 +1,13 @@
 [
   {
     "id": "hotel-heritage-1",
-    "name": "Old City Heritage Hotel Istanbul",
+    "name": "Old City Comus",
     "district": "Sultanahmet / Fatih",
     "type": "Butik Otel & Konak",
     "address": "Alemdar Divanyolu Cd. No:20 Fatih/İstanbul",
     "phone": "+90 212 518 90 00",
+    "whatsappPhone": "05325809676",
+    "managerPhone": "05325809676",
     "website": "https://purelyistanbul.usecomus.com",
     "ratingStr": "4.9 (Doğrulanmış Partner)",
     "targetReason": "Anlaşmalı Pilot Tesis",

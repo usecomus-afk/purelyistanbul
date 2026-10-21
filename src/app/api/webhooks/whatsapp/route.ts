@@ -227,11 +227,14 @@ export async function POST(req: Request) {
           } else if (msgType === 'button') {
             textBody = String(msg?.button?.text || msg?.button?.payload || '');
           } else if (msgType === 'interactive') {
-            textBody = String(
-              msg?.interactive?.button_reply?.title ||
-                msg?.interactive?.list_reply?.title ||
-                ''
-            );
+            textBody = [
+              msg?.interactive?.button_reply?.id,
+              msg?.interactive?.button_reply?.title,
+              msg?.interactive?.list_reply?.id,
+              msg?.interactive?.list_reply?.title,
+            ]
+              .filter(Boolean)
+              .join(' ');
           }
 
           const { approved, extractedCode } = isApprovalMessage(textBody);

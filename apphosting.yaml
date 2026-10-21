@@ -71,6 +71,11 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: PROPERTY_MANAGER_WHATSAPP
+    value: "+905325809676"
+    availability:
+      - BUILD
+      - RUNTIME
 
 
   - variable: APNS_KEY_ID

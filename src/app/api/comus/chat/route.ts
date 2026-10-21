@@ -6,6 +6,8 @@ import {
   getPublishedListings,
   searchPublishedListings,
 } from '@/services/comusListingCatalog';
+import { WhatsAppService } from '@/services/whatsappService';
+import { NotificationDispatcher } from '@/services/notificationDispatcher';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -793,12 +795,14 @@ export async function createRoomTicket({
   const ticketId = `COMUS-${Math.floor(100000 + Math.random() * 900000)}`;
   const waMessage = `🚨 *[Purely Istanbul • Comus Canlı Misafir Talebi]*\n• *Kayıt No:* ${ticketId}\n• *İşletme:* ${resolvedPropertyName}\n• *Birim:* ${resolvedUnitName}\n• *Hizmet Tipi:* ${check.title}\n• *Detay:* ${details}\n• *Öncelik:* ACİL (URGENT)`;
 
+  const reqDocId = `req-${Date.now()}`;
+  const nowIso = new Date().toISOString();
+  const targetHotelId = String(hotelId || 'hotel-heritage-1');
+  const firestoreServiceKey =
+    check.canonicalService === 'maintenance' ? 'technical' : check.canonicalService;
+
   // Persist to Firestore service_requests so the iOS App & Management Portal receive immediate push/live notification
   try {
-    const reqDocId = `req-${Date.now()}`;
-    const nowIso = new Date().toISOString();
-    const firestoreServiceKey =
-      check.canonicalService === 'maintenance' ? 'technical' : check.canonicalService;
     await fetch(
       `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests?documentId=${reqDocId}`,
       {
@@ -807,7 +811,7 @@ export async function createRoomTicket({
         body: JSON.stringify({
           fields: {
             id: { stringValue: reqDocId },
-            hotelId: { stringValue: String(hotelId || 'hotel-heritage-1') },
+            hotelId: { stringValue: targetHotelId },
             hotelName: { stringValue: String(resolvedPropertyName) },
             roomNumber: { stringValue: resolvedRoomNumber },
             serviceKey: { stringValue: firestoreServiceKey },
@@ -825,33 +829,68 @@ export async function createRoomTicket({
     );
   } catch {}
 
-  const managerPhone = process.env.PROPERTY_MANAGER_WHATSAPP || '905325554433';
-  const deepLinkUrl = `https://api.whatsapp.com/send?phone=${managerPhone}&text=${encodeURIComponent(waMessage)}`;
-
   let dispatchedViaCloudApi = false;
-  if (process.env.WHATSAPP_CLOUD_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
-    try {
-      const resp = await fetch(
-        `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+  let recipientPhones: string[] = ['905325809676'];
+  try {
+    recipientPhones = await WhatsAppService.resolveHotelRecipients(
+      targetHotelId,
+      process.env.PROPERTY_MANAGER_WHATSAPP
+    );
+    const [waRes] = await Promise.all([
+      WhatsAppService.sendGuestRequestAlertWhatsApp(recipientPhones, {
+        requestId: reqDocId,
+        hotelId: targetHotelId,
+        hotelName: String(resolvedPropertyName || 'Old City Comus'),
+        roomNumber: resolvedRoomNumber,
+        serviceKey: firestoreServiceKey,
+        serviceTitle: `Comus Talebi: ${check.title}`,
+        notes: String(details || ''),
+        department: 'Concierge & Management Desk',
+        priority: 'acil',
+        createdAt: nowIso,
+      }),
+      NotificationDispatcher.dispatchSmartNotification({
+        targetRole: 'staff',
+        hotelId: targetHotelId,
+        roomNumber: resolvedRoomNumber,
+        requestId: reqDocId,
+        priority: 'acil',
+        urgency: 'HIGH',
+        title: '🚨 Comus Misafir Talebi! 🛎️',
+        subtitle: String(resolvedPropertyName || 'Old City Comus'),
+        body: `Birim ${resolvedRoomNumber} - ${check.title}: ${details}`,
+        url: '/hotel-portal/requests',
+        dataPayload: {
+          requestId: reqDocId,
+          hotelId: targetHotelId,
+          roomNumber: resolvedRoomNumber,
+          serviceKey: firestoreServiceKey,
+        },
+      }).catch(() => null),
+    ]);
+    dispatchedViaCloudApi = Boolean(waRes?.success);
+
+    const firstWamid = waRes?.dispatched?.find((d) => d.message_id)?.message_id || '';
+    if (firstWamid) {
+      fetch(
+        `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests/${encodeURIComponent(reqDocId)}?updateMask.fieldPaths=whatsappMessageId`,
         {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.WHATSAPP_CLOUD_API_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messaging_product: 'whatsapp',
-            to: managerPhone,
-            type: 'text',
-            text: { body: waMessage },
+            fields: {
+              whatsappMessageId: { stringValue: firstWamid },
+            },
           }),
         }
-      );
-      dispatchedViaCloudApi = resp.ok;
-    } catch {
-      dispatchedViaCloudApi = false;
+      ).catch(() => {});
     }
+  } catch (e) {
+    console.warn('[Comus createRoomTicket WhatsApp dispatch error]:', e);
   }
+
+  const managerPhone = recipientPhones[0] || '905325809676';
+  const deepLinkUrl = `https://api.whatsapp.com/send?phone=${managerPhone}&text=${encodeURIComponent(waMessage)}`;
 
   return {
     ticketId,

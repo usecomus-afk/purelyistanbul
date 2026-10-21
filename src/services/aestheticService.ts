@@ -10,6 +10,7 @@ import {
   AestheticInquiryLead, 
   AvailableTimeSlot 
 } from '@/types/aesthetic';
+import { WhatsAppService } from '@/services/whatsappService';
 
 // In-Memory Storage
 const clinicsStore = new Map<string, AestheticClinic>();
@@ -496,6 +497,24 @@ export class AestheticServiceEngine {
     // Push to CRM
     await this.pushAppointmentToClinicCrm(newBooking);
 
+    try {
+      const clinic = clinicsStore.get(data.clinic_id);
+      const service = servicesStore.get(data.service_id);
+      const targetHotelId = data.hotel_id || 'hotel-heritage-1';
+      const recipients = await WhatsAppService.resolveHotelRecipients(targetHotelId);
+      await WhatsAppService.sendGuestRequestAlertWhatsApp(recipients, {
+        requestId: bookingId,
+        hotelId: targetHotelId,
+        hotelName: 'Old City Comus',
+        roomNumber: String(data.room_number || '101'),
+        serviceKey: 'aesthetic_booking',
+        serviceTitle: `Estetik & Wellness Randevusu: ${clinic?.name || ''} - ${service?.title || ''}`,
+        notes: `Misafir: ${data.guest_name} (${data.guest_phone}) · Tarih: ${data.appointment_date} ${data.start_time}${data.notes ? ` · Not: ${data.notes}` : ''}`,
+        department: 'Concierge & Sağlık Turizmi',
+        priority: 'standart',
+      });
+    } catch {}
+
     return newBooking;
   }
 
@@ -534,7 +553,7 @@ export class AestheticServiceEngine {
           <tr><td style="padding: 8px; font-weight: bold;">Telefon / WhatsApp:</td><td><a href="tel:${leadData.guest_phone}">${leadData.guest_phone}</a></td></tr>
           <tr><td style="padding: 8px; font-weight: bold;">E-Posta:</td><td>${leadData.guest_email}</td></tr>
           <tr><td style="padding: 8px; font-weight: bold;">İletişim Tercihi:</td><td><strong>${leadData.preferred_contact_method}</strong></td></tr>
-          <tr><td style="padding: 8px; font-weight: bold;">Konaklanan Otel:</td><td>${leadData.hotel_id || 'Pera Palace Hotel'} (Oda ${leadData.room_number || '304'})</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Konaklanan Otel:</td><td>${leadData.hotel_id || 'Old City Comus'} (Oda ${leadData.room_number || '101'})</td></tr>
           <tr><td style="padding: 8px; font-weight: bold;">Misafir Notu:</td><td>${leadData.message || 'Belirtilmedi'}</td></tr>
         </table>
         
@@ -544,9 +563,23 @@ export class AestheticServiceEngine {
 
     console.log(`[CLINIC EMAIL SENT] To: ${clinic?.email_official} | Subject: Yeni Lead (${leadData.guest_name})`);
 
-    // 2. Misafire SMS / WhatsApp Bilgilendirme Linki Gönder
-    const trackingUrl = `https://xenios.app/inquiry/${leadId}`;
-    console.log(`[GUEST WA/SMS NOTIFICATION] To: ${leadData.guest_phone} | Msg: Talebiniz ${clinic?.name} kliniğine iletildi. Detaylar: ${trackingUrl}`);
+    // 2. Otel Yetkilisine ve Misafire Canlı WhatsApp Bildirimi Gönder
+    const trackingUrl = `https://xenios.usecomus.com/inquiry/${leadId}`;
+    try {
+      const targetHotelId = leadData.hotel_id || 'hotel-heritage-1';
+      const recipients = await WhatsAppService.resolveHotelRecipients(targetHotelId);
+      await WhatsAppService.sendGuestRequestAlertWhatsApp(recipients, {
+        requestId: leadId,
+        hotelId: targetHotelId,
+        hotelName: 'Old City Comus',
+        roomNumber: String(leadData.room_number || '101'),
+        serviceKey: 'aesthetic_inquiry',
+        serviceTitle: `Estetik Bilgi Talebi: ${clinic?.name || ''} — ${service?.title || ''}`,
+        notes: `Misafir: ${leadData.guest_name} · Tel: ${leadData.guest_phone}${leadData.message ? ` · Mesaj: ${leadData.message}` : ''}`,
+        department: 'Concierge & Sağlık Turizmi',
+        priority: 'standart',
+      });
+    } catch {}
 
     return {
       success: true,

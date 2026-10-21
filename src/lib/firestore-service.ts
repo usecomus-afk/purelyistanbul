@@ -856,42 +856,78 @@ export const FirestoreService = {
           managerProf?.whatsappPhone ||
           hotelObj?.managerPhone ||
           managerProf?.managerPhone ||
-          '';
+          '+905325809676';
 
-        await fetch('/api/requests', {
+        const reqBody = JSON.stringify({
+          id: local.id,
+          persistToFirestore: true,
+          hotelId: targetHotelId,
+          hotelName: local.hotelName || hotelObj?.name || 'Old City Comus',
+          roomNumber: unitNum,
+          serviceKey: local.serviceKey,
+          serviceTitle: local.serviceTitle,
+          notes: local.notes || '',
+          department: local.department || 'Housekeeping',
+          stage: local.stage || 'pending',
+          priority: local.priority || 'standart',
+          createdAt: local.createdAt,
+          paymentMethod: local.paymentMethod,
+          paymentStatus: local.paymentStatus,
+          paymentAmount: local.paymentAmount,
+          paymentCurrency: local.paymentCurrency,
+          paymentReference: local.paymentReference,
+          whatsappPhone,
+          title: pushTitle,
+          body: pushBody,
+        });
+
+        const res = await fetch('/api/requests', {
           method: 'POST',
           keepalive: true,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: local.id,
-            persistToFirestore: false,
-            hotelId: targetHotelId,
-            hotelName: local.hotelName || hotelObj?.name || 'Purely Istanbul',
-            roomNumber: unitNum,
-            serviceKey: local.serviceKey,
-            serviceTitle: local.serviceTitle,
-            notes: local.notes || '',
-            department: local.department || 'Housekeeping',
-            stage: local.stage || 'pending',
-            priority: local.priority || 'standart',
-            createdAt: local.createdAt,
-            paymentMethod: local.paymentMethod,
-            paymentStatus: local.paymentStatus,
-            paymentAmount: local.paymentAmount,
-            paymentCurrency: local.paymentCurrency,
-            paymentReference: local.paymentReference,
-            whatsappPhone,
-            title: pushTitle,
-            body: pushBody,
-          }),
+          body: reqBody,
         });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
       } catch {
-        // Ignore network errors
+        // Fallback to hosted API origin if relative fetch fails (e.g. inside native WebView)
+        try {
+          const targetHotelId = local.hotelId || 'hotel-heritage-1';
+          const hotelObj = XeniosStore.getHotelById(targetHotelId);
+          await fetch('https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app/api/requests', {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: local.id,
+              persistToFirestore: true,
+              hotelId: targetHotelId,
+              hotelName: local.hotelName || hotelObj?.name || 'Old City Comus',
+              roomNumber: String(local.roomNumber || '101').trim(),
+              serviceKey: local.serviceKey,
+              serviceTitle: local.serviceTitle,
+              notes: local.notes || '',
+              department: local.department || 'Housekeeping',
+              stage: local.stage || 'pending',
+              priority: local.priority || 'standart',
+              createdAt: local.createdAt,
+              paymentMethod: local.paymentMethod,
+              paymentStatus: local.paymentStatus,
+              paymentAmount: local.paymentAmount,
+              paymentCurrency: local.paymentCurrency,
+              paymentReference: local.paymentReference,
+              whatsappPhone: '+905325809676',
+            }),
+          });
+        } catch {
+          // Ignore network errors
+        }
       }
     })();
 
-    // Fire REST PATCH (with keepalive: true) immediately in parallel with Firebase SDK setDoc
-    // so orders from a Home Screen QR PWA reach Firestore and WhatsApp in <150ms.
+    // Ensure both Firestore persistence and WhatsApp / Push API dispatch complete reliably
     const restPromise = Promise.all([saveViaRest(), notifyApiPromise]);
 
     if (!db || !isFirebaseConfigured) {
@@ -901,10 +937,13 @@ export const FirestoreService = {
 
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
-      await Promise.race([
-        Promise.all([setDoc(doc(colRef, local.id), payload), notifyApiPromise]),
-        restPromise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 2500)),
+      await Promise.all([
+        Promise.race([
+          setDoc(doc(colRef, local.id), payload),
+          saveViaRest(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 2500)),
+        ]).catch(() => saveViaRest()),
+        notifyApiPromise,
       ]);
     } catch {
       await restPromise;

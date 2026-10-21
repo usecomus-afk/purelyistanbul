@@ -81,6 +81,53 @@ export class WhatsAppService {
     };
   }
 
+  /**
+   * Resolves all WhatsApp recipient phones for a hotel (Firestore + env + test fallback 905325809676).
+   */
+  static async resolveHotelRecipients(
+    hotelId: string = 'hotel-heritage-1',
+    explicitPhones?: string | string[]
+  ): Promise<string[]> {
+    const candidates: string[] = [];
+
+    if (explicitPhones) {
+      if (Array.isArray(explicitPhones)) {
+        candidates.push(...explicitPhones);
+      } else {
+        candidates.push(String(explicitPhones));
+      }
+    }
+
+    try {
+      const res = await fetch(
+        `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/hotels/${encodeURIComponent(hotelId)}`,
+        { cache: 'no-store' }
+      );
+      if (res.ok) {
+        const docData = await res.json();
+        const fields = docData?.fields || {};
+        if (fields.whatsappPhone?.stringValue) {
+          candidates.push(fields.whatsappPhone.stringValue);
+        }
+        if (fields.managerPhone?.stringValue) {
+          candidates.push(fields.managerPhone.stringValue);
+        }
+      }
+    } catch {
+      // Ignore Firestore lookup error and fall back to env/default
+    }
+
+    const defaultEnv =
+      process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905325809676';
+    candidates.push(defaultEnv);
+
+    const parsed = this.parseRecipientPhones(candidates.join(','));
+    if (!parsed.includes('905325809676')) {
+      parsed.unshift('905325809676');
+    }
+    return parsed;
+  }
+
   /** Şablon parametreleri satır sonu / tab / 4+ boşluk içeremez. */
   static sanitizeTemplateParam(value: string): string {
     const clean = String(value ?? '')
@@ -282,7 +329,7 @@ export class WhatsAppService {
     const messageBody = [
       headerTitle,
       '━━━━━━━━━━━━━━━━━━━━━━',
-      `🏨 *Tesis:* ${reqData.hotelName || 'Purely Istanbul Partner'}`,
+      `🏨 *Tesis:* ${reqData.hotelName || 'Old City Comus'}`,
       `🚪 *Birim:* ${unitLabel}`,
       `🛎️ *Talep / Sipariş:* ${reqData.serviceTitle}`,
       `🏢 *Departman:* ${reqData.department || 'Konaklama İçi Hizmet'}`,
@@ -292,8 +339,7 @@ export class WhatsAppService {
       paymentLine ? paymentLine.trim() : '',
       shortCode ? `🔖 *Talep Kodu:* #${shortCode}` : '',
       '━━━━━━━━━━━━━━━━━━━━━━',
-      '✅ *Talebi Onaylamak / Tamamlamak İçin:*',
-      'Bu mesaja yanıt olarak *OK* veya *TAMAM* yazmanız yeterlidir.',
+      '✅ *Onaylamak İçin:* Aşağıdaki *Onayla & Tamamla* butonuna dokunun veya *OK* yazın.',
     ]
       .filter((line) => line !== '')
       .join('\n');
@@ -304,24 +350,73 @@ export class WhatsAppService {
     for (const formattedPhone of recipients) {
       if (isLive && orderTemplate) {
         // Şablon değişkenleri: {{1}} Tesis, {{2}} Birim, {{3}} Talep, {{4}} Öncelik, {{5}} Not, {{6}} Talep Kodu
-        results.push(
-          await this.sendTemplateMessage(formattedPhone, orderTemplate, [
-            reqData.hotelName || 'Purely Istanbul Partner',
-            unitLabel,
-            reqData.serviceTitle,
-            isUrgent ? 'ACİL' : 'Standart',
-            [cleanNotes, paymentLine.replace(/\*/g, '').trim()].filter(Boolean).join(' · ') || '-',
-            shortCode ? `#${shortCode}` : '-',
-          ])
+        const tplRes = await this.sendTemplateMessage(formattedPhone, orderTemplate, [
+          reqData.hotelName || 'Old City Comus',
+          unitLabel,
+          reqData.serviceTitle,
+          isUrgent ? 'ACİL' : 'Standart',
+          [cleanNotes, paymentLine.replace(/\*/g, '').trim()].filter(Boolean).join(' · ') || '-',
+          shortCode ? `#${shortCode}` : '-',
+        ]);
+        if (tplRes.success) {
+          results.push(tplRes);
+          continue;
+        }
+        console.warn(
+          `[WHATSAPP 0850 API] Template '${orderTemplate}' failed, falling back to interactive/text:`,
+          tplRes.details
         );
-        continue;
       }
 
       if (isLive) {
-        console.warn(
-          '[WHATSAPP 0850 API] WHATSAPP_TEMPLATE_ORDER_ALERT tanımlı değil — serbest metin yalnızca alıcı son 24 saatte 0850 hattına yazdıysa teslim edilir.'
-        );
         try {
+          // 1. Try sending interactive message with 1-tap approval button
+          const interactiveBody = messageBody.slice(0, 1020);
+          const interactiveRes = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              messaging_product: 'whatsapp',
+              recipient_type: 'individual',
+              to: formattedPhone,
+              type: 'interactive',
+              interactive: {
+                type: 'button',
+                body: { text: interactiveBody },
+                footer: { text: 'Purely Istanbul • Comus Concierge' },
+                action: {
+                  buttons: [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: shortCode ? `OK #${shortCode}` : 'OK',
+                        title: '✅ Onayla & Tamamla',
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+          });
+
+          if (interactiveRes.ok) {
+            const intData = await interactiveRes.json().catch(() => ({}));
+            const msgId = intData.messages?.[0]?.id || `wamid_${Date.now()}`;
+            results.push({
+              success: true,
+              message_id: msgId,
+              recipient_phone: formattedPhone,
+              status: 'SENT',
+              sender_number: senderNumber,
+              details: intData,
+            });
+            continue;
+          }
+
+          // 2. Fallback to standard text message if interactive payload exceeds limits
           const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
             method: 'POST',
             headers: {

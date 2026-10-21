@@ -6,51 +6,11 @@ import { WhatsAppService } from '@/services/whatsappService';
 const FIRESTORE_REQUESTS_BASE_URL =
   'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/service_requests';
 
-const FIRESTORE_HOTELS_BASE_URL =
-  'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/hotels';
-
 async function resolveHotelWhatsAppRecipients(
   hotelId: string,
   explicitPhones?: string | string[]
 ): Promise<string[]> {
-  const candidates: string[] = [];
-
-  if (explicitPhones) {
-    if (Array.isArray(explicitPhones)) {
-      candidates.push(...explicitPhones);
-    } else {
-      candidates.push(String(explicitPhones));
-    }
-  }
-
-  try {
-    const res = await fetch(`${FIRESTORE_HOTELS_BASE_URL}/${encodeURIComponent(hotelId)}`, {
-      cache: 'no-store',
-    });
-    if (res.ok) {
-      const docData = await res.json();
-      const fields = docData?.fields || {};
-      if (fields.whatsappPhone?.stringValue) {
-        candidates.push(fields.whatsappPhone.stringValue);
-      }
-      if (fields.managerPhone?.stringValue) {
-        candidates.push(fields.managerPhone.stringValue);
-      }
-    }
-  } catch {
-    // Ignore Firestore lookup error and fall back to env/default
-  }
-
-  const defaultEnv =
-    process.env.WHATSAPP_DEFAULT_RECIPIENT_PHONES || '+905325809676';
-  candidates.push(defaultEnv);
-
-  const parsed = WhatsAppService.parseRecipientPhones(candidates.join(','));
-  // Ensure test/default phone 905325809676 is always included unless explicitly removed
-  if (!parsed.includes('905325809676')) {
-    parsed.unshift('905325809676');
-  }
-  return parsed;
+  return WhatsAppService.resolveHotelRecipients(hotelId, explicitPhones);
 }
 
 export async function POST(req: Request) {
@@ -60,7 +20,16 @@ export async function POST(req: Request) {
 
     const id = String(body.id || `req-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
     const hotelId = String(body.hotelId || 'hotel-heritage-1');
-    const hotelName = String(body.hotelName || 'Purely Istanbul Partner Hotel');
+    const rawHotelName = String(body.hotelName || '').trim();
+    const hotelName =
+      !rawHotelName ||
+      rawHotelName === 'Purely Istanbul' ||
+      rawHotelName === 'Purely Istanbul Partner Hotel' ||
+      rawHotelName === 'Old City Heritage Hotel Istanbul'
+        ? hotelId === 'hotel-heritage-1'
+          ? 'Old City Comus'
+          : rawHotelName || 'Old City Comus'
+        : rawHotelName;
     const roomNumber = String(body.roomNumber || body.unitName || '101').trim();
     const serviceKey = String(body.serviceKey || 'service');
     const serviceTitle = String(body.serviceTitle || body.title || 'Birim Hizmeti');
