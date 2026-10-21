@@ -18,7 +18,7 @@ interface GuestTabBarProps {
  * 3-Column Heritage Hotel Building SVG Icon matching reference bottom bar "Hotel"
  */
 function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#A67C46" : "currentColor";
+  const strokeColor = active ? "#D4AF37" : "#CBD5E1";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -89,7 +89,7 @@ function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
  * Multi-line Nautilus / Vortex Spiral SVG Icon for comusAI matching reference bottom bar
  */
 function LuxurySpiralIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#7D5E2A" : "#8B6220";
+  const strokeColor = active ? "#D4AF37" : "#E2E8F0";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -131,7 +131,7 @@ function LuxurySpiralIcon({ active }: { active: boolean }) {
  * Clean Circular Info '(i)' SVG Icon for Guide matching reference bottom bar
  */
 function LuxuryGuideInfoIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#A67C46" : "currentColor";
+  const strokeColor = active ? "#D4AF37" : "#CBD5E1";
   return (
     <svg
       viewBox="0 0 24 24"
@@ -157,10 +157,6 @@ export function GuestTabBar({
   const [currentLang, setCurrentLang] = useState<Language>(() => propLang || detectBrowserLanguage());
   const [shouldShow, setShouldShow] = useState(true);
   const [shouldShowDark, setShouldShowDark] = useState(true);
-  const [isFooterScrollHidden, setIsFooterScrollHidden] = useState(false);
-  const lastScrollYRef = useRef(0);
-  const touchStartYRef = useRef<number | null>(null);
-  const ignoreScrollUntilRef = useRef(0);
 
   useEffect(() => {
     const isCockpit = pathname?.startsWith('/cockpit') || pathname?.startsWith('/hotel-portal');
@@ -171,8 +167,6 @@ export function GuestTabBar({
   useEffect(() => {
     if (propActiveTab) {
       setCurrentTab(propActiveTab);
-      setIsFooterScrollHidden(false);
-      ignoreScrollUntilRef.current = Date.now() + 550;
     }
   }, [propActiveTab]);
 
@@ -184,13 +178,11 @@ export function GuestTabBar({
     }
   }, [propLang]);
 
-  // Global event & scroll direction listeners
+  // Global event listeners
   useEffect(() => {
     const handleTabEvent = (e: any) => {
       if (e.detail?.tab) {
         setCurrentTab(e.detail.tab);
-        setIsFooterScrollHidden(false);
-        ignoreScrollUntilRef.current = Date.now() + 550;
       }
     };
     const handleLangEvent = (e: any) => {
@@ -200,97 +192,13 @@ export function GuestTabBar({
       setShouldShowDark(e.detail?.isOpen ? false : true);
     };
 
-    const getScrollY = (target?: EventTarget | null) => {
-      if (
-        target instanceof HTMLElement &&
-        target.id === 'guest-scroll-container' &&
-        target.scrollTop > 0
-      ) {
-        return target.scrollTop;
-      }
-      return (
-        window.scrollY ||
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0
-      );
-    };
-
-    const handleScroll = (e: Event) => {
-      if (Date.now() < ignoreScrollUntilRef.current) return;
-      const rawY = getScrollY(e.target);
-      const maxScroll = Math.max(
-        0,
-        document.documentElement.scrollHeight - window.innerHeight
-      );
-      const currentY = Math.max(0, Math.min(rawY, maxScroll > 0 ? maxScroll : rawY));
-      const prevY = lastScrollYRef.current;
-      const diff = currentY - prevY;
-
-      if (Math.abs(diff) < 6) return;
-
-      if (diff > 0) {
-        // Aşağı kaydırırken alttaki Footer açık kalır / açılır
-        setIsFooterScrollHidden(false);
-      } else if (diff < 0) {
-        // Yukarı kaydırırken alttaki Footer gizlenir
-        setIsFooterScrollHidden(true);
-      }
-
-      lastScrollYRef.current = currentY;
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        touchStartYRef.current = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (Date.now() < ignoreScrollUntilRef.current) return;
-      if (touchStartYRef.current === null || e.touches.length !== 1) return;
-      const currentTouchY = e.touches[0].clientY;
-      const deltaY = touchStartYRef.current - currentTouchY; // > 0 means scrolling down, < 0 means scrolling up
-
-      if (Math.abs(deltaY) < 14) return;
-
-      if (deltaY > 0) {
-        // Aşağı kaydırırken alttaki Footer açılır
-        setIsFooterScrollHidden(false);
-        touchStartYRef.current = currentTouchY;
-      } else if (deltaY < 0) {
-        // Yukarı kaydırırken alttaki Footer gizlenir
-        setIsFooterScrollHidden(true);
-        touchStartYRef.current = currentTouchY;
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (Date.now() < ignoreScrollUntilRef.current) return;
-      if (Math.abs(e.deltaY) < 8) return;
-      if (e.deltaY > 0) {
-        setIsFooterScrollHidden(false);
-      } else if (e.deltaY < 0) {
-        setIsFooterScrollHidden(true);
-      }
-    };
-
     window.addEventListener('xenios_tab_changed', handleTabEvent);
     window.addEventListener('xenios_lang_changed', handleLangEvent);
     window.addEventListener('xenios_modal_state', handleModalEvent);
-    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       window.removeEventListener('xenios_tab_changed', handleTabEvent);
       window.removeEventListener('xenios_lang_changed', handleLangEvent);
       window.removeEventListener('xenios_modal_state', handleModalEvent);
-      window.removeEventListener('scroll', handleScroll, { capture: true } as EventListenerOptions);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('wheel', handleWheel);
     };
   }, []);
 
@@ -305,8 +213,6 @@ export function GuestTabBar({
 
   const handleTabClick = (tabId: TabId) => {
     setCurrentTab(tabId);
-    setIsFooterScrollHidden(false);
-    ignoreScrollUntilRef.current = Date.now() + 550;
     onTabChange?.(tabId);
 
     if (typeof window !== 'undefined') {
@@ -329,7 +235,7 @@ export function GuestTabBar({
 
   if (!shouldShow) return null;
 
-  const isHidden = !shouldShowDark || (isFooterScrollHidden && currentTab !== 'categories');
+  const isHidden = !shouldShowDark;
 
   return (
     <nav
@@ -369,8 +275,8 @@ export function GuestTabBar({
                 isComusTrigger
                   ? 'text-[#8B6220] font-bold'
                   : isActive
-                    ? 'text-[#9E7035] font-semibold'
-                    : 'text-[#222222] hover:text-[#000000] font-normal'
+                    ? 'text-[#D4AF37] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                    : 'text-[#94A3B8] hover:text-[#F8F6F0] font-normal'
               }`}
             >
               <div
@@ -378,8 +284,8 @@ export function GuestTabBar({
                   isComusTrigger
                     ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7]/70 via-[#F5E6C8]/65 to-[#E2C285]/60 backdrop-blur-md border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.28),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                     : isActive
-                      ? 'w-11 h-11 rounded-full bg-white/38 backdrop-blur-md border-[1.5px] border-[rgba(224,184,102,0.68)] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
-                      : 'w-10 h-10 text-[#1E1E1E]'
+                      ? 'w-11 h-11 rounded-full bg-[#162E5B]/85 backdrop-blur-md border-[1.5px] border-[#D4AF37] text-[#D4AF37] shadow-[0_6px_16px_rgba(11,27,61,0.5),inset_0_1px_2px_rgba(255,255,255,0.25)]'
+                      : 'w-10 h-10 text-[#CBD5E1]'
                 }`}
               >
                 {isComusTrigger && (
