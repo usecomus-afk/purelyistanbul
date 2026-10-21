@@ -7,6 +7,7 @@
 const COMUS_DEFAULT_WHATSAPP_TOKEN =
   'EAAQL7lziK8wBSqJWGlNoDwz1fAepnwZBVDzNB3sMN2X3qGqS2SzoaZBZACwBfCP3ah8uzSrKBDR8gIfCfdl3YRq5M6uZBah95bUm32mjlDxxJ3TzSWKW9L7465fcBcy71hJLl2dzV6yIadLI5Y7JO6VZCpEKYrjclkxoZBa37ZBdPqVzw2ZCJIyLzZAuVOzEUuwZDZD';
 const COMUS_DEFAULT_PHONE_NUMBER_ID = '1384418771423280'; // +90 850 308 59 06 (Rezervasyon Comus)
+const COMUS_DEFAULT_WABA_ID = '4071375639665332'; // Meta WhatsApp Business Account: "comus"
 
 export interface WhatsAppBookingDetailsDTO {
   bookingId: string;
@@ -64,20 +65,28 @@ export class WhatsAppService {
       COMUS_DEFAULT_WHATSAPP_TOKEN;
     const phoneId =
       process.env.WHATSAPP_PHONE_NUMBER_ID || COMUS_DEFAULT_PHONE_NUMBER_ID;
+    const wabaId =
+      process.env.WHATSAPP_WABA_ID || COMUS_DEFAULT_WABA_ID;
     const isLive = !!token && !!phoneId && !token.includes('mock') && !token.startsWith('test_');
-    return { token, phoneId, isLive, senderNumber: '+90 850 308 59 06' };
+    return { token, phoneId, wabaId, isLive, senderNumber: '+90 850 308 59 06' };
   }
 
   /**
    * Meta yalnızca son 24 saat içinde size yazmış kişilere serbest metin teslim eder.
    * Bu pencere dışındaki (işletme başlatmalı) mesajlar, Meta'da ONAYLI bir şablonla gönderilmelidir;
    * aksi halde API 200 döner ama mesaj sessizce düşer (hata 131047 webhook ile gelir).
+   * WABA "comus" (4071375639665332) üzerinde onaylı şablonlarımız varsayılan olarak tanımlıdır.
    */
   static getTemplateConfig() {
     return {
       language: process.env.WHATSAPP_TEMPLATE_LANG || 'tr',
-      orderAlert: process.env.WHATSAPP_TEMPLATE_ORDER_ALERT || '',
-      reservationConfirm: process.env.WHATSAPP_TEMPLATE_RESERVATION_CONFIRM || '',
+      orderAlert:
+        process.env.WHATSAPP_TEMPLATE_ORDER_ALERT || 'misafir_siparis_talep_bildirimi',
+      orderAlertFallback:
+        process.env.WHATSAPP_TEMPLATE_ORDER_ALERT_FALLBACK || 'yeni_rezervasyon_bildirimi',
+      reservationConfirm:
+        process.env.WHATSAPP_TEMPLATE_RESERVATION_CONFIRM || 'rezervasyon_onay_bildirimi',
+      reservationConfirmFallback: 'yeni_rezervasyon_bildirimi',
     };
   }
 
@@ -345,12 +354,16 @@ export class WhatsAppService {
       .join('\n');
 
     const results: WhatsAppSendResult[] = [];
-    const { orderAlert: orderTemplate } = this.getTemplateConfig();
+    const { orderAlert: orderTemplate, orderAlertFallback } = this.getTemplateConfig();
+    const [datePart, timePart] = timeFormatted.split(' ');
 
     for (const formattedPhone of recipients) {
+      let templateDelivered = false;
+
+      // 1. Önce 24 saat penceresinden bağımsız (7/24 garantili) ONAYLI Meta Şablonu gönder
       if (isLive && orderTemplate) {
-        // Şablon değişkenleri: {{1}} Tesis, {{2}} Birim, {{3}} Talep, {{4}} Öncelik, {{5}} Not, {{6}} Talep Kodu
-        const tplRes = await this.sendTemplateMessage(formattedPhone, orderTemplate, [
+        // Birincil şablon: misafir_siparis_talep_bildirimi ({{1}} Tesis, {{2}} Birim, {{3}} Talep, {{4}} Öncelik, {{5}} Not, {{6}} Talep Kodu)
+        const primaryTplRes = await this.sendTemplateMessage(formattedPhone, orderTemplate, [
           reqData.hotelName || 'Old City Comus',
           unitLabel,
           reqData.serviceTitle,
@@ -358,19 +371,44 @@ export class WhatsAppService {
           [cleanNotes, paymentLine.replace(/\*/g, '').trim()].filter(Boolean).join(' · ') || '-',
           shortCode ? `#${shortCode}` : '-',
         ]);
-        if (tplRes.success) {
-          results.push(tplRes);
-          continue;
+
+        if (primaryTplRes.success) {
+          results.push(primaryTplRes);
+          templateDelivered = true;
+        } else if (orderAlertFallback && orderAlertFallback !== orderTemplate) {
+          // Yedek onaylı şablon: yeni_rezervasyon_bildirimi (WABA 4071375639665332 üzerinde APPROVED)
+          const fallbackTplRes = await this.sendTemplateMessage(
+            formattedPhone,
+            orderAlertFallback,
+            [
+              `${reqData.hotelName || 'Old City Comus'} — ${unitLabel}`,
+              `${reqData.serviceTitle} (${isUrgent ? 'ACİL' : 'Standart'})`,
+              [
+                cleanNotes,
+                paymentLine.replace(/\*/g, '').trim(),
+                shortCode ? `Talep Kodu: #${shortCode}` : '',
+              ]
+                .filter(Boolean)
+                .join(' · ') || 'Misafir Talebi',
+              datePart || timeFormatted,
+              `${timePart || ''} (Onay için OK yazınız)`.trim(),
+            ]
+          );
+          if (fallbackTplRes.success) {
+            results.push(fallbackTplRes);
+            templateDelivered = true;
+          } else {
+            console.warn(
+              `[WHATSAPP 0850 API] Both primary ('${orderTemplate}') and fallback ('${orderAlertFallback}') templates failed:`,
+              fallbackTplRes.details
+            );
+          }
         }
-        console.warn(
-          `[WHATSAPP 0850 API] Template '${orderTemplate}' failed, falling back to interactive/text:`,
-          tplRes.details
-        );
       }
 
       if (isLive) {
         try {
-          // 1. Try sending interactive message with 1-tap approval button
+          // 2. Ayrıca interaktif "✅ Onayla & Tamamla" butonlu mesajı da gönder (24 saatlik pencere açıksa tek dokunuşla onay sağlar)
           const interactiveBody = messageBody.slice(0, 1020);
           const interactiveRes = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
             method: 'POST',
@@ -405,18 +443,24 @@ export class WhatsAppService {
           if (interactiveRes.ok) {
             const intData = await interactiveRes.json().catch(() => ({}));
             const msgId = intData.messages?.[0]?.id || `wamid_${Date.now()}`;
-            results.push({
-              success: true,
-              message_id: msgId,
-              recipient_phone: formattedPhone,
-              status: 'SENT',
-              sender_number: senderNumber,
-              details: intData,
-            });
+            if (!templateDelivered) {
+              results.push({
+                success: true,
+                message_id: msgId,
+                recipient_phone: formattedPhone,
+                status: 'SENT',
+                sender_number: senderNumber,
+                details: intData,
+              });
+            }
             continue;
           }
 
-          // 2. Fallback to standard text message if interactive payload exceeds limits
+          if (templateDelivered) {
+            continue;
+          }
+
+          // 3. Fallback to standard text message if interactive payload exceeds limits
           const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
             method: 'POST',
             headers: {
@@ -596,14 +640,34 @@ ${details.locationAddress ? `_${details.locationAddress}_` : ''}
 Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
 
     if (isLive) {
-      const { reservationConfirm } = this.getTemplateConfig();
+      const { reservationConfirm, reservationConfirmFallback } = this.getTemplateConfig();
+      let templateResult: WhatsAppSendResult | null = null;
+
       if (reservationConfirm) {
         // Şablon değişkenleri: {{1}} Misafir, {{2}} Tesis, {{3}} Detay (deneyim/tarih/kod)
-        return this.sendTemplateMessage(formattedPhone, reservationConfirm, [
+        const primaryRes = await this.sendTemplateMessage(formattedPhone, reservationConfirm, [
           details.guestName,
           `${details.hotelName} (Birim ${details.roomNumber})`,
           `${details.experienceTitle} · ${details.bookingDate} ${details.bookingTime} · Onay Kodu: ${details.confirmationCode}`,
         ]);
+        if (primaryRes.success) {
+          templateResult = primaryRes;
+        } else if (reservationConfirmFallback && reservationConfirmFallback !== reservationConfirm) {
+          const fallbackRes = await this.sendTemplateMessage(
+            formattedPhone,
+            reservationConfirmFallback,
+            [
+              `${details.hotelName} (Birim ${details.roomNumber})`,
+              details.guestName,
+              `${details.guestCount} Kişi · ${details.experienceTitle}`,
+              details.bookingDate,
+              `${details.bookingTime} (Kod: ${details.confirmationCode})`,
+            ]
+          );
+          if (fallbackRes.success) {
+            templateResult = fallbackRes;
+          }
+        }
       }
 
       try {
@@ -626,6 +690,9 @@ Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
         });
 
         const data = await response.json().catch(() => ({}));
+        if (templateResult) {
+          return templateResult;
+        }
         if (response.ok) {
           const msgId = data.messages?.[0]?.id || `wamid_${Date.now()}`;
           return {
@@ -647,6 +714,9 @@ Keyifli ve unutulmaz bir İstanbul deneyimi dileriz!`;
           details: { error: data?.error?.message || `HTTP ${response.status}`, ...data }
         };
       } catch (err: any) {
+        if (templateResult) {
+          return templateResult;
+        }
         console.warn('[WHATSAPP API] Live dispatch error:', err);
         return {
           success: false,

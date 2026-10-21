@@ -61,6 +61,31 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: WHATSAPP_WABA_ID
+    value: "4071375639665332"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_TEMPLATE_LANG
+    value: "tr"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_TEMPLATE_ORDER_ALERT
+    value: "misafir_siparis_talep_bildirimi"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_TEMPLATE_ORDER_ALERT_FALLBACK
+    value: "yeni_rezervasyon_bildirimi"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: WHATSAPP_TEMPLATE_RESERVATION_CONFIRM
+    value: "rezervasyon_onay_bildirimi"
+    availability:
+      - BUILD
+      - RUNTIME
   - variable: WHATSAPP_SENDER_NUMBER
     value: "+90 850 308 59 06"
     availability:
