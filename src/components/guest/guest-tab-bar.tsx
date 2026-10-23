@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Language } from '@/lib/types';
 import { getT, detectBrowserLanguage } from '@/lib/i18n';
 import { LayoutGrid } from 'lucide-react';
@@ -18,7 +18,7 @@ interface GuestTabBarProps {
  * 3-Column Heritage Hotel Building SVG Icon matching reference bottom bar "Hotel"
  */
 function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#CBD5E1";
+  const strokeColor = active ? "#A67C46" : "currentColor";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -89,7 +89,7 @@ function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
  * Multi-line Nautilus / Vortex Spiral SVG Icon for comusAI matching reference bottom bar
  */
 function LuxurySpiralIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#E2E8F0";
+  const strokeColor = active ? "#7D5E2A" : "#8B6220";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -131,7 +131,7 @@ function LuxurySpiralIcon({ active }: { active: boolean }) {
  * Clean Circular Info '(i)' SVG Icon for Guide matching reference bottom bar
  */
 function LuxuryGuideInfoIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#CBD5E1";
+  const strokeColor = active ? "#A67C46" : "currentColor";
   return (
     <svg
       viewBox="0 0 24 24"
@@ -178,7 +178,7 @@ export function GuestTabBar({
     }
   }, [propLang]);
 
-  // Global event listeners
+  // Global event listeners (bottom bar stays permanently visible during scroll)
   useEffect(() => {
     const handleTabEvent = (e: any) => {
       if (e.detail?.tab) {
@@ -275,8 +275,8 @@ export function GuestTabBar({
                 isComusTrigger
                   ? 'text-[#8B6220] font-bold'
                   : isActive
-                    ? 'text-[#D4AF37] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
-                    : 'text-[#94A3B8] hover:text-[#F8F6F0] font-normal'
+                    ? 'text-[#9E7035] font-semibold'
+                    : 'text-[#222222] hover:text-[#000000] font-normal'
               }`}
             >
               <div
@@ -284,8 +284,8 @@ export function GuestTabBar({
                   isComusTrigger
                     ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7]/70 via-[#F5E6C8]/65 to-[#E2C285]/60 backdrop-blur-md border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.28),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                     : isActive
-                      ? 'w-11 h-11 rounded-full bg-[#162E5B]/85 backdrop-blur-md border-[1.5px] border-[#D4AF37] text-[#D4AF37] shadow-[0_6px_16px_rgba(11,27,61,0.5),inset_0_1px_2px_rgba(255,255,255,0.25)]'
-                      : 'w-10 h-10 text-[#CBD5E1]'
+                      ? 'w-11 h-11 rounded-full bg-white/38 backdrop-blur-md border-[1.5px] border-[rgba(224,184,102,0.68)] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
+                      : 'w-10 h-10 text-[#1E1E1E]'
                 }`}
               >
                 {isComusTrigger && (

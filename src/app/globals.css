@@ -90,7 +90,6 @@ body {
   max-width: 100vw !important;
   min-height: 100dvh;
   position: relative;
-  overflow-x: hidden !important;
   overflow-x: clip !important;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: none !important;
@@ -124,7 +123,6 @@ select {
   width: 100% !important;
   max-width: 100vw !important;
   min-height: 100dvh;
-  overflow-x: hidden !important;
   overflow-x: clip !important;
   overscroll-behavior-x: none !important;
   touch-action: pan-y;
@@ -429,7 +427,7 @@ html.dark, html.dark body {
   animation: xenios-pulse-line 3.2s ease-in-out infinite;
 }
 
-/* Mobile Bottom Navigation Bar - Fixed Viewport Anchoring with Smooth Scroll Hide/Reveal */
+/* Mobile Bottom Navigation Bar - Fixed Viewport Anchoring */
 .mobile-bottom-nav {
   position: fixed !important;
   bottom: 0 !important;

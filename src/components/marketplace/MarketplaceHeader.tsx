@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandMark } from "@/components/brand-mark";
 
@@ -10,8 +10,6 @@ export function MarketplaceHeader() {
   const { user, profile, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
-  const lastScrollYRef = useRef(0);
   const [hotelSession, setHotelSession] = useState<{ hotelId: string; roomId: string } | null>(null);
 
   useEffect(() => {
@@ -29,33 +27,18 @@ export function MarketplaceHeader() {
     const onScroll = () => {
       const currentY = Math.max(0, window.scrollY || window.pageYOffset || 0);
       setScrolled(currentY > 4);
-      const diff = currentY - lastScrollYRef.current;
-      if (Math.abs(diff) >= 6) {
-        if (diff > 0 && currentY > 24) {
-          setIsHeaderHidden(true);
-        } else if (diff < 0) {
-          setIsHeaderHidden(false);
-        }
-        lastScrollYRef.current = currentY;
-      }
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const hideBar = isHeaderHidden && !menuOpen;
-
   return (
     <header
-      className={`sticky top-0 inset-x-0 z-40 w-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] pt-[max(0.15rem,env(safe-area-inset-top))] backdrop-blur-xl ${
+      className={`sticky top-0 inset-x-0 z-40 w-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] pt-[max(0.15rem,env(safe-area-inset-top))] backdrop-blur-xl translate-y-0 opacity-100 pointer-events-auto ${
         scrolled
           ? "bg-white/45 border-b border-white/65 shadow-[0_4px_24px_rgba(11,25,44,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.8)]"
           : "bg-white/32 border-b border-white/55 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.75)]"
-      } ${
-        hideBar
-          ? "-translate-y-full opacity-0 pointer-events-none"
-          : "translate-y-0 opacity-100 pointer-events-auto"
       }`}
     >
       <div className="w-full flex items-center justify-between px-4 sm:px-6 lg:px-10 h-[72px] gap-3">
