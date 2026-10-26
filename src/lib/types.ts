@@ -522,3 +522,21 @@ export interface AiTokenStats {
   updatedAt: string;
 }
 
+export interface HotelPartnerApplication {
+  id: string;
+  propertyName: string;
+  businessType: string; // Konaklama işletme tipi (Butik Otel, PMC, Apart Otel vb.)
+  capacity: number; // Oda / bağımsız birim kapasitesi
+  locationDistrict: string; // Tesisin bulunduğu ilçe/bölge
+  locationAddress: string; // Tesisin açık yeri / adresi
+  authorizedPerson: string; // Yetkili kişi Ad Soyad (& Ünvan)
+  phone: string; // Standart iletişim - Telefon / WhatsApp
+  email: string; // Standart iletişim - E-posta
+  website?: string; // Opsiyonel web sitesi / sosyal medya
+  notes?: string;
+  wantsToBePartner: boolean; // "PurelyIstanbul partneri olmak istiyorum" onayı
+  reviewedAt?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}

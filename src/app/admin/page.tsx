@@ -41,6 +41,7 @@ import { authFetch } from "@/lib/auth-fetch";
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
+import { PartnerApplicationsPanel } from "@/components/cockpit/partner-applications-panel";
 import { Admin2FASetupModal } from "@/components/dashboard/admin-2fa-setup-modal";
 import { AdminSecurityPanel } from "@/components/dashboard/admin-security-panel";
 import { AdminOpsSync } from "@/components/dashboard/admin-ops-sync";
@@ -2474,6 +2475,9 @@ export default function AdminPage() {
               {/* SUBTAB 3: MARKETPLACE APPROVALS & HOST APPLICATIONS */}
               {channelSubTab === "marketplace" && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="lg:col-span-2">
+                    <PartnerApplicationsPanel />
+                  </div>
                   {/* Pending Marketplace Listings */}
                   <div className="comus-card space-y-4">
                     <div className="border-b border-[#C8C4B0]/60 pb-3">

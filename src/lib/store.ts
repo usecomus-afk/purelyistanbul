@@ -1,4 +1,4 @@
-import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType } from './types';
+import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType, HotelPartnerApplication } from './types';
 import { UserPreferences } from '@/types/comusAi';
 import { CategoryConfig, mergeCategoryConfigs } from '@/lib/marketplace/categories';
 import rawHotels from '@/data/hotels.json';
@@ -26,7 +26,8 @@ const STORAGE_KEYS = {
   ROOM_SERVICE_MENU: 'xenios_room_service_menu',
   OTA_CHANNELS: 'xenios_ota_channels',
   AI_TOKEN_USAGE: 'xenios_ai_token_usage',
-  AI_CHAT_MESSAGES: 'xenios_ai_chat_messages'
+  AI_CHAT_MESSAGES: 'xenios_ai_chat_messages',
+  PARTNER_APPLICATIONS: 'xenios_hotel_partner_applications'
 };
 
 function inferSupplierType(category: string): SupplierType {
@@ -2235,6 +2236,103 @@ export const XeniosStore = {
   saveAiChatMessages(messages: any[]): void {
     try {
       safeSet(STORAGE_KEYS.AI_CHAT_MESSAGES, JSON.stringify(messages));
+    } catch (e) {}
+  },
+
+  getHotelPartnerApplications(): HotelPartnerApplication[] {
+    try {
+      const stored = safeGet(STORAGE_KEYS.PARTNER_APPLICATIONS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return parsed.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        }
+      }
+    } catch (e) {}
+    return [];
+  },
+
+  saveHotelPartnerApplications(list: HotelPartnerApplication[]) {
+    safeSet(STORAGE_KEYS.PARTNER_APPLICATIONS, JSON.stringify(list));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_partner_applications_updated'));
+    }
+  },
+
+  async syncHotelPartnerApplicationsFromServer(): Promise<HotelPartnerApplication[]> {
+    try {
+      const res = await fetch('/api/partner-applications', { cache: 'no-store' });
+      const data = await res.json();
+      if (data?.ok && Array.isArray(data.applications)) {
+        const local = this.getHotelPartnerApplications();
+        const mergedMap = new Map<string, HotelPartnerApplication>();
+        local.forEach((item) => mergedMap.set(item.id, item));
+        data.applications.forEach((item: HotelPartnerApplication) => mergedMap.set(item.id, item));
+        const merged = Array.from(mergedMap.values()).sort((a, b) =>
+          (b.createdAt || '').localeCompare(a.createdAt || '')
+        );
+        this.saveHotelPartnerApplications(merged);
+        return merged;
+      }
+    } catch (e) {}
+    return this.getHotelPartnerApplications();
+  },
+
+  async submitHotelPartnerApplication(
+    payload: Omit<HotelPartnerApplication, 'id' | 'status' | 'createdAt' | 'updatedAt'>
+  ): Promise<HotelPartnerApplication> {
+    const now = new Date().toISOString();
+    const newApp: HotelPartnerApplication = {
+      ...payload,
+      id: `partner-app-${Date.now()}`,
+      status: 'pending',
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const current = this.getHotelPartnerApplications();
+    this.saveHotelPartnerApplications([newApp, ...current]);
+
+    try {
+      await fetch('/api/partner-applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'submit', application: newApp }),
+      });
+    } catch (e) {}
+
+    return newApp;
+  },
+
+  async updateHotelPartnerApplicationStatus(
+    id: string,
+    status: 'pending' | 'approved' | 'rejected'
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    const list = this.getHotelPartnerApplications().map((item) =>
+      item.id === id ? { ...item, status, reviewedAt: now, updatedAt: now } : item
+    );
+    this.saveHotelPartnerApplications(list);
+
+    try {
+      await fetch('/api/partner-applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_status', id, status }),
+      });
+    } catch (e) {}
+  },
+
+  async deleteHotelPartnerApplication(id: string): Promise<void> {
+    const list = this.getHotelPartnerApplications().filter((item) => item.id !== id);
+    this.saveHotelPartnerApplications(list);
+
+    try {
+      await fetch('/api/partner-applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id }),
+      });
     } catch (e) {}
   },
 

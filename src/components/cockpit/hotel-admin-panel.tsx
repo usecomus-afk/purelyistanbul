@@ -5,6 +5,7 @@ import { XeniosStore } from '@/lib/store';
 import { Hotel, Room } from '@/lib/types';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { PartnerApplicationsPanel } from './partner-applications-panel';
 import {
   Building2,
   MapPin,
@@ -294,6 +295,9 @@ export function HotelAdminPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Konaklama Partneri Üyelik Başvuruları (App Yönetim Girişi -> Üye Ol) */}
+      <PartnerApplicationsPanel />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 dark:border-slate-800 border border-amber-200/80">
