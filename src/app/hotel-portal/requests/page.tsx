@@ -16,6 +16,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FirestoreService } from '@/lib/firestore-service';
+import { StaffWhatsappRoutingPanel } from '@/components/hotel/staff-whatsapp-routing-panel';
+import { authFetch } from '@/lib/auth-fetch';
+import { UserCheck, Phone } from 'lucide-react';
 
 interface ParsedRequestView {
   deptBadge: string;
@@ -287,6 +290,64 @@ export default function HotelLiveRequestsPage() {
   const [filterDept, setFilterDept] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
+  const [hotelVersion, setHotelVersion] = useState(0);
+  const [manualStaffAssign, setManualStaffAssign] = useState<Record<string, string>>({});
+  const [forwardingReqId, setForwardingReqId] = useState<string | null>(null);
+
+  const liveHotel = XeniosStore.getHotelById(currentHotel.id) || currentHotel;
+  const staffList = Array.isArray(liveHotel.staffMembers)
+    ? liveHotel.staffMembers.filter((s) => s.active)
+    : [];
+  const routingMap =
+    liveHotel.departmentStaffRouting && typeof liveHotel.departmentStaffRouting === 'object'
+      ? liveHotel.departmentStaffRouting
+      : {};
+
+  const handleForwardRequestToStaff = async (req: ServiceRequest, staffId: string) => {
+    const staff = staffList.find((s) => s.id === staffId);
+    const targetPhone =
+      staff?.whatsappPhone || liveHotel.whatsappPhone || liveHotel.managerPhone || '';
+    const targetName = staff?.name || liveHotel.managerName || 'Sorumlu Personel';
+    if (!targetPhone) {
+      toast.error('Sorumlu personelin WhatsApp numarası tanımlı değil.');
+      return;
+    }
+
+    setForwardingReqId(req.id);
+    try {
+      const res = await authFetch('/api/notifications/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'TEST_ALERT',
+          phone: targetPhone,
+          requestAlert: {
+            requestId: req.id,
+            hotelId: liveHotel.id,
+            hotelName: liveHotel.name,
+            roomNumber: req.roomNumber,
+            serviceKey: req.serviceKey,
+            serviceTitle: req.serviceTitle,
+            notes: req.notes || '',
+            department: req.department || 'Operasyon',
+            priority: req.priority || 'standart',
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        toast.success(
+          `📲 Birim ${req.roomNumber} talebi ${targetName} (${targetPhone}) WhatsApp hattına iletildi!`
+        );
+      } else {
+        toast.error('WhatsApp mesajı gönderilemedi.');
+      }
+    } catch {
+      toast.error('WhatsApp gönderimi sırasında bağlantı hatası oluştu.');
+    } finally {
+      setForwardingReqId(null);
+    }
+  };
 
   useEffect(() => {
     // Subscribe to Cloud Firestore in real-time across all devices and units!
@@ -367,6 +428,13 @@ export default function HotelLiveRequestsPage() {
           </button>
         )}
       </div>
+
+      {/* Sorumlu Personel Kaydı & Otomatik WhatsApp Yönlendirme Masası */}
+      <StaffWhatsappRoutingPanel
+        hotel={liveHotel}
+        defaultExpanded={false}
+        onUpdated={() => setHotelVersion((v) => v + 1)}
+      />
 
       {/* Filters Bar — 100% width, zero horizontal scroll */}
       <div
@@ -587,6 +655,61 @@ export default function HotelLiveRequestsPage() {
                     C) EYLEM BUTONLARI SATIRI (FOOTER)
                     Esnek (flex-wrap: wrap; gap: 8px;), sağa/tam genişliğe hizalı
                 ========================================================= */}
+                {/* Sorumlu Personel Seçimi & Tek Tıkla WhatsApp Yönlendirme Satırı */}
+                <div className="p-2.5 rounded-xl bg-white/70 border border-amber-600/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    <span className="text-[11px] font-bold text-[#2C1E0F] shrink-0">
+                      Sorumlu Personel:
+                    </span>
+                    <select
+                      value={
+                        manualStaffAssign[req.id] ||
+                        routingMap[parsed.deptBadge] ||
+                        'default_manager'
+                      }
+                      onChange={(e) =>
+                        setManualStaffAssign((prev) => ({
+                          ...prev,
+                          [req.id]: e.target.value,
+                        }))
+                      }
+                      className="flex-1 min-w-0 p-1.5 rounded-lg bg-amber-50/70 border border-amber-300 text-[11px] font-bold text-zinc-900 cursor-pointer"
+                    >
+                      <option value="default_manager">
+                        Genel Sorumlu ({liveHotel.managerName || 'Yönetici'} ·{' '}
+                        {liveHotel.whatsappPhone || liveHotel.managerPhone || '05325809676'})
+                      </option>
+                      {staffList.map((st) => (
+                        <option key={st.id} value={st.id}>
+                          {st.name} — {st.roleTitle} ({st.whatsappPhone})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleForwardRequestToStaff(
+                        req,
+                        manualStaffAssign[req.id] ||
+                          routingMap[parsed.deptBadge] ||
+                          'default_manager'
+                      )
+                    }
+                    disabled={forwardingReqId === req.id}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-2xs disabled:opacity-50"
+                  >
+                    <Phone className="w-3 h-3 shrink-0" />
+                    <span>
+                      {forwardingReqId === req.id
+                        ? 'İletiliyor...'
+                        : 'WhatsApp ile Personele İlet'}
+                    </span>
+                  </button>
+                </div>
+
                 <div className="pt-2.5 border-t border-amber-700/20 flex flex-wrap items-center justify-end gap-2 w-full">
                   {req.status === 'pending' && (
                     <button

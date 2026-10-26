@@ -5,6 +5,7 @@ import { authFetch } from '@/lib/auth-fetch';
 import { XeniosStore } from '@/lib/store';
 import { Hotel } from '@/lib/types';
 import { FirestoreService } from '@/lib/firestore-service';
+import { StaffWhatsappRoutingPanel } from '@/components/hotel/staff-whatsapp-routing-panel';
 import { 
   Building2, 
   User, 
@@ -626,6 +627,9 @@ export default function HotelProfileManagementPage() {
             </p>
           </div>
         </div>
+
+        {/* 3C. SORUMLU PERSONEL KAYDI & OTOMATİK WHATSAPP YÖNLENDİRME MASASI */}
+        <StaffWhatsappRoutingPanel hotel={currentHotel} defaultExpanded={true} />
 
         {/* 4. SESLİ BİLDİRİM & CANLI TALEP ALARM AYARLARI */}
         <div className="luxury-service-card p-6 rounded-3xl space-y-5">

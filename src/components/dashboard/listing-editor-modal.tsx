@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ImagePlus, Save, Sparkles, X } from "lucide-react";
-import type { Experience, PilotDistrictKey, SupplierPartner } from "@/lib/types";
+import { Building2, ImagePlus, Save, Sparkles, X } from "lucide-react";
+import type { Experience, Hotel, PilotDistrictKey, SupplierPartner } from "@/lib/types";
 import type { CategoryConfig } from "@/lib/marketplace/categories";
 import { getExperienceCategoryKey } from "@/lib/marketplace/seed-listings";
 import { fileToResizedDataUrl } from "@/lib/image-utils";
@@ -21,6 +21,7 @@ interface ListingEditorModalProps {
   prefill?: Partial<Experience> | null;
   suppliers: SupplierPartner[];
   categories: CategoryConfig[];
+  hotels?: Hotel[];
   onSave: (listing: Experience) => void;
   onClose: () => void;
 }
@@ -54,6 +55,8 @@ interface Draft {
   publishToWeb: boolean;
   publishToMobile: boolean;
   recommendedDistricts: PilotDistrictKey[];
+  hotelVisibility: "all" | "specific";
+  allowedHotelIds: string[];
 }
 
 const str = (v: unknown, fallback = "") => (v === undefined || v === null ? fallback : String(v));
@@ -101,6 +104,8 @@ function toDraft(
       : Array.isArray(s.recommendedDistricts)
       ? s.recommendedDistricts
       : [],
+    hotelVisibility: s.hotelVisibility === "specific" ? "specific" : "all",
+    allowedHotelIds: Array.isArray(s.allowedHotelIds) ? s.allowedHotelIds : [],
   };
 }
 
@@ -110,6 +115,7 @@ export function ListingEditorModal({
   prefill,
   suppliers,
   categories,
+  hotels = [],
   onSave,
   onClose,
 }: ListingEditorModalProps) {
@@ -194,6 +200,8 @@ export function ListingEditorModal({
       publishToWeb: d.publishToWeb,
       publishToMobile: d.publishToMobile,
       recommendedDistricts: d.recommendedDistricts,
+      hotelVisibility: d.hotelVisibility,
+      allowedHotelIds: d.hotelVisibility === "specific" ? d.allowedHotelIds : undefined,
     };
 
     if (mode === "edit" && initial) {
@@ -497,6 +505,81 @@ export function ListingEditorModal({
               );
             })}
           </div>
+        </div>
+
+        {/* Otele Özel Görünürlük & Yayın Hedefleme */}
+        <div className="p-4 rounded-2xl bg-[#F6F1E8] border border-[#C8C4B0] space-y-3">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#2C2C1A]">
+            <Building2 className="w-4 h-4 text-[#3B6D11]" />
+            <span>Otel Portalı &amp; PWA Görünürlük Hedefleme</span>
+          </div>
+          <p className="text-xs text-[#6B6B55]">
+            Bu ilanın yalnızca belirli bir otelin misafirlerine mi yoksa platformdaki tüm partner otellere mi açık olduğunu belirleyin.
+          </p>
+
+          <div className="flex items-center gap-4 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2C2C1A]">
+              <input
+                type="radio"
+                name="hotelVisibility"
+                checked={d.hotelVisibility === "all"}
+                onChange={() => set("hotelVisibility", "all")}
+                className="accent-[#3B6D11]"
+              />
+              <span>Tüm Partner Otellerde Yayınla (Genel İstanbul)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2C2C1A]">
+              <input
+                type="radio"
+                name="hotelVisibility"
+                checked={d.hotelVisibility === "specific"}
+                onChange={() => set("hotelVisibility", "specific")}
+                className="accent-[#3B6D11]"
+              />
+              <span>Yalnızca Seçili Otellerin Misafirlerine Özel</span>
+            </label>
+          </div>
+
+          {d.hotelVisibility === "specific" && (
+            <div className="pt-2">
+              <label className="comus-label">Görünür Olacağı Oteller:</label>
+              {hotels.length === 0 ? (
+                <p className="text-xs text-[#6B6B55]">Kayıtlı partner otel bulunamadı.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-1">
+                  {hotels.map((h) => {
+                    const checked = d.allowedHotelIds.includes(h.id);
+                    return (
+                      <label
+                        key={h.id}
+                        className={`flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer select-none transition ${
+                          checked
+                            ? "bg-[#EAF3DE] border-[#3B6D11] text-[#2C2C1A]"
+                            : "bg-white border-[#C8C4B0] text-[#6B6B55] hover:border-[#3B6D11]/40"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            setD((prev) => ({
+                              ...prev,
+                              allowedHotelIds: isChecked
+                                ? Array.from(new Set([...prev.allowedHotelIds, h.id]))
+                                : prev.allowedHotelIds.filter((id) => id !== h.id),
+                            }));
+                          }}
+                          className="accent-[#3B6D11]"
+                        />
+                        <span className="truncate">{h.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Yayın durumu */}

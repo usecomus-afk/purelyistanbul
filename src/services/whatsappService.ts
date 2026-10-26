@@ -90,12 +90,59 @@ export class WhatsAppService {
     };
   }
 
+  private static unwrapFirestoreVal(val: any): any {
+    if (!val || typeof val !== 'object') return val;
+    if ('stringValue' in val) return val.stringValue;
+    if ('booleanValue' in val) return Boolean(val.booleanValue);
+    if ('integerValue' in val) return Number(val.integerValue);
+    if ('doubleValue' in val) return Number(val.doubleValue);
+    if ('nullValue' in val) return null;
+    if ('arrayValue' in val) {
+      const values = val.arrayValue?.values;
+      return Array.isArray(values) ? values.map((v: any) => this.unwrapFirestoreVal(v)) : [];
+    }
+    if ('mapValue' in val) {
+      const fields = val.mapValue?.fields || {};
+      const out: Record<string, any> = {};
+      for (const [k, v] of Object.entries(fields)) {
+        out[k] = this.unwrapFirestoreVal(v);
+      }
+      return out;
+    }
+    return val;
+  }
+
+  private static normalizeDeptKey(rawDeptOrService?: string): string {
+    const s = String(rawDeptOrService || '').toLowerCase();
+    if (!s) return '';
+    if (s.includes('teknik') || s.includes('technical') || s.includes('maintenance') || s.includes('arıza') || s.includes('ac') || s.includes('wifi')) {
+      return 'Teknik';
+    }
+    if (s.includes('mutfak') || s.includes('kahvaltı') || s.includes('breakfast') || s.includes('roomservice') || s.includes('room service') || s.includes('yeme') || s.includes('minibar')) {
+      return 'Mutfak';
+    }
+    if (s.includes('housekeeping') || s.includes('temizlik') || s.includes('cleaning') || s.includes('havlu') || s.includes('towel') || s.includes('çarşaf') || s.includes('linen') || s.includes('pillow') || s.includes('yastık') || s.includes('toiletries') || s.includes('hygiene')) {
+      return 'Housekeeping';
+    }
+    if (s.includes('çamaşır') || s.includes('laundry') || s.includes('kuru temizleme') || s.includes('ütü')) {
+      return 'Çamaşırhane';
+    }
+    if (s.includes('concierge') || s.includes('taksi') || s.includes('taxi') || s.includes('transfer') || s.includes('ulaşım')) {
+      return 'Concierge';
+    }
+    if (s.includes('resepsiyon') || s.includes('ön büro') || s.includes('danışma') || s.includes('checkout') || s.includes('extend')) {
+      return 'Resepsiyon';
+    }
+    return '';
+  }
+
   /**
-   * Resolves all WhatsApp recipient phones for a hotel (Firestore + env + test fallback 905325809676).
+   * Resolves all WhatsApp recipient phones for a hotel, including responsible staff routed by department/serviceKey.
    */
   static async resolveHotelRecipients(
     hotelId: string = 'hotel-heritage-1',
-    explicitPhones?: string | string[]
+    explicitPhones?: string | string[],
+    departmentOrServiceKey?: string
   ): Promise<string[]> {
     const candidates: string[] = [];
 
@@ -107,6 +154,8 @@ export class WhatsAppService {
       }
     }
 
+    const normDept = this.normalizeDeptKey(departmentOrServiceKey);
+
     try {
       const res = await fetch(
         `https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents/hotels/${encodeURIComponent(hotelId)}`,
@@ -115,6 +164,41 @@ export class WhatsAppService {
       if (res.ok) {
         const docData = await res.json();
         const fields = docData?.fields || {};
+        const hotelObj = this.unwrapFirestoreVal({ mapValue: { fields } }) || {};
+
+        // 1. Check department-routed staff members first (highest priority)
+        const staffList: Array<any> = Array.isArray(hotelObj.staffMembers)
+          ? hotelObj.staffMembers
+          : [];
+        const routingMap: Record<string, string> =
+          hotelObj.departmentStaffRouting && typeof hotelObj.departmentStaffRouting === 'object'
+            ? hotelObj.departmentStaffRouting
+            : {};
+
+        if (normDept && routingMap[normDept]) {
+          const routedStaffId = routingMap[normDept];
+          const routedStaff = staffList.find(
+            (st) => st && st.active !== false && st.id === routedStaffId && st.whatsappPhone
+          );
+          if (routedStaff?.whatsappPhone) {
+            candidates.push(String(routedStaff.whatsappPhone));
+          }
+        }
+
+        // 2. Also include any active staff member assigned to this department or marked receiveAllAlerts (Genel Sorumlu)
+        for (const st of staffList) {
+          if (!st || st.active === false || !st.whatsappPhone) continue;
+          const depts: string[] = Array.isArray(st.departments) ? st.departments : [];
+          if (
+            st.receiveAllAlerts ||
+            depts.includes('all') ||
+            (normDept && depts.includes(normDept))
+          ) {
+            candidates.push(String(st.whatsappPhone));
+          }
+        }
+
+        // 3. Always include main hotel WhatsApp / Manager phone
         if (fields.whatsappPhone?.stringValue) {
           candidates.push(fields.whatsappPhone.stringValue);
         }

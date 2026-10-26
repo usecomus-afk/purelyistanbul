@@ -9,9 +9,10 @@ const FIRESTORE_REQUESTS_BASE_URL =
 
 async function resolveHotelWhatsAppRecipients(
   hotelId: string,
-  explicitPhones?: string | string[]
+  explicitPhones?: string | string[],
+  departmentOrServiceKey?: string
 ): Promise<string[]> {
-  return WhatsAppService.resolveHotelRecipients(hotelId, explicitPhones);
+  return WhatsAppService.resolveHotelRecipients(hotelId, explicitPhones, departmentOrServiceKey);
 }
 
 export async function POST(req: Request) {
@@ -116,7 +117,8 @@ export async function POST(req: Request) {
 
     const recipientPhones = await resolveHotelWhatsAppRecipients(
       hotelId,
-      body.whatsappPhone || body.managerPhone
+      body.whatsappPhone || body.managerPhone,
+      `${department} ${serviceKey} ${serviceTitle}`
     );
 
     const [whatsappResult, pushResult] = await Promise.all([

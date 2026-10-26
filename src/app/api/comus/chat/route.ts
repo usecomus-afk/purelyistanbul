@@ -892,7 +892,8 @@ export async function createRoomTicket({
   try {
     recipientPhones = await WhatsAppService.resolveHotelRecipients(
       targetHotelId,
-      process.env.PROPERTY_MANAGER_WHATSAPP
+      process.env.PROPERTY_MANAGER_WHATSAPP,
+      `${firestoreServiceKey} ${check.title}`
     );
     const [waRes] = await Promise.all([
       WhatsAppService.sendGuestRequestAlertWhatsApp(recipientPhones, {

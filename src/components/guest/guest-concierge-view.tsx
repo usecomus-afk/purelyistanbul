@@ -302,10 +302,14 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   // Panelden düzenlenen kategoriler (ad, ikon, sıra, gizli/açık) — web ile ortak
   const categoryConfigs = useCategoryConfigs();
   const hiddenCategoryKeys = new Set(categoryConfigs.filter((c) => c.hidden).map((c) => c.key));
-  // Gizlenen kategorilerin ilanları uygulamada hiç görünmez
-  const visibleExperiences = allExperiences.filter(
-    (e) => !hiddenCategoryKeys.has(getExperienceCategoryKey(e))
-  );
+  // Gizlenen kategorilerin veya otele özel kısıtlanmış ilanların filtrelenmesi
+  const visibleExperiences = allExperiences.filter((e) => {
+    if (hiddenCategoryKeys.has(getExperienceCategoryKey(e))) return false;
+    if (e.hotelVisibility === 'specific' && Array.isArray(e.allowedHotelIds) && e.allowedHotelIds.length > 0) {
+      if (!e.allowedHotelIds.includes(activeHotelId)) return false;
+    }
+    return true;
+  });
 
   const builtinShowcase = MARKETPLACE_CATEGORIES.map((def) => ({
     catKey: def.key,

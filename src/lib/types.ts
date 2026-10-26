@@ -72,6 +72,26 @@ export interface Room {
   updatedAt?: string;
 }
 
+export type StaffDepartmentKey =
+  | 'all'
+  | 'Housekeeping'
+  | 'Mutfak'
+  | 'Teknik'
+  | 'Resepsiyon'
+  | 'Concierge'
+  | 'Çamaşırhane';
+
+export interface HotelStaffMember {
+  id: string;
+  name: string;
+  roleTitle: string;
+  whatsappPhone: string;
+  departments: StaffDepartmentKey[];
+  receiveAllAlerts?: boolean;
+  active: boolean;
+  createdAt: string;
+}
+
 export interface HotelModules {
   enable_guest_self_kbs?: boolean;
   [key: string]: any;
@@ -101,6 +121,9 @@ export interface Hotel {
   managerName?: string;
   managerPhone?: string;
   whatsappPhone?: string;
+  /** İşletme sorumlu personel kayıtları ve departman bazlı otomatik WhatsApp yönlendirme haritası */
+  staffMembers?: HotelStaffMember[];
+  departmentStaffRouting?: Record<string, string>;
   publishToWeb?: boolean;
   publishToMobile?: boolean;
   /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
@@ -232,6 +255,9 @@ export interface ServiceRequest {
   paymentAmount?: number;
   paymentCurrency?: string;
   paymentReference?: string;
+  assignedStaffId?: string;
+  assignedStaffName?: string;
+  assignedStaffPhone?: string;
 }
 
 export type BookingStatus = 'payment_success' | 'provider_pending' | 'confirmed' | 'cancelled';

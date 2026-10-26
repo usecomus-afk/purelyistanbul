@@ -26,6 +26,7 @@ import {
   Wallet
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { PartnerCommissionTracker } from '@/components/hotel/partner-commission-tracker';
 
 interface FolioItem {
   id: string;
@@ -308,7 +309,7 @@ export default function HotelReportsPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-zinc-900 dark:text-slate-100 mt-1 flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-amber-700 shrink-0" />
-            <span>Raporlar, Misafir Folyo & Analitik</span>
+            <span>Raporlar, %4 Partner Payı & Misafir Folyo</span>
           </h1>
           <p className="text-xs text-zinc-600 mt-0.5">
             Birim bazlı ücretli talep/sipariş folyosu, online ödemeler, işlem hacimleri ve Comus AI kullanım analizleri.
@@ -322,6 +323,15 @@ export default function HotelReportsPage() {
       </div>
 
       {/* ===================================================================== */}
+      {/* ===================================================================== */}
+      {/* İSTANBUL SAYFASI İLAN SATIN ALMALARI %4 KONAKLAMA PARTNERİ PAYI       */}
+      {/* ===================================================================== */}
+      <PartnerCommissionTracker
+        hotel={currentHotel}
+        bookings={bookings}
+        experiences={experiences}
+      />
+
       {/* MİSAFİR FOLYO & BİRİM HESABI / ONLİNE ÖDEME TAKİP MASASI              */}
       {/* ===================================================================== */}
       <div className="luxury-service-card w-full max-w-full box-border overflow-hidden p-4 sm:p-6 rounded-3xl space-y-5">

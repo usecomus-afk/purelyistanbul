@@ -99,8 +99,8 @@ export default function HotelPortalDashboard() {
     },
     {
       id: 'reports',
-      title: 'Raporlar',
-      desc: 'Misafir uygulama kullanımı, satış/randevu metrikleri ve Comus AI pasta dilimi dağılımı',
+      title: 'Raporlar & %4 Partner Payı',
+      desc: 'İstanbul sayfası %4 konaklama partneri payı takibi, misafir folyo ve Comus AI analizleri',
       href: '/hotel-portal/reports',
     }
   ];

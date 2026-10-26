@@ -1893,6 +1893,8 @@ export const XeniosStore = {
     const confirmationCode = 'XEN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     const newBooking: Booking = {
       ...booking,
+      hotelId: booking.hotelId || this.getActiveHotelId(),
+      roomNumber: booking.roomNumber || this.getActiveRoomId(),
       id: `book-${Date.now()}`,
       confirmationCode,
       createdAt: new Date().toISOString()

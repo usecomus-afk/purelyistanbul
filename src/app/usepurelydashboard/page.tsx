@@ -36,6 +36,8 @@ import { getExperienceCategoryKey } from "@/lib/marketplace/seed-listings";
 import rawExperiences from "@/data/experiences.json";
 import { CategoryManager } from "@/components/dashboard/category-manager";
 import { ListingEditorModal } from "@/components/dashboard/listing-editor-modal";
+import { ListingSlotManager } from "@/components/dashboard/listing-slot-manager";
+import { authFetch } from "@/lib/auth-fetch";
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
@@ -64,6 +66,7 @@ import {
   LogOut,
   CheckCircle2,
   Clock,
+  Calendar,
   QrCode,
   Sparkles,
   Menu,
@@ -331,6 +334,7 @@ export default function UsePurelyDashboardPage() {
   const [showAddListingModal, setShowAddListingModal] = useState(false);
   const [newDraft, setNewDraft] = useState<NewExpDraft>(EMPTY_DRAFT);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
+  const [slotManagingExperience, setSlotManagingExperience] = useState<Experience | null>(null);
   const [listingSearch, setListingSearch] = useState("");
   const [listingFilterChannel, setListingFilterChannel] = useState<"all" | "web" | "mobile">("all");
   const [listingFilterCategory, setListingFilterCategory] = useState<string>("all");
@@ -376,11 +380,23 @@ export default function UsePurelyDashboardPage() {
     } catch {}
   }, []);
 
-  const handleSavePaymentConfig = () => {
+  const handleSavePaymentConfig = async () => {
     try {
       localStorage.setItem("purely_payment_gateway_config", JSON.stringify(paymentConfig));
     } catch {}
-    toast.success("Ödeme yöntemi ve Sanal POS entegrasyon ayarları kaydedildi!");
+    try {
+      const res = await authFetch("/api/admin/settings/finance", {
+        method: "POST",
+        body: JSON.stringify(paymentConfig),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Sunucuya kaydedilemedi");
+      }
+      toast.success("Ödeme, komisyon ve Sanal POS yapılandırması sunucuya (Firestore) kaydedildi!");
+    } catch (e: any) {
+      toast.error(e.message || "Kaydetme başarısız");
+    }
   };
 
   const handleExportReportsCsv = () => {
@@ -501,6 +517,19 @@ export default function UsePurelyDashboardPage() {
       }
     });
   }, []);
+
+  // Sunucu (Firestore) finansal ayarlarını yükle
+  useEffect(() => {
+    if (!adminCloudReady) return;
+    authFetch("/api/admin/settings/finance")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.config) {
+          setPaymentConfig((prev) => ({ ...prev, ...data.config }));
+        }
+      })
+      .catch(() => {});
+  }, [adminCloudReady]);
 
   useEffect(() => {
     if (!isAuth || !adminCloudReady || !db) return;
@@ -2899,6 +2928,14 @@ export default function UsePurelyDashboardPage() {
                               </button>
 
                               <button
+                                onClick={() => setSlotManagingExperience(exp)}
+                                className="comus-btn-ghost text-xs py-1.5 px-2.5 text-[#3B6D11] hover:bg-[#EAF3DE]"
+                                title="Seans ve Kontenjan Yönetimi (Çifte Rezervasyon Koruması & iCal Entegrasyonu)"
+                              >
+                                <Calendar className="w-3.5 h-3.5" /> Seans &amp; Kota
+                              </button>
+
+                              <button
                                 onClick={() => handleStartEditListing(exp)}
                                 className="comus-btn-ghost text-xs py-1.5 px-3"
                               >
@@ -4074,6 +4111,7 @@ export default function UsePurelyDashboardPage() {
             prefill={draftToExperiencePatch(newDraft)}
             suppliers={suppliers}
             categories={categoryConfigs}
+            hotels={hotels}
             onSave={handleSaveListingFromEditor}
             onClose={() => {
               setShowAddListingModal(false);
@@ -4088,8 +4126,17 @@ export default function UsePurelyDashboardPage() {
             initial={editingListing}
             suppliers={suppliers}
             categories={categoryConfigs}
+            hotels={hotels}
             onSave={handleSaveListingFromEditor}
             onClose={() => setEditingListingId(null)}
+          />
+        )}
+
+        {/* Seans & Kontenjan Yönetimi Modal (Overbooking Koruması & iCal Takvim Entegrasyonu) */}
+        {slotManagingExperience && (
+          <ListingSlotManager
+            experience={slotManagingExperience}
+            onClose={() => setSlotManagingExperience(null)}
           />
         )}
 
