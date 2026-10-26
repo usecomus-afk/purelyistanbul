@@ -73,7 +73,33 @@ export default function AdminLayout({
               -webkit-text-size-adjust: 100%;
             }
             [data-comus-dashboard] .comus-serif {
-              font-family: 'Cormorant Garamond', Georgia, serif;
+              font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+              font-weight: 600 !important;
+              letter-spacing: -0.02em;
+            }
+            [data-comus-dashboard] .comus-serif em {
+              font-style: normal !important;
+              font-weight: 700 !important;
+            }
+            @media (max-width: 767px) {
+              [data-comus-dashboard] {
+                padding-top: max(3.25rem, calc(env(safe-area-inset-top, 47px) + 0.5rem));
+              }
+            }
+            .admin-safe-top-mask {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: max(3rem, env(safe-area-inset-top, 47px));
+              background: linear-gradient(180deg, #F6F1E8 80%, rgba(246, 241, 232, 0));
+              z-index: 45;
+              pointer-events: none;
+            }
+            @media (min-width: 768px) {
+              .admin-safe-top-mask {
+                display: none;
+              }
             }
             [data-comus-dashboard] .comus-logo {
               font-family: 'Cormorant Garamond', Georgia, serif;

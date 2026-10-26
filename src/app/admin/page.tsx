@@ -1082,8 +1082,9 @@ export default function AdminPage() {
     return (
       <div
         data-comus-dashboard="true"
-        className="min-h-dvh flex flex-col justify-between p-4 sm:p-6 md:p-12 overflow-y-auto"
+        className="min-h-dvh flex flex-col justify-between px-4 pb-8 pt-[max(3.5rem,calc(env(safe-area-inset-top,47px)+0.75rem))] sm:p-6 md:p-12 overflow-y-auto"
       >
+        <div className="admin-safe-top-mask" aria-hidden="true" />
         {/* Top Minimalist Nav */}
         <header className="max-w-5xl w-full mx-auto flex flex-wrap items-center justify-between gap-2">
           <Link href="/" translate="no" className="notranslate comus-logo">
@@ -1509,6 +1510,7 @@ export default function AdminPage() {
       data-comus-dashboard="true"
       className="min-h-dvh w-full max-w-[100dvw] overflow-x-hidden md:h-dvh md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
     >
+      <div className="admin-safe-top-mask" aria-hidden="true" />
       <AdminOpsSync />
       {/* Desktop Sticky Left Sidebar (Independently Scrollable) */}
       <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-dvh md:overflow-y-auto">
@@ -1519,10 +1521,10 @@ export default function AdminPage() {
       {mobileNavOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
           <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
             onClick={() => setMobileNavOpen(false)}
           />
-          <div className="relative w-72 max-w-[85vw] h-full z-10 overflow-y-auto shadow-xl">
+          <div className="relative w-72 max-w-[85vw] h-full z-10 overflow-y-auto shadow-xl pt-[env(safe-area-inset-top,20px)] bg-[#FFFCFA]">
             {sidebarContent}
           </div>
         </div>
@@ -1534,7 +1536,7 @@ export default function AdminPage() {
         className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden md:h-dvh md:overflow-y-auto"
       >
         {/* Main Content Container */}
-        <main className="flex-1 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 max-w-6xl w-full min-w-0 overflow-x-hidden mx-auto space-y-5 sm:space-y-8 pb-24 md:pb-10">
+        <main className="flex-1 px-3.5 sm:px-6 md:px-10 pt-2 sm:pt-6 md:py-8 max-w-6xl w-full min-w-0 overflow-x-hidden mx-auto space-y-5 sm:space-y-8 pb-32 md:pb-10">
           {/* =========================================================
               TAB 1: GENEL BAKIŞ (OVERVIEW)
           ========================================================= */}
@@ -1543,105 +1545,116 @@ export default function AdminPage() {
               {/* PWA Mobile Command Header & Quick Action Stage */}
               <section className="space-y-3">
                 {/* Executive Greeting & Operational Status */}
-                <div className="bg-gradient-to-br from-[#FFFCFA] to-[#F6F1E8] border border-[#C8C4B0] rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-3">
+                <div className="bg-white border border-[#C8C4B0] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#C8C4B0]/60">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-[#3B6D11] bg-[#EAF3DE] px-2 py-0.5 rounded-md border border-[#C0DD97]/60">
+                      <div className="flex items-center justify-between sm:justify-start gap-2 mb-1.5">
+                        <span className="text-[11px] uppercase tracking-wider font-bold text-[#27500A] bg-[#EAF3DE] px-2.5 py-1 rounded-md border border-[#C0DD97]">
                           Canlı Operasyon Masası
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] text-[#6B6B55]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#3B6D11] animate-pulse" />
-                          3 Kanal Senkron
-                        </span>
+                        <button
+                          type="button"
+                          onClick={handleCloudSync}
+                          disabled={isSyncing}
+                          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#3B6D11] bg-[#F6F1E8] hover:bg-[#EAF3DE] px-2.5 py-1 rounded-md border border-[#C8C4B0]/70 transition cursor-pointer"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${isSyncing ? "animate-spin" : ""}`} />
+                          <span>{isSyncing ? "Senkronize..." : "Canlı Senkron"}</span>
+                        </button>
                       </div>
-                      <h1 className="comus-serif text-2xl sm:text-3xl font-light text-[#2C2C1A] leading-tight">
-                        Genel Bakış &amp; <em className="italic text-[#3B6D11]">Hızlı Yönetim</em>
+                      <h1 className="text-xl sm:text-2xl font-bold text-[#1E1E12] tracking-tight leading-snug">
+                        Genel Bakış &amp; <span className="text-[#3B6D11]">Hızlı Yönetim</span>
                       </h1>
-                      <p className="text-xs sm:text-sm text-[#6B6B55] mt-0.5 line-clamp-1 sm:line-clamp-none">
-                        Web vitrini, iOS misafir deneyimi ve partner otel PWA kanalları tek noktadan canlı yönetiliyor.
+                      <p className="text-xs sm:text-sm text-[#525240] font-medium mt-1 leading-relaxed">
+                        Web vitrini, iOS misafir uygulaması ve partner otel PWA kanalları tek merkezde.
                       </p>
                     </div>
 
                     {/* 3 Channels Quick Status Badges */}
-                    <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 text-[11px]">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 border border-[#C8C4B0]/60 text-[#2C2C1A] shadow-2xs">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#3B6D11]" />
-                        <span className="font-medium text-xs">purelyistanbul.com</span>
-                        <span className="text-[10px] text-[#3B6D11] font-semibold bg-[#EAF3DE] px-1.5 py-0.2 rounded">Aktif</span>
+                    <div className="grid grid-cols-3 sm:flex sm:flex-col items-stretch sm:items-end gap-1.5 text-[11px]">
+                      <div className="flex items-center justify-between sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#F6F1E8]/80 border border-[#C8C4B0]/80 text-[#1E1E12]">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <span className="w-2 h-2 rounded-full bg-[#3B6D11] shrink-0" />
+                          <span className="font-semibold text-[11px] truncate">Web Vitrin</span>
+                        </span>
+                        <span className="text-[10px] text-[#27500A] font-bold bg-[#EAF3DE] px-1.5 py-0.5 rounded shrink-0">Aktif</span>
                       </div>
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 border border-[#C8C4B0]/60 text-[#2C2C1A] shadow-2xs">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#3B6D11]" />
-                        <span className="font-medium text-xs">iOS Misafir App</span>
-                        <span className="text-[10px] text-[#3B6D11] font-semibold bg-[#EAF3DE] px-1.5 py-0.2 rounded">Aktif</span>
+                      <div className="flex items-center justify-between sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#F6F1E8]/80 border border-[#C8C4B0]/80 text-[#1E1E12]">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <span className="w-2 h-2 rounded-full bg-[#3B6D11] shrink-0" />
+                          <span className="font-semibold text-[11px] truncate">iOS App</span>
+                        </span>
+                        <span className="text-[10px] text-[#27500A] font-bold bg-[#EAF3DE] px-1.5 py-0.5 rounded shrink-0">Aktif</span>
                       </div>
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 border border-[#C8C4B0]/60 text-[#2C2C1A] shadow-2xs">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#3B6D11]" />
-                        <span className="font-medium text-xs">Otel İçi PWA</span>
-                        <span className="text-[10px] text-[#3B6D11] font-semibold bg-[#EAF3DE] px-1.5 py-0.2 rounded">Aktif</span>
+                      <div className="flex items-center justify-between sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#F6F1E8]/80 border border-[#C8C4B0]/80 text-[#1E1E12]">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <span className="w-2 h-2 rounded-full bg-[#3B6D11] shrink-0" />
+                          <span className="font-semibold text-[11px] truncate">Otel PWA</span>
+                        </span>
+                        <span className="text-[10px] text-[#27500A] font-bold bg-[#EAF3DE] px-1.5 py-0.5 rounded shrink-0">Aktif</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Mobile Quick Action Pill Grid (4 Native-Feel Touch Targets) */}
                   <div>
-                    <div className="text-[10px] uppercase tracking-wider font-semibold text-[#6B6B55] mb-2 flex items-center justify-between">
+                    <div className="text-[11px] uppercase tracking-wider font-bold text-[#525240] mb-2 flex items-center justify-between">
                       <span>Hızlı İşlemler &amp; Yeni Kayıt</span>
-                      <span className="text-[10px] font-normal text-[#3B6D11]">1 Dokunuşla Başlat</span>
+                      <span className="text-[11px] font-semibold text-[#3B6D11]">1 Dokunuşla Başlat</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       <button
                         onClick={() => {
                           setActiveTab("listings");
                           setShowAddListingModal(true);
                         }}
-                        className="group flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-[#3B6D11] text-white hover:bg-[#27500A] active:scale-98 transition shadow-xs cursor-pointer text-left"
+                        className="group flex items-center gap-2.5 p-3 rounded-xl bg-[#3B6D11] text-white hover:bg-[#27500A] active:scale-98 transition shadow-xs cursor-pointer text-left"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                          <Plus className="w-4 h-4 text-white" />
+                        <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                          <Plus className="w-5 h-5 text-white" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold truncate leading-tight">Yeni İlan</div>
-                          <div className="text-[10px] text-white/80 truncate">Deneyim &amp; Tur</div>
+                          <div className="text-xs sm:text-sm font-bold truncate leading-tight">Yeni İlan</div>
+                          <div className="text-[11px] text-white/90 font-medium truncate">Deneyim &amp; Tur</div>
                         </div>
                       </button>
 
                       <button
                         onClick={() => setActiveTab("suppliers")}
-                        className="group flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-[#C1622F] text-white hover:bg-[#9C4E24] active:scale-98 transition shadow-xs cursor-pointer text-left"
+                        className="group flex items-center gap-2.5 p-3 rounded-xl bg-[#C1622F] text-white hover:bg-[#9C4E24] active:scale-98 transition shadow-xs cursor-pointer text-left"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                          <Briefcase className="w-4 h-4 text-white" />
+                        <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                          <Briefcase className="w-5 h-5 text-white" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold truncate leading-tight">Yeni İşletme</div>
-                          <div className="text-[10px] text-white/80 truncate">Partner Kaydı</div>
+                          <div className="text-xs sm:text-sm font-bold truncate leading-tight">Yeni İşletme</div>
+                          <div className="text-[11px] text-white/90 font-medium truncate">Partner Kaydı</div>
                         </div>
                       </button>
 
                       <button
                         onClick={() => setActiveTab("properties")}
-                        className="group flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white border border-[#C8C4B0] text-[#2C2C1A] hover:bg-[#F6F1E8] active:scale-98 transition shadow-xs cursor-pointer text-left"
+                        className="group flex items-center gap-2.5 p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] text-[#1E1E12] hover:bg-[#EDE8DE] active:scale-98 transition shadow-xs cursor-pointer text-left"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] text-[#3B6D11] flex items-center justify-center shrink-0">
-                          <Building2 className="w-4 h-4" />
+                        <div className="w-9 h-9 rounded-lg bg-[#EAF3DE] text-[#3B6D11] flex items-center justify-center shrink-0">
+                          <Building2 className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold truncate leading-tight">Mülk Portföyü</div>
-                          <div className="text-[10px] text-[#6B6B55] truncate">Kiralık &amp; Satılık</div>
+                          <div className="text-xs sm:text-sm font-bold truncate leading-tight">Mülk Portföyü</div>
+                          <div className="text-[11px] text-[#525240] font-medium truncate">Kiralık &amp; Satılık</div>
                         </div>
                       </button>
 
                       <Link
                         href="/qr-generator"
-                        className="group flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white border border-[#C8C4B0] text-[#2C2C1A] hover:bg-[#F6F1E8] active:scale-98 transition shadow-xs cursor-pointer text-left"
+                        className="group flex items-center gap-2.5 p-3 rounded-xl bg-[#F6F1E8] border border-[#C8C4B0] text-[#1E1E12] hover:bg-[#EDE8DE] active:scale-98 transition shadow-xs cursor-pointer text-left"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-[#EDE8DE] text-[#2C2C1A] flex items-center justify-center shrink-0">
-                          <QrCode className="w-4 h-4 text-[#2C2C1A]" />
+                        <div className="w-9 h-9 rounded-lg bg-[#EDE8DE] text-[#1E1E12] flex items-center justify-center shrink-0">
+                          <QrCode className="w-5 h-5 text-[#1E1E12]" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold truncate leading-tight">QR Üretici</div>
-                          <div className="text-[10px] text-[#6B6B55] truncate">Oda &amp; Masa QR</div>
+                          <div className="text-xs sm:text-sm font-bold truncate leading-tight">QR Üretici</div>
+                          <div className="text-[11px] text-[#525240] font-medium truncate">Oda &amp; Masa QR</div>
                         </div>
                       </Link>
                     </div>
@@ -1655,16 +1668,16 @@ export default function AdminPage() {
                   onClick={() => setActiveTab("listings")}
                   className="comus-hairline-cell cursor-pointer active:bg-[#EDE8DE] transition-colors"
                 >
-                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold mb-1 sm:mb-2 truncate">
+                  <div className="text-[11px] uppercase tracking-wider text-[#27500A] font-bold mb-1 truncate">
                     İlan Envanteri
                   </div>
-                  <div className="comus-serif text-2xl sm:text-4xl font-light text-[#2C2C1A]">
+                  <div className="text-2xl sm:text-3xl font-bold text-[#1E1E12] tracking-tight">
                     {experiences.length}
                   </div>
-                  <p className="text-[11px] text-[#6B6B55] mt-1 truncate">
+                  <p className="text-xs text-[#525240] font-medium mt-1 truncate">
                     Web: <strong>{webActiveCount}</strong> • Mobil: <strong>{mobileActiveCount}</strong>
                   </p>
-                  <div className="text-[11px] text-[#3B6D11] font-medium mt-2 flex items-center gap-1">
+                  <div className="text-xs text-[#3B6D11] font-bold mt-2 flex items-center gap-1">
                     <span>İlanları yönet</span>
                     <span>→</span>
                   </div>
@@ -1674,16 +1687,16 @@ export default function AdminPage() {
                   onClick={() => setActiveTab("suppliers")}
                   className="comus-hairline-cell cursor-pointer active:bg-[#EDE8DE] transition-colors"
                 >
-                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#C1622F] font-semibold mb-1 sm:mb-2 truncate">
+                  <div className="text-[11px] uppercase tracking-wider text-[#9C4E24] font-bold mb-1 truncate">
                     İşletmeler
                   </div>
-                  <div className="comus-serif text-2xl sm:text-4xl font-light text-[#2C2C1A]">
+                  <div className="text-2xl sm:text-3xl font-bold text-[#1E1E12] tracking-tight">
                     {suppliers.length}
                   </div>
-                  <p className="text-[11px] text-[#6B6B55] mt-1 truncate">
-                    Sözleşmeli tedarikçi &amp; acenteler
+                  <p className="text-xs text-[#525240] font-medium mt-1 truncate">
+                    Sözleşmeli tedarikçi &amp; acente
                   </p>
-                  <div className="text-[11px] text-[#C1622F] font-medium mt-2 flex items-center gap-1">
+                  <div className="text-xs text-[#C1622F] font-bold mt-2 flex items-center gap-1">
                     <span>İşletmeleri yönet</span>
                     <span>→</span>
                   </div>
@@ -1693,16 +1706,16 @@ export default function AdminPage() {
                   onClick={() => setActiveTab("properties")}
                   className="comus-hairline-cell cursor-pointer active:bg-[#EDE8DE] transition-colors"
                 >
-                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold mb-1 sm:mb-2 truncate">
+                  <div className="text-[11px] uppercase tracking-wider text-[#27500A] font-bold mb-1 truncate">
                     Mülk &amp; Yatırım
                   </div>
-                  <div className="comus-serif text-2xl sm:text-4xl font-light text-[#2C2C1A]">
+                  <div className="text-2xl sm:text-3xl font-bold text-[#1E1E12] tracking-tight">
                     {properties.length}
                   </div>
-                  <p className="text-[11px] text-[#6B6B55] mt-1 truncate">
+                  <p className="text-xs text-[#525240] font-medium mt-1 truncate">
                     <strong>{investmentLeads.length}</strong> aktif yatırımcı talebi
                   </p>
-                  <div className="text-[11px] text-[#3B6D11] font-medium mt-2 flex items-center gap-1">
+                  <div className="text-xs text-[#3B6D11] font-bold mt-2 flex items-center gap-1">
                     <span>Portföyü yönet</span>
                     <span>→</span>
                   </div>
@@ -1712,16 +1725,16 @@ export default function AdminPage() {
                   onClick={() => setActiveTab("hotels")}
                   className="comus-hairline-cell cursor-pointer active:bg-[#EDE8DE] transition-colors"
                 >
-                  <div className="text-[10px] sm:text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold mb-1 sm:mb-2 truncate">
+                  <div className="text-[11px] uppercase tracking-wider text-[#27500A] font-bold mb-1 truncate">
                     Partner Otel &amp; QR
                   </div>
-                  <div className="comus-serif text-2xl sm:text-4xl font-light text-[#2C2C1A]">
+                  <div className="text-2xl sm:text-3xl font-bold text-[#1E1E12] tracking-tight">
                     {hotels.length}
                   </div>
-                  <p className="text-[11px] text-[#6B6B55] mt-1 truncate">
+                  <p className="text-xs text-[#525240] font-medium mt-1 truncate">
                     <strong>{totalRoomsCount}</strong> oda QR envanteri
                   </p>
-                  <div className="text-[11px] text-[#3B6D11] font-medium mt-2 flex items-center gap-1">
+                  <div className="text-xs text-[#3B6D11] font-bold mt-2 flex items-center gap-1">
                     <span>QR envanterini yönet</span>
                     <span>→</span>
                   </div>
@@ -1730,19 +1743,18 @@ export default function AdminPage() {
 
               {/* 3 Platform Durum & Yönetim Kartları (Web, iOS App, PWA) */}
               <section className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                   <div>
-                    <div className="text-xs uppercase tracking-widest text-[#3B6D11]">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#3B6D11]">
                       Yayın Kanalları
                     </div>
-                    <h2 className="comus-serif text-2xl sm:text-3xl font-light text-[#2C2C1A]">
-                      Web Sitesi, <em className="italic text-[#3B6D11]">iOS App</em>{" "}
-                      ve PWA Kontrolü
+                    <h2 className="text-lg sm:text-2xl font-bold text-[#1E1E12] tracking-tight">
+                      Web Sitesi, <span className="text-[#3B6D11]">iOS App</span> ve PWA Kontrolü
                     </h2>
                   </div>
                   <button
                     onClick={() => setActiveTab("channels")}
-                    className="comus-btn-ghost text-xs"
+                    className="comus-btn-ghost text-xs font-semibold w-full sm:w-auto justify-center"
                   >
                     Tüm Kanal Ayarlarını Aç →
                   </button>
@@ -4262,52 +4274,73 @@ export default function AdminPage() {
           </div>
         </footer>
 
-        {/* Mobile Bottom Navigation Bar for PWA */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FFFCFA]/95 backdrop-blur-md border-t border-[#C8C4B0] px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around text-[10px]">
+        {/* Mobile Bottom Navigation Bar for PWA & iOS App */}
+        <nav
+          aria-label="Mobil Alt Menü"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/98 backdrop-blur-lg border-t border-[#C8C4B0] px-2 pt-2 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,20px)+0.35rem))] grid grid-cols-5 items-center shadow-[0_-4px_20px_rgba(44,44,26,0.08)]"
+        >
           <button
             onClick={() => switchTab("overview")}
-            className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg cursor-pointer ${
-              activeTab === "overview" ? "text-[#3B6D11] font-bold" : "text-[#6B6B55]"
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition cursor-pointer ${
+              activeTab === "overview"
+                ? "text-[#27500A] bg-[#EAF3DE] font-bold"
+                : "text-[#4A4A38] font-semibold hover:bg-[#F6F1E8]"
             }`}
           >
-            <LayoutGrid className="w-4 h-4" />
-            <span>Özet</span>
+            <LayoutGrid className="w-5 h-5" />
+            <span className="text-[11px] leading-none">Özet</span>
           </button>
           <button
             onClick={() => switchTab("listings")}
-            className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg cursor-pointer ${
-              activeTab === "listings" ? "text-[#3B6D11] font-bold" : "text-[#6B6B55]"
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition cursor-pointer ${
+              activeTab === "listings"
+                ? "text-[#27500A] bg-[#EAF3DE] font-bold"
+                : "text-[#4A4A38] font-semibold hover:bg-[#F6F1E8]"
             }`}
           >
-            <Compass className="w-4 h-4" />
-            <span>İlanlar</span>
+            <Compass className="w-5 h-5" />
+            <span className="text-[11px] leading-none">İlanlar</span>
           </button>
           <button
             onClick={() => switchTab("channels")}
-            className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg cursor-pointer ${
-              activeTab === "channels" ? "text-[#3B6D11] font-bold" : "text-[#6B6B55]"
+            className={`relative flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition cursor-pointer ${
+              activeTab === "channels"
+                ? "text-[#27500A] bg-[#EAF3DE] font-bold"
+                : "text-[#4A4A38] font-semibold hover:bg-[#F6F1E8]"
             }`}
           >
-            <CreditCard className="w-4 h-4" />
-            <span>Operasyon</span>
+            <Smartphone className="w-5 h-5" />
+            <span className="text-[11px] leading-none">Operasyon</span>
+            {pendingMarketplaceListings.length +
+              hostApplications.filter((a) => a.status === "pending").length +
+              pendingRequestsCount >
+              0 && (
+              <span className="absolute top-1 right-3 w-2 h-2 rounded-full bg-[#C1622F]" />
+            )}
           </button>
           <button
             onClick={() => switchTab("payments")}
-            className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg cursor-pointer ${
-              activeTab === "payments" ? "text-[#3B6D11] font-bold" : "text-[#6B6B55]"
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition cursor-pointer ${
+              activeTab === "payments"
+                ? "text-[#27500A] bg-[#EAF3DE] font-bold"
+                : "text-[#4A4A38] font-semibold hover:bg-[#F6F1E8]"
             }`}
           >
-            <Wallet className="w-4 h-4" />
-            <span>Finans</span>
+            <Wallet className="w-5 h-5" />
+            <span className="text-[11px] leading-none">Finans</span>
           </button>
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[#6B6B55] cursor-pointer"
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition cursor-pointer ${
+              mobileNavOpen
+                ? "text-[#27500A] bg-[#EAF3DE] font-bold"
+                : "text-[#4A4A38] font-semibold hover:bg-[#F6F1E8]"
+            }`}
           >
-            <Menu className="w-4 h-4" />
-            <span>Menü</span>
+            <Menu className="w-5 h-5" />
+            <span className="text-[11px] leading-none">Menü</span>
           </button>
-        </div>
+        </nav>
       </div>
     </div>
   );

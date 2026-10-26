@@ -34,7 +34,7 @@ export function AdminOpsSync() {
   const ok = state === "ok";
   return (
     <div
-      className="fixed bottom-3 left-3 z-[60] flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] shadow-sm bg-white/95 backdrop-blur"
+      className="hidden md:flex fixed bottom-4 right-4 z-[60] items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-md bg-white/95 backdrop-blur"
       style={{ borderColor: ok ? "#C0DD97" : "#F2B8B5", color: ok ? "#3B6D11" : "#B3261E" }}
       role="status"
       aria-live="polite"
