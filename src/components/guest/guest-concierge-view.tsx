@@ -494,13 +494,6 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
                     {getCategoryLabel(selectedCategory)}
                   </h2>
-                  {selectedCategory === 'picked-for-you' && (
-                    <p className="font-luxury-sans text-xs text-[#5C4938] mt-0.5">
-                      {pickedI18n.pageSubtitle(
-                        lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
-                      )}
-                    </p>
-                  )}
                 </div>
                 <div className="hidden">
                 <h2 className="hidden">
@@ -602,19 +595,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E6A2D] group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="luxury-category-title text-[15px] sm:text-[17px] font-bold tracking-[-0.01em] leading-snug">
-                      {pickedI18n.badgeTitle}
-                    </span>
-                    <span className="golden-pill-badge font-luxury-sans px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                      {pilotDistrictConfig.label} • {pickedI18n.curatedBadge}
-                    </span>
-                  </div>
-                  <p className="font-luxury-sans text-[11px] sm:text-xs text-[#5C4938] truncate mt-0.5">
-                    {pickedI18n.badgeSubtitle(
-                      lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
-                    )}
-                  </p>
+                  <span className="luxury-category-title text-[15px] sm:text-[17px] font-bold tracking-[-0.01em] leading-snug block">
+                    {pickedI18n.badgeTitle}
+                  </span>
                 </div>
               </div>
 
