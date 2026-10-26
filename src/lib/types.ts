@@ -65,6 +65,8 @@ export interface Hotel {
   whatsappPhone?: string;
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
+  recommendedDistricts?: PilotDistrictKey[];
   updatedAt?: string;
   deleted?: boolean;
 }
@@ -103,12 +105,15 @@ export interface SupplierPartner {
   contractNotes?: string;
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
+  recommendedDistricts?: PilotDistrictKey[];
   createdAt: string;
   updatedAt?: string;
   deleted?: boolean;
 }
 
 export type ExperienceStatus = 'active' | 'suspended';
+export type PilotDistrictKey = 'fatih' | 'besiktas' | 'beyoglu' | 'sisli' | 'kadikoy';
 
 export interface Experience {
   id: string;
@@ -148,6 +153,8 @@ export interface Experience {
   listingType?: 'experience' | 'stay';
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
+  recommendedDistricts?: PilotDistrictKey[];
   updatedAt?: string;
   deleted?: boolean;
 }
@@ -269,6 +276,8 @@ export interface PropertyListing {
   managementType?: 'sale' | 'short_term_rental' | 'both';
   publishToWeb?: boolean;
   publishToMobile?: boolean;
+  /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
+  recommendedDistricts?: PilotDistrictKey[];
   updatedAt?: string;
   deleted?: boolean;
 }

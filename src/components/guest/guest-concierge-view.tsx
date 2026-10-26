@@ -10,6 +10,12 @@ import { Hotel, Experience, ServiceRequest, Language } from '@/lib/types';
 import { getT, detectBrowserLanguage, getLocalizedCategoryTitle } from '@/lib/i18n';
 import { toast } from 'sonner';
 import { getExperienceCategoryKey } from '@/lib/marketplace/seed-listings';
+import {
+  PICKED_FOR_YOU_I18N,
+  getCuratedMixedExperiencesForDistrict,
+  getPilotDistrictConfig,
+  resolveHotelPilotDistrict,
+} from '@/lib/pilot-districts';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace/categories';
 import { useCategoryConfigs } from '@/lib/marketplace/use-category-configs';
 import { HotelHeader } from '@/components/guest/hotel-header';
@@ -80,6 +86,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [urlDistrictOverride, setUrlDistrictOverride] = useState<string | null>(null);
 
   const [selectedDetailExp, setSelectedDetailExp] = useState<Experience | null>(null);
   const [transitExp, setTransitExp] = useState<Experience | null>(null);
@@ -218,6 +225,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         }
       }
       const tabParam = urlParams.get('tab');
+      const districtParam = urlParams.get('district') || urlParams.get('pilot') || urlParams.get('region');
+      if (districtParam) {
+        setUrlDistrictOverride(districtParam);
+      }
       if (tabParam && ['services', 'experiences', 'categories', 'ai', 'practical', 'invest'].includes(tabParam)) {
         closeAllModals();
         if (tabParam === 'ai') {
@@ -284,6 +295,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
   const currentHotel = hotels.find(h => h.id === activeHotelId) || hotels[0];
   const t = getT(lang);
+  const currentPilotDistrict = resolveHotelPilotDistrict(currentHotel, urlDistrictOverride);
+  const pilotDistrictConfig = getPilotDistrictConfig(currentPilotDistrict);
+  const pickedI18n = PICKED_FOR_YOU_I18N[lang] || PICKED_FOR_YOU_I18N.tr;
 
   // Panelden düzenlenen kategoriler (ad, ikon, sıra, gizli/açık) — web ile ortak
   const categoryConfigs = useCategoryConfigs();
@@ -356,10 +370,37 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     .sort((a, b) => a.order - b.order);
 
   // Deneyimler sekmesindeki kategori çipleri (yatırım kartı ayrı sekmeye gider)
-  const categories = ['all', ...categoryShowcase.filter((c) => c.tab !== 'invest').map((c) => c.catKey)];
+  const curatedDistrictExperiences = getCuratedMixedExperiencesForDistrict(
+    visibleExperiences,
+    currentPilotDistrict
+  );
+  const categories = ['picked-for-you', 'all', ...categoryShowcase.filter((c) => c.tab !== 'invest').map((c) => c.catKey)];
+  const baseExperiencesForCategory =
+    selectedCategory === 'picked-for-you'
+      ? curatedDistrictExperiences
+      : visibleExperiences.filter((e) => {
+          if (e.status === 'suspended') return false;
+          const expCatKey = getExperienceCategoryKey(e);
+          return (
+            selectedCategory === 'all' ||
+            expCatKey === selectedCategory ||
+            e.category === selectedCategory ||
+            expCatKey === getExperienceCategoryKey({ category: selectedCategory })
+          );
+        });
+  const filteredExperiences = baseExperiencesForCategory.filter((e) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      !searchQuery ||
+      e.title.toLowerCase().includes(q) ||
+      e.provider.toLowerCase().includes(q) ||
+      e.location.toLowerCase().includes(q)
+    );
+  });
+  // Legacy filter kept unused
 
   // Filter experiences (admin-suspended listings never reach the guest catalog)
-  const filteredExperiences = visibleExperiences.filter(e => {
+  const _unusedFilteredExperiences = visibleExperiences.filter(e => {
     if (e.status === 'suspended') return false;
     const expCatKey = getExperienceCategoryKey(e);
     const matchesCat =
@@ -387,6 +428,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
 
 
   const getCategoryLabel = (categoryRaw: string) => {
+    if (categoryRaw === 'picked-for-you') return `✨ ${pickedI18n.badgeTitle}`;
     if (categoryRaw === 'all') return t.allCategories;
     const dynamicEntry = categoryShowcase.find((c) => c.catKey === categoryRaw);
     if (dynamicEntry) return dynamicEntry.key;
@@ -440,10 +482,24 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {activeTab === 'experiences' && (
           <div className="space-y-4 px-1">
             {selectedCategory && selectedCategory !== 'all' ? (
-              <div className="flex items-center justify-between">
-                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#F5F2EB]">
+                    {getCategoryLabel(selectedCategory)}
+                  </h2>
+                  {selectedCategory === 'picked-for-you' && (
+                    <p className="font-luxury-sans text-xs text-[#A8A398] mt-0.5">
+                      {pickedI18n.pageSubtitle(
+                        lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
+                      )}
+                    </p>
+                  )}
+                </div>
+                <div className="hidden">
+                <h2 className="hidden">
                   {getCategoryLabel(selectedCategory)}
                 </h2>
+                </div>
                 <button
                   type="button"
                   onClick={() => setActiveTab('categories')}
@@ -454,10 +510,13 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
               </div>
             ) : (
               <div>
-                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+                <h2 className="hidden">
                   {t.experiencesTitle}
                 </h2>
-                <p className="font-luxury-sans text-xs text-[#5C4938]">{t.experiencesSubtitle}</p>
+                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#F5F2EB]">
+                  {t.experiencesTitle}
+                </h2>
+                <p className="font-luxury-sans text-xs text-[#A8A398]">{t.experiencesSubtitle}</p>
               </div>
             )}
 
@@ -520,6 +579,45 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
         {/* TAB 3: Category Catalog View — Smoked Midnight-Navy & Champagne-Gold Translucent Glass Style */}
         {activeTab === 'categories' && (
           <div className="relative z-10 w-full max-w-full box-border grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 p-1 sm:p-4 mx-0">
+            {/* SİZİN İÇİN SEÇTİKLERİMİZ — En Üst Sırada Header Altında Tam Genişlik Çerçeveli Rozet Buton */}
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('picked-for-you');
+                setActiveTab('experiences');
+                if (typeof window !== 'undefined') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="col-span-full w-full luxury-category-card px-4 py-3.5 sm:px-5 sm:py-4 flex items-center justify-between gap-3 group relative cursor-pointer border-[1.5px] border-[#D4AF37]/60"
+            >
+              <div className="flex items-center gap-3 min-w-0 relative z-10 text-left">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#262420] border border-[#D4AF37]/55 flex items-center justify-center shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_4px_12px_rgba(0,0,0,0.4)]">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-luxury-serif text-[16px] sm:text-[18px] font-semibold tracking-[0.03em] text-[#F5F2EB] group-hover:text-[#E5C358] transition leading-snug">
+                      {pickedI18n.badgeTitle}
+                    </span>
+                    <span className="ottoman-badge px-2.5 py-0.5 rounded-full bg-[#262420] border border-[#D4AF37]/50 text-[#D4AF37] text-[10px]">
+                      {pilotDistrictConfig.label} • {pickedI18n.curatedBadge}
+                    </span>
+                  </div>
+                  <p className="font-luxury-sans text-[11px] sm:text-xs text-[#A8A398] truncate mt-0.5">
+                    {pickedI18n.badgeSubtitle(
+                      lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0 relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#262420] border border-[#D4AF37]/55 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#151310] transition font-luxury-sans text-xs font-semibold">
+                <span>{curatedDistrictExperiences.length}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            </button>
             {categoryShowcase.map((cat, idx) => (
               <button
                 key={idx}
@@ -590,6 +688,16 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           roomNumber={activeRoomNumber}
           lang={lang}
           onClose={() => setSelectedDetailExp(null)}
+          onExploreCategory={(exp) => {
+            const targetCatKey = getExperienceCategoryKey(exp);
+            setSelectedDetailExp(null);
+            setSearchQuery('');
+            setSelectedCategory(targetCatKey);
+            setActiveTab('experiences');
+            if (typeof window !== 'undefined') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
           onOpenTransit={(exp) => setTransitExp(exp)}
           onOpenCheckout={(exp) => setCheckoutExp(exp)}
           onOpenRestaurantReserve={(exp) => {

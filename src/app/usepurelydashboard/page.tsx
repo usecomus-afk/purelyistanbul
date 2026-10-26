@@ -20,7 +20,12 @@ import {
   ServiceRequest,
   InvestmentLead,
   BookingStatus,
+  PilotDistrictKey,
 } from "@/lib/types";
+import {
+  PILOT_DISTRICTS,
+  getEffectiveRecommendedDistricts,
+} from "@/lib/pilot-districts";
 import { MARKETPLACE_COLLECTIONS } from "@/lib/marketplace/collections";
 import type { HostApplication, MarketplaceListing } from "@/lib/marketplace/types";
 import { approveHostApplication, rejectHostApplication } from "@/lib/marketplace/firestore";
@@ -599,6 +604,26 @@ export default function UsePurelyDashboardPage() {
   };
 
   // Listing Handlers
+  const handleToggleListingPilotDistrict = (
+    exp: Experience,
+    districtKey: PilotDistrictKey
+  ) => {
+    const current = getEffectiveRecommendedDistricts(exp);
+    const exists = current.includes(districtKey);
+    const next = exists
+      ? current.filter((d) => d !== districtKey)
+      : [...current, districtKey];
+    XeniosStore.updateExperience(exp.id, { recommendedDistricts: next });
+    refreshAllData();
+    const regionLabel =
+      PILOT_DISTRICTS.find((r) => r.key === districtKey)?.label || districtKey;
+    toast.success(
+      exists
+        ? `"${exp.title}" ilanı ${regionLabel} bölgesi "Sizin İçin Seçtiklerimiz" listesinden çıkarıldı.`
+        : `"${exp.title}" ilanı ${regionLabel} bölgesi "Sizin İçin Seçtiklerimiz" listesine eklendi.`
+    );
+  };
+
   const handleStartEditListing = (exp: Experience) => {
     setEditingListingId(exp.id);
   };
@@ -2066,6 +2091,35 @@ export default function UsePurelyDashboardPage() {
                               {formatPrice(exp.price, exp.currency)}
                             </strong>{" "}
                             • Komisyon: %{exp.commissionRate ?? 15}
+                            <span className="pt-1.5 flex flex-wrap items-center gap-1.5">
+                              <span className="text-[10.5px] font-semibold text-[#3B6D11] mr-0.5">
+                                ✨ Sizin İçin Seçtiklerimiz:
+                              </span>
+                              {PILOT_DISTRICTS.map((region) => {
+                                const activeRegions = getEffectiveRecommendedDistricts(exp);
+                                const isChecked = activeRegions.includes(region.key);
+                                return (
+                                  <label
+                                    key={region.key}
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-medium border cursor-pointer transition select-none ${
+                                      isChecked
+                                        ? "bg-[#EAF3DE] text-[#2D5A1E] border-[#3B6D11]"
+                                        : "bg-[#FFFCFA] text-[#6B6B55] border-[#C8C4B0] hover:border-[#3B6D11]/50"
+                                    }`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() =>
+                                        handleToggleListingPilotDistrict(exp, region.key)
+                                      }
+                                      className="accent-[#3B6D11] w-3 h-3 cursor-pointer"
+                                    />
+                                    <span>{region.label}</span>
+                                  </label>
+                                );
+                              })}
+                            </span>
                           </div>
                         </div>
 
@@ -2745,6 +2799,38 @@ export default function UsePurelyDashboardPage() {
                               </p>
                               <p className="text-xs text-[#6B6B55] line-clamp-1">
                                 {exp.agentNote || exp.desc}
+                              </p>
+                              <div className="pt-2 flex flex-wrap items-center gap-1.5">
+                                <span className="text-[11px] font-semibold text-[#3B6D11] mr-1">
+                                  ✨ Sizin İçin Seçtiklerimiz (Pilot Bölgeler):
+                                </span>
+                                {PILOT_DISTRICTS.map((region) => {
+                                  const activeRegions = getEffectiveRecommendedDistricts(exp);
+                                  const isChecked = activeRegions.includes(region.key);
+                                  return (
+                                    <label
+                                      key={region.key}
+                                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border cursor-pointer transition select-none ${
+                                        isChecked
+                                          ? "bg-[#EAF3DE] text-[#2D5A1E] border-[#3B6D11]"
+                                          : "bg-[#FFFCFA] text-[#6B6B55] border-[#C8C4B0] hover:border-[#3B6D11]/50"
+                                      }`}
+                                      title={`${region.label} (${region.neighborhoods}) bölgesinde "Sizin İçin Seçtiklerimiz" arasında göster`}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() =>
+                                          handleToggleListingPilotDistrict(exp, region.key)
+                                        }
+                                        className="accent-[#3B6D11] w-3.5 h-3.5 cursor-pointer"
+                                      />
+                                      <span>{region.label}</span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                              <p className="hidden">
                               </p>
                             </div>
                           </div>

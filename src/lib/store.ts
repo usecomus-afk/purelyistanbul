@@ -747,6 +747,9 @@ export const XeniosStore = {
           desc: existing.desc ?? existing.agentNote ?? seed.desc ?? seed.agentNote,
           features: existing.features ?? existing.specialties ?? seed.features ?? seed.specialties,
           image: existing.image || seed.image,
+          recommendedDistricts: Array.isArray(existing.recommendedDistricts)
+            ? existing.recommendedDistricts
+            : seed.recommendedDistricts,
         });
       } else {
         mergedSeedItems.push(seed);

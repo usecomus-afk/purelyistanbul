@@ -7,7 +7,8 @@ import { adminLogin, establishAdminFirebaseSession } from '@/lib/admin-auth';
 import { PropertyAdminPanel } from '@/components/cockpit/property-admin-panel';
 import { SupplierAdminPanel } from '@/components/cockpit/supplier-admin-panel';
 import { HotelAdminPanel } from '@/components/cockpit/hotel-admin-panel';
-import { Experience, Booking, XeniosUser, BookingStatus, SupplierPartner } from '@/lib/types';
+import { Experience, Booking, XeniosUser, BookingStatus, SupplierPartner, PilotDistrictKey } from '@/lib/types';
+import { PILOT_DISTRICTS, getEffectiveRecommendedDistricts } from '@/lib/pilot-districts';
 import { formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -38,6 +39,7 @@ type NewExpDraft = {
   lat: number;
   lng: number;
   scoreStr: string;
+  recommendedDistricts: PilotDistrictKey[];
 };
 
 const EMPTY_DRAFT: NewExpDraft = {
@@ -61,7 +63,8 @@ const EMPTY_DRAFT: NewExpDraft = {
   image: '/images/istanbul/il_1588xN.6201904451_eqr3.webp',
   lat: 41.0082,
   lng: 28.9784,
-  scoreStr: '5.0'
+  scoreStr: '5.0',
+  recommendedDistricts: [],
 };
 
 function experienceToDraft(exp: Experience): NewExpDraft {
@@ -86,7 +89,8 @@ function experienceToDraft(exp: Experience): NewExpDraft {
     image: exp.image,
     lat: exp.coords?.lat ?? 41.0082,
     lng: exp.coords?.lng ?? 28.9784,
-    scoreStr: exp.scoreStr || '5.0'
+    scoreStr: exp.scoreStr || '5.0',
+    recommendedDistricts: getEffectiveRecommendedDistricts(exp),
   };
 }
 
@@ -114,7 +118,8 @@ function draftToExperiencePatch(draft: NewExpDraft): Partial<Experience> {
     image: draft.image,
     coords: { lat: Number(draft.lat) || 41.0082, lng: Number(draft.lng) || 28.9784 },
     scoreStr: draft.scoreStr || '5.0',
-    rating: ratingNum
+    rating: ratingNum,
+    recommendedDistricts: draft.recommendedDistricts,
   };
 }
 
@@ -1088,6 +1093,46 @@ function ExperienceFormModal({ title, submitLabel, values, onChange, onCancel, o
                 onChange={(e) => set({ agentNote: e.target.value })}
                 className="w-full px-3.5 py-2.5 bg-amber-50/40 border border-amber-200/80 rounded-xl focus:border-amber-500 focus:outline-none text-zinc-800 dark:text-slate-200"
               />
+            </div>
+
+            <div className="sm:col-span-2 bg-amber-50/60 p-3.5 rounded-2xl border border-amber-300/80 space-y-2.5">
+              <div>
+                <label className="text-[11px] font-bold text-amber-900 block">
+                  ✨ Sizin İçin Seçtiklerimiz — Öne Çıkarılacak 5 Pilot Bölge
+                </label>
+                <p className="text-[10.5px] text-zinc-600 mt-0.5">
+                  İlan normal kategorisinde yayınlanmaya devam eder; işaretlediğiniz pilot bölgelerdeki otellerde konaklayan misafirler için &ldquo;Sizin İçin Seçtiklerimiz&rdquo; vitrininde gösterilir.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {PILOT_DISTRICTS.map((region) => {
+                  const checked = (values.recommendedDistricts || []).includes(region.key);
+                  return (
+                    <label
+                      key={region.key}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition select-none ${
+                        checked
+                          ? 'bg-amber-500/20 border-amber-600 text-amber-950'
+                          : 'bg-white border-amber-200 text-zinc-700 hover:border-amber-400'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          const current = values.recommendedDistricts || [];
+                          const next = e.target.checked
+                            ? Array.from(new Set([...current, region.key]))
+                            : current.filter((k) => k !== region.key);
+                          set({ recommendedDistricts: next });
+                        }}
+                        className="accent-amber-600 w-4 h-4 shrink-0 cursor-pointer"
+                      />
+                      <span>{region.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

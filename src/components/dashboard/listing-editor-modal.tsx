@@ -2,11 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ImagePlus, Save, X } from "lucide-react";
-import type { Experience, SupplierPartner } from "@/lib/types";
+import { ImagePlus, Save, Sparkles, X } from "lucide-react";
+import type { Experience, PilotDistrictKey, SupplierPartner } from "@/lib/types";
 import type { CategoryConfig } from "@/lib/marketplace/categories";
 import { getExperienceCategoryKey } from "@/lib/marketplace/seed-listings";
 import { fileToResizedDataUrl } from "@/lib/image-utils";
+import {
+  PILOT_DISTRICTS,
+  PILOT_DISTRICT_KEYS,
+  getEffectiveRecommendedDistricts,
+} from "@/lib/pilot-districts";
 
 interface ListingEditorModalProps {
   mode: "create" | "edit";
@@ -48,6 +53,7 @@ interface Draft {
   suspended: boolean;
   publishToWeb: boolean;
   publishToMobile: boolean;
+  recommendedDistricts: PilotDistrictKey[];
 }
 
 const str = (v: unknown, fallback = "") => (v === undefined || v === null ? fallback : String(v));
@@ -90,6 +96,11 @@ function toDraft(
     suspended: s.status === "suspended",
     publishToWeb: s.publishToWeb !== false,
     publishToMobile: s.publishToMobile !== false,
+    recommendedDistricts: s.id
+      ? getEffectiveRecommendedDistricts(s as Experience)
+      : Array.isArray(s.recommendedDistricts)
+      ? s.recommendedDistricts
+      : [],
   };
 }
 
@@ -182,6 +193,7 @@ export function ListingEditorModal({
       status: d.suspended ? "suspended" : "active",
       publishToWeb: d.publishToWeb,
       publishToMobile: d.publishToMobile,
+      recommendedDistricts: d.recommendedDistricts,
     };
 
     if (mode === "edit" && initial) {
@@ -414,6 +426,77 @@ export function ListingEditorModal({
             placeholder="Örn: Otelden alım, Rehber dahil, İkram"
             className="comus-input"
           />
+        </div>
+
+        {/* Sizin İçin Seçtiklerimiz — 5 Pilot Bölge Seçimi */}
+        <div className="p-4 rounded-2xl bg-[#F6F1E8] border-2 border-[#3B6D11]/35 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#3B6D11]">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Sizin İçin Seçtiklerimiz — Pilot Bölge Önerileri</span>
+              </div>
+              <p className="text-xs text-[#6B6B55] mt-0.5">
+                İlan normal kategorisinde yayınlanmaya devam eder; işaretlediğiniz pilot bölgelerdeki otellerde konaklayan misafirlere <strong>&ldquo;Sizin İçin Seçtiklerimiz&rdquo;</strong> vitrininde öne çıkarılarak gösterilir.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => set("recommendedDistricts", [...PILOT_DISTRICT_KEYS])}
+                className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#EAF3DE] text-[#3B6D11] border border-[#C0DD97] hover:bg-[#dcebc9] cursor-pointer transition"
+              >
+                Tümünü İşaretle
+              </button>
+              <button
+                type="button"
+                onClick={() => set("recommendedDistricts", [])}
+                className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#FFFCFA] text-[#6B6B55] border border-[#C8C4B0] hover:bg-[#EDE8DE] cursor-pointer transition"
+              >
+                Temizle
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            {PILOT_DISTRICTS.map((region) => {
+              const checked = d.recommendedDistricts.includes(region.key);
+              return (
+                <label
+                  key={region.key}
+                  className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition select-none ${
+                    checked
+                      ? "bg-[#EAF3DE] border-[#3B6D11] shadow-xs"
+                      : "bg-[#FFFCFA] border-[#C8C4B0] hover:border-[#3B6D11]/50"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setD((prev) => {
+                        const current = prev.recommendedDistricts;
+                        const next = isChecked
+                          ? Array.from(new Set([...current, region.key]))
+                          : current.filter((k) => k !== region.key);
+                        return { ...prev, recommendedDistricts: next };
+                      });
+                    }}
+                    className="accent-[#3B6D11] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-[#2C2C1A] leading-tight">
+                      {region.label}
+                    </div>
+                    <div className="text-[10px] text-[#6B6B55] leading-snug mt-0.5">
+                      {region.neighborhoods}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
         </div>
 
         {/* Yayın durumu */}

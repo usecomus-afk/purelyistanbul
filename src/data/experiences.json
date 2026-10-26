@@ -22,7 +22,13 @@
     "featured": true,
     "image": "/images/experiences/exp-1.jpg",
     "categoryKey": "cat-1",
-    "desc": "Licensed TÜRSAB Group A dinner cruise along the illuminated Bosphorus strait with live cultural performances."
+    "desc": "Licensed TÜRSAB Group A dinner cruise along the illuminated Bosphorus strait with live cultural performances.",
+    "recommendedDistricts": [
+      "fatih",
+      "besiktas",
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-2",
@@ -47,7 +53,10 @@
     "featured": true,
     "image": "/images/experiences/exp-2.jpg",
     "categoryKey": "cat-1",
-    "desc": "All-inclusive evening Bosphorus cruise featuring traditional Whirling Dervish and Anatolian folk dances."
+    "desc": "All-inclusive evening Bosphorus cruise featuring traditional Whirling Dervish and Anatolian folk dances.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-3",
@@ -72,7 +81,11 @@
     "featured": true,
     "image": "/images/experiences/exp-3.jpg",
     "categoryKey": "cat-1",
-    "desc": "Panoramic Bosphorus evening cruise with curated Turkish meze and freshly grilled seasonal fish."
+    "desc": "Panoramic Bosphorus evening cruise with curated Turkish meze and freshly grilled seasonal fish.",
+    "recommendedDistricts": [
+      "fatih",
+      "besiktas"
+    ]
   },
   {
     "id": "exp-4",
@@ -97,7 +110,13 @@
     "featured": true,
     "image": "/images/experiences/exp-4.jpg",
     "categoryKey": "cat-1",
-    "desc": "Private motor yacht charter along the Bosphorus for couples and small groups (2 to 4 hours)."
+    "desc": "Private motor yacht charter along the Bosphorus for couples and small groups (2 to 4 hours).",
+    "recommendedDistricts": [
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-5",
@@ -122,7 +141,13 @@
     "featured": true,
     "image": "/images/experiences/exp-5.jpg",
     "categoryKey": "cat-1",
-    "desc": "Golden-hour sunset yacht cruise departing from Karaköy with live English historian commentary."
+    "desc": "Golden-hour sunset yacht cruise departing from Karaköy with live English historian commentary.",
+    "recommendedDistricts": [
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-6",
@@ -147,7 +172,14 @@
     "featured": true,
     "image": "/images/experiences/exp-6.jpg",
     "categoryKey": "cat-2",
-    "desc": "Skip-the-line fast-track museum entry with a licensed historian guide across Hagia Sophia, Topkapi & Basilica Cistern."
+    "desc": "Skip-the-line fast-track museum entry with a licensed historian guide across Hagia Sophia, Topkapi & Basilica Cistern.",
+    "recommendedDistricts": [
+      "fatih",
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-7",
@@ -172,7 +204,10 @@
     "featured": true,
     "image": "/images/experiences/exp-7.jpg",
     "categoryKey": "cat-2",
-    "desc": "Intimate small-group walking route through the UNESCO-listed Historic Peninsula with a licensed local guide."
+    "desc": "Intimate small-group walking route through the UNESCO-listed Historic Peninsula with a licensed local guide.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-8",
@@ -197,7 +232,13 @@
     "featured": true,
     "image": "/images/experiences/exp-8.jpg",
     "categoryKey": "cat-2",
-    "desc": "Tailored architectural and secret-courtyard walk curated specifically for boutique hotel guests."
+    "desc": "Tailored architectural and secret-courtyard walk curated specifically for boutique hotel guests.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "besiktas",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-9",
@@ -222,7 +263,10 @@
     "featured": true,
     "image": "/images/experiences/exp-9.jpg",
     "categoryKey": "cat-2",
-    "desc": "Essential Historic Peninsula daily guided walk covering Roman, Byzantine, and Ottoman landmarks."
+    "desc": "Essential Historic Peninsula daily guided walk covering Roman, Byzantine, and Ottoman landmarks.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-10",
@@ -247,7 +291,12 @@
     "featured": true,
     "image": "/images/experiences/exp-10.jpg",
     "categoryKey": "cat-3",
-    "desc": "Two-continent culinary trail from Karaköy to Kadıköy sampling 12 authentic local family-run stops."
+    "desc": "Two-continent culinary trail from Karaköy to Kadıköy sampling 12 authentic local family-run stops.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "kadikoy",
+      "fatih"
+    ]
   },
   {
     "id": "exp-11",
@@ -272,7 +321,11 @@
     "featured": true,
     "image": "/images/experiences/exp-11.jpg",
     "categoryKey": "cat-3",
-    "desc": "Backstreet gastronomy walk exploring historic tradesmen lokantas, wood-fired bakeries, and spice stalls."
+    "desc": "Backstreet gastronomy walk exploring historic tradesmen lokantas, wood-fired bakeries, and spice stalls.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-12",
@@ -297,7 +350,11 @@
     "featured": true,
     "image": "/images/experiences/exp-12.jpg",
     "categoryKey": "cat-3",
-    "desc": "Small-group historic market walk with curated tastings of artisanal Turkish cheeses, olives, and baklava."
+    "desc": "Small-group historic market walk with curated tastings of artisanal Turkish cheeses, olives, and baklava.",
+    "recommendedDistricts": [
+      "fatih",
+      "beyoglu"
+    ]
   },
   {
     "id": "exp-13",
@@ -322,7 +379,11 @@
     "featured": false,
     "image": "/images/experiences/exp-13.jpg",
     "categoryKey": "cat-3",
-    "desc": "Hands-on Anatolian cooking workshop preceded by a guided Spice Bazaar ingredient walk."
+    "desc": "Hands-on Anatolian cooking workshop preceded by a guided Spice Bazaar ingredient walk.",
+    "recommendedDistricts": [
+      "sisli",
+      "besiktas"
+    ]
   },
   {
     "id": "exp-14",
@@ -347,7 +408,11 @@
     "featured": false,
     "image": "/images/experiences/exp-14.jpg",
     "categoryKey": "cat-4",
-    "desc": "Authentic 300-year-old marble hammam ritual with traditional kese scrub and warm olive-oil foam massage."
+    "desc": "Authentic 300-year-old marble hammam ritual with traditional kese scrub and warm olive-oil foam massage.",
+    "recommendedDistricts": [
+      "fatih",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-15",
@@ -372,7 +437,11 @@
     "featured": false,
     "image": "/images/experiences/exp-15.jpg",
     "categoryKey": "cat-4",
-    "desc": "16th-century Mimar Sinan architectural hammam sanctuary offering private thermal bath and aromatherapy rituals."
+    "desc": "16th-century Mimar Sinan architectural hammam sanctuary offering private thermal bath and aromatherapy rituals.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-16",
@@ -397,7 +466,10 @@
     "featured": false,
     "image": "/images/experiences/exp-16.jpg",
     "categoryKey": "cat-5",
-    "desc": "Authentic Mevlevi Sema Whirling Dervish ceremony accompanied by classical Turkish reed-flute music."
+    "desc": "Authentic Mevlevi Sema Whirling Dervish ceremony accompanied by classical Turkish reed-flute music.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-17",
@@ -422,7 +494,11 @@
     "featured": false,
     "image": "/images/experiences/exp-17.jpg",
     "categoryKey": "cat-5",
-    "desc": "Artisan mosaic glass lamp and traditional Ebru (water marbling) workshop with local craftspeople."
+    "desc": "Artisan mosaic glass lamp and traditional Ebru (water marbling) workshop with local craftspeople.",
+    "recommendedDistricts": [
+      "fatih",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-18",
@@ -447,7 +523,12 @@
     "featured": false,
     "image": "/images/experiences/exp-18.jpg",
     "categoryKey": "cat-3",
-    "desc": "Sand-brewed traditional Turkish coffee workshop and cultural storytelling in a historic Galata studio."
+    "desc": "Sand-brewed traditional Turkish coffee workshop and cultural storytelling in a historic Galata studio.",
+    "recommendedDistricts": [
+      "fatih",
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-24",
@@ -472,7 +553,12 @@
     "featured": false,
     "image": "/images/experiences/exp-24.jpg",
     "categoryKey": "cat-7",
-    "desc": "24/7 licensed luxury Mercedes-Benz Vito/Sprinter airport meet-and-greet transfer for IST & SAW."
+    "desc": "24/7 licensed luxury Mercedes-Benz Vito/Sprinter airport meet-and-greet transfer for IST & SAW.",
+    "recommendedDistricts": [
+      "fatih",
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-25",
@@ -497,7 +583,11 @@
     "featured": false,
     "image": "/images/experiences/exp-25.jpg",
     "categoryKey": "cat-7",
-    "desc": "Chauffeur-driven licensed executive fleet for full-day city transfers and Bosphorus evening dining."
+    "desc": "Chauffeur-driven licensed executive fleet for full-day city transfers and Bosphorus evening dining.",
+    "recommendedDistricts": [
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "exp-26",
@@ -522,7 +612,10 @@
     "featured": false,
     "image": "/images/experiences/exp-26.jpg",
     "categoryKey": "cat-6",
-    "desc": "Iconic rooftop flying-dress photography session overlooking the Golden Horn and Historic Peninsula domes."
+    "desc": "Iconic rooftop flying-dress photography session overlooking the Golden Horn and Historic Peninsula domes.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-27",
@@ -547,7 +640,12 @@
     "featured": false,
     "image": "/images/experiences/exp-27.jpg",
     "categoryKey": "cat-6",
-    "desc": "Private editorial portrait session framed by the medieval Galata Tower at sunrise or sunset."
+    "desc": "Private editorial portrait session framed by the medieval Galata Tower at sunrise or sunset.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-28",
@@ -572,7 +670,10 @@
     "featured": false,
     "image": "/images/experiences/exp-28.jpg",
     "categoryKey": "cat-6",
-    "desc": "Heritage costume and handwoven carpet terrace photography session with professional lighting."
+    "desc": "Heritage costume and handwoven carpet terrace photography session with professional lighting.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-29",
@@ -597,7 +698,12 @@
     "featured": false,
     "image": "/images/experiences/exp-29.jpg",
     "categoryKey": "cat-6",
-    "desc": "Bosphorus waterfront and Ortaköy Mosque photo & reel session with a professional local photographer."
+    "desc": "Bosphorus waterfront and Ortaköy Mosque photo & reel session with a professional local photographer.",
+    "recommendedDistricts": [
+      "besiktas",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-33",
@@ -622,7 +728,11 @@
     "featured": false,
     "image": "/images/experiences/exp-33.jpg",
     "categoryKey": "cat-8",
-    "desc": "Zero-commission, transparent Grand Bazaar artisan walk connecting guests directly with master weavers and jewelers."
+    "desc": "Zero-commission, transparent Grand Bazaar artisan walk connecting guests directly with master weavers and jewelers.",
+    "recommendedDistricts": [
+      "fatih",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-34",
@@ -647,7 +757,12 @@
     "featured": false,
     "image": "/images/experiences/exp-34.jpg",
     "categoryKey": "cat-8",
-    "desc": "Curated design and antique trail through Çukurcuma, Galata, and Serdar-ı Ekrem independent ateliers."
+    "desc": "Curated design and antique trail through Çukurcuma, Galata, and Serdar-ı Ekrem independent ateliers.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli",
+      "besiktas"
+    ]
   },
   {
     "id": "exp-35",
@@ -672,7 +787,11 @@
     "featured": false,
     "image": "/images/experiences/exp-35.jpg",
     "categoryKey": "cat-8",
-    "desc": "Private access to historic caravanserai workshops and master copper, silk, and ceramic artisans."
+    "desc": "Private access to historic caravanserai workshops and master copper, silk, and ceramic artisans.",
+    "recommendedDistricts": [
+      "fatih",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-41",
@@ -697,7 +816,13 @@
     "featured": false,
     "image": "/images/experiences/exp-41.jpg",
     "categoryKey": "cat-5",
-    "desc": "Guided visit to Istanbul Modern in its Renzo Piano-designed waterfront building at Karaköy."
+    "desc": "Guided visit to Istanbul Modern in its Renzo Piano-designed waterfront building at Karaköy.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "besiktas",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-42",
@@ -722,7 +847,11 @@
     "featured": false,
     "image": "/images/experiences/exp-42.jpg",
     "categoryKey": "cat-5",
-    "desc": "Pera Museum guided tour featuring Orientalist masterpieces, Anatolian weights, and Kütahya tiles."
+    "desc": "Pera Museum guided tour featuring Orientalist masterpieces, Anatolian weights, and Kütahya tiles.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli"
+    ]
   },
   {
     "id": "exp-43",
@@ -747,7 +876,11 @@
     "featured": false,
     "image": "/images/experiences/exp-43.jpg",
     "categoryKey": "cat-5",
-    "desc": "Arter contemporary art museum walk exploring multi-story exhibitions and sculpture galleries."
+    "desc": "Arter contemporary art museum walk exploring multi-story exhibitions and sculpture galleries.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli"
+    ]
   },
   {
     "id": "exp-44",
@@ -772,7 +905,11 @@
     "featured": false,
     "image": "/images/experiences/exp-44.jpg",
     "categoryKey": "cat-5",
-    "desc": "SALT Galata architectural tour and Ottoman Bank Museum heritage vault walk."
+    "desc": "SALT Galata architectural tour and Ottoman Bank Museum heritage vault walk.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-45",
@@ -797,7 +934,10 @@
     "featured": false,
     "image": "/images/experiences/exp-45.jpg",
     "categoryKey": "cat-2",
-    "desc": "Galata Mevlevi Lodge and Sufi heritage route exploring centuries of poetry, music, and calligraphy."
+    "desc": "Galata Mevlevi Lodge and Sufi heritage route exploring centuries of poetry, music, and calligraphy.",
+    "recommendedDistricts": [
+      "beyoglu"
+    ]
   },
   {
     "id": "exp-46",
@@ -822,7 +962,10 @@
     "featured": false,
     "image": "/images/experiences/exp-46.jpg",
     "categoryKey": "cat-2",
-    "desc": "Fener & Balat historic walking route visiting the Ecumenical Patriarchate and Byzantine landmarks."
+    "desc": "Fener & Balat historic walking route visiting the Ecumenical Patriarchate and Byzantine landmarks.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-47",
@@ -847,7 +990,10 @@
     "featured": false,
     "image": "/images/experiences/exp-47.jpg",
     "categoryKey": "cat-2",
-    "desc": "Sephardic heritage walk visiting historic synagogues of Galata and Balat with a specialist historian."
+    "desc": "Sephardic heritage walk visiting historic synagogues of Galata and Balat with a specialist historian.",
+    "recommendedDistricts": [
+      "beyoglu"
+    ]
   },
   {
     "id": "exp-48",
@@ -872,7 +1018,11 @@
     "featured": false,
     "image": "/images/experiences/exp-48.jpg",
     "categoryKey": "cat-2",
-    "desc": "Private architectural and multi-faith heritage walk across the Golden Horn neighborhoods."
+    "desc": "Private architectural and multi-faith heritage walk across the Golden Horn neighborhoods.",
+    "recommendedDistricts": [
+      "fatih",
+      "beyoglu"
+    ]
   },
   {
     "id": "rest-1",
@@ -905,7 +1055,10 @@
     ],
     "image": "/images/experiences/rest-1.jpg",
     "categoryKey": "cat-3",
-    "desc": "Award-winning rooftop fine dining near Hagia Sophia serving authentic 15th–17th century Ottoman palace recipes."
+    "desc": "Award-winning rooftop fine dining near Hagia Sophia serving authentic 15th–17th century Ottoman palace recipes.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-2",
@@ -938,7 +1091,10 @@
     ],
     "image": "/images/experiences/rest-2.jpg",
     "categoryKey": "cat-3",
-    "desc": "Hidden lush courtyard in Sultanahmet renowned for clay-pot testi kebab and fresh Aegean seafood."
+    "desc": "Hidden lush courtyard in Sultanahmet renowned for clay-pot testi kebab and fresh Aegean seafood.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-3",
@@ -971,7 +1127,10 @@
     ],
     "image": "/images/experiences/rest-3.jpg",
     "categoryKey": "cat-3",
-    "desc": "Panoramic Sea of Marmara and Old City terrace offering refined Anatolian cuisine and sommelier pairings."
+    "desc": "Panoramic Sea of Marmara and Old City terrace offering refined Anatolian cuisine and sommelier pairings.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-4",
@@ -1004,7 +1163,11 @@
     ],
     "image": "/images/experiences/rest-4.jpg",
     "categoryKey": "cat-3",
-    "desc": "Avant-garde chef tasting plates and botanical cocktails inside a 100-year-old stone building in Karaköy."
+    "desc": "Avant-garde chef tasting plates and botanical cocktails inside a 100-year-old stone building in Karaköy.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli"
+    ]
   },
   {
     "id": "rest-5",
@@ -1037,7 +1200,12 @@
     ],
     "image": "/images/experiences/rest-5.jpg",
     "categoryKey": "cat-3",
-    "desc": "Michelin-starred rooftop by Chef Mehmet Gürs celebrating New Anatolian cuisine with sweeping Golden Horn views."
+    "desc": "Michelin-starred rooftop by Chef Mehmet Gürs celebrating New Anatolian cuisine with sweeping Golden Horn views.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "rest-6",
@@ -1070,7 +1238,10 @@
     ],
     "image": "/images/experiences/rest-6.jpg",
     "categoryKey": "cat-3",
-    "desc": "Legendary 120-year-old turquoise-tiled culinary institution above the Spice Bazaar doorway."
+    "desc": "Legendary 120-year-old turquoise-tiled culinary institution above the Spice Bazaar doorway.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-7",
@@ -1103,7 +1274,11 @@
     ],
     "image": "/images/experiences/rest-7.jpg",
     "categoryKey": "cat-3",
-    "desc": "Michelin Star & Green Star dining by Chef Maksut Aşkar atop SALT Galata, honoring sustainable Anatolian traditions."
+    "desc": "Michelin Star & Green Star dining by Chef Maksut Aşkar atop SALT Galata, honoring sustainable Anatolian traditions.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "besiktas"
+    ]
   },
   {
     "id": "rest-8",
@@ -1136,7 +1311,10 @@
     ],
     "image": "/images/experiences/rest-8.jpg",
     "categoryKey": "cat-3",
-    "desc": "360-degree rooftop dining overlooking Hagia Sophia, the Blue Mosque, and the Bosphorus strait."
+    "desc": "360-degree rooftop dining overlooking Hagia Sophia, the Blue Mosque, and the Bosphorus strait.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-9",
@@ -1170,7 +1348,10 @@
     ],
     "image": "/images/experiences/rest-9.jpg",
     "categoryKey": "cat-3",
-    "desc": "Chef Musa Dağdeviren’s world-renowned Kadıköy culinary table preserving rare Anatolian and Mesopotamian recipes."
+    "desc": "Chef Musa Dağdeviren’s world-renowned Kadıköy culinary table preserving rare Anatolian and Mesopotamian recipes.",
+    "recommendedDistricts": [
+      "kadikoy"
+    ]
   },
   {
     "id": "rest-10",
@@ -1203,7 +1384,10 @@
     ],
     "image": "/images/experiences/rest-10.jpg",
     "categoryKey": "cat-3",
-    "desc": "Royal Ottoman palace cuisine served beside Topkapi Palace using documented archival recipes."
+    "desc": "Royal Ottoman palace cuisine served beside Topkapi Palace using documented archival recipes.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-11",
@@ -1236,7 +1420,11 @@
     ],
     "image": "/images/experiences/rest-11.jpg",
     "categoryKey": "cat-3",
-    "desc": "Iconic Ulus Park hilltop dining overlooking the Bosphorus Bridge with an acclaimed international cellar."
+    "desc": "Iconic Ulus Park hilltop dining overlooking the Bosphorus Bridge with an acclaimed international cellar.",
+    "recommendedDistricts": [
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "rest-12",
@@ -1269,7 +1457,10 @@
     ],
     "image": "/images/experiences/rest-12.jpg",
     "categoryKey": "cat-3",
-    "desc": "Michelin-recommended open-fire and wood-smoked seafood & grill terrace overlooking the Historic Peninsula."
+    "desc": "Michelin-recommended open-fire and wood-smoked seafood & grill terrace overlooking the Historic Peninsula.",
+    "recommendedDistricts": [
+      "beyoglu"
+    ]
   },
   {
     "id": "rest-13",
@@ -1302,7 +1493,10 @@
     ],
     "image": "/images/experiences/rest-13.jpg",
     "categoryKey": "cat-3",
-    "desc": "Waterfront gastronomy housed in a restored 19th-century Ottoman palace building on the Bosphorus shore."
+    "desc": "Waterfront gastronomy housed in a restored 19th-century Ottoman palace building on the Bosphorus shore.",
+    "recommendedDistricts": [
+      "besiktas"
+    ]
   },
   {
     "id": "rest-14",
@@ -1335,7 +1529,11 @@
     ],
     "image": "/images/experiences/rest-14.jpg",
     "categoryKey": "cat-3",
-    "desc": "Michelin-starred seasonal tasting menu served on the historic Franciscan monastery terrace in Beyoğlu."
+    "desc": "Michelin-starred seasonal tasting menu served on the historic Franciscan monastery terrace in Beyoğlu.",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli"
+    ]
   },
   {
     "id": "rest-15",
@@ -1368,7 +1566,10 @@
     ],
     "image": "/images/experiences/rest-15.jpg",
     "categoryKey": "cat-3",
-    "desc": "Intimate garden table celebrating ancient Mesopotamian spices and slow-cooked clay-oven dishes."
+    "desc": "Intimate garden table celebrating ancient Mesopotamian spices and slow-cooked clay-oven dishes.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "rest-16",
@@ -1401,7 +1602,10 @@
     ],
     "image": "/images/experiences/rest-16.jpg",
     "categoryKey": "cat-3",
-    "desc": "Authentic charcoal ocakbaşı grill experience tucked in the historic lanes of Beyoğlu."
+    "desc": "Authentic charcoal ocakbaşı grill experience tucked in the historic lanes of Beyoğlu.",
+    "recommendedDistricts": [
+      "beyoglu"
+    ]
   },
   {
     "id": "rest-17",
@@ -1435,7 +1639,10 @@
     ],
     "image": "/images/experiences/rest-17.jpg",
     "categoryKey": "cat-3",
-    "desc": "Classic Istanbul meyhane evening with acoustic traditional music and freshly prepared Aegean meze."
+    "desc": "Classic Istanbul meyhane evening with acoustic traditional music and freshly prepared Aegean meze.",
+    "recommendedDistricts": [
+      "beyoglu"
+    ]
   },
   {
     "id": "rest-18",
@@ -1468,7 +1675,10 @@
     ],
     "image": "/images/experiences/rest-18.jpg",
     "categoryKey": "cat-3",
-    "desc": "Contemporary Aegean herbs and seafood meze table in the vibrant heart of Kadıköy."
+    "desc": "Contemporary Aegean herbs and seafood meze table in the vibrant heart of Kadıköy.",
+    "recommendedDistricts": [
+      "kadikoy"
+    ]
   },
   {
     "id": "rest-19",
@@ -1501,7 +1711,10 @@
     ],
     "image": "/images/experiences/rest-19.jpg",
     "categoryKey": "cat-3",
-    "desc": "Heritage Cretan and Aegean olive-oil meze tavern in Kadıköy’s lively market quarter."
+    "desc": "Heritage Cretan and Aegean olive-oil meze tavern in Kadıköy’s lively market quarter.",
+    "recommendedDistricts": [
+      "kadikoy"
+    ]
   },
   {
     "id": "rest-20",
@@ -1534,7 +1747,10 @@
     ],
     "image": "/images/experiences/rest-20.jpg",
     "categoryKey": "cat-3",
-    "desc": "Sultanahmet’s historic 1920 culinary landmark serving its signature heritage grilled meatballs."
+    "desc": "Sultanahmet’s historic 1920 culinary landmark serving its signature heritage grilled meatballs.",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-hammam-3",
@@ -1559,7 +1775,12 @@
     "categoryTag": "Wellness",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/experiences/exp-14.jpg"
+    "image": "/images/experiences/exp-14.jpg",
+    "recommendedDistricts": [
+      "beyoglu",
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "exp-hammam-4",
@@ -1584,7 +1805,12 @@
     "categoryTag": "Wellness",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/experiences/exp-15.jpg"
+    "image": "/images/experiences/exp-15.jpg",
+    "recommendedDistricts": [
+      "fatih",
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "exp-transfer-3",
@@ -1609,7 +1835,14 @@
     "categoryTag": "Transfer",
     "iconName": "Car",
     "featured": true,
-    "image": "/images/experiences/exp-24.jpg"
+    "image": "/images/experiences/exp-24.jpg",
+    "recommendedDistricts": [
+      "fatih",
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-transfer-4",
@@ -1634,7 +1867,13 @@
     "categoryTag": "Transfer",
     "iconName": "Car",
     "featured": true,
-    "image": "/images/experiences/exp-25.jpg"
+    "image": "/images/experiences/exp-25.jpg",
+    "recommendedDistricts": [
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-bazaar-4",
@@ -1659,7 +1898,11 @@
     "categoryTag": "Shopping",
     "iconName": "ShoppingBag",
     "featured": true,
-    "image": "/images/experiences/exp-35.jpg"
+    "image": "/images/experiences/exp-35.jpg",
+    "recommendedDistricts": [
+      "fatih",
+      "sisli"
+    ]
   },
   {
     "id": "exp-catering-1",
@@ -1684,7 +1927,12 @@
     "categoryTag": "Catering",
     "iconName": "Utensils",
     "featured": true,
-    "image": "/images/experiences/exp-10.jpg"
+    "image": "/images/experiences/exp-10.jpg",
+    "recommendedDistricts": [
+      "fatih",
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-catering-2",
@@ -1709,7 +1957,13 @@
     "categoryTag": "Catering",
     "iconName": "Utensils",
     "featured": true,
-    "image": "/images/experiences/exp-11.jpg"
+    "image": "/images/experiences/exp-11.jpg",
+    "recommendedDistricts": [
+      "besiktas",
+      "beyoglu",
+      "sisli",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-catering-3",
@@ -1734,7 +1988,10 @@
     "categoryTag": "Catering",
     "iconName": "Utensils",
     "featured": true,
-    "image": "/images/experiences/exp-12.jpg"
+    "image": "/images/experiences/exp-12.jpg",
+    "recommendedDistricts": [
+      "fatih"
+    ]
   },
   {
     "id": "exp-catering-4",
@@ -1759,7 +2016,11 @@
     "categoryTag": "Catering",
     "iconName": "Utensils",
     "featured": true,
-    "image": "/images/experiences/rest-1.jpg"
+    "image": "/images/experiences/rest-1.jpg",
+    "recommendedDistricts": [
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "exp-laundry-1",
@@ -1784,7 +2045,11 @@
     "categoryTag": "GarmentCare",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/istanbul/il_1588xN.6201904451_eqr3.webp"
+    "image": "/images/istanbul/il_1588xN.6201904451_eqr3.webp",
+    "recommendedDistricts": [
+      "fatih",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-laundry-2",
@@ -1809,7 +2074,11 @@
     "categoryTag": "GarmentCare",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/istanbul/il_1588xN.6694809467_oy2s.webp"
+    "image": "/images/istanbul/il_1588xN.6694809467_oy2s.webp",
+    "recommendedDistricts": [
+      "besiktas",
+      "sisli"
+    ]
   },
   {
     "id": "exp-laundry-3",
@@ -1834,7 +2103,12 @@
     "categoryTag": "GarmentCare",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/istanbul/il_1588xN.6737485673_8hhm.webp"
+    "image": "/images/istanbul/il_1588xN.6737485673_8hhm.webp",
+    "recommendedDistricts": [
+      "besiktas",
+      "beyoglu",
+      "kadikoy"
+    ]
   },
   {
     "id": "exp-laundry-4",
@@ -1859,6 +2133,10 @@
     "categoryTag": "GarmentCare",
     "iconName": "Sparkles",
     "featured": true,
-    "image": "/images/istanbul/il_1588xN.7346047570_63w8.webp"
+    "image": "/images/istanbul/il_1588xN.7346047570_63w8.webp",
+    "recommendedDistricts": [
+      "beyoglu",
+      "sisli"
+    ]
   }
 ]
