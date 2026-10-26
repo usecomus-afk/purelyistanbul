@@ -435,10 +435,17 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     return getLocalizedCategoryTitle(categoryRaw, lang);
   };
 
+  const scrollGuestToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('guest-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="ottoman-theme w-full max-w-[100vw] min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y box-border text-[#F5F2EB] bg-[#151310] relative">
+    <div className="w-full max-w-[100vw] overflow-x-clip overscroll-x-none touch-pan-y box-border text-[#221F1C] relative">
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
-      <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#151310]">
+      <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
         <Image 
           src="/images/light-mosque-bg.jpg" 
           alt="Historic Istanbul Mosque Silhouette"
@@ -446,9 +453,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           priority
           quality={90}
           unoptimized
-          className="object-cover object-center scale-[1.01] blur-[3px] brightness-[0.22] contrast-[1.15] saturate-[0.7] opacity-60"
+          className="object-cover object-center scale-[1.01] blur-[2px] sepia-[0.18] saturate-[0.88] brightness-[1.01] contrast-[0.98]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#151310] via-[#151310]/70 to-[#151310]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
       </div>
 
       <div className="relative z-10 w-full max-w-full overflow-x-clip overscroll-x-none touch-pan-y box-border">
@@ -484,11 +491,11 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             {selectedCategory && selectedCategory !== 'all' ? (
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#F5F2EB]">
+                  <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
                     {getCategoryLabel(selectedCategory)}
                   </h2>
                   {selectedCategory === 'picked-for-you' && (
-                    <p className="font-luxury-sans text-xs text-[#A8A398] mt-0.5">
+                    <p className="font-luxury-sans text-xs text-[#5C4938] mt-0.5">
                       {pickedI18n.pageSubtitle(
                         lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
                       )}
@@ -513,10 +520,10 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 <h2 className="hidden">
                   {t.experiencesTitle}
                 </h2>
-                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#F5F2EB]">
+                <h2 className="font-luxury-serif text-[20px] sm:text-[22px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
                   {t.experiencesTitle}
                 </h2>
-                <p className="font-luxury-sans text-xs text-[#A8A398]">{t.experiencesSubtitle}</p>
+                <p className="font-luxury-sans text-xs text-[#5C4938]">{t.experiencesSubtitle}</p>
               </div>
             )}
 
@@ -586,26 +593,24 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 setSearchQuery('');
                 setSelectedCategory('picked-for-you');
                 setActiveTab('experiences');
-                if (typeof window !== 'undefined') {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                scrollGuestToTop();
               }}
-              className="col-span-full w-full luxury-category-card px-4 py-3.5 sm:px-5 sm:py-4 flex items-center justify-between gap-3 group relative cursor-pointer border-[1.5px] border-[#D4AF37]/60"
+              className="col-span-full w-full luxury-category-card px-4 py-3.5 sm:px-5 sm:py-4 flex items-center justify-between gap-3 group relative cursor-pointer"
             >
               <div className="flex items-center gap-3 min-w-0 relative z-10 text-left">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#262420] border border-[#D4AF37]/55 flex items-center justify-center shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_4px_12px_rgba(0,0,0,0.4)]">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full luxury-category-plinth flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E6A2D] group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-luxury-serif text-[16px] sm:text-[18px] font-semibold tracking-[0.03em] text-[#F5F2EB] group-hover:text-[#E5C358] transition leading-snug">
+                    <span className="luxury-category-title text-[15px] sm:text-[17px] font-bold tracking-[-0.01em] leading-snug">
                       {pickedI18n.badgeTitle}
                     </span>
-                    <span className="ottoman-badge px-2.5 py-0.5 rounded-full bg-[#262420] border border-[#D4AF37]/50 text-[#D4AF37] text-[10px]">
+                    <span className="golden-pill-badge font-luxury-sans px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
                       {pilotDistrictConfig.label} • {pickedI18n.curatedBadge}
                     </span>
                   </div>
-                  <p className="font-luxury-sans text-[11px] sm:text-xs text-[#A8A398] truncate mt-0.5">
+                  <p className="font-luxury-sans text-[11px] sm:text-xs text-[#5C4938] truncate mt-0.5">
                     {pickedI18n.badgeSubtitle(
                       lang === 'tr' ? pilotDistrictConfig.label : pilotDistrictConfig.labelEn
                     )}
@@ -613,7 +618,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 </div>
               </div>
 
-              <div className="shrink-0 relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#262420] border border-[#D4AF37]/55 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#151310] transition font-luxury-sans text-xs font-semibold">
+              <div className="shrink-0 relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full golden-pill-badge group-hover:bg-[rgba(240,195,70,0.52)] transition font-luxury-sans text-xs font-bold">
                 <span>{curatedDistrictExperiences.length}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
@@ -625,17 +630,13 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 onClick={() => {
                   if ((cat as any).tab === 'invest') {
                     setActiveTab('invest');
-                    if (typeof window !== 'undefined') {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    scrollGuestToTop();
                     return;
                   }
                   setSearchQuery('');
                   setSelectedCategory(cat.catKey);
                   setActiveTab('experiences');
-                  if (typeof window !== 'undefined') {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }
+                  scrollGuestToTop();
                 }}
                 className="luxury-category-card px-3 py-2.5 flex flex-col items-center text-center justify-center gap-2 min-h-[136px] sm:min-h-[154px] group relative cursor-pointer"
               >
@@ -694,9 +695,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
             setSearchQuery('');
             setSelectedCategory(targetCatKey);
             setActiveTab('experiences');
-            if (typeof window !== 'undefined') {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            scrollGuestToTop();
           }}
           onOpenTransit={(exp) => setTransitExp(exp)}
           onOpenCheckout={(exp) => setCheckoutExp(exp)}
@@ -908,9 +907,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           setSelectedCategory(catKey);
           setActiveTab('experiences');
           setIsAiOpen(false);
-          if (typeof window !== 'undefined') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
+          scrollGuestToTop();
         }}
       />
       </div>

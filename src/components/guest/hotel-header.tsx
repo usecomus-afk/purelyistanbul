@@ -151,22 +151,27 @@ export function HotelHeader({
         {/* Centered Logo/Name — Hotel Name ONLY on Hotel page; PURELY ISTANBUL on all other pages */}
         <h1
           translate="no"
-          className="notranslate font-luxury-serif text-[19px] sm:text-[22px] tracking-[0.12em] font-semibold text-[#F5F2EB] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase text-center leading-[1.28] select-none mt-0.5 max-w-full"
+          className="notranslate font-luxury-serif text-[18px] sm:text-[21px] tracking-[0.14em] font-normal text-[#141414] uppercase text-center leading-[1.28] select-none mt-0.5 max-w-full"
         >
           {headerTitleContent}
         </h1>
 
         {/* Clean Translucent Glass Top Bar Pill */}
         <div
-          className="ottoman-header-pill flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 max-w-full box-border rounded-full relative z-50"
-
+          className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 max-w-full box-border rounded-full backdrop-blur-xl border border-[rgba(224,184,102,0.52)] shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.75),inset_0_-1px_2px_rgba(218,174,86,0.22),0_8px_24px_rgba(24,18,10,0.10)] relative z-50"
+          style={{
+            background:
+              'linear-gradient(145deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.16) 52%, rgba(248, 234, 202, 0.22) 100%)',
+            backdropFilter: 'blur(16px) saturate(135%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(135%)',
+          }}
         >
           
           {/* 1. Notification Bell Icon */}
           <button
             type="button"
             onClick={() => setShowPwaModal(true)}
-            className="w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/10 text-[#D4AF37]"
+            className="w-7 h-7 rounded-full transition flex items-center justify-center relative cursor-pointer hover:bg-white/45 text-[#8C6D46]"
             title={
               lang === 'tr' ? "PWA Bildirim Ayarları" :
               lang === 'ar' ? "إعدادات الإشعارات" :
@@ -176,7 +181,7 @@ export function HotelHeader({
               "Notification Settings"
             }
           >
-            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[#D4AF37]" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[#8C6D46]" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
@@ -185,33 +190,33 @@ export function HotelHeader({
             )}
           </button>
 
-          <span className="w-px h-4 bg-[#D4AF37]/25" />
+          <span className="w-px h-4 bg-[#C4B7A3]/70" />
 
           {/* 2. Language Selector */}
           <LanguageSelector currentLang={lang} onSelect={onLanguageChange} theme="light" />
 
-          <span className="w-px h-4 bg-[#D4AF37]/25" />
+          <span className="w-px h-4 bg-[#C4B7A3]/70" />
 
           {/* 3. Building Icon */}
           <button
             type="button"
             onClick={() => setShowHotelModal(true)}
-            className="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition cursor-pointer"
+            className="w-7 h-7 rounded-full hover:bg-white/45 flex items-center justify-center transition cursor-pointer"
             title={isHotelServices ? hotel.name : 'Purely Istanbul'}
           >
-            <Building2 className="w-4 h-4 text-[#D4AF37] stroke-[1.6]" />
+            <Building2 className="w-4 h-4 text-[#8C6D46] stroke-[1.6]" />
           </button>
 
-          <span className="w-px h-4 bg-[#D4AF37]/25" />
+          <span className="w-px h-4 bg-[#C4B7A3]/70" />
 
           {/* 4. Wi-Fi & Room Number ("Oda TEST") */}
           <button
             type="button"
             onClick={() => setShowHotelModal(true)}
-            className="ottoman-room-badge flex items-center gap-1.5 px-3 py-1 rounded-full text-[#F5F2EB] text-[11.5px] font-semibold transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 bg-white/35 hover:bg-white/55 backdrop-blur-md border border-[rgba(224,184,102,0.52)] rounded-full text-[#141414] text-[11.5px] font-bold transition cursor-pointer shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.8)]"
           >
-            <Wifi className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.6]" />
-            <ChevronDown className="w-3 h-3 text-[#D4AF37] stroke-[1.6]" />
+            <Wifi className="w-3.5 h-3.5 text-[#8C6D46] stroke-[1.6]" />
+            <ChevronDown className="w-3 h-3 text-[#8C6D46] stroke-[1.6]" />
             <span>{t.room} {roomNumber}</span>
           </button>
 

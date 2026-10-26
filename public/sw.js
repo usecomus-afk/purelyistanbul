@@ -1,5 +1,5 @@
 // Purely Istanbul PWA Service Worker — Lock-Screen Web Push & Background Live Request Watcher
-const CACHE_NAME = 'xenios-v3';
+const CACHE_NAME = 'xenios-v4';
 const FIRESTORE_QUERY_URL =
   'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery';
 

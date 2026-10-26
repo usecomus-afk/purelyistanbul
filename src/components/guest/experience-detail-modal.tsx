@@ -297,24 +297,24 @@ export function ExperienceDetailModal({
             <button
               type="button"
               onClick={() => onExploreCategory(experience)}
-              className="w-full p-4 rounded-2xl border-2 border-[#D4AF37]/65 bg-gradient-to-r from-[#1D1B18] via-[#262420] to-[#1D1B18] hover:border-[#E5C358] text-[#F5F2EB] shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.12)] flex items-center justify-between gap-3 group transition-all duration-200 active:scale-[0.985] cursor-pointer"
+              className="w-full p-4 rounded-2xl border-[1.5px] border-[rgba(220,175,50,0.65)] bg-gradient-to-r from-[#FAF6EE] via-[#F4E6C3]/80 to-[#FAF6EE] hover:border-[#9E7B42] text-[#141414] shadow-[0_8px_24px_rgba(32,24,12,0.08),inset_0_1px_1.5px_rgba(255,255,255,0.85)] flex items-center justify-between gap-3 group transition-all duration-200 active:scale-[0.985] cursor-pointer"
             >
               <div className="flex items-center gap-3 text-left min-w-0">
-                <span className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 flex items-center justify-center shrink-0 text-[#D4AF37] group-hover:bg-[#D4AF37]/25 transition">
+                <span className="w-10 h-10 rounded-xl bg-white/80 border border-[rgba(220,175,50,0.55)] flex items-center justify-center shrink-0 text-[#8E6A2D] shadow-2xs group-hover:scale-105 transition">
                   <Sparkles className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <div className="font-luxury-serif text-base sm:text-lg font-semibold text-[#F5F2EB] group-hover:text-[#E5C358] transition leading-snug">
+                  <div className="font-luxury-serif text-base sm:text-lg font-bold text-[#141414] group-hover:text-[#7D5E2A] transition leading-snug">
                     {(PICKED_FOR_YOU_I18N[lang] || PICKED_FOR_YOU_I18N.tr).moreInCategoryBtn}
                   </div>
-                  <div className="font-luxury-sans text-xs text-[#A8A398] truncate">
+                  <div className="font-luxury-sans text-xs text-[#5C4938] truncate">
                     {(PICKED_FOR_YOU_I18N[lang] || PICKED_FOR_YOU_I18N.tr).moreInCategorySub(
                       getLocalizedCategoryTitle(getExperienceCategoryKey(experience), lang)
                     )}
                   </div>
                 </div>
               </div>
-              <span className="px-3.5 py-2 rounded-full bg-gradient-to-b from-[#E5C358] to-[#D4AF37] text-[#151310] font-luxury-sans text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm group-hover:translate-x-0.5 transition">
+              <span className="px-3.5 py-2 rounded-full bg-gradient-to-b from-[#9E7B42] to-[#7D5E2A] text-white font-luxury-sans text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm group-hover:translate-x-0.5 transition">
                 <span>{(PICKED_FOR_YOU_I18N[lang] || PICKED_FOR_YOU_I18N.tr).moreInCategoryBtn}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>

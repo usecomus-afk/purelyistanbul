@@ -228,13 +228,13 @@ export function LuxuryServiceIcon({
       >
         <defs>
           <linearGradient id={`${uid}-fill`} gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21">
-            <stop offset="0" stopColor="#F5F2EB" stopOpacity="0.95" />
-            <stop offset="0.55" stopColor="#E5C358" stopOpacity="0.85" />
-            <stop offset="1" stopColor="#D4AF37" stopOpacity="0.80" />
+            <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.98" />
+            <stop offset="0.55" stopColor="#F7ECD3" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#DFC187" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id={`${uid}-stroke`} gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21">
-            <stop offset="0" stopColor="#E5C358" />
-            <stop offset="1" stopColor="#B89324" />
+            <stop offset="0" stopColor="#B08A45" />
+            <stop offset="1" stopColor="#6B4E1F" />
           </linearGradient>
           <filter id={`${uid}-shadow`} x="-30%" y="-30%" width="170%" height="180%">
             <feDropShadow dx="0" dy="0.8" stdDeviation="0.65" floodColor="#5A3F14" floodOpacity="0.34" />

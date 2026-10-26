@@ -51,12 +51,33 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
     isAppRoute(pathname) ||
     (pathname === '/' ? isNative : hasHotelSession);
 
+  useEffect(() => {
+    if (!appMode) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'none';
+    body.style.overscrollBehavior = 'none';
+    window.scrollTo(0, 0);
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      body.style.overscrollBehavior = prevBodyOverscroll;
+    };
+  }, [appMode]);
+
   return (
     <div
       id="app"
       className={
         appMode
-          ? 'ottoman-theme w-full max-w-[100vw] min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y text-[#F5F2EB] bg-[#151310] antialiased relative box-border'
+          ? 'fixed inset-0 w-full max-w-[100vw] h-[100dvh] max-h-[100dvh] overflow-hidden overscroll-none flex flex-col text-slate-900 antialiased box-border'
           : 'w-full max-w-[100vw] min-h-screen overflow-x-clip antialiased box-border'
       }
     >
@@ -64,12 +85,12 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
         id={appMode ? 'guest-scroll-container' : undefined}
         className={
           appMode
-            ? 'w-full max-w-full min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y box-border'
+            ? 'flex-1 min-h-0 w-full max-w-full h-full overflow-y-auto overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y box-border'
             : 'w-full max-w-full box-border'
         }
         style={
           appMode
-            ? { paddingBottom: 'calc(75px + env(safe-area-inset-bottom, 20px))' }
+            ? { paddingBottom: 'calc(88px + env(safe-area-inset-bottom, 24px))' }
             : undefined
         }
       >

@@ -18,7 +18,7 @@ interface GuestTabBarProps {
  * 3-Column Heritage Hotel Building SVG Icon matching reference bottom bar "Hotel"
  */
 function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#A8A398";
+  const strokeColor = active ? "#A67C46" : "currentColor";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -89,7 +89,7 @@ function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
  * Multi-line Nautilus / Vortex Spiral SVG Icon for comusAI matching reference bottom bar
  */
 function LuxurySpiralIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#A8A398";
+  const strokeColor = active ? "#7D5E2A" : "#8B6220";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -131,7 +131,7 @@ function LuxurySpiralIcon({ active }: { active: boolean }) {
  * Clean Circular Info '(i)' SVG Icon for Guide matching reference bottom bar
  */
 function LuxuryGuideInfoIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#D4AF37" : "#A8A398";
+  const strokeColor = active ? "#A67C46" : "currentColor";
   return (
     <svg
       viewBox="0 0 24 24"
@@ -219,6 +219,9 @@ export function GuestTabBar({
       window.dispatchEvent(new CustomEvent('xenios_tab_changed', { detail: { tab: tabId } }));
       if (tabId === 'ai') {
         window.dispatchEvent(new CustomEvent('xenios_open_ai'));
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('guest-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       if (
@@ -239,8 +242,8 @@ export function GuestTabBar({
 
   return (
     <nav
-      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-in-out backdrop-blur-xl border-t border-[rgba(224,184,102,0.52)] after:content-[''] after:absolute after:left-0 after:right-0 after:top-full after:h-[50px] after:bg-white/25 after:backdrop-blur-xl ${
-        isHidden ? 'is-hidden translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 pointer-events-auto'
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0.5rem))] backdrop-blur-xl border-t border-[rgba(224,184,102,0.52)] ${
+        isHidden ? 'is-hidden opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
       }`}
       style={{
         position: 'fixed',
@@ -256,9 +259,6 @@ export function GuestTabBar({
         WebkitBackdropFilter: 'blur(18px) saturate(140%)',
         borderTop: '1px solid rgba(224, 184, 102, 0.52)',
         boxShadow: 'inset 0 1.5px 2px rgba(255, 255, 255, 0.72), 0 -8px 26px rgba(32, 26, 18, 0.08)',
-        transform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
-        WebkitTransform: isHidden ? 'translateY(calc(100% + 50px))' : 'translateY(0)',
-        transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease'
       }}
     >
       <div className="max-w-md mx-auto flex items-center justify-around relative z-10">
@@ -275,22 +275,22 @@ export function GuestTabBar({
                 isComusTrigger
                   ? 'text-[#8B6220] font-bold'
                   : isActive
-                    ? 'text-[#D4AF37] font-semibold drop-shadow-[0_0_8px_rgba(212,175,55,0.3)]'
-                    : 'text-[#A8A398] hover:text-[#F5F2EB] font-normal'
+                    ? 'text-[#9E7035] font-semibold'
+                    : 'text-[#222222] hover:text-[#000000] font-normal'
               }`}
             >
               <div
                 className={`transition-all duration-300 flex items-center justify-center relative ${
                   isComusTrigger
-                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#262420] to-[#1D1B18] backdrop-blur-md border-[1.5px] border-[#D4AF37] text-[#D4AF37] shadow-[0_4px_14px_rgba(212,175,55,0.25),inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7]/70 via-[#F5E6C8]/65 to-[#E2C285]/60 backdrop-blur-md border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.28),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                     : isActive
-                      ? 'w-11 h-11 rounded-full ottoman-tab-active backdrop-blur-md text-[#D4AF37]'
-                      : 'w-10 h-10 text-[#A8A398]'
+                      ? 'w-11 h-11 rounded-full bg-white/38 backdrop-blur-md border-[1.5px] border-[rgba(224,184,102,0.68)] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
+                      : 'w-10 h-10 text-[#1E1E1E]'
                 }`}
               >
                 {isComusTrigger && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#4E8B62] ring-2 ring-[#1D1B18] shadow-[0_0_8px_#4E8B62] animate-pulse"
+                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#F5F2EC] animate-pulse"
                     aria-hidden="true"
                   />
                 )}
