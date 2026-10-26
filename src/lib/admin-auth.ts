@@ -14,13 +14,22 @@ import { auth } from './firebase';
  */
 export async function adminLogin(
   email: string,
-  password: string
-): Promise<{ success: boolean; email?: string; name?: string; role?: string; customToken?: string; error?: string }> {
+  password: string,
+  totpCode?: string
+): Promise<{
+  success: boolean;
+  email?: string;
+  name?: string;
+  role?: string;
+  customToken?: string;
+  require2FA?: boolean;
+  error?: string;
+}> {
   try {
     const res = await fetch('/api/admin-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password, totpCode }),
     });
     return await res.json();
   } catch {

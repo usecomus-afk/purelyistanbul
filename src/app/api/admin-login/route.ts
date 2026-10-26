@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getAdminAuthOrNull } from '@/lib/firebase-admin';
+import { getAdminAuthOrNull, getAdminDbOrNull } from '@/lib/firebase-admin';
+import { verifyTOTP } from '@/lib/totp';
 
 /**
- * Cockpit admin girişini onaylar VE (Admin SDK yapılandırılmışsa) `role: 'admin'`
- * custom claim'ine sahip bir Firebase custom token üretir. İstemci bu token ile
- * signInWithCustomToken() çağırarak aynı oturumda hem cockpit'e hem de
- * firestore.rules'ın isAdmin() koluna erişim kazanır — ekstra bir giriş gerekmez.
+ * Cockpit & usepurelydashboard admin girişini onaylar.
+ * Google Authenticator (TOTP) aktifse 2FA kodunu doğrular.
+ * Onay sonrasında Firebase admin custom token döner.
  */
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, totpCode } = await req.json();
 
     const expectedEmail = (process.env.ADMIN_EMAIL || 'anilaslan@usecomus.com').trim().toLowerCase();
     const expectedPassword = process.env.ADMIN_PASSWORD || 'Camille+1618';
@@ -21,6 +21,48 @@ export async function POST(req: Request) {
 
     if (!isMatch) {
       return NextResponse.json({ success: false, error: 'E-posta veya şifre hatalı.' }, { status: 401 });
+    }
+
+    // --- Google Authenticator (TOTP 2FA Kontrolü) ---
+    let activeSecret: string | null = process.env.ADMIN_TOTP_SECRET?.trim() || null;
+    let is2FAEnabled = Boolean(activeSecret);
+
+    if (!activeSecret) {
+      const db = getAdminDbOrNull();
+      if (db) {
+        try {
+          const doc = await db.collection('system_security').doc('admin_2fa').get();
+          if (doc.exists) {
+            const data = doc.data();
+            if (data?.enabled && data?.secret) {
+              activeSecret = data.secret;
+              is2FAEnabled = true;
+            }
+          }
+        } catch (err) {
+          console.warn('[admin-login] 2FA Firestore okuma hatası:', err);
+        }
+      }
+    }
+
+    if (is2FAEnabled && activeSecret) {
+      const code = (totpCode ?? '').toString().trim();
+      if (!code) {
+        return NextResponse.json({
+          success: false,
+          require2FA: true,
+          error: 'Lütfen Google Authenticator uygulamanızdaki 6 haneli doğrulama kodunu giriniz.',
+        }, { status: 403 });
+      }
+
+      const isValidTOTP = verifyTOTP(code, activeSecret, 1);
+      if (!isValidTOTP) {
+        return NextResponse.json({
+          success: false,
+          require2FA: true,
+          error: 'Girilen 6 haneli Google Authenticator kodu geçersiz veya süresi dolmuş.',
+        }, { status: 401 });
+      }
     }
 
     let customToken: string | undefined;
@@ -57,9 +99,10 @@ export async function POST(req: Request) {
       email: expectedEmail,
       name: 'Anıl Aslan',
       role: 'pilot',
-      customToken
+      customToken,
     });
-  } catch {
+  } catch (err) {
+    console.error('[admin-login] POST exception:', err);
     return NextResponse.json({ success: false, error: 'Geçersiz istek.' }, { status: 400 });
   }
 }

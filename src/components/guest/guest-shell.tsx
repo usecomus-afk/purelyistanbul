@@ -56,7 +56,7 @@ export function GuestShell({ children }: { children: React.ReactNode }) {
       id="app"
       className={
         appMode
-          ? 'w-full max-w-[100vw] min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y text-slate-900 antialiased relative box-border'
+          ? 'ottoman-theme w-full max-w-[100vw] min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y text-[#F5F2EB] bg-[#151310] antialiased relative box-border'
           : 'w-full max-w-[100vw] min-h-screen overflow-x-clip antialiased box-border'
       }
     >

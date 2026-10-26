@@ -394,9 +394,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
   };
 
   return (
-    <div className="w-full max-w-[100vw] overflow-x-clip overscroll-x-none touch-pan-y box-border text-[#221F1C] relative">
+    <div className="ottoman-theme w-full max-w-[100vw] min-h-[100dvh] overflow-x-clip overscroll-x-none touch-pan-y box-border text-[#F5F2EB] bg-[#151310] relative">
       {/* Global Fixed Background — Subtle Sepia / Warm-Tinted Soft-Focus Istanbul Mosque Silhouette */}
-      <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#F6F1E7]">
+      <div className="fixed -top-[70px] -bottom-[50px] left-0 right-0 z-0 pointer-events-none overflow-hidden bg-[#151310]">
         <Image 
           src="/images/light-mosque-bg.jpg" 
           alt="Historic Istanbul Mosque Silhouette"
@@ -404,9 +404,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
           priority
           quality={90}
           unoptimized
-          className="object-cover object-center scale-[1.01] blur-[2px] sepia-[0.18] saturate-[0.88] brightness-[1.01] contrast-[0.98]"
+          className="object-cover object-center scale-[1.01] blur-[3px] brightness-[0.22] contrast-[1.15] saturate-[0.7] opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/68 via-[#F5EFE6]/14 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#151310] via-[#151310]/70 to-[#151310]" />
       </div>
 
       <div className="relative z-10 w-full max-w-full overflow-x-clip overscroll-x-none touch-pan-y box-border">

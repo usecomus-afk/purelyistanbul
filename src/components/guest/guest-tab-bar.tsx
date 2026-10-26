@@ -18,7 +18,7 @@ interface GuestTabBarProps {
  * 3-Column Heritage Hotel Building SVG Icon matching reference bottom bar "Hotel"
  */
 function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#A67C46" : "currentColor";
+  const strokeColor = active ? "#D4AF37" : "#A8A398";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -89,7 +89,7 @@ function LuxuryHotelBuildingIcon({ active }: { active: boolean }) {
  * Multi-line Nautilus / Vortex Spiral SVG Icon for comusAI matching reference bottom bar
  */
 function LuxurySpiralIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#7D5E2A" : "#8B6220";
+  const strokeColor = active ? "#D4AF37" : "#A8A398";
   return (
     <svg
       viewBox="0 0 28 28"
@@ -131,7 +131,7 @@ function LuxurySpiralIcon({ active }: { active: boolean }) {
  * Clean Circular Info '(i)' SVG Icon for Guide matching reference bottom bar
  */
 function LuxuryGuideInfoIcon({ active }: { active: boolean }) {
-  const strokeColor = active ? "#A67C46" : "currentColor";
+  const strokeColor = active ? "#D4AF37" : "#A8A398";
   return (
     <svg
       viewBox="0 0 24 24"
@@ -275,22 +275,22 @@ export function GuestTabBar({
                 isComusTrigger
                   ? 'text-[#8B6220] font-bold'
                   : isActive
-                    ? 'text-[#9E7035] font-semibold'
-                    : 'text-[#222222] hover:text-[#000000] font-normal'
+                    ? 'text-[#D4AF37] font-semibold drop-shadow-[0_0_8px_rgba(212,175,55,0.3)]'
+                    : 'text-[#A8A398] hover:text-[#F5F2EB] font-normal'
               }`}
             >
               <div
                 className={`transition-all duration-300 flex items-center justify-center relative ${
                   isComusTrigger
-                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#FFFDF7]/70 via-[#F5E6C8]/65 to-[#E2C285]/60 backdrop-blur-md border-[1.5px] border-[#C59B38] text-[#8B6220] shadow-[0_4px_14px_rgba(166,124,70,0.28),inset_0_1px_2px_rgba(255,255,255,0.9)]'
+                    ? 'w-11 h-11 rounded-full bg-gradient-to-br from-[#262420] to-[#1D1B18] backdrop-blur-md border-[1.5px] border-[#D4AF37] text-[#D4AF37] shadow-[0_4px_14px_rgba(212,175,55,0.25),inset_0_1px_1px_rgba(255,255,255,0.1)]'
                     : isActive
-                      ? 'w-11 h-11 rounded-full bg-white/38 backdrop-blur-md border-[1.5px] border-[rgba(224,184,102,0.68)] text-[#A67C46] shadow-[0_5px_12px_rgba(60,45,20,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
-                      : 'w-10 h-10 text-[#1E1E1E]'
+                      ? 'w-11 h-11 rounded-full ottoman-tab-active backdrop-blur-md text-[#D4AF37]'
+                      : 'w-10 h-10 text-[#A8A398]'
                 }`}
               >
                 {isComusTrigger && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#F5F2EC] animate-pulse"
+                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#4E8B62] ring-2 ring-[#1D1B18] shadow-[0_0_8px_#4E8B62] animate-pulse"
                     aria-hidden="true"
                   />
                 )}

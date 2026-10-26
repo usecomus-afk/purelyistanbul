@@ -33,6 +33,7 @@ import { ListingEditorModal } from "@/components/dashboard/listing-editor-modal"
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
+import { Admin2FASetupModal } from "@/components/dashboard/admin-2fa-setup-modal";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -291,6 +292,9 @@ export default function UsePurelyDashboardPage() {
   const [isAuth, setIsAuth] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [totpCode, setTotpCode] = useState("");
+  const [require2FA, setRequire2FA] = useState(false);
+  const [showSetupModal, setShowSetupModal] = useState(false);
   const [authError, setAuthError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -506,15 +510,25 @@ export default function UsePurelyDashboardPage() {
     e.preventDefault();
     setIsLoggingIn(true);
     setAuthError("");
-    const result = await adminLogin(email, password);
+    const result = await adminLogin(email, password, totpCode);
     setIsLoggingIn(false);
+
+    if (result.require2FA) {
+      setRequire2FA(true);
+      setAuthError(
+        result.error ||
+          "Lütfen telefonunuzdaki Google Authenticator uygulamasından 6 haneli kodu giriniz."
+      );
+      toast.info("Google Authenticator 2FA doğrulaması gerekiyor.");
+      return;
+    }
 
     if (!result.success) {
       setAuthError(
         result.error ||
           "Hatalı yönetici e-postası veya şifre. Lütfen kontrol ediniz."
       );
-      toast.error("Giriş yapılamadı.");
+      toast.error(result.error || "Giriş yapılamadı.");
       return;
     }
 
@@ -1006,6 +1020,33 @@ export default function UsePurelyDashboardPage() {
                 />
               </div>
 
+              {require2FA && (
+                <div className="p-3.5 rounded-xl bg-[#F4F9F1] border border-[#C2D8B8] space-y-1.5 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-[#2D5A1E] flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#3B6D11]" />
+                      <span>Google Authenticator (6 Haneli Kod)</span>
+                    </label>
+                    <span className="text-[10px] text-[#6B6B55] uppercase tracking-wider font-mono">2FA Aktif</span>
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    required
+                    autoFocus
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="123456"
+                    className="w-full text-center tracking-[0.3em] font-mono font-bold text-lg rounded-xl border border-[#A4C99A] bg-white px-3 py-2 text-[#2C2C1A] focus:outline-none focus:ring-2 focus:ring-[#3B6D11]/30 focus:border-[#3B6D11]"
+                  />
+                  <p className="text-[11px] text-[#556B48] leading-tight">
+                    Telefonunuzdaki Google Authenticator uygulamasında üretilen güncel kodu girin.
+                  </p>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isLoggingIn}
@@ -1013,8 +1054,27 @@ export default function UsePurelyDashboardPage() {
               >
                 {isLoggingIn
                   ? "Giriş Yapılıyor..."
+                  : require2FA
+                  ? "2FA Doğrula ve Giriş Yap →"
                   : "Yönetim Paneline Giriş Yap →"}
               </button>
+
+              <div className="text-center pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!email || !password) {
+                      setAuthError("Lütfen önce yukarıdaki E-Posta ve Güvenlik Şifrenizi doldurunuz.");
+                      return;
+                    }
+                    setShowSetupModal(true);
+                  }}
+                  className="text-xs text-[#3B6D11] hover:underline hover:text-[#2D5A1E] font-medium inline-flex items-center gap-1 transition"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>Google Authenticator Kur / QR Kodu Görüntüle</span>
+                </button>
+              </div>
             </form>
 
             <div className="pt-4 border-t border-[#C8C4B0]/60 flex items-center justify-between text-xs text-[#6B6B55]">
@@ -1029,6 +1089,20 @@ export default function UsePurelyDashboardPage() {
         <footer className="max-w-5xl w-full mx-auto text-center text-xs text-[#6B6B55]">
           © 2026 <span translate="no" className="notranslate">purelyİstanbul</span> • Web, iOS App &amp; PWA Merkezi Yönetim
         </footer>
+
+        {/* Google Authenticator (2FA) Kurulum Modalı */}
+        <Admin2FASetupModal
+          email={email}
+          password={password}
+          isOpen={showSetupModal}
+          onClose={() => setShowSetupModal(false)}
+          onSuccess={() => {
+            setShowSetupModal(false);
+            setRequire2FA(true);
+            setTotpCode("");
+            toast.success("Google Authenticator başarıyla bağlandı. Şimdi 6 haneli kodunuzla giriş yapabilirsiniz.");
+          }}
+        />
       </div>
     );
   }
