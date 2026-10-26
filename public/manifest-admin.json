@@ -1,0 +1,42 @@
+{
+  "name": "Purely İstanbul — Operasyon & Yönetim Paneli",
+  "short_name": "Purely Admin",
+  "description": "Purely Istanbul Master Operasyon, İlan, Rezervasyon & Finans Yönetim Paneli",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F6F1E8",
+  "theme_color": "#3B6D11",
+  "categories": [
+    "business",
+    "management",
+    "travel"
+  ],
+  "icons": [
+    {
+      "src": "/icons/app/icon-192.webp",
+      "type": "image/webp",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/app/icon-512.webp",
+      "type": "image/webp",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    }
+  ]
+}

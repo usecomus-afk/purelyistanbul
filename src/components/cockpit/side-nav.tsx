@@ -30,8 +30,7 @@ export function CockpitSideNav({ isOpen, onClose }: CockpitSideNavProps) {
 
   // Xenios Proje Yöneticisi Master Admin Menüsü
   const navItems = [
-    { href: "/usepurelydashboard", label: "Sade Yönetim Paneli (Yeni)", icon: Sparkles, badge: "Comus" },
-    { href: "/admin", label: "İlan, İşletme & Mülk Yönetimi", icon: Lock, badge: "Admin" },
+    { href: "/admin", label: "Merkezi Yönetim Paneli (Admin PWA)", icon: Sparkles, badge: "PWA" },
     { href: "/hotels", label: "Partner Oteller & Tesisler", icon: Building2 },
     { href: "/host-applications", label: "Host Başvuruları (Marketplace)", icon: Building2, badge: "Web" },
     { href: "/listing-approvals", label: "İlan Onayları (Marketplace)", icon: ImageOff, badge: "Web" },

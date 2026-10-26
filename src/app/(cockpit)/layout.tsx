@@ -57,11 +57,11 @@ export default function CockpitLayout({
 
           <div className="flex items-center gap-1.5 shrink-0">
             <Link
-              href="/usepurelydashboard"
+              href="/admin"
               className="px-2.5 py-1.5 bg-[#3B6D11] text-white rounded-lg text-[11px] font-medium flex items-center gap-1 shadow-xs whitespace-nowrap"
             >
               <Sparkles className="w-3 h-3 shrink-0" />
-              <span>Sade Panel</span>
+              <span>Admin PWA</span>
             </Link>
             <button
               onClick={handleLogout}
@@ -82,10 +82,10 @@ export default function CockpitLayout({
                 purelyİstanbul Yönetim Masası
               </span>
               <Link
-                href="/usepurelydashboard"
+                href="/admin"
                 className="text-[11px] px-3 py-1 rounded-lg bg-[#EAF3DE] text-[#3B6D11] font-medium border border-[#C0DD97] hover:bg-[#3B6D11] hover:text-white transition"
               >
-                ✨ Yeni Sade Dashboard&apos;a Geç (/usepurelydashboard) →
+                ✨ Merkezi Yönetim Paneli (Admin PWA) →
               </Link>
             </div>
 

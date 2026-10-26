@@ -62,6 +62,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/usepurelydashboard',
+        destination: '/admin',
+        permanent: true,
+      },
+      {
         source: '/marketplace/legal/gizlilik-bildirimi',
         destination: '/marketplace/legal/privacy-policy',
         permanent: true,
