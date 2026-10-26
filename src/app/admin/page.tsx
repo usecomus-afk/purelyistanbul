@@ -317,53 +317,6 @@ export default function AdminPage() {
   const [channelSubTab, setChannelSubTab] = useState<ChannelSubTab>("matrix");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // PWA Install & Standalone State
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isStandalone, setIsStandalone] = useState(false);
-  const [showIosPwaGuide, setShowIosPwaGuide] = useState(false);
-
-  useEffect(() => {
-    // Standalone PWA kontrolü
-    if (typeof window !== "undefined") {
-      const isStandaloneMode =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone === true;
-      setIsStandalone(isStandaloneMode);
-    }
-
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-  }, []);
-
-  const handleInstallPwa = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice?.outcome === "accepted") {
-        toast.success("Purely Admin uygulaması cihazınıza yüklendi!");
-      }
-      setDeferredPrompt(null);
-    } else {
-      const isIos =
-        typeof navigator !== "undefined" &&
-        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as any).MSStream;
-      if (isIos) {
-        setShowIosPwaGuide(true);
-      } else {
-        toast.info(
-          "Yönetim paneli tarayıcınızdan 'Ana Ekrana Ekle' seçeneğiyle doğrudan uygulama olarak yüklenebilir.",
-          { duration: 4000 }
-        );
-      }
-    }
-  };
-
   // Store & Firestore data
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [suppliers, setSuppliers] = useState<SupplierPartner[]>([]);
@@ -1328,13 +1281,8 @@ export default function AdminPage() {
           </Link>
           <div className="flex items-center gap-1.5 mt-0.5">
             <p className="text-[11px] text-[#6B6B55] tracking-wide">
-              Merkezi Operasyon &amp; PWA
+              Merkezi Operasyon Paneli
             </p>
-            {isStandalone && (
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#EAF3DE] text-[#3B6D11] border border-[#C0DD97]">
-                PWA
-              </span>
-            )}
           </div>
         </div>
         {mobileNavOpen && (
@@ -1358,13 +1306,6 @@ export default function AdminPage() {
         >
           <Plus className="w-4 h-4" />
           <span>Yeni İlan Ekle</span>
-        </button>
-        <button
-          onClick={handleInstallPwa}
-          className="w-full py-2 px-3 rounded-xl border border-[#C0DD97] bg-[#EAF3DE] hover:bg-[#dcebc9] text-[#3B6D11] text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>{isStandalone ? "Uygulama Yüklü (PWA)" : "Cihaza Yükle (PWA)"}</span>
         </button>
       </div>
 
@@ -4194,44 +4135,6 @@ export default function AdminPage() {
             experience={slotManagingExperience}
             onClose={() => setSlotManagingExperience(null)}
           />
-        )}
-
-        {/* iOS Safari PWA Kurulum Rehberi Modalı */}
-        {showIosPwaGuide && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="comus-card w-full max-w-sm p-6 space-y-4 border-2 border-[#3B6D11] text-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#EAF3DE] border border-[#C0DD97] text-[#3B6D11] mx-auto flex items-center justify-center">
-                <Smartphone className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="comus-serif text-lg text-[#2C2C1A]">iPhone &amp; iPad PWA Kurulumu</h4>
-                <p className="text-xs text-[#6B6B55] mt-1 leading-relaxed">
-                  Purely Admin yönetim panelini ana ekranınıza uygulama olarak eklemek için:
-                </p>
-              </div>
-              <div className="text-left text-xs bg-[#F6F1E8] p-3.5 rounded-xl border border-[#C8C4B0] space-y-2 text-[#2C2C1A]">
-                <div className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#3B6D11] text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
-                  <span>Safari alt çubuğundaki <strong>&ldquo;Paylaş&rdquo;</strong> (kare içinden yukarı ok) simgesine dokunun.</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#3B6D11] text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
-                  <span>Menüyü aşağı kaydırıp <strong>&ldquo;Ana Ekrana Ekle&rdquo;</strong> seçeneğine tıklayın.</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#3B6D11] text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
-                  <span>Sağ üstteki <strong>&ldquo;Ekle&rdquo;</strong> butonuna basarak kurulumu tamamlayın.</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowIosPwaGuide(false)}
-                className="comus-btn-primary w-full text-xs py-2.5 justify-center"
-              >
-                Anladım
-              </button>
-            </div>
-          </div>
         )}
 
         {/* Mobile Bottom Navigation Bar for PWA & iOS App */}
