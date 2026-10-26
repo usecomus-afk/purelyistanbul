@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import { XeniosStore } from '@/lib/store';
 import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate } from '@/lib/types';
 import {
@@ -97,14 +98,17 @@ export default function HotelRoomsPage() {
     const wifiSsid = roomObj?.wifiSsid || `${currentHotel.name.split(' ')[0]}_Guest`;
     const wifiPass = roomObj?.wifiPass || 'purely2026!';
     const roomType = roomObj?.type || 'Konaklama Birimi';
-    const address = currentHotel.address || `${currentHotel.district || 'Sultanahmet'}, İstanbul`;
-    const lat = currentHotel.coords?.lat || 41.0054;
-    const lng = currentHotel.coords?.lng || 28.9768;
-    const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
-    const purelyLink = `https://xenios.usecomus.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(roomNum)}`;
+    const address =
+      roomObj?.locationAddress ||
+      currentHotel.address ||
+      `${currentHotel.district || 'Sultanahmet'}, İstanbul`;
+    const lat = roomObj?.coords?.lat || currentHotel.coords?.lat || 41.0054;
+    const lng = roomObj?.coords?.lng || currentHotel.coords?.lng || 28.9768;
+    const mapsLink = roomObj?.mapsUrl || `https://maps.google.com/?q=${lat},${lng}`;
+    const purelyLink = `https://purelyistanbul.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(roomNum)}`;
     const stayTimeInfo =
       checkinOutNote ||
-      `Giriş: 14:00 · Çıkış: ${currentHotel.checkoutTime || '12:00'}`;
+      `Giriş: 14:00 · Çıkış: ${currentHotel.checkoutTime || '12:00'}${roomObj?.doorCode ? ` | Giriş Şifresi: ${roomObj.doorCode}` : ''}`;
 
     return rawTemplate
       .replace(/\{misafir_adi\}/g, guestName || 'Değerli Misafirimiz')
@@ -201,10 +205,11 @@ export default function HotelRoomsPage() {
     const roomObj = (currentHotel.rooms || []).find((r) => r.number === whatsappModalRoom);
     const wifiSsid = roomObj?.wifiSsid || `${currentHotel.name.split(' ')[0]}_Guest`;
     const wifiPass = roomObj?.wifiPass || 'purely2026!';
-    const lat = currentHotel.coords?.lat || 41.0054;
-    const lng = currentHotel.coords?.lng || 28.9768;
-    const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
-    const purelyLink = `https://xenios.usecomus.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(whatsappModalRoom)}`;
+    const unitAddress = roomObj?.locationAddress || currentHotel.address || 'İstanbul';
+    const lat = roomObj?.coords?.lat || currentHotel.coords?.lat || 41.0054;
+    const lng = roomObj?.coords?.lng || currentHotel.coords?.lng || 28.9768;
+    const mapsLink = roomObj?.mapsUrl || `https://maps.google.com/?q=${lat},${lng}`;
+    const purelyLink = `https://purelyistanbul.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(whatsappModalRoom)}`;
     const currentInfo = roomStates[whatsappModalRoom];
     const stayTimeInfo =
       currentInfo?.checkout || `Giriş: 14:00 · Çıkış: ${currentHotel.checkoutTime || '12:00'}`;
@@ -217,11 +222,12 @@ export default function HotelRoomsPage() {
         `*${currentHotel.name}* — *Birim ${whatsappModalRoom}* rezervasyonunuz onaylanmıştır.`,
         '',
         `⏰ *Giriş / Çıkış:* ${stayTimeInfo}`,
+        ...(roomObj?.doorCode ? [`🔑 *Kapı / Giriş Şifresi:* ${roomObj.doorCode}`] : []),
         `📶 *Wi-Fi:* ${wifiSsid} | *Şifre:* ${wifiPass}`,
-        `📍 *Konum:* ${currentHotel.address || 'İstanbul'} (${mapsLink})`,
+        `📍 *Birim Konumu:* ${unitAddress} (${mapsLink})`,
         '',
         `🌟 *Purely Istanbul Dijital Asistanınız:*`,
-        `Birim içi siparişleriniz ve İstanbul deneyimleri için size özel bağlantınız:`,
+        `Birim içi siparişleriniz, Comus AI ev rehberi ve İstanbul deneyimleri için size özel bağlantınız:`,
         `👉 ${purelyLink}`,
       ].join('\n')
     );
@@ -232,10 +238,11 @@ export default function HotelRoomsPage() {
     const roomObj = (currentHotel.rooms || []).find((r) => r.number === whatsappModalRoom);
     const wifiSsid = roomObj?.wifiSsid || `${currentHotel.name.split(' ')[0]}_Guest`;
     const wifiPass = roomObj?.wifiPass || 'purely2026!';
-    const lat = currentHotel.coords?.lat || 41.0054;
-    const lng = currentHotel.coords?.lng || 28.9768;
-    const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
-    const purelyLink = `https://xenios.usecomus.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(whatsappModalRoom)}`;
+    const unitAddress = roomObj?.locationAddress || currentHotel.address || 'İstanbul';
+    const lat = roomObj?.coords?.lat || currentHotel.coords?.lat || 41.0054;
+    const lng = roomObj?.coords?.lng || currentHotel.coords?.lng || 28.9768;
+    const mapsLink = roomObj?.mapsUrl || `https://maps.google.com/?q=${lat},${lng}`;
+    const purelyLink = `https://purelyistanbul.com/stay/${encodeURIComponent(currentHotel.id)}/${encodeURIComponent(whatsappModalRoom)}`;
     const currentInfo = roomStates[whatsappModalRoom];
     const stayTimeInfo =
       currentInfo?.checkout || `Giriş: 14:00 · Çıkış: ${currentHotel.checkoutTime || '12:00'}`;
@@ -244,11 +251,11 @@ export default function HotelRoomsPage() {
     if (snippetType === 'wifi') {
       snippet = `\n📶 *Wi-Fi Ağı:* ${wifiSsid} | *Şifre:* ${wifiPass}`;
     } else if (snippetType === 'location') {
-      snippet = `\n📍 *Adres & Konum:* ${currentHotel.address || 'İstanbul'}\n🗺️ *Harita:* ${mapsLink}`;
+      snippet = `\n📍 *Birim Adresi & Konum:* ${unitAddress}\n🗺️ *Harita:* ${mapsLink}`;
     } else if (snippetType === 'checkin') {
-      snippet = `\n⏰ *Giriş / Çıkış Bilgisi:* ${stayTimeInfo}`;
+      snippet = `\n⏰ *Giriş / Çıkış Bilgisi:* ${stayTimeInfo}${roomObj?.doorCode ? `\n🔑 *Giriş Şifresi:* ${roomObj.doorCode}` : ''}`;
     } else if (snippetType === 'purely') {
-      snippet = `\n🌟 *Purely Istanbul Dijital Concierge & Şehir Rehberi:*\nKonaklamanız boyunca birim içi siparişlerinizi tek tıkla iletmek ve İstanbul deneyimlerini keşfetmek için:\n👉 ${purelyLink}`;
+      snippet = `\n🌟 *Purely Istanbul Dijital Concierge & Comus AI Ev Rehberi:*\nKonaklamanız boyunca birim içi siparişlerinizi tek tıkla iletmek ve İstanbul deneyimlerini keşfetmek için:\n👉 ${purelyLink}`;
     }
 
     setWhatsappMessageBody((prev) => `${prev.trim()}\n${snippet.trim()}`);
@@ -393,17 +400,34 @@ export default function HotelRoomsPage() {
 
     setIsSendingWhatsapp(true);
     try {
-      const res = await fetch('/api/whatsapp/send-reservation-confirm', {
+      const roomObj = (currentHotel.rooms || []).find((r) => r.number === whatsappModalRoom);
+      let unitLat = roomObj?.coords?.lat;
+      let unitLng = roomObj?.coords?.lng;
+      if ((!unitLat || !unitLng) && roomObj?.mapsUrl) {
+        const m = roomObj.mapsUrl.match(/(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})/);
+        if (m) {
+          unitLat = parseFloat(m[1]);
+          unitLng = parseFloat(m[2]);
+        }
+      }
+      const resolvedLat = unitLat || currentHotel.coords?.lat || 41.0054;
+      const resolvedLng = unitLng || currentHotel.coords?.lng || 28.9768;
+      const resolvedAddress =
+        roomObj?.locationAddress ||
+        currentHotel.address ||
+        `${currentHotel.district}, İstanbul`;
+
+      const res = await authFetch('/api/whatsapp/send-reservation-confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: cleanPhone,
           message: cleanBody,
           sendLocationPin,
-          latitude: currentHotel.coords?.lat || 41.0054,
-          longitude: currentHotel.coords?.lng || 28.9768,
-          locationName: currentHotel.name,
-          locationAddress: currentHotel.address || `${currentHotel.district}, İstanbul`,
+          latitude: resolvedLat,
+          longitude: resolvedLng,
+          locationName: `${currentHotel.name} — Birim ${whatsappModalRoom}`,
+          locationAddress: resolvedAddress,
         }),
       });
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/api-auth';
 import { getAdminDbOrNull } from '@/lib/firebase-admin';
 import { experienceToMarketplaceListing, hotelToMarketplaceListing } from '@/lib/marketplace/seed-listings';
 import { normalizeCategoryLabel, type CategoryConfig } from '@/lib/marketplace/categories';
@@ -13,6 +14,9 @@ function stripUndefined<T extends Record<string, any>>(obj: T): T {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { action, payload } = body || {};

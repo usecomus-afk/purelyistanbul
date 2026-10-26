@@ -1,6 +1,10 @@
+import { rateLimit } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'dispatch', 60, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const { type, recipient, title, hotelName, roomNumber, guestName, guestContact, details, timestamp } = body;

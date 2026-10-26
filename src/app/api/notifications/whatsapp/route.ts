@@ -1,3 +1,4 @@
+import { rateLimit, requireStaff } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import {
   WhatsAppService,
@@ -6,6 +7,13 @@ import {
 } from '@/services/whatsappService';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'wa-notify', 30, 60 * 1000);
+  if (limited) return limited;
+
+  // Yalnızca otel personeli / yönetici WhatsApp bildirimi tetikleyebilir.
+  const staff = await requireStaff(req);
+  if (staff.denied) return staff.denied;
+
   try {
     const body = await req.json();
     const {

@@ -1,3 +1,4 @@
+import { rateLimit } from '@/lib/api-auth';
 export const maxDuration = 60;
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
@@ -35,6 +36,9 @@ function resolveGeminiApiKey(): string {
 }
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'ai-chat', 30, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body: ComusAiChatRequest = await req.json();
     const {

@@ -1,7 +1,11 @@
+import { rateLimit } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { KbsService, parsePassportMRZ } from '@/services/kbsService';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'kbs-ocr', 20, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const { image, base64Image, mimeType = 'image/jpeg', mrzText } = body;

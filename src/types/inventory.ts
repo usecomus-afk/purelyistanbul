@@ -50,10 +50,15 @@ export interface ListingSlot {
   listing_id: string;
   start_time: string;          // ISO Date
   end_time: string;            // ISO Date
+  date?: string;               // YYYY-MM-DD
+  time_slot?: string;          // HH:mm
   capacity: number;            // Toplam kontenjan
   booked_count: number;        // Kesinleşmiş satılan koltuk sayısı
   locked_count: number;        // Aktif ödeme aşamasındaki geçici kilitler
   available_spots: number;     // capacity - (booked_count + locked_count)
+  status?: 'open' | 'closed' | 'sold_out';
+  closed_reason?: string;
+  external_source?: 'none' | 'airbnb' | 'booking' | 'tripadvisor' | 'octo' | 'manual';
   version: number;             // Optimistic concurrency versiyonu
   updated_at: string;
 }

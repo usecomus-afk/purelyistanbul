@@ -1,7 +1,11 @@
+import { rateLimit } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { NotificationDispatcher, SmartNotificationRequest } from '@/services/notificationDispatcher';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'push', 60, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = (await req.json()) as SmartNotificationRequest;
 

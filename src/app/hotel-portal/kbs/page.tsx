@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import { XeniosStore } from '@/lib/store';
 import { ServiceRequest } from '@/lib/types';
 import { KbsGuestRecord, KbsModuleSettings } from '@/types/kbs';
@@ -218,7 +219,7 @@ export default function HotelKbsPage() {
   const fetchRecords = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/kbs/submit?hotelId=${currentHotel.id}`);
+      const res = await authFetch(`/api/kbs/submit?hotelId=${currentHotel.id}`);
       if (res.ok) {
         const data = await res.json();
         mergeAndSetRecords(data.records || []);
@@ -353,7 +354,7 @@ export default function HotelKbsPage() {
 
   const handleTriggerKvkkPurge = async () => {
     try {
-      const res = await fetch('/api/kbs/cleanup', { method: 'POST' });
+      const res = await authFetch('/api/kbs/cleanup', { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         toast.success(`KVKK 30-Günlük Veri İmhası Tamamlandı (${data.purgedCount || 0} kayıt maskelendi).`);

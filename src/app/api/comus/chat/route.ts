@@ -1,3 +1,4 @@
+import { rateLimit } from '@/lib/api-auth';
 import { GoogleGenAI, Type, type FunctionDeclaration } from '@google/genai';
 import { InRoomServiceItem } from '@/lib/types';
 import { COMUS_PERSONA_PROMPT } from '@/prompts/comusSystemPrompt';
@@ -13,6 +14,17 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
+export interface UnitHouseGuideContext {
+  wifiSsid?: string;
+  wifiPass?: string;
+  locationAddress?: string;
+  mapsUrl?: string;
+  doorCode?: string;
+  applianceGuide?: string;
+  houseGuideNotes?: string;
+  checkoutTime?: string;
+}
+
 export interface PropertyLiveContext {
   propertyName: string;       // e.g. "Galata Port Suites" or "Old City Heritage Hotel"
   propertyType: 'hotel' | 'apartment'; // Determines tone and wording
@@ -26,6 +38,7 @@ export interface PropertyLiveContext {
     price?: string;
   }>;
   disabledServices: string[]; // e.g. ["dry_cleaning", "extra_cleaning"]
+  unitGuide?: UnitHouseGuideContext;
 }
 
 /**
@@ -102,9 +115,32 @@ Sen Comus'sun, ${liveContext.propertyName} adlı tesisin özel dijital asistanı
 
 3. DİNAMİK VE SPESİFİK YANIT ÜRETİMİ: Sorulara uzun, ezberlenmiş şablon listelerle yanıt verme. Sadece kullanıcının anlık talebine ve ${liveContext.district} bölgesinin dinamiklerine uygun, doğrudan hedefe yönelik ve kısa cevaplar üret.
 
-4. OTEL İÇİ TALEPLERİN ÖNCELİĞİ: Misafirlerin havlu, temizlik, arıza veya ${hotelServices} gibi otel içi operasyonel talepleri her zaman en yüksek önceliğe sahiptir. Bu tür bir talep geldiğinde turistik öneri modüllerini tamamen devre dışı bırak ve sadece ilgili otel departmanına bilgi verildiğini net bir şekilde teyit et.`;
+4. OTEL İÇİ TALEPLERİN ÖNCELİĞİ: Misafirlerin havlu, temizlik, arıza veya ${hotelServices} gibi otel içi operasyonel talepleri her zaman en yüksek önceliğe sahiptir. Bu tür bir talep geldiğinde turistik öneri modüllerini tamamen devre dışı bırak ve sadece ilgili otel departmanına bilgi verildiğini net bir şekilde teyit et.
 
-  return `${COMUS_PERSONA_PROMPT}\n\n${dynamicInstruction}\n\n${coreRules}\n\n[PUBLISHED LISTINGS — şu an yayında olan ilanlar]\n${publishedListingsText}\n\n[LIVE PROPERTY SNAPSHOT: ${JSON.stringify(liveContext)}]`;
+5. BİRİM ÖZEL EV REHBERİ & CİHAZ KULLANIM BİLGİ BANKASI (UNIT HOUSE GUIDE): Misafir konakladığı birimin (${liveContext.unitName}) Wi-Fi şifresini, açık adresini/konumunu, kapı/anahtar kutusu şifresini, elektrikli eşya kullanımını (klima, kombi/ısıtma, sıcak su, çamaşır/bulaşık makinesi, kahve makinesi, TV, sigorta kutusu) veya ev kurallarını (çöp saatleri, yedek havlu/çarşaf yeri, çıkış saati) sorarsa, aşağıdaki [UNIT HOUSE GUIDE] ve [LIVE PROPERTY SNAPSHOT] içindeki \`unitGuide\` verilerini kullanarak doğrudan, net ve yardımcı bir ev rehberi olarak yanıt ver.`;
+
+  const ug = liveContext.unitGuide;
+  const unitGuideBlock = ug
+    ? [
+        `[UNIT HOUSE GUIDE — ${liveContext.propertyName} / ${liveContext.unitName}]`,
+        ug.wifiSsid || ug.wifiPass
+          ? `• Wi-Fi Ağı (SSID): ${ug.wifiSsid || 'Belirtilmedi'} | Wi-Fi Şifresi: ${ug.wifiPass || 'Belirtilmedi'}`
+          : '',
+        ug.locationAddress
+          ? `• Birim Açık Adresi & Konum: ${ug.locationAddress}${ug.mapsUrl ? ` (Harita: ${ug.mapsUrl})` : ''}`
+          : '',
+        ug.doorCode ? `• Kapı / Anahtar Kutusu Şifresi & Giriş: ${ug.doorCode}` : '',
+        ug.applianceGuide
+          ? `• Elektrikli Eşya & Cihaz Kullanımı: ${ug.applianceGuide}`
+          : '',
+        ug.houseGuideNotes ? `• Ev Bilgileri & Kurallar: ${ug.houseGuideNotes}` : '',
+        ug.checkoutTime ? `• Çıkış (Check-out) Saati: ${ug.checkoutTime}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n')
+    : '';
+
+  return `${COMUS_PERSONA_PROMPT}\n\n${dynamicInstruction}\n\n${coreRules}${unitGuideBlock ? `\n\n${unitGuideBlock}` : ''}\n\n[PUBLISHED LISTINGS — şu an yayında olan ilanlar]\n${publishedListingsText}\n\n[LIVE PROPERTY SNAPSHOT: ${JSON.stringify(liveContext)}]`;
 }
 
 /**
@@ -411,7 +447,7 @@ export async function fetchPropertyLiveContext({
     clientLiveContext?.district ||
     'İstanbul';
 
-  const rooms: Array<{ id?: string; number?: string; type?: string }> =
+  const rooms: Array<Record<string, any>> =
     Array.isArray(remoteHotel?.rooms) ? remoteHotel.rooms : [];
 
   const matchedRoom = rooms.find(
@@ -426,6 +462,27 @@ export async function fetchPropertyLiveContext({
     remoteHotel?.breakfastHours ||
     clientLiveContext?.breakfastHours ||
     undefined;
+
+  const clientUg = clientLiveContext?.unitGuide;
+  const unitGuide: UnitHouseGuideContext = {
+    wifiSsid: matchedRoom?.wifiSsid || clientUg?.wifiSsid || undefined,
+    wifiPass: matchedRoom?.wifiPass || clientUg?.wifiPass || undefined,
+    locationAddress:
+      matchedRoom?.locationAddress ||
+      clientUg?.locationAddress ||
+      remoteHotel?.address ||
+      remoteProperty?.district ||
+      undefined,
+    mapsUrl: matchedRoom?.mapsUrl || clientUg?.mapsUrl || undefined,
+    doorCode: matchedRoom?.doorCode || clientUg?.doorCode || undefined,
+    applianceGuide: matchedRoom?.applianceGuide || clientUg?.applianceGuide || undefined,
+    houseGuideNotes: matchedRoom?.houseGuideNotes || clientUg?.houseGuideNotes || undefined,
+    checkoutTime:
+      remoteHotel?.checkoutTime ||
+      (clientLiveContext as any)?.checkoutTime ||
+      clientUg?.checkoutTime ||
+      undefined,
+  };
 
   // 3. Resolve partner service toggles from Firestore `modules.inRoomServices` or client snapshot
   const remoteServices: InRoomServiceItem[] | undefined = Array.isArray(
@@ -525,6 +582,7 @@ export async function fetchPropertyLiveContext({
     district,
     activeServices,
     disabledServices: Array.from(disabledSet),
+    unitGuide,
   };
 }
 
@@ -1116,6 +1174,103 @@ async function buildToolGroundedResponse(
 • **Practical Tip:** Make sure the meter (*taksimetre*) is on, refuse flat-rate offers, and say the banknote value out loud when paying.`;
   }
 
+  // 2.5 Check if query is about Unit House Guide (Wi-Fi password, Door/Lockbox code, Unit Address/Location, Appliance Usage, or House Rules)
+  const ug = liveContext.unitGuide;
+  const isAskingUnitGuide =
+    q.includes('şifre') ||
+    q.includes('password') ||
+    q.includes('ssid') ||
+    q.includes('nasıl çalış') ||
+    q.includes('nasıl kullan') ||
+    q.includes('how to use') ||
+    q.includes('how does') ||
+    q.includes('kombi') ||
+    q.includes('boiler') ||
+    q.includes('sıcak su') ||
+    q.includes('hot water') ||
+    q.includes('bulaşık') ||
+    q.includes('dishwasher') ||
+    q.includes('kahve makine') ||
+    q.includes('coffee machine') ||
+    q.includes('sigorta') ||
+    q.includes('fuse') ||
+    q.includes('kapı şifre') ||
+    q.includes('anahtar kutu') ||
+    q.includes('lockbox') ||
+    q.includes('door code') ||
+    q.includes('ev rehber') ||
+    q.includes('house guide') ||
+    q.includes('house rule') ||
+    q.includes('çöp') ||
+    q.includes('trash') ||
+    q.includes('adres') ||
+    q.includes('konum') ||
+    q.includes('location') ||
+    ((q.includes('wifi') || q.includes('wi-fi') || q.includes('internet')) &&
+      !q.includes('arıza') &&
+      !q.includes('çalışmıyor') &&
+      !q.includes('kopuyor') &&
+      !q.includes('bozuk'));
+
+  if (
+    isAskingUnitGuide &&
+    ug &&
+    (ug.wifiSsid ||
+      ug.wifiPass ||
+      ug.doorCode ||
+      ug.applianceGuide ||
+      ug.houseGuideNotes ||
+      ug.locationAddress)
+  ) {
+    const bulletLines: string[] = [];
+    if (ug.wifiSsid || ug.wifiPass) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Wi-Fi Ağı:** \`${ug.wifiSsid || 'Birim Wi-Fi'}\` | **Şifre:** \`${ug.wifiPass || '-'}\``
+          : `• **Wi-Fi Network:** \`${ug.wifiSsid || 'Unit Wi-Fi'}\` | **Password:** \`${ug.wifiPass || '-'}\``
+      );
+    }
+    if (ug.doorCode) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Giriş / Kapı & Anahtar Kutusu Şifresi:** ${ug.doorCode}`
+          : `• **Door / Lockbox Access Code:** ${ug.doorCode}`
+      );
+    }
+    if (ug.locationAddress) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Birim Konumu & Adres:** ${ug.locationAddress}${ug.mapsUrl ? ` ([Haritada Aç](${ug.mapsUrl}))` : ''}`
+          : `• **Unit Location & Address:** ${ug.locationAddress}${ug.mapsUrl ? ` ([Open in Maps](${ug.mapsUrl}))` : ''}`
+      );
+    }
+    if (ug.applianceGuide) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Elektrikli Eşya & Cihaz Kullanımı:** ${ug.applianceGuide}`
+          : `• **Appliance & Device Guide:** ${ug.applianceGuide}`
+      );
+    }
+    if (ug.houseGuideNotes) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Ev Bilgileri & Kurallar:** ${ug.houseGuideNotes}`
+          : `• **House Guide & Rules:** ${ug.houseGuideNotes}`
+      );
+    }
+    if (ug.checkoutTime) {
+      bulletLines.push(
+        isTurkish
+          ? `• **Çıkış (Check-out) Saati:** ${ug.checkoutTime}`
+          : `• **Check-out Time:** ${ug.checkoutTime}`
+      );
+    }
+
+    return isTurkish
+      ? `**${liveContext.propertyName} — ${liveContext.unitName}** biriminize özel ev rehberi ve kullanım bilgileri:\n\n${bulletLines.join('\n')}\n\nHerhangi bir cihazla ilgili teknik destek veya ek yardıma ihtiyacınız olursa bana yazmanız yeterli.`
+      : `Here is the unit-specific house guide for **${liveContext.propertyName} — ${liveContext.unitName}**:\n\n${bulletLines.join('\n')}\n\nLet me know if you need any technical assistance during your stay.`;
+  }
+
   // 3. Check if query is about In-Stay Service (Breakfast, Cleaning, Maintenance, Laundry)
   if (
     q.includes('odam için') ||
@@ -1233,6 +1388,9 @@ ${ticket.actionTag}`;
 }
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'comus-chat', 30, 60 * 1000);
+  if (limited) return limited;
+
   const encoder = new TextEncoder();
 
   try {

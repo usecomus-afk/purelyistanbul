@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireStaff } from '@/lib/api-auth';
 import { KbsService } from '@/services/kbsService';
 
-export async function POST() {
+export async function POST(req: Request) {
+  const staff = await requireStaff(req);
+  if (staff.denied) return staff.denied;
+
   try {
     const result = KbsService.purgeExpiredKbsRecords(30);
     return NextResponse.json({
@@ -16,5 +20,6 @@ export async function POST() {
 }
 
 export async function GET() {
-  return POST();
+  // GET ile yıkıcı işlem tetiklenemez (prefetch/CSRF riski); yalnızca POST kabul edilir.
+  return NextResponse.json({ success: false, error: 'Method not allowed. POST kullanın.' }, { status: 405 });
 }

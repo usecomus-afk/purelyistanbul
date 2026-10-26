@@ -1265,6 +1265,31 @@ export const XeniosStore = {
     } catch (e) {}
   },
 
+  /**
+   * YÖNETİCİ: sunucudaki (Firestore) operasyon verisini yerel depoya yansıtır; paneller tek doğruluk
+   * kaynağı olarak sunucuyu görür. Yalnızca yönetici oturumunda (OpsSync) çağrılır.
+   */
+  syncBookingsFromRemote(list: Booking[]) {
+    try {
+      safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
+    } catch (e) {}
+  },
+
+  syncComplaintsFromRemote(list: Complaint[]) {
+    try {
+      safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
+    } catch (e) {}
+  },
+
+  syncLeadsFromRemote(list: InvestmentLead[]) {
+    try {
+      safeSet(STORAGE_KEYS.INVESTMENT_LEADS, JSON.stringify(list));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+    } catch (e) {}
+  },
+
   updateRequestStage(id: string, stage: string, status: ServiceRequest['status']) {
     const list = this.getRequests();
     const item = list.find(r => r.id === id);

@@ -286,7 +286,7 @@ export function HotelHeader({
               </h2>
               <p className="text-xs text-[#5C4938] flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-[#8E7252] shrink-0" />
-                <span>{hotel.address}</span>
+                <span>{(room as any)?.locationAddress || hotel.address}</span>
               </p>
             </div>
 

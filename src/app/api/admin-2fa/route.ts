@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import QRCode from 'qrcode';
 import { getAdminDbOrNull } from '@/lib/firebase-admin';
+import { getAdminEmail, hasAdminPasswordSource, rateLimit, requireAdmin, verifyAdminPassword } from '@/lib/api-auth';
 import {
   generateTOTPSecret,
   generateOTPAuthURI,
@@ -47,6 +48,10 @@ async function getActiveTOTPSecret(expectedEmail: string): Promise<{ secret: str
  * GET: 2FA durumunu döner. Eğer aktif değilse kurulum için yeni geçici QR kod ve secret üretir.
  */
 export async function GET(req: Request) {
+  // 2FA kurulum sırrı/QR yalnızca oturum açmış yönetici tarafından alınabilir.
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email')?.trim().toLowerCase() || 'anilaslan@usecomus.com';
@@ -111,16 +116,23 @@ export async function GET(req: Request) {
  * POST: İlk kurulumu doğrular ve kalıcı olarak aktifleştirir.
  */
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'admin-2fa', 10, 15 * 60 * 1000);
+  if (limited) return limited;
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { email, password, token, secret } = await req.json();
 
-    const expectedEmail = (process.env.ADMIN_EMAIL || 'anilaslan@usecomus.com').trim().toLowerCase();
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'Camille+1618';
+    if (!(await hasAdminPasswordSource())) {
+      return NextResponse.json({ success: false, error: 'Y\u00f6netici kimlik bilgileri sunucuda yap\u0131land\u0131r\u0131lmam\u0131\u015f.' }, { status: 503 });
+    }
+    const expectedEmail = getAdminEmail();
 
     const providedEmail = (email ?? '').toString().trim().toLowerCase();
     const providedPassword = (password ?? '').toString();
 
-    if ((providedEmail !== expectedEmail && providedEmail !== 'anilaslan') || providedPassword !== expectedPassword) {
+    if ((providedEmail !== expectedEmail && providedEmail !== 'anilaslan') || !(await verifyAdminPassword(providedPassword))) {
       return NextResponse.json({ success: false, error: 'Kimlik doğrulama başarısız.' }, { status: 401 });
     }
 

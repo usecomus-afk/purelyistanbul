@@ -1181,7 +1181,18 @@ export function AiChatDrawer({
             unitName: formattedUnitName,
             district: activeProperty?.district || undefined,
             breakfastHours: activeProperty?.breakfastHours || undefined,
+            checkoutTime: activeProperty?.checkoutTime || undefined,
             inRoomServices,
+            unitGuide: {
+              wifiSsid: matchedRoom?.wifiSsid || undefined,
+              wifiPass: matchedRoom?.wifiPass || undefined,
+              locationAddress:
+                matchedRoom?.locationAddress || activeProperty?.address || undefined,
+              mapsUrl: matchedRoom?.mapsUrl || undefined,
+              doorCode: matchedRoom?.doorCode || undefined,
+              applianceGuide: matchedRoom?.applianceGuide || undefined,
+              houseGuideNotes: matchedRoom?.houseGuideNotes || undefined,
+            },
           },
         }),
         signal: controller.signal,

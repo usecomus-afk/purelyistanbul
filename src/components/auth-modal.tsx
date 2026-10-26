@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { hotelLogin, purgeLegacySavedPasswords } from '@/lib/hotel-auth';
 import { 
   X, 
   User, 
@@ -279,22 +280,41 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLa
       if (localStorage.getItem('xenios_remember_me') !== null || localStorage.getItem('xenios_hotel_remember_me') !== null) {
         setRememberMe(isRemembered);
       }
+      purgeLegacySavedPasswords();
       const savedUser = localStorage.getItem('xenios_hotel_saved_user') || localStorage.getItem('xenios_saved_email');
-      const savedPass = localStorage.getItem('xenios_hotel_saved_pass') || localStorage.getItem('xenios_saved_pass');
       if (savedUser) setEmail(savedUser);
-      if (savedPass) setPassword(savedPass);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast.error(a.missingEmailPass);
       return;
     }
 
+    // OTEL hesabı: GERÇEK Firebase girişi. Hesaplar yönetici tarafından açılır; kendi kendine kayıt yok.
+    if ((role as string) === 'hotel') {
+      if (mode !== 'login') {
+        toast.error('Otel hesaplar\u0131 y\u00f6netici taraf\u0131ndan olu\u015fturulur. L\u00fctfen Comus ekibi ile ileti\u015fime ge\u00e7in.');
+        return;
+      }
+      const res = await hotelLogin(email, password, rememberMe);
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      XeniosStore.setHotelPortalLoggedIn(true);
+      if (typeof window !== 'undefined') localStorage.setItem('xenios_app_role', 'hotel');
+      toast.success(a.hotelLoginSuccess, { description: a.hotelLoginRedirect });
+      setTimeout(() => {
+        onClose();
+        window.location.href = '/hotel-portal';
+      }, 350);
+      return;
+    }
     const inputEmail = email.trim().toLowerCase();
     const userName = name.trim() || (role === 'hotel' ? a.hotelManagerDefault : email.split('@')[0]);
     
@@ -317,11 +337,9 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLa
       if (rememberMe) {
         localStorage.setItem('xenios_remember_me', 'true');
         localStorage.setItem('xenios_saved_email', inputEmail);
-        localStorage.setItem('xenios_saved_pass', password);
         if (role === 'hotel') {
           localStorage.setItem('xenios_hotel_remember_me', 'true');
           localStorage.setItem('xenios_hotel_saved_user', inputEmail);
-          localStorage.setItem('xenios_hotel_saved_pass', password);
           localStorage.setItem('xenios_app_role', 'hotel');
         }
       } else {

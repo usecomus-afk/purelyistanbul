@@ -123,3 +123,17 @@ env:
     value: "false"
     availability:
       - RUNTIME
+
+  # --- Güvenlik gizli anahtarları: değerler Secret Manager'da, burada YOK ---
+  - variable: ADMIN_PASSWORD
+    secret: ADMIN_PASSWORD
+    availability:
+      - RUNTIME
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability:
+      - RUNTIME
+  - variable: OCTO_WEBHOOK_SECRET
+    secret: OCTO_WEBHOOK_SECRET
+    availability:
+      - RUNTIME

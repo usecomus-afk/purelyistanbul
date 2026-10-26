@@ -8,7 +8,44 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() && (request.auth.token.role == 'admin' || request.auth.token.email == 'anilaslan@usecomus.com');
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        (request.auth.token.email == 'anilaslan@usecomus.com' && request.auth.token.email_verified == true)
+      );
+    }
+
+    // Doğrulama yardımcıları (map d içindeki alan k için tip + uzunluk sınırı).
+    function reqStr(d, k, minLen, maxLen) {
+      return k in d && d[k] is string && d[k].size() >= minLen && d[k].size() <= maxLen;
+    }
+
+    function optStr(d, k, maxLen) {
+      return !(k in d) || (d[k] is string && d[k].size() <= maxLen);
+    }
+
+    function optNum(d, k) {
+      return !(k in d) || d[k] is int || d[k] is float;
+    }
+
+    // notifications_log / ai_logs: herkese açık create için üst sınır doğrulaması.
+    function isValidLogCreate(d) {
+      return d.keys().size() <= 30 &&
+        optStr(d, 'type', 100) &&
+        optStr(d, 'recipient', 320) &&
+        optStr(d, 'title', 1000) &&
+        optStr(d, 'hotelName', 300) &&
+        optStr(d, 'roomNumber', 100) &&
+        optStr(d, 'guestName', 500) &&
+        optStr(d, 'guestContact', 1000) &&
+        optStr(d, 'status', 100) &&
+        optStr(d, 'deliveredTo', 320) &&
+        optStr(d, 'notifiedTo', 320) &&
+        optStr(d, 'createdAt', 64) &&
+        optStr(d, 'timestamp', 64) &&
+        optStr(d, 'message', 5000) &&
+        optStr(d, 'reply', 5000) &&
+        optStr(d, 'query', 5000) &&
+        (!('details' in d) || d.details is map);
     }
 
     function isPilotOrHotelManager() {
@@ -190,9 +227,9 @@ service cloud.firestore {
     // 16. Oteller (Hotels) — herkes okuyabilir, admin ve otel yöneticisi/pilot yazabilir.
     match /hotels/{hotelId} {
       allow read: if true;
-      allow create, update: if isAdmin() || isPilotOrHotelManager() || (
-        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 300
-      );
+      allow create, update: if (isAdmin() || isPilotOrHotelManager()) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 300;
       allow delete: if isAdmin() || isPilotOrHotelManager();
     }
 
@@ -240,28 +277,129 @@ service cloud.firestore {
 
     // 20. Oda ve Konsiyerj Talepleri (Service Requests) — misafir oluşturabilir ve takip edebilir,
     // durum güncelleme ve silme işlemleri admin veya otel/pilot masası tarafından yapılır.
+    //
+    // NOT: Otel portalı henüz Firebase Auth kullanmadığı için (ve sunucu API rotaları da
+    // kimliksiz REST ile yazdığı için) okuma/oluşturma/güncelleme/silme kimliksiz çalışmaya
+    // devam eder; ancak şekil (shape) doğrulaması ve alan kısıtlamaları uygulanır.
     match /service_requests/{requestId} {
+      // Oluşturma doğrulaması: istemci (setDoc), /api/requests, Comus chat ve push-registry
+      // (notes alanında en fazla 150 cihazlık JSON liste) yazımlarındaki gerçek alanlara göre.
+      function isValidServiceRequestCreate(d) {
+        return d.keys().size() <= 30 &&
+          reqStr(d, 'id', 1, 200) &&
+          reqStr(d, 'serviceKey', 1, 200) &&
+          reqStr(d, 'serviceTitle', 1, 300) &&
+          reqStr(d, 'hotelId', 1, 200) &&
+          reqStr(d, 'roomNumber', 1, 100) &&
+          d.status == 'pending' &&
+          optStr(d, 'hotelName', 300) &&
+          optStr(d, 'department', 200) &&
+          optStr(d, 'stage', 100) &&
+          optStr(d, 'priority', 50) &&
+          optStr(d, 'createdAt', 64) &&
+          optStr(d, 'updatedAt', 64) &&
+          optStr(d, 'paymentMethod', 50) &&
+          optStr(d, 'paymentStatus', 50) &&
+          optStr(d, 'paymentCurrency', 10) &&
+          optStr(d, 'paymentReference', 200) &&
+          optStr(d, 'whatsappMessageId', 200) &&
+          optStr(d, 'notes', 200000) &&
+          optNum(d, 'paymentAmount') &&
+          (!('details' in d) || d.details is map) &&
+          (!('isDemo' in d) || d.isDemo is bool);
+      }
+
+      // Personel olmayan istemcilerin değiştirebileceği anahtarlar: durum akışı (status/stage/
+      // updatedAt), ödeme bilgisi ekleme, notlar, WhatsApp onay/mesaj izi ve push-registry
+      // 'notes' alanı. Kimlik/otel/oda/hizmet alanları değiştirilemez.
+      function isAllowedGuestPortalRequestUpdate() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'updatedAt', 'stage', 'notes',
+            'paymentMethod', 'paymentStatus', 'paymentAmount', 'paymentCurrency', 'paymentReference',
+            'whatsappMessageId', 'approvedViaWhatsAppBy'
+          ]) &&
+          request.resource.data.status is string &&
+          request.resource.data.status in ['pending', 'in_progress', 'completed', 'cancelled'] &&
+          optStr(request.resource.data, 'notes', 200000) &&
+          optStr(request.resource.data, 'stage', 100) &&
+          optStr(request.resource.data, 'updatedAt', 64);
+      }
+
       allow read: if true;
-      allow create: if true;
-      allow update: if isAdmin() || isPilotOrHotelManager() || (
-        request.resource.data.status in ['pending', 'in_progress', 'completed', 'cancelled']
-      );
+      allow create: if isAdmin() || isPilotOrHotelManager() || isValidServiceRequestCreate(request.resource.data);
+      allow update: if isAdmin() || isPilotOrHotelManager() || isAllowedGuestPortalRequestUpdate();
+      // TODO(hotel-auth): Otel portalı Firebase Auth'a geçtiğinde silme YALNIZCA
+      // isAdmin() || isPilotOrHotelManager() olmalıdır. Şimdilik kimliksiz otel portalı
+      // için, sadece tamamlanmış/iptal edilmiş talepler personel olmayan istemciler
+      // tarafından silinebilir (aktif talepler silinemez).
       allow delete: if isAdmin() || isPilotOrHotelManager() || (
-        resource.data.keys().hasAny(['id', 'serviceKey', 'serviceTitle', 'status'])
+        resource.data.status in ['completed', 'cancelled']
       );
     }
 
     // 21. Yatırım Talepleri (Investment Leads) — ziyaretçiler talep bırakabilir,
     // sadece admin ve yetkili personel görüntüleyip yönetebilir.
     match /investment_leads/{leadId} {
-      allow create: if true;
+      // Gerçek yük: InvestmentLead alanları + notifiedTo/updatedAt (firestore-service.addInvestmentLead).
+      function isValidInvestmentLead(d) {
+        return d.keys().size() <= 30 &&
+          reqStr(d, 'guestName', 1, 200) &&
+          reqStr(d, 'guestContact', 1, 320) &&
+          optStr(d, 'id', 200) &&
+          optStr(d, 'propertyId', 200) &&
+          optStr(d, 'propertyTitle', 500) &&
+          optStr(d, 'hotelId', 200) &&
+          optStr(d, 'hotelName', 300) &&
+          optStr(d, 'roomNumber', 100) &&
+          optStr(d, 'note', 5000) &&
+          optStr(d, 'personaGuess', 200) &&
+          optStr(d, 'notifiedTo', 320) &&
+          optStr(d, 'createdAt', 64) &&
+          optStr(d, 'updatedAt', 64);
+      }
+
+      allow create: if isValidInvestmentLead(request.resource.data);
       allow read, update, delete: if isAdmin() || isPilotOrHotelManager();
     }
 
-    // 22. Şikayet ve Çözüm Masası (Complaints) — herkes okuyup oluşturabilir,
+    // 22. Şikayet ve Çözüm Masası (Complaints) — herkes oluşturabilir,
     // yanıt ve durum güncellemeleri admin veya yetkili personel tarafından yapılır.
+    // Okuma: istemci kodunda Firestore'dan şikayet okuyan bir akış yoktur (misafir sayfası
+    // ve kokpit yerel XeniosStore kullanır); şikayetler PII (e-posta, telefon, IBAN) içerdiğinden
+    // okuma yalnızca admin/yetkili personele açıktır.
     match /complaints/{complaintId} {
-      allow read, create: if true;
+      function isValidComplaintCreate(d) {
+        return d.keys().size() <= 40 &&
+          reqStr(d, 'businessName', 1, 300) &&
+          reqStr(d, 'description', 1, 5000) &&
+          reqStr(d, 'guestEmail', 1, 320) &&
+          d.status == 'under_review' &&
+          optStr(d, 'id', 200) &&
+          optStr(d, 'trackingCode', 100) &&
+          optStr(d, 'businessCategory', 100) &&
+          optStr(d, 'location', 300) &&
+          optStr(d, 'incidentDate', 40) &&
+          optStr(d, 'currency', 10) &&
+          optStr(d, 'guestName', 200) &&
+          optStr(d, 'guestPhone', 50) &&
+          optStr(d, 'hotelName', 300) &&
+          optStr(d, 'roomNumber', 100) &&
+          optStr(d, 'receiptPhotoUrl', 2000) &&
+          optStr(d, 'refundIbanOrCard', 100) &&
+          optStr(d, 'businessEmail', 320) &&
+          optStr(d, 'businessResponse', 5000) &&
+          optStr(d, 'createdAt', 64) &&
+          optStr(d, 'updatedAt', 64) &&
+          optNum(d, 'amountPaid') &&
+          optNum(d, 'amountExpected') &&
+          optNum(d, 'discrepancyAmount') &&
+          optNum(d, 'daysPending') &&
+          (!('isPublicAlert' in d) || d.isPublicAlert == false) &&
+          (!('isDemo' in d) || d.isDemo is bool);
+      }
+
+      allow read: if isAdmin() || isPilotOrHotelManager();
+      allow create: if isValidComplaintCreate(request.resource.data);
       allow update, delete: if isAdmin() || isPilotOrHotelManager();
     }
 
@@ -272,14 +410,16 @@ service cloud.firestore {
 
     // 24. Bildirim Kuyruğu Logları (Notifications Log) — sistem/istemci log bırakabilir,
     // sadece admin ve yetkili personel okuyup yönetebilir.
+    // Yük: DispatchPayload (+ status/deliveredTo/createdAt); iç içe 'details' map'i olabilir,
+    // bu yüzden anahtar sayısı ve bilinen üst düzey metin alanları sınırlanır.
     match /notifications_log/{logId} {
-      allow create: if true;
+      allow create: if isValidLogCreate(request.resource.data);
       allow read, update, delete: if isAdmin() || isPilotOrHotelManager();
     }
 
     // 25. AI Konsiyerj Logları (AI Logs) — istemci log bırakabilir, sadece admin okuyup yönetebilir.
     match /ai_logs/{logId} {
-      allow create: if true;
+      allow create: if isValidLogCreate(request.resource.data);
       allow read, update, delete: if isAdmin();
     }
   }

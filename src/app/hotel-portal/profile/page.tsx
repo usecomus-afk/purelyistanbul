@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import { XeniosStore } from '@/lib/store';
 import { Hotel } from '@/lib/types';
 import { FirestoreService } from '@/lib/firestore-service';
@@ -102,7 +103,7 @@ export default function HotelProfileManagementPage() {
     }
     setIsTestingWhatsApp(true);
     try {
-      const res = await fetch('/api/notifications/whatsapp', {
+      const res = await authFetch('/api/notifications/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

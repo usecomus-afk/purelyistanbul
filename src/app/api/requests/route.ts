@@ -1,3 +1,4 @@
+import { rateLimit } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { NotificationDispatcher } from '@/services/notificationDispatcher';
 import { FcmPushService } from '@/services/fcmPushService';
@@ -14,6 +15,9 @@ async function resolveHotelWhatsAppRecipients(
 }
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'requests', 60, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const nowIso = new Date().toISOString();

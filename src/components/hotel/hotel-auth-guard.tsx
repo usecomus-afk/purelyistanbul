@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { XeniosStore } from '@/lib/store';
-import { NotificationService } from '@/lib/notification-service';
+import { hotelLogin, onHotelSession, purgeLegacySavedPasswords, sendHotelPasswordReset } from '@/lib/hotel-auth';
 import { LuxuryPortalIcon } from '@/components/hotel/luxury-portal-icon';
 import {
   Lock,
@@ -29,7 +29,6 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
-  const [recoveryCode, setRecoveryCode] = useState('');
   const [isResetting, setIsResetting] = useState(false);
 
   const hotels = XeniosStore.getHotels();
@@ -39,75 +38,64 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
   const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
-    const check = () => {
-      const isLogged = XeniosStore.isHotelPortalLoggedIn();
-      setIsAuth(isLogged);
-    };
-    check();
+    purgeLegacySavedPasswords();
 
-    // Auto load saved username and password if available
+    // Yalnızca e-posta hatırlanır; parola ASLA saklanmaz.
     if (typeof window !== 'undefined') {
       const isRemembered = localStorage.getItem('xenios_hotel_remember_me') === 'true';
       if (localStorage.getItem('xenios_hotel_remember_me') !== null) {
         setRememberMe(isRemembered);
       }
       const savedUser = localStorage.getItem('xenios_hotel_saved_user');
-      const savedPass = localStorage.getItem('xenios_hotel_saved_pass');
       if (savedUser) {
         setHotelEmailOrUser(savedUser);
       }
-      if (savedPass) {
-        setPassword(savedPass);
-      }
     }
 
-    window.addEventListener('xenios_hotel_portal_auth', check);
-    return () => window.removeEventListener('xenios_hotel_portal_auth', check);
+    // GERÇEK oturum: Firebase Authentication + rol claim'i. localStorage bayrağı yetki vermez.
+    const unsubscribe = onHotelSession((session) => {
+      setIsAuth(!!session);
+      // Eski bileşenlerin okuduğu yerel bayrağı gerçek oturumla eşitle.
+      if (XeniosStore.isHotelPortalLoggedIn() !== !!session) {
+        XeniosStore.setHotelPortalLoggedIn(!!session);
+      }
+      // Otel yöneticisi yalnızca kendi oteline bağlıdır.
+      if (session?.role === 'hotel_manager' && session.hotelId && XeniosStore.getActiveHotelId() !== session.hotelId) {
+        XeniosStore.setActiveHotelId(session.hotelId);
+      }
+    });
+    return unsubscribe;
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
-      const input = hotelEmailOrUser.trim().toLowerCase();
+    const input = hotelEmailOrUser.trim().toLowerCase();
+    const result = await hotelLogin(input, password, rememberMe);
 
-      // 1. Check Demo credentials
-      const passTrimmed = password.trim();
-      const passLower = passTrimmed.toLowerCase();
-      const isDemo =
-        (input === 'purely' || input === 'hotel' || input === 'demo') &&
-        (passLower === 'purelyistanbul' || passLower === 'hotel2026' || passLower === 'xenios2026' || passTrimmed === '1234');
-
-      // 2. Check Real Manager Email Login
-      const isRealEmail = input.includes('@') && password.length >= 4;
-      const isHeritageManager = input === 'heritage@xenios.istanbul' || input === 'manager@heritagehotel.com' || input === 'hotel@xenios.istanbul';
-
-      if (isDemo || isRealEmail || isHeritageManager) {
-        XeniosStore.setHotelPortalLoggedIn(true);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('xenios_app_role', 'hotel');
-          if (rememberMe) {
-            localStorage.setItem('xenios_hotel_remember_me', 'true');
-            localStorage.setItem('xenios_hotel_saved_user', hotelEmailOrUser.trim());
-            localStorage.setItem('xenios_hotel_saved_pass', passTrimmed);
-          } else {
-            localStorage.removeItem('xenios_hotel_remember_me');
-            localStorage.removeItem('xenios_hotel_saved_user');
-            localStorage.removeItem('xenios_hotel_saved_pass');
-          }
+    if (result.ok) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('xenios_app_role', 'hotel');
+        if (rememberMe) {
+          localStorage.setItem('xenios_hotel_remember_me', 'true');
+          localStorage.setItem('xenios_hotel_saved_user', hotelEmailOrUser.trim());
+        } else {
+          localStorage.removeItem('xenios_hotel_remember_me');
+          localStorage.removeItem('xenios_hotel_saved_user');
         }
-        toast.success(`${currentHotel.name} Yönetim Paneline giriş yapıldı!`, {
-          description: `Hoş geldiniz, ${hotelEmailOrUser.trim()}`
-        });
-        setError('');
-      } else {
-        setError("Hatalı yönetici e-postası veya şifre! Lütfen kontrol ediniz ya da 'Şifremi Unuttum' üzerinden sıfırlayınız.");
-        toast.error("Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.");
       }
-      setIsLoading(false);
-    }, 450);
+      setPassword('');
+      toast.success(`${currentHotel.name} Yönetim Paneline giriş yapıldı!`, {
+        description: `Hoş geldiniz, ${hotelEmailOrUser.trim()}`
+      });
+      setError('');
+    } else {
+      setError(result.error);
+      toast.error(result.error);
+    }
+    setIsLoading(false);
   };
 
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
@@ -118,33 +106,15 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
     }
 
     setIsResetting(true);
-    const code = 'RESET-' + Math.floor(100000 + Math.random() * 900000);
-    setRecoveryCode(code);
-
-    // Dispatch notification to hi@usecomus.com
-    await NotificationService.dispatch({
-      type: 'room_service',
-      recipient: 'hi@usecomus.com',
-      title: `Yönetici Şifre Sıfırlama Talebi: ${currentHotel.name}`,
-      hotelName: currentHotel.name,
-      roomNumber: 'YÖNETİM KOKPİTİ',
-      guestName: 'İşletme Yöneticisi',
-      guestContact: forgotEmail.trim(),
-      details: {
-        hotelId: currentHotel.id,
-        hotelName: currentHotel.name,
-        managerEmail: forgotEmail.trim(),
-        recoveryCode: code,
-        action: 'Yönetici Şifre Sıfırlama Bağlantısı Gönderildi'
-      },
-      timestamp: new Date().toISOString()
-    });
-
-    setTimeout(() => {
-      setIsResetting(false);
-      setForgotSent(true);
-      toast.success('Şifre sıfırlama bağlantısı ve kurtarma kodu gönderildi!');
-    }, 600);
+    // Gerçek Firebase şifre sıfırlama e-postası (bağlantı kullanıcıya doğrudan gider).
+    const ok = await sendHotelPasswordReset(forgotEmail);
+    setIsResetting(false);
+    if (!ok) {
+      toast.error('Şifre sıfırlama e-postası gönderilemedi. Lütfen biraz sonra tekrar deneyin.');
+      return;
+    }
+    setForgotSent(true);
+    toast.success('Şifre sıfırlama bağlantısı gönderildi!');
   };
 
   if (isAuth === null) {
@@ -252,7 +222,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     required
                     value={hotelEmailOrUser}
                     onChange={(e) => setHotelEmailOrUser(e.target.value)}
-                    placeholder="manager@purelyistanbul.com veya Purely"
+                    placeholder="manager@purelyistanbul.com"
                     className="w-full p-3 pl-9 bg-[#FAF8F4]/95 border border-[#C4B8A4] rounded-xl font-medium text-[#1A1A1A] placeholder:text-[#8A7B69] focus:outline-none focus:border-[#8E7252] shadow-[inset_0_1px_2px_rgba(36,28,18,0.06)] text-xs transition"
                   />
                   <Mail className="w-4 h-4 text-[#8E7252] absolute left-3 top-3.5" />
@@ -301,11 +271,6 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     Beni Hatırla (Yönetim Masası Olarak Başlat)
                   </span>
                 </label>
-              </div>
-
-              <div className="p-2.5 px-3 bg-[#F3ECE0]/85 rounded-xl border border-[#C9AE82]/75 text-[11px] text-[#4A3A28] flex items-center justify-between">
-                <span className="font-medium">Hızlı Test Erişimi:</span>
-                <strong className="font-mono text-[#1A1A1A] tracking-tight">Purely / Purelyistanbul</strong>
               </div>
 
               <button
@@ -401,20 +366,15 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                       Talep Başarıyla İletildi
                     </h3>
                     <p className="text-xs text-[#5C4938] leading-relaxed">
-                      <strong>{forgotEmail}</strong> ve <strong>hi@usecomus.com</strong> adreslerine şifre sıfırlama talimatı gönderildi.
+                      <strong>{forgotEmail}</strong> adresine (hesap kayıtlıysa) şifre sıfırlama talimatı gönderildi.
                     </p>
-                  </div>
-
-                  <div className="p-3 bg-[#FAF8F4] rounded-xl border border-[#C9AE82] text-xs text-left space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-[#8E7252] block">Kurtarma Referans Kodu:</span>
-                    <strong className="font-mono text-sm text-[#141414] block">{recoveryCode}</strong>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => {
                       setShowForgotModal(false);
-                      setPassword('Purelyistanbul');
+                      setPassword('');
                     }}
                     className="w-full py-2.5 bg-[#1D2025] hover:bg-[#2C3038] text-[#F5EFE6] border border-[#8E7252]/45 font-semibold rounded-xl text-xs transition cursor-pointer"
                   >

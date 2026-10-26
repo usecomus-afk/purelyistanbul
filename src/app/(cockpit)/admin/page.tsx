@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { XeniosStore } from '@/lib/store';
+import { updateOpsStatus } from '@/lib/ops-client';
 import { FirestoreService } from '@/lib/firestore-service';
 import { adminLogin, establishAdminFirebaseSession } from '@/lib/admin-auth';
 import { PropertyAdminPanel } from '@/components/cockpit/property-admin-panel';
@@ -393,8 +394,12 @@ export default function AdminPage() {
     refresh();
   };
 
-  const handleApproveBooking = (id: string) => {
-    XeniosStore.updateBookingStatus(id, 'confirmed');
+  const handleApproveBooking = async (id: string) => {
+    const r = await updateOpsStatus('booking', id, 'confirmed');
+    if (!r.ok) {
+      toast.error(r.error || 'Rezervasyon sunucuda onaylanamadı.');
+      return;
+    }
     toast.success('Rezervasyon onaylandı.');
     refresh();
   };

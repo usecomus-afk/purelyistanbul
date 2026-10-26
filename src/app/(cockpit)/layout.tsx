@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CockpitSideNav } from "@/components/cockpit/side-nav";
 import { AdminAuthGuard } from "@/components/cockpit/admin-auth-guard";
+import { AdminOpsSync } from "@/components/dashboard/admin-ops-sync";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { ArrowLeft, Menu, Hotel, QrCode, LogOut, Sparkles } from "lucide-react";
@@ -32,6 +33,7 @@ export default function CockpitLayout({
 
   return (
     <AdminAuthGuard>
+      <AdminOpsSync />
       <div className="min-h-dvh w-full max-w-[100dvw] overflow-x-hidden bg-[#F6F1E8] text-[#2C2C1A] flex flex-col md:flex-row">
         <CockpitSideNav
           isOpen={mobileMenuOpen}

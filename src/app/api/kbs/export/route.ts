@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/api-auth';
 import { KbsService } from '@/services/kbsService';
 
 export async function GET(req: Request) {
+  // Kimlik bildirim (KBS) dışa aktarımı kişisel veri içerir: yalnızca yönetici.
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const format = searchParams.get('format') || 'xml';

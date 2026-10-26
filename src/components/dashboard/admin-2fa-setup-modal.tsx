@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Shield, KeyRound, QrCode, CheckCircle2, AlertCircle, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface Admin2FASetupModalProps {
   email: string;
@@ -35,7 +36,7 @@ export function Admin2FASetupModal({
     setTotpCode("");
     setLoading(true);
 
-    fetch(`/api/admin-2fa?email=${encodeURIComponent(email)}`)
+    authFetch(`/api/admin-2fa?email=${encodeURIComponent(email)}`)
       .then((res) => res.json())
       .then((data) => {
         setLoading(false);
@@ -75,7 +76,7 @@ export function Admin2FASetupModal({
     setError("");
 
     try {
-      const res = await fetch("/api/admin-2fa", {
+      const res = await authFetch("/api/admin-2fa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

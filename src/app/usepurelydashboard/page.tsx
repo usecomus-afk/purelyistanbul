@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   adminLogin,
   establishAdminFirebaseSession,
@@ -39,6 +40,9 @@ import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
 import { Admin2FASetupModal } from "@/components/dashboard/admin-2fa-setup-modal";
+import { AdminSecurityPanel } from "@/components/dashboard/admin-security-panel";
+import { AdminOpsSync } from "@/components/dashboard/admin-ops-sync";
+import { updateOpsStatus } from "@/lib/ops-client";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -91,7 +95,8 @@ type DashboardTab =
   | "properties"
   | "hotels"
   | "payments"
-  | "reports";
+  | "reports"
+  | "security";
 
 type PaymentGatewayConfig = {
   activeProvider: "stripe" | "iyzico" | "paytr";
@@ -481,8 +486,24 @@ export default function UsePurelyDashboardPage() {
   }, []);
 
   // 3. Subscribe to Marketplace Host Applications & Pending Listings
+  // Firestore dinleyicileri (host başvuruları, bekleyen ilanlar) yalnızca admin Firebase oturumu
+  // kurulduktan SONRA başlatılır; aksi halde permission-denied ile sürekli düşer.
+  const [adminCloudReady, setAdminCloudReady] = useState(false);
   useEffect(() => {
-    if (!isAuth || !db) return;
+    if (!auth) return;
+    return onAuthStateChanged(auth, async (u) => {
+      if (!u || u.isAnonymous) return setAdminCloudReady(false);
+      try {
+        const tok = await u.getIdTokenResult();
+        setAdminCloudReady(tok.claims.role === 'admin');
+      } catch {
+        setAdminCloudReady(false);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isAuth || !adminCloudReady || !db) return;
     let unsubApps = () => {};
     let unsubPending = () => {};
     try {
@@ -508,7 +529,7 @@ export default function UsePurelyDashboardPage() {
       unsubApps();
       unsubPending();
     };
-  }, [isAuth]);
+  }, [isAuth, adminCloudReady]);
 
   // Login Handler
   const handleLogin = async (e: React.FormEvent) => {
@@ -1204,6 +1225,12 @@ export default function UsePurelyDashboardPage() {
       icon: BarChart3,
       count: bookings.length + serviceRequests.length,
     },
+    {
+      id: "security",
+      label: "Ayarlar \u0026 G\u00fcvenlik",
+      sublabel: "Parola Yenile \u0026 Otel Hesaplar\u0131",
+      icon: ShieldCheck,
+    },
   ];
 
   const sidebarContent = (
@@ -1380,6 +1407,7 @@ export default function UsePurelyDashboardPage() {
       data-comus-dashboard="true"
       className="min-h-dvh w-full max-w-[100dvw] overflow-x-hidden md:h-dvh md:overflow-hidden flex flex-col md:flex-row bg-[#F6F1E8] text-[#2C2C1A]"
     >
+      <AdminOpsSync />
       {/* Desktop Sticky Left Sidebar (Independently Scrollable) */}
       <aside className="hidden md:flex md:flex-col w-72 shrink-0 md:h-dvh md:overflow-y-auto">
         {sidebarContent}
@@ -2567,13 +2595,10 @@ export default function UsePurelyDashboardPage() {
                             </div>
                             <select
                               value={bk.status}
-                              onChange={(e) => {
-                                XeniosStore.updateBookingStatus(
-                                  bk.id,
-                                  e.target.value as BookingStatus
-                                );
-                                refreshAllData();
-                                toast.success("Rezervasyon durumu güncellendi.");
+                              onChange={async (e) => {
+                                const r = await updateOpsStatus("booking", bk.id, e.target.value);
+                                if (r.ok) toast.success("Rezervasyon durumu güncellendi.");
+                                else toast.error(r.error || "Durum sunucuya kaydedilemedi.");
                               }}
                               className="comus-input w-full sm:w-auto text-xs py-1.5 sm:py-1 px-2.5"
                             >
@@ -3051,6 +3076,10 @@ export default function UsePurelyDashboardPage() {
           {/* =========================================================
               TAB 7: ÖDEME YÖNTEMİ & SANAL POS ENTEGRASYON ALANI
           ========================================================= */}
+          {activeTab === "security" && (
+            <AdminSecurityPanel hotels={hotels.map((h) => ({ id: h.id, name: h.name }))} />
+          )}
+
           {activeTab === "payments" && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#C8C4B0]">

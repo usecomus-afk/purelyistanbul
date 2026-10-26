@@ -8,6 +8,9 @@ export interface RoomStateInfo {
   guestPhone?: string;
   checkout?: string;
   whatsappConfirmedAt?: string;
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
 }
 
@@ -16,6 +19,9 @@ export interface HotelWhatsAppTemplate {
   title: string;
   body: string;
   isDefault?: boolean;
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
 }
 
@@ -26,11 +32,43 @@ export interface Room {
   floor: string;
   wifiSsid: string;
   wifiPass: string;
+  /** Birim bazlı konum bilgisi (PMC şirketlerinin farklı konumlardaki daireleri için) */
+  locationAddress?: string;
+  mapsUrl?: string;
+  coords?: { lat: number; lng: number };
+  /** Birim bazlı Ev Rehberi & Comus AI Bilgi Bankası (her mülk için değişen özel bilgiler) */
+  doorCode?: string;
+  applianceGuide?: string;
+  houseGuideNotes?: string;
+  /** Self-Servis PMS Takvim & Fiyat Optimizasyonu (Birim bazlı fiyatlama ve takvim) */
+  basePriceEur?: number;
+  minStayNights?: number;
+  weekendMarkupPct?: number;
+  highOccupancyMarkupPct?: number;
+  lastMinuteDiscountPct?: number;
+  channelMarkups?: {
+    airbnb?: number;
+    booking?: number;
+    expedia?: number;
+    vrbo?: number;
+  };
+  calendarOverrides?: Record<
+    string,
+    {
+      status?: 'available' | 'booked' | 'blocked';
+      channel?: 'Direkt' | 'Airbnb' | 'Booking.com' | 'Expedia' | 'VRBO' | 'Bloke';
+      priceEur?: number;
+      guestName?: string;
+    }
+  >;
   status?: RoomOccupancyStatus;
   guest?: string;
   guestPhone?: string;
   checkout?: string;
   whatsappConfirmedAt?: string;
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
 }
 
@@ -67,6 +105,9 @@ export interface Hotel {
   publishToMobile?: boolean;
   /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
   recommendedDistricts?: PilotDistrictKey[];
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
   deleted?: boolean;
 }
@@ -108,6 +149,9 @@ export interface SupplierPartner {
   /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
   recommendedDistricts?: PilotDistrictKey[];
   createdAt: string;
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
   deleted?: boolean;
 }
@@ -155,6 +199,9 @@ export interface Experience {
   publishToMobile?: boolean;
   /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
   recommendedDistricts?: PilotDistrictKey[];
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
   deleted?: boolean;
 }
@@ -278,6 +325,9 @@ export interface PropertyListing {
   publishToMobile?: boolean;
   /** Beş pilot bölgeden ("fatih" | "besiktas" | "beyoglu" | "sisli" | "kadikoy") hangilerinde "Sizin için seçtiklerimiz" vitrininde öne çıkarılacağı */
   recommendedDistricts?: PilotDistrictKey[];
+  /** Otele özel görünürlük: 'all' (tüm oteller) veya 'specific' (yalnızca allowedHotelIds'deki otellerin misafirleri) */
+  hotelVisibility?: 'all' | 'specific';
+  allowedHotelIds?: string[];
   updatedAt?: string;
   deleted?: boolean;
 }

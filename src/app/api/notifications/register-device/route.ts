@@ -1,8 +1,12 @@
+import { rateLimit } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { NotificationDispatcher, UserDeviceDTO } from '@/services/notificationDispatcher';
 import { VAPID_PUBLIC_KEY } from '@/lib/vapid-keys';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'register-device', 60, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = (await req.json()) as Partial<UserDeviceDTO>;
     const token = body.webPushSubscription?.endpoint || body.apnsToken || body.deviceToken;

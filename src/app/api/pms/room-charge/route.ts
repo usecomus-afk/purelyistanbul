@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/api-auth';
 import { PmsAdapter, RoomChargePayload } from '@/services/pmsAdapter';
 
 export async function POST(req: Request) {
+  // Folyoya harcama yazar: yetkisiz çağrı finansal etki yaratır.
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const payload = await req.json() as RoomChargePayload;
 

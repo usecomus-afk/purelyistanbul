@@ -5,6 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { verifyStripeSignature, webhookGate } from '@/lib/api-auth';
 import { InventoryEngine } from '@/services/inventoryEngine';
 import { OctoAdapter } from '@/services/octoAdapter';
 import { FailSafeGuardrails } from '@/services/failSafeGuardrails';
@@ -12,7 +13,14 @@ import { InventoryType, OctoChannelConfig } from '@/types/inventory';
 
 export async function POST(req: Request) {
   try {
-    const payload = await req.json();
+    const rawBody = await req.text();
+    const stripeSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
+    const gate = webhookGate(
+      stripeSecret,
+      !!stripeSecret && verifyStripeSignature(rawBody, req.headers.get('stripe-signature'), stripeSecret)
+    );
+    if (!gate.ok) return gate.response;
+    const payload = JSON.parse(rawBody);
     
     // Webhook metadata extraction
     const {

@@ -1,4 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
+import { authFetch } from './auth-fetch';
 import { 
   collection, 
   doc, 
@@ -62,7 +63,7 @@ function stripUndefined<T extends Record<string, any>>(obj: T): T {
 async function postAdminCatalog(action: string, payload: Record<string, any>): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   try {
-    const res = await fetch('/api/admin/catalog', {
+    const res = await authFetch('/api/admin/catalog', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, payload }),
@@ -1112,15 +1113,24 @@ export const FirestoreService = {
   },
 
   // 💳 BOOKINGS
-  async addBooking(booking: Omit<Booking, 'id' | 'createdAt' | 'confirmationCode'>): Promise<Booking> {
-    const local = XeniosStore.addBooking(booking);
-    if (!db || !isFirebaseConfigured) return local;
+  async addBooking(booking: Omit<Booking, 'id' | 'createdAt' | 'confirmationCode'> | Booking): Promise<Booking> {
+    // Çift kayıt önlemi: çağıran taraf zaten XeniosStore.addBooking ile oluşturduysa yeniden ekleme.
+    const existing = booking as Partial<Booking>;
+    const local: Booking = existing.id && existing.confirmationCode ? (existing as Booking) : XeniosStore.addBooking(booking as Omit<Booking, 'id' | 'createdAt' | 'confirmationCode'>);
 
-    try {
-      const colRef = collection(db, COLLECTIONS.BOOKINGS);
-      await setDoc(doc(colRef, local.id), local);
-    } catch (e) {
-      console.warn("Firestore add booking error:", e);
+    // Kalıcı kayıt SUNUCUDA yapılır (firestore.rules: bookings istemci yazmasına kapalı).
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/ops/bookings', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(local),
+        });
+        if (!res.ok) reportSyncError('booking', { code: 'http-' + res.status });
+      } catch (e) {
+        reportSyncError('booking', e);
+      }
     }
     return local;
   },

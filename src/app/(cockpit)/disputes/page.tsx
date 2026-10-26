@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { XeniosStore } from '@/lib/store';
+import { updateOpsStatus } from '@/lib/ops-client';
 import { Complaint, ComplaintStatus } from '@/lib/types';
 import { formatPrice } from '@/lib/utils';
 import { 
@@ -41,34 +42,44 @@ export default function CockpitComplaintsPage() {
     };
   }, []);
 
-  const handleSendEmail = (comp: Complaint) => {
-    XeniosStore.updateComplaintStatus(
+  // Karar SUNUCUYA (Firestore + denetim kayıtlı) yazılır; yalnızca yerel depoya değil.
+  const persistComplaint = async (id: string, status: ComplaintStatus, note?: string, isPublicAlert?: boolean) => {
+    const r = await updateOpsStatus('complaint', id, status, { note, isPublicAlert });
+    if (!r.ok) {
+      toast.error(r.error || 'Durum sunucuya kaydedilemedi.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSendEmail = async (comp: Complaint) => {
+    if (!(await persistComplaint(
       comp.id, 
       'contacted_business', 
       'İşletmeye 30 günlük resmi uzlaşma ve fark iadesi talep yazısı e-posta ile iletildi.'
-    );
+    ))) return;
     toast.success(`${comp.businessName} işletmesine resmi hakem inceleme yazısı gönderildi.`);
     refreshData();
   };
 
-  const handleResolveRefund = (comp: Complaint) => {
-    XeniosStore.updateComplaintStatus(
+  const handleResolveRefund = async (comp: Complaint) => {
+    if (!(await persistComplaint(
       comp.id, 
       'resolved_refunded', 
       'İşletme hatayı kabul etti ve fark tutarını misafirin hesabına iade etti. Dosya uzlaşmayla kapatıldı.',
       false
-    );
+    ))) return;
     toast.success("Mağduriyet telafi edildi ve dosya başarıyla kapatıldı.");
     refreshData();
   };
 
-  const handlePublishBlacklist = (comp: Complaint) => {
-    XeniosStore.updateComplaintStatus(
+  const handlePublishBlacklist = async (comp: Complaint) => {
+    if (!(await persistComplaint(
       comp.id, 
       'published_blacklisted', 
       '30 gün boyunca iyi niyet gösterilmedi veya telafi reddedildi. İşletme Xenios Uyarı Panosu\'nda yayınlandı.',
       true
-    );
+    ))) return;
     toast.error("İşletme kamuya açık Uyarı Panosu'na eklendi.");
     refreshData();
   };

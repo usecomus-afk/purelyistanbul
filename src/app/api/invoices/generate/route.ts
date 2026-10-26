@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/api-auth';
 import { EInvoiceService, EInvoicePayloadDTO } from '@/services/eInvoiceService';
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const payload = await req.json() as EInvoicePayloadDTO;
 
@@ -18,6 +22,9 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   const { searchParams } = new URL(req.url);
   const bookingId = searchParams.get('bookingId');
 

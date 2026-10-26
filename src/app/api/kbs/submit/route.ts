@@ -1,8 +1,12 @@
+import { rateLimit, requireStaff } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { KbsService } from '@/services/kbsService';
 import { KbsGuestRecord } from '@/types/kbs';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'kbs-submit', 20, 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json() as Partial<KbsGuestRecord>;
 
@@ -46,8 +50,13 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  // Misafir kimlik kayıtları kişisel veridir: yalnızca otel personeli / yönetici.
+  // Otel yöneticisi yalnızca kendi otelinin kayıtlarını görebilir.
   const { searchParams } = new URL(req.url);
-  const hotelId = searchParams.get('hotelId') || undefined;
+  const requested = searchParams.get('hotelId') || undefined;
+  const staff = await requireStaff(req, requested);
+  if (staff.denied) return staff.denied;
+  const hotelId = staff.claims.role === 'hotel_manager' ? staff.claims.hotelId : requested;
   const records = KbsService.getKbsRecords(hotelId);
   return NextResponse.json({ success: true, count: records.length, records });
 }

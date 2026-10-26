@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAdminAuthOrNull, getAdminDbOrNull } from '@/lib/firebase-admin';
 import { verifyTOTP } from '@/lib/totp';
+import { getAdminEmail, hasAdminPasswordSource, rateLimit, verifyAdminPassword } from '@/lib/api-auth';
 
 /**
  * Cockpit & usepurelydashboard admin girişini onaylar.
@@ -8,16 +9,26 @@ import { verifyTOTP } from '@/lib/totp';
  * Onay sonrasında Firebase admin custom token döner.
  */
 export async function POST(req: Request) {
+  // Kaba kuvvet koruması: IP başına 15 dk'da 8 deneme.
+  const limited = rateLimit(req, 'admin-login', 8, 15 * 60 * 1000);
+  if (limited) return limited;
+
   try {
     const { email, password, totpCode } = await req.json();
 
-    const expectedEmail = (process.env.ADMIN_EMAIL || 'anilaslan@usecomus.com').trim().toLowerCase();
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'Camille+1618';
+    if (!(await hasAdminPasswordSource())) {
+      console.error('[admin-login] No admin password source (ADMIN_PASSWORD missing); login disabled.');
+      return NextResponse.json(
+        { success: false, error: 'Y\u00f6netici giri\u015fi sunucuda yap\u0131land\u0131r\u0131lmam\u0131\u015f.' },
+        { status: 503 }
+      );
+    }
+    const expectedEmail = getAdminEmail();
 
     const providedEmail = (email ?? '').toString().trim().toLowerCase();
     const providedPassword = (password ?? '').toString();
 
-    const isMatch = (providedEmail === expectedEmail || providedEmail === 'anilaslan') && providedPassword === expectedPassword;
+    const isMatch = (providedEmail === expectedEmail || providedEmail === 'anilaslan') && (await verifyAdminPassword(providedPassword));
 
     if (!isMatch) {
       return NextResponse.json({ success: false, error: 'E-posta veya şifre hatalı.' }, { status: 401 });
@@ -73,13 +84,13 @@ export async function POST(req: Request) {
         try {
           userRecord = await adminAuth.getUserByEmail(expectedEmail);
           await adminAuth.updateUser(userRecord.uid, {
-            password: expectedPassword,
+            password: providedPassword,
             emailVerified: true,
           });
         } catch {
           userRecord = await adminAuth.createUser({
             email: expectedEmail,
-            password: expectedPassword,
+            password: providedPassword,
             emailVerified: true,
           });
         }

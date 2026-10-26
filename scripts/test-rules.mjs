@@ -208,6 +208,146 @@ async function run() {
     "deny"
   );
 
+  // ---- Otel portalı / operasyon koleksiyonları (sıkılaştırma) ----
+  await check(
+    "hotels: kimliksiz istemci otel oluşturamaz",
+    setDoc(doc(anon.firestore(), "hotels", "hx"), { name: "Hack Hotel" }),
+    "deny"
+  );
+  await check(
+    "hotels: admin geçerli adla yazabilir",
+    setDoc(doc(admin.firestore(), "hotels", "hx"), { name: "Real Hotel" }),
+    "allow"
+  );
+  await check(
+    "hotels: admin bile adsız otel yazamaz",
+    setDoc(doc(admin.firestore(), "hotels", "hy"), { city: "Istanbul" }),
+    "deny"
+  );
+
+  const validReq = {
+    id: "r1",
+    serviceKey: "towels",
+    serviceTitle: "Havlu",
+    hotelId: "h1",
+    roomNumber: "101",
+    status: "pending",
+    notes: "x",
+    createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z"
+  };
+  await check(
+    "service_requests: kimliksiz geçerli talep oluşturabilir",
+    setDoc(doc(anon.firestore(), "service_requests", "r1"), validReq),
+    "allow"
+  );
+  await check(
+    "service_requests: status!='pending' ile oluşturulamaz",
+    setDoc(doc(anon.firestore(), "service_requests", "r2"), { ...validReq, id: "r2", status: "completed" }),
+    "deny"
+  );
+  await check(
+    "service_requests: alan eksik talep reddedilir",
+    setDoc(doc(anon.firestore(), "service_requests", "r3"), { id: "r3", status: "pending" }),
+    "deny"
+  );
+  await check(
+    "service_requests: dev boyutlu serviceTitle reddedilir",
+    setDoc(doc(anon.firestore(), "service_requests", "r4"), { ...validReq, id: "r4", serviceTitle: "a".repeat(500) }),
+    "deny"
+  );
+  await check(
+    "service_requests: kimliksiz status güncelleyebilir (otel portalı)",
+    updateDoc(doc(anon.firestore(), "service_requests", "r1"), { status: "in_progress", updatedAt: "2026-01-01T01:00:00.000Z" }),
+    "allow"
+  );
+  await check(
+    "service_requests: kimliksiz geçersiz status'a güncelleyemez",
+    updateDoc(doc(anon.firestore(), "service_requests", "r1"), { status: "hacked" }),
+    "deny"
+  );
+  await check(
+    "service_requests: kimliksiz hotelId değiştiremez",
+    updateDoc(doc(anon.firestore(), "service_requests", "r1"), { hotelId: "other" }),
+    "deny"
+  );
+  await check(
+    "service_requests: aktif (in_progress) talep kimliksiz silinemez",
+    deleteDoc(doc(anon.firestore(), "service_requests", "r1")),
+    "deny"
+  );
+  await check(
+    "service_requests: tamamlanan talep kimliksiz silinebilir (geçici, TODO hotel-auth)",
+    (async () => {
+      await updateDoc(doc(anon.firestore(), "service_requests", "r1"), { status: "completed" });
+      await deleteDoc(doc(anon.firestore(), "service_requests", "r1"));
+    })(),
+    "allow"
+  );
+
+  await check(
+    "complaints: kimliksiz geçerli şikayet oluşturabilir",
+    setDoc(doc(anon.firestore(), "complaints", "c1"), {
+      businessName: "Bar X",
+      description: "Fazla ücret",
+      guestEmail: "a@b.com",
+      status: "under_review"
+    }),
+    "allow"
+  );
+  await check("complaints: kimliksiz okuyamaz", getDoc(doc(anon.firestore(), "complaints", "c1")), "deny");
+  await check("complaints: admin okuyabilir", getDoc(doc(admin.firestore(), "complaints", "c1")), "allow");
+  await check(
+    "complaints: dev açıklama reddedilir",
+    setDoc(doc(anon.firestore(), "complaints", "c2"), {
+      businessName: "Bar X",
+      description: "a".repeat(6000),
+      guestEmail: "a@b.com",
+      status: "under_review"
+    }),
+    "deny"
+  );
+
+  await check(
+    "investment_leads: geçerli talep oluşturulabilir",
+    setDoc(doc(anon.firestore(), "investment_leads", "il1"), { guestName: "Ali", guestContact: "+90555" }),
+    "allow"
+  );
+  await check(
+    "investment_leads: adsız talep reddedilir",
+    setDoc(doc(anon.firestore(), "investment_leads", "il2"), { guestContact: "+90555" }),
+    "deny"
+  );
+  await check(
+    "notifications_log: geçerli log oluşturulabilir",
+    setDoc(doc(anon.firestore(), "notifications_log", "n1"), { type: "room_service", title: "t", details: { a: 1 } }),
+    "allow"
+  );
+  await check(
+    "notifications_log: dev başlık reddedilir",
+    setDoc(doc(anon.firestore(), "notifications_log", "n2"), { type: "room_service", title: "a".repeat(2000) }),
+    "deny"
+  );
+  await check(
+    "ai_logs: geçerli log oluşturulabilir",
+    setDoc(doc(anon.firestore(), "ai_logs", "a1"), { message: "merhaba" }),
+    "allow"
+  );
+
+  // isAdmin() e-posta yedeği: e-posta doğrulanmadıkça geçerli değil
+  const unverifiedFounder = testEnv.authenticatedContext("f1", { email: "anilaslan@usecomus.com", email_verified: false });
+  const verifiedFounder = testEnv.authenticatedContext("f2", { email: "anilaslan@usecomus.com", email_verified: true });
+  await check(
+    "isAdmin: doğrulanmamış e-posta admin sayılmaz",
+    getDoc(doc(unverifiedFounder.firestore(), "system_alerts", "a1")),
+    "deny"
+  );
+  await check(
+    "isAdmin: doğrulanmış e-posta admin sayılır",
+    getDoc(doc(verifiedFounder.firestore(), "system_alerts", "a1")),
+    "allow"
+  );
+
   // ---- Storage kuralları ----
   const image = new Uint8Array([1, 2, 3]);
   await check(

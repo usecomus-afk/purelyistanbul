@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HotelAuthGuard } from "@/components/hotel/hotel-auth-guard";
+import { hotelLogout } from "@/lib/hotel-auth";
 import { Building2, BellRing, LogOut, ArrowLeft, Volume2, VolumeX, DoorOpen } from "lucide-react";
 import { XeniosStore } from "@/lib/store";
 import { HotelAudioNotification, HotelAudioNotificationPrefs } from "@/lib/hotel-audio-notification";
@@ -71,6 +72,7 @@ export default function HotelPortalLayout({
 
   const handleLogout = () => {
     XeniosStore.setHotelPortalLoggedIn(false);
+    hotelLogout();
     if (typeof window !== 'undefined') {
       localStorage.removeItem('xenios_app_role');
       localStorage.removeItem('xenios_hotel_remember_me');

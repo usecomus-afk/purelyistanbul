@@ -1,7 +1,14 @@
+import { rateLimit, requireStaff } from '@/lib/api-auth';
 import { NextResponse } from 'next/server';
 import { WhatsAppService } from '@/services/whatsappService';
 
 export async function POST(req: Request) {
+  const limited = rateLimit(req, 'wa-confirm', 30, 60 * 1000);
+  if (limited) return limited;
+
+  const staff = await requireStaff(req);
+  if (staff.denied) return staff.denied;
+
   try {
     const body = await req.json();
     const phone = String(body.phone || '').trim();

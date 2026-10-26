@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
+import { requireAdminOrCron } from '@/lib/api-auth';
 import { InventoryEngine } from '@/services/inventoryEngine';
 
-export async function POST() {
+// Süresi dolan envanter kilitlerini serbest bırakır. Yalnızca zamanlanmış görev
+// (Authorization: Bearer CRON_SECRET) veya yönetici çağırabilir.
+export async function POST(req: Request) {
+  const denied = await requireAdminOrCron(req);
+  if (denied) return denied;
+
   try {
     const result = await InventoryEngine.releaseExpiredLocks();
     return NextResponse.json({
@@ -15,6 +21,6 @@ export async function POST() {
   }
 }
 
-export async function GET() {
-  return POST();
+export async function GET(req: Request) {
+  return POST(req);
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { WhatsAppService } from '@/services/whatsappService';
+import { verifyHmacSha256, webhookGate } from '@/lib/api-auth';
 
 const FIRESTORE_BASE_URL =
   'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents';
@@ -174,7 +175,7 @@ export async function GET(req: Request) {
   const token = searchParams.get('hub.verify_token') || '';
   const challenge = searchParams.get('hub.challenge') || '';
 
-  if (mode === 'subscribe' && VERIFY_TOKENS.has(token)) {
+  if (mode === 'subscribe' && token && VERIFY_TOKENS.has(token)) {
     return new Response(challenge, {
       status: 200,
       headers: { 'Content-Type': 'text/plain' },
@@ -191,7 +192,14 @@ export async function GET(req: Request) {
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const waSecret = process.env.WHATSAPP_APP_SECRET?.trim();
+    const gate = webhookGate(
+      waSecret,
+      !!waSecret && verifyHmacSha256(rawBody, req.headers.get('x-hub-signature-256'), waSecret)
+    );
+    if (!gate.ok) return gate.response;
+    const body = JSON.parse(rawBody);
     const entries = Array.isArray(body?.entry) ? body.entry : [];
     const processed: Array<{
       requestId: string;

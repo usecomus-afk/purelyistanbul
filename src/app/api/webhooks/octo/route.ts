@@ -8,6 +8,7 @@
 
 import { NextResponse } from 'next/server';
 import { WhatsAppService } from '@/services/whatsappService';
+import { verifyHmacSha256, webhookGate } from '@/lib/api-auth';
 
 export interface OctoWebhookEvent {
   event: 'BOOKING_CANCELLED' | 'AVAILABILITY_UPDATED' | 'TIMETABLE_CHANGED' | 'BOOKING_CONFIRMED';
@@ -26,7 +27,14 @@ export interface OctoWebhookEvent {
 
 export async function POST(req: Request) {
   try {
-    const payload = await req.json() as OctoWebhookEvent;
+    const rawBody = await req.text();
+    const octoSecret = process.env.OCTO_WEBHOOK_SECRET?.trim();
+    const gate = webhookGate(
+      octoSecret,
+      !!octoSecret && verifyHmacSha256(rawBody, req.headers.get('x-octo-signature'), octoSecret)
+    );
+    if (!gate.ok) return gate.response;
+    const payload = JSON.parse(rawBody) as OctoWebhookEvent;
     const { event, provider, bookingReference, productId, vacancies, newStartDateTime, reason, guestPhone, guestName } = payload;
 
     console.log(`[OCTO INBOUND WEBHOOK] Event: ${event} | Provider: ${provider} | Product: ${productId}`);
