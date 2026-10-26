@@ -678,7 +678,7 @@ export default function HotelLiveRequestsPage() {
                     >
                       <option value="default_manager">
                         Genel Sorumlu ({liveHotel.managerName || 'Yönetici'} ·{' '}
-                        {liveHotel.whatsappPhone || liveHotel.managerPhone || '05325809676'})
+                        {!liveHotel.modules?.hideDefaultManager ? (liveHotel.whatsappPhone || liveHotel.managerPhone || 'Ana Hat') : 'Seçiniz'})
                       </option>
                       {staffList.map((st) => (
                         <option key={st.id} value={st.id}>

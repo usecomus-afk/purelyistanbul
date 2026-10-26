@@ -10,13 +10,11 @@ import {
   Phone,
   Plus,
   Trash2,
-  CheckCircle2,
   Send,
-  ShieldCheck,
   ChevronDown,
   ChevronUp,
   UserCheck,
-  Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -71,6 +69,8 @@ export function StaffWhatsappRoutingPanel({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [staffList, setStaffList] = useState<HotelStaffMember[]>([]);
   const [routingMap, setRoutingMap] = useState<Record<string, string>>({});
+  const [hiddenDepts, setHiddenDepts] = useState<string[]>([]);
+  const [hideDefaultManager, setHideDefaultManager] = useState<boolean>(false);
 
   // New staff form
   const [newName, setNewName] = useState('');
@@ -92,27 +92,48 @@ export function StaffWhatsappRoutingPanel({
         ? freshHotel.departmentStaffRouting
         : {}
     );
+    setHiddenDepts(
+      Array.isArray(freshHotel.modules?.hiddenStaffDepartments)
+        ? freshHotel.modules!.hiddenStaffDepartments
+        : []
+    );
+    setHideDefaultManager(Boolean(freshHotel.modules?.hideDefaultManager));
   }, [hotel.id, hotel.updatedAt]);
 
-  const persistToStoreAndFirestore = (
+  const persistAll = (
     nextStaff: HotelStaffMember[],
-    nextRouting: Record<string, string>
+    nextRouting: Record<string, string>,
+    nextHiddenDepts: string[] = hiddenDepts,
+    nextHideDefaultManager: boolean = hideDefaultManager,
+    extraHotelPatch?: Partial<Hotel>
   ) => {
     setStaffList(nextStaff);
     setRoutingMap(nextRouting);
+    setHiddenDepts(nextHiddenDepts);
+    setHideDefaultManager(nextHideDefaultManager);
 
-    XeniosStore.updateHotel(hotel.id, {
+    const freshHotel = XeniosStore.getHotelById(hotel.id) || hotel;
+    const updatedModules = {
+      ...(freshHotel.modules || {}),
+      hiddenStaffDepartments: nextHiddenDepts,
+      hideDefaultManager: nextHideDefaultManager,
+    };
+
+    const patch: Partial<Hotel> = {
       staffMembers: nextStaff,
       departmentStaffRouting: nextRouting,
-    });
+      modules: updatedModules,
+      ...(extraHotelPatch || {}),
+    };
+
+    XeniosStore.updateHotel(hotel.id, patch);
 
     if (typeof window !== 'undefined') {
       const merged = XeniosStore.getHotelById(hotel.id);
       if (merged) {
         FirestoreService.upsertHotel({
           ...merged,
-          staffMembers: nextStaff,
-          departmentStaffRouting: nextRouting,
+          ...patch,
         }).catch(() => {});
       }
     }
@@ -151,16 +172,16 @@ export function StaffWhatsappRoutingPanel({
     const nextStaff = [...staffList, created];
     const nextRouting = { ...routingMap };
 
-    // Auto-bind selected departments to this new staff member if not yet routed
+    // Seçilen departmanları yeni eklenen personele bağla
     if (!newReceiveAll) {
       for (const d of created.departments) {
-        if (d !== 'all' && !nextRouting[d]) {
+        if (d !== 'all' && (!nextRouting[d] || nextRouting[d] === 'none' || nextRouting[d] === 'default_manager')) {
           nextRouting[d] = created.id;
         }
       }
     }
 
-    persistToStoreAndFirestore(nextStaff, nextRouting);
+    persistAll(nextStaff, nextRouting);
     setNewName('');
     setNewPhone('');
     setNewReceiveAll(false);
@@ -174,28 +195,76 @@ export function StaffWhatsappRoutingPanel({
     const nextRouting = { ...routingMap };
     for (const k of Object.keys(nextRouting)) {
       if (nextRouting[k] === staffId) {
-        delete nextRouting[k];
+        nextRouting[k] = 'none';
       }
     }
-    persistToStoreAndFirestore(nextStaff, nextRouting);
-    toast.success(`${staffName} kaydı kaldırıldı.`);
+    persistAll(nextStaff, nextRouting);
+    toast.success(`${staffName} kaydı silindi.`);
+  };
+
+  const handleDeleteDefaultManager = () => {
+    const nextRouting = { ...routingMap };
+    for (const dept of STAFF_DEPARTMENTS) {
+      if (!nextRouting[dept.key] || nextRouting[dept.key] === 'default_manager') {
+        nextRouting[dept.key] = 'none';
+      }
+    }
+    persistAll(staffList, nextRouting, hiddenDepts, true, {
+      whatsappPhone: '',
+      managerPhone: '',
+    });
+    toast.success('Varsayılan Ana Sorumlu / Genel Yönetici numarası listeden silindi.');
+  };
+
+  const handleDeleteDepartmentCard = (deptKey: string, deptLabel: string) => {
+    const nextHidden = Array.from(new Set([...hiddenDepts, deptKey]));
+    const nextRouting = { ...routingMap, [deptKey]: 'none' };
+    persistAll(staffList, nextRouting, nextHidden, hideDefaultManager);
+    toast.success(`"${deptLabel}" departmanı listeden silindi.`);
+  };
+
+  const handleClearDepartmentAssignment = (deptKey: string, deptLabel: string) => {
+    const currentAssignedId = routingMap[deptKey];
+    // Eğer özel bir personel seçiliyse atamasını kaldır, varsayılan yönetici seçiliyse 'none' yap
+    const nextRouting = { ...routingMap, [deptKey]: 'none' };
+    if (currentAssignedId && currentAssignedId !== 'default_manager' && currentAssignedId !== 'none') {
+      const matched = staffList.find((s) => s.id === currentAssignedId);
+      persistAll(staffList, nextRouting);
+      toast.success(
+        `${deptLabel} departmanındaki ${matched?.name || 'personel'} ataması silindi.`
+      );
+    } else {
+      persistAll(staffList, nextRouting, hiddenDepts, true);
+      toast.success(`${deptLabel} departmanındaki sorumlu ataması silindi.`);
+    }
+  };
+
+  const handleRestoreDepartments = () => {
+    persistAll(staffList, routingMap, [], hideDefaultManager);
+    toast.success('Silinen departmanlar geri yüklendi.');
   };
 
   const handleToggleStaffActive = (staffId: string) => {
     const nextStaff = staffList.map((s) =>
       s.id === staffId ? { ...s, active: !s.active } : s
     );
-    persistToStoreAndFirestore(nextStaff, routingMap);
+    persistAll(nextStaff, routingMap);
   };
 
   const handleChangeDepartmentRoute = (deptKey: string, staffId: string) => {
     const nextRouting = { ...routingMap };
+    if (staffId === 'none') {
+      nextRouting[deptKey] = 'none';
+      persistAll(staffList, nextRouting);
+      toast.info(`${deptKey} için otomatik WhatsApp yönlendirmesi kaldırıldı.`);
+      return;
+    }
     if (!staffId || staffId === 'default_manager') {
       delete nextRouting[deptKey];
     } else {
       nextRouting[deptKey] = staffId;
     }
-    persistToStoreAndFirestore(staffList, nextRouting);
+    persistAll(staffList, nextRouting);
     const matched = staffList.find((s) => s.id === staffId);
     toast.success(
       matched
@@ -239,6 +308,14 @@ export function StaffWhatsappRoutingPanel({
     }
   };
 
+  const visibleDepartments = STAFF_DEPARTMENTS.filter(
+    (d) => !hiddenDepts.includes(d.key)
+  );
+
+  const defaultManagerPhone = !hideDefaultManager
+    ? hotel.whatsappPhone || hotel.managerPhone || ''
+    : '';
+
   return (
     <div className="luxury-service-card p-4 sm:p-5 rounded-3xl space-y-4 w-full box-border">
       {/* Header Bar */}
@@ -274,7 +351,7 @@ export function StaffWhatsappRoutingPanel({
 
       {isExpanded && (
         <div className="space-y-5 text-xs">
-          {/* 1. OTOMATİK YÖNLENDİRME MATRİSİ (Departman -> Sorumlu Personel Seçimi) */}
+          {/* 1. OTOMATİK YÖNLENDİRME MATRİSİ (Departman -> Sorumlu Personel Seçimi & Silme) */}
           <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/90 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
@@ -283,54 +360,221 @@ export function StaffWhatsappRoutingPanel({
                   <span>Departman Bazlı Otomatik WhatsApp Yönlendirme Seçimi</span>
                 </h3>
                 <p className="text-[11px] text-zinc-600">
-                  Yönetim panelini kullanan ana sorumlu tüm talep ve siparişleri görür; ayrıca aşağıdan seçtiğiniz departman sorumlularına ilgili talep geldiği anda otomatik WhatsApp mesajı gider.
+                  Yönetim panelini kullanan ana sorumlu tüm talep ve siparişleri görür; ayrıca aşağıdan seçtiğiniz departman sorumlularına ilgili talep geldiği anda otomatik WhatsApp mesajı gider. İstemediğiniz departmanı veya sorumlu atamasını <strong>Sil</strong> butonuyla kaldırabilirsiniz.
                 </p>
               </div>
-              <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-amber-900 shrink-0">
-                Ana Sorumlu: {hotel.managerName || 'İşletme Yöneticisi'} ({hotel.whatsappPhone || hotel.managerPhone || '05325809676'})
-              </span>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              {STAFF_DEPARTMENTS.map((dept) => {
-                const selectedStaffId = routingMap[dept.key] || 'default_manager';
-                return (
-                  <div
-                    key={dept.key}
-                    className="p-3 rounded-xl bg-white border border-amber-200 flex flex-col justify-between gap-2"
+              {!hideDefaultManager && (
+                <div className="inline-flex items-center justify-between sm:justify-start gap-2 px-2.5 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-900 shrink-0">
+                  <span className="text-[10.5px] font-bold">
+                    Ana Sorumlu: {hotel.managerName || 'İşletme Yöneticisi'}
+                    {defaultManagerPhone ? ` (${defaultManagerPhone})` : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleDeleteDefaultManager}
+                    className="px-2 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition"
+                    title="Ana Sorumlu Numarasını / Atamasını Sil"
                   >
-                    <div>
-                      <span className="font-bold text-zinc-900 block text-xs">
-                        {dept.label}
-                      </span>
-                      <span className="text-[10px] text-zinc-500 block leading-snug mt-0.5">
-                        {dept.desc}
-                      </span>
-                    </div>
-
-                    <select
-                      value={selectedStaffId}
-                      onChange={(e) => handleChangeDepartmentRoute(dept.key, e.target.value)}
-                      className="w-full p-2 rounded-lg bg-amber-50/50 border border-amber-300 text-[11px] font-bold text-zinc-900 cursor-pointer focus:outline-none"
-                    >
-                      <option value="default_manager">
-                        Genel Sorumlu Yönetici ({hotel.whatsappPhone || hotel.managerPhone || 'Ana Hat'})
-                      </option>
-                      {staffList
-                        .filter((s) => s.active)
-                        .map((st) => (
-                          <option key={st.id} value={st.id}>
-                            {st.name} — {st.roleTitle} ({st.whatsappPhone})
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                );
-              })}
+                    <Trash2 className="w-3 h-3" />
+                    <span>Sil</span>
+                  </button>
+                </div>
+              )}
             </div>
+
+            {visibleDepartments.length === 0 ? (
+              <div className="p-4 rounded-xl bg-white border border-amber-200 text-center space-y-2">
+                <p className="text-xs text-zinc-600">
+                  Listedeki tüm departmanlar silindi.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleRestoreDepartments}
+                  className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Varsayılan Departmanları Geri Yükle</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                {visibleDepartments.map((dept) => {
+                  const rawRoute = routingMap[dept.key];
+                  const selectedStaffId =
+                    rawRoute === 'none'
+                      ? 'none'
+                      : rawRoute
+                      ? rawRoute
+                      : hideDefaultManager
+                      ? 'none'
+                      : 'default_manager';
+
+                  return (
+                    <div
+                      key={dept.key}
+                      className="p-3 rounded-xl bg-white border border-amber-200 flex flex-col justify-between gap-2.5"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="font-bold text-zinc-900 block text-xs">
+                            {dept.label}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 block leading-snug mt-0.5">
+                            {dept.desc}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDepartmentCard(dept.key, dept.label)}
+                          className="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer transition"
+                          title="Bu Departmanı Listeden Sil"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Sil</span>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <select
+                          value={selectedStaffId}
+                          onChange={(e) => handleChangeDepartmentRoute(dept.key, e.target.value)}
+                          className="flex-1 min-w-0 p-2 rounded-lg bg-amber-50/50 border border-amber-300 text-[11px] font-bold text-zinc-900 cursor-pointer focus:outline-none"
+                        >
+                          <option value="none">
+                            — Sorumlu Atanmadı (Seçiniz) —
+                          </option>
+                          {!hideDefaultManager && (
+                            <option value="default_manager">
+                              Genel Sorumlu Yönetici{defaultManagerPhone ? ` (${defaultManagerPhone})` : ''}
+                            </option>
+                          )}
+                          {staffList
+                            .filter((s) => s.active)
+                            .map((st) => (
+                              <option key={st.id} value={st.id}>
+                                {st.name} — {st.roleTitle} ({st.whatsappPhone})
+                              </option>
+                            ))}
+                        </select>
+
+                        {selectedStaffId !== 'none' && (
+                          <button
+                            type="button"
+                            onClick={() => handleClearDepartmentAssignment(dept.key, dept.label)}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shrink-0 cursor-pointer transition"
+                            title="Seçili Sorumlu Atamasını Kaldır / Sil"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {hiddenDepts.length > 0 && visibleDepartments.length > 0 && (
+              <div className="flex items-center justify-end pt-1">
+                <button
+                  type="button"
+                  onClick={handleRestoreDepartments}
+                  className="text-[11px] font-bold text-amber-900 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Silinen Departmanları Geri Yükle ({hiddenDepts.length})</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* 2. YENİ SORUMLU PERSONEL KAYIT FORMU */}
+          {/* 2. KAYITLI SORUMLU PERSONELLER LİSTESİ (Silme Seçenekli) */}
+          {staffList.length > 0 && (
+            <div className="p-4 rounded-2xl bg-white/90 border border-amber-200 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-zinc-900">
+                  Kayıtlı Sorumlu Personeller ({staffList.length})
+                </span>
+                <span className="text-[10px] text-zinc-500">
+                  Personeli silmek için sağdaki <strong>Sil</strong> butonunu kullanın
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {staffList.map((st) => (
+                  <div
+                    key={st.id}
+                    className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${
+                      st.active
+                        ? 'bg-amber-50/30 border-amber-200'
+                        : 'bg-zinc-100/80 border-zinc-300 opacity-70'
+                    }`}
+                  >
+                    <div className="min-w-0 space-y-0.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <strong className="text-xs font-bold text-zinc-900">
+                          {st.name}
+                        </strong>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-semibold">
+                          {st.roleTitle}
+                        </span>
+                        {st.receiveAllAlerts && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                            Tüm Talepler
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] font-mono text-emerald-800 font-bold flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        <span>{st.whatsappPhone}</span>
+                      </div>
+                      <div className="text-[10px] text-zinc-500">
+                        Departmanlar:{' '}
+                        {st.receiveAllAlerts || st.departments.includes('all')
+                          ? 'Tüm Departmanlar'
+                          : st.departments.join(', ')}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleSendTestToStaff(st)}
+                        disabled={testingStaffId === st.id}
+                        className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold cursor-pointer"
+                        title="Bu personele test WhatsApp mesajı gönder"
+                      >
+                        {testingStaffId === st.id ? '...' : '📲 Test'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStaffActive(st.id)}
+                        className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold border cursor-pointer ${
+                          st.active
+                            ? 'bg-emerald-600 text-white border-emerald-700'
+                            : 'bg-zinc-200 text-zinc-700 border-zinc-300'
+                        }`}
+                      >
+                        {st.active ? 'Aktif' : 'Pasif'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteStaff(st.id, st.name)}
+                        className="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition"
+                        title="Personeli Sil"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Sil</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3. YENİ SORUMLU PERSONEL KAYIT FORMU */}
           <div className="p-4 rounded-2xl bg-emerald-50/45 border border-emerald-200/90 space-y-3">
             <div className="font-bold text-emerald-950 flex items-center gap-1.5">
               <Plus className="w-4 h-4 text-emerald-700" />
@@ -433,84 +677,6 @@ export function StaffWhatsappRoutingPanel({
               </button>
             </div>
           </div>
-
-          {/* 3. KAYITLI SORUMLU PERSONELLER LİSTESİ */}
-          {staffList.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-[11px] font-bold text-zinc-700 block">
-                Kayıtlı Sorumlu Personeller ({staffList.length})
-              </span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                {staffList.map((st) => (
-                  <div
-                    key={st.id}
-                    className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${
-                      st.active
-                        ? 'bg-white border-amber-200'
-                        : 'bg-zinc-100/80 border-zinc-300 opacity-70'
-                    }`}
-                  >
-                    <div className="min-w-0 space-y-0.5">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <strong className="text-xs font-bold text-zinc-900">
-                          {st.name}
-                        </strong>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-semibold">
-                          {st.roleTitle}
-                        </span>
-                        {st.receiveAllAlerts && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
-                            Tüm Talepler
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] font-mono text-emerald-800 font-bold flex items-center gap-1">
-                        <Phone className="w-3 h-3" />
-                        <span>{st.whatsappPhone}</span>
-                      </div>
-                      <div className="text-[10px] text-zinc-500">
-                        Departmanlar:{' '}
-                        {st.receiveAllAlerts || st.departments.includes('all')
-                          ? 'Tüm Departmanlar'
-                          : st.departments.join(', ')}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => handleSendTestToStaff(st)}
-                        disabled={testingStaffId === st.id}
-                        className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold cursor-pointer"
-                        title="Bu personele test WhatsApp mesajı gönder"
-                      >
-                        {testingStaffId === st.id ? '...' : '📲 Test'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStaffActive(st.id)}
-                        className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold border cursor-pointer ${
-                          st.active
-                            ? 'bg-emerald-600 text-white border-emerald-700'
-                            : 'bg-zinc-200 text-zinc-700 border-zinc-300'
-                        }`}
-                      >
-                        {st.active ? 'Aktif' : 'Pasif'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteStaff(st.id, st.name)}
-                        className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer"
-                        title="Personeli Sil"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
