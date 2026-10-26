@@ -1210,10 +1210,6 @@ export default function AdminPage() {
           </div>
         </main>
 
-        <footer className="max-w-5xl w-full mx-auto text-center text-xs text-[#6B6B55]">
-          © 2026 <span translate="no" className="notranslate">purelyİstanbul</span> • Web, iOS App &amp; PWA Merkezi Yönetim
-        </footer>
-
         {/* Google Authenticator (2FA) Kurulum Modalı */}
         <Admin2FASetupModal
           email={email}
@@ -4237,42 +4233,6 @@ export default function AdminPage() {
             </div>
           </div>
         )}
-
-        {/* Minimalist Comus Footer */}
-        <footer className="mt-10 sm:mt-16 mb-16 md:mb-0 border-t border-[#C8C4B0] px-4 sm:px-6 md:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-[#6B6B55] text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
-            <span className="comus-logo text-lg">
-              purely<span>istanbul</span>
-            </span>
-            <span className="hidden sm:inline">•</span>
-            <span>Merkezi Yönetim Paneli (/admin • PWA)</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <button
-              onClick={handleInstallPwa}
-              className="text-[#3B6D11] font-semibold hover:underline cursor-pointer flex items-center gap-1"
-            >
-              <Download className="w-3 h-3" />
-              <span>{isStandalone ? "PWA Aktif" : "Uygulamayı Cihaza Yükle"}</span>
-            </button>
-            <span>|</span>
-            <Link href="/" target="_blank" className="hover:text-[#3B6D11]">
-              purelyistanbul.com Web
-            </Link>
-            <span>|</span>
-            <Link
-              href="/hotel?h=1&r=304"
-              target="_blank"
-              className="hover:text-[#3B6D11]"
-            >
-              iOS App &amp; PWA Önizleme
-            </Link>
-            <span>|</span>
-            <Link href="/qr-generator" className="hover:text-[#3B6D11]">
-              QR Kod Üretici
-            </Link>
-          </div>
-        </footer>
 
         {/* Mobile Bottom Navigation Bar for PWA & iOS App */}
         <nav
