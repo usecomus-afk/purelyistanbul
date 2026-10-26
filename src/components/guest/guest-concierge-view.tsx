@@ -374,7 +374,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
     visibleExperiences,
     currentPilotDistrict
   );
-  const categories = ['picked-for-you', 'all', ...categoryShowcase.filter((c) => c.tab !== 'invest').map((c) => c.catKey)];
+  const categories = ['picked-for-you', ...categoryShowcase.filter((c) => c.tab !== 'invest').map((c) => c.catKey)];
   const baseExperiencesForCategory =
     selectedCategory === 'picked-for-you'
       ? curatedDistrictExperiences
@@ -500,13 +500,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                   {getCategoryLabel(selectedCategory)}
                 </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('categories')}
-                  className="golden-pill-badge font-luxury-sans text-[11px] font-bold text-[#2C1E0F] px-3.5 py-1.5 rounded-full backdrop-blur-[18px] shadow-xs hover:bg-[rgba(240,195,70,0.48)] active:opacity-75 active:scale-[0.985] transition-all duration-150 cursor-pointer"
-                >
-                  ← {t.allCategories}
-                </button>
+                
               </div>
             ) : (
               <div>
