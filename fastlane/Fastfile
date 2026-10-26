@@ -1,7 +1,7 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Push a new beta build to TestFlight"
+  desc "Push a new beta build to TestFlight (Guest & Hotel App)"
   lane :beta do
     app_store_connect_api_key(
       key_id: ENV["APPSTORE_KEY_ID"],
@@ -56,5 +56,116 @@ platform :ios do
       ipa: "./build/purelyistanbul.ipa",
       skip_waiting_for_build_processing: true
     )
+  end
+
+  desc "Build & Push Purely Admin Operations iOS App to TestFlight"
+  lane :beta_admin do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPSTORE_KEY_ID"],
+      issuer_id: ENV["APPSTORE_ISSUER_ID"],
+      key_content: ENV["APPSTORE_P8_KEY"],
+      is_key_content_base64: false,
+      in_house: false
+    )
+
+    setup_ci
+
+    admin_bundle_id = (ENV["ADMIN_BUNDLE_ID"] && !ENV["ADMIN_BUNDLE_ID"].empty?) ? ENV["ADMIN_BUNDLE_ID"] : "com.usecomus.purelyadmin.R8LQC6KZG8"
+
+    begin
+      existing_apps = Spaceship::ConnectAPI::App.all
+      UI.message("Existing App Store Connect Apps: #{existing_apps.map { |a| "#{a.name} (#{a.bundle_id})" }.join(', ')}")
+    rescue => ex
+      UI.message("Note while listing apps: #{ex.message}")
+    end
+
+    begin
+      bundle_record = Spaceship::ConnectAPI::BundleId.find(admin_bundle_id)
+      if bundle_record.nil?
+        UI.message("Registering new Bundle ID '#{admin_bundle_id}' in Apple Developer Portal...")
+        bundle_record = Spaceship::ConnectAPI::BundleId.create(
+          name: "Purely Istanbul Admin",
+          identifier: admin_bundle_id,
+          platform: Spaceship::ConnectAPI::BundleIdPlatform::IOS
+        )
+        UI.success("Successfully created Bundle ID: #{admin_bundle_id}")
+      else
+        UI.message("Bundle ID '#{admin_bundle_id}' already registered in Apple Developer Portal.")
+      end
+
+      begin
+        bundle_record.create_capability(Spaceship::ConnectAPI::BundleIdCapability::Type::PUSH_NOTIFICATIONS)
+        UI.success("Enabled Push Notifications capability for #{admin_bundle_id}")
+      rescue => cap_err
+        UI.message("Push Notifications capability note: #{cap_err.message}")
+      end
+    rescue => e
+      UI.important("Bundle ID check/creation note: #{e.message}")
+    end
+
+    match(
+      type: "appstore",
+      readonly: false,
+      git_url: "git@github.com:usecomus-afk/purelyistanbul-certs.git",
+      app_identifier: admin_bundle_id,
+      username: "fastlane"
+    )
+
+    update_app_identifier(
+      xcodeproj: "ios/App/App.xcodeproj",
+      plist_path: "App/Info.plist",
+      app_identifier: admin_bundle_id
+    )
+
+    update_info_plist(
+      xcodeproj: "ios/App/App.xcodeproj",
+      plist_path: "App/Info.plist",
+      display_name: "Purely Admin"
+    )
+
+    update_project_team(
+      path: "ios/App/App.xcodeproj",
+      teamid: "R8LQC6KZG8"
+    )
+
+    profile_env_key = "sigh_#{admin_bundle_id}_appstore_profile-path"
+    update_project_provisioning(
+      xcodeproj: "ios/App/App.xcodeproj",
+      profile: ENV[profile_env_key],
+      build_configuration: "Release"
+    )
+
+    increment_build_number(
+      build_number: ENV["GITHUB_RUN_NUMBER"],
+      xcodeproj: "ios/App/App.xcodeproj"
+    )
+
+    build_app(
+      project: "ios/App/App.xcodeproj",
+      scheme: "App",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "PurelyAdmin.ipa",
+      xcargs: "DEVELOPMENT_TEAM=R8LQC6KZG8 CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=\"Apple Distribution\""
+    )
+
+    app_record = Spaceship::ConnectAPI::App.find(admin_bundle_id)
+    if app_record
+      upload_to_testflight(
+        api_key: api_key,
+        ipa: "./build/PurelyAdmin.ipa",
+        app_identifier: admin_bundle_id,
+        skip_waiting_for_build_processing: true
+      )
+      UI.success("🎉 Purely Admin iOS App uploaded to TestFlight!")
+    else
+      UI.important("================================================================================")
+      UI.important("✅ Bundle ID (#{admin_bundle_id}), Provisioning Profile ve imzalı PurelyAdmin.ipa hazır!")
+      UI.important("⚠️ App Store Connect'te henüz '#{admin_bundle_id}' için uygulama kaydı oluşturulmamış.")
+      UI.important("👉 Lütfen https://appstoreconnect.apple.com/apps adresinde (+) New App ->")
+      UI.important("   Bundle ID: #{admin_bundle_id} | Name: Purely Admin | SKU: purelyadmin")
+      UI.important("   olarak oluşturup bu GitHub Action'ı yeniden çalıştırın.")
+      UI.important("================================================================================")
+    end
   end
 end

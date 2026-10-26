@@ -108,7 +108,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let videoURL = Bundle.main.url(forResource: "splash-intro", withExtension: "mp4", subdirectory: "public/videos")
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
-        if let win = self.window, let videoURL = videoURL {
+        let isAdminApp = Bundle.main.bundleIdentifier?.contains("purelyadmin") == true
+        if !isAdminApp, let win = self.window, let videoURL = videoURL {
             let scriptSource = "try { sessionStorage.setItem('purely_splash_v8_played', 'true'); sessionStorage.setItem('purely_splash_v7_played', 'true'); sessionStorage.setItem('purely_splash_v6_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V8__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH_V7__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH_V6__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
             let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)

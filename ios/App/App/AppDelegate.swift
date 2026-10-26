@@ -68,11 +68,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             "https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app/api/notifications/register-device",
             "https://purelyistanbul.com/api/notifications/register-device"
         ]
+        let isAdminApp = Bundle.main.bundleIdentifier?.contains("purelyadmin") == true
         var payload: [String: Any] = [
             "deviceToken": tokenHex,
             "apnsToken": tokenHex,
             "platform": "ios",
-            "role": "staff"
+            "role": isAdminApp ? "admin" : "staff"
         ]
         if let hotelId = hotelId, !hotelId.isEmpty {
             payload["hotelId"] = hotelId
@@ -268,7 +269,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         DispatchQueue.main.async {
             if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let rootVC = scene.windows.first?.rootViewController as? CAPBridgeViewController {
-                rootVC.webView?.evaluateJavaScript("window.location.href = '/hotel-portal/requests';", completionHandler: nil)
+                let isAdminApp = Bundle.main.bundleIdentifier?.contains("purelyadmin") == true
+                let targetPath = isAdminApp ? "/admin" : "/hotel-portal/requests"
+                rootVC.webView?.evaluateJavaScript("window.location.href = '\(targetPath)';", completionHandler: nil)
             }
         }
         completionHandler()
