@@ -45,7 +45,7 @@ export interface PropertyLiveContext {
  * Base System Instruction for Comus (temperature: 0.35, maxOutputTokens: 350)
  * Comus already introduces himself in the first welcome message; never repeat "Ben Comus" / "I am Comus" in follow-up replies.
  */
-export const COMUS_SYSTEM_INSTRUCTION = `You are Comus, the dedicated digital stay and city assistant for guests who have traveled from their home countries to visit Istanbul and are staying at Purely Istanbul partner properties.
+const COMUS_SYSTEM_INSTRUCTION = `You are Comus, the dedicated digital stay and city assistant for guests who have traveled from their home countries to visit Istanbul and are staying at Purely Istanbul partner properties.
 Your core mission: Assist international and domestic guests throughout their stay in Istanbul—helping with their in-accommodation requests and providing practical, reliable guidance on getting around the city, local routes, and dining spots.
 
 NAME, PURPOSE & CONVERSATION CONTINUITY RULES (CRITICAL):
@@ -92,7 +92,7 @@ When the guest requests any in-stay service:
 /**
  * Builds the full Gemini system_instruction with the injected [LIVE PROPERTY SNAPSHOT] JSON.
  */
-export function buildComusSystemInstruction(
+function buildComusSystemInstruction(
   liveContext: PropertyLiveContext,
   publishedListingsText: string = formatCatalogForPrompt([])
 ): string {
@@ -146,7 +146,7 @@ Sen Comus'sun, ${liveContext.propertyName} adlı tesisin özel dijital asistanı
 /**
  * Infers whether a property is a boutique "hotel" or short-term rental "apartment" (PMC / suite / residence).
  */
-export function inferPropertyType(
+function inferPropertyType(
   rawType?: string,
   propertyName?: string
 ): 'hotel' | 'apartment' {
@@ -170,7 +170,7 @@ export function inferPropertyType(
 /**
  * Formats unitName appropriately based on propertyType and raw unit_id.
  */
-export function formatUnitName(
+function formatUnitName(
   rawUnitId: string,
   propertyType: 'hotel' | 'apartment',
   roomTypeLabel?: string
@@ -204,7 +204,7 @@ export function formatUnitName(
 /**
  * Checks if current Istanbul time (Europe/Istanbul, UTC+3) is within a working hours window like "08:00 - 11:30".
  */
-export function isWithinIstanbulWorkingHours(hoursRange?: string): boolean {
+function isWithinIstanbulWorkingHours(hoursRange?: string): boolean {
   if (!hoursRange || hoursRange === '7/24' || hoursRange === '24/7') return true;
   const match = hoursRange.match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
   if (!match) return true;
@@ -395,7 +395,7 @@ async function fetchFirestoreDoc(collectionName: string, docId: string): Promise
 /**
  * Queries Firestore and merges with local/client fallback to construct a real-time PropertyLiveContext.
  */
-export async function fetchPropertyLiveContext({
+async function fetchPropertyLiveContext({
   propertyId,
   unitId,
   fallbackHotelName,
@@ -588,7 +588,7 @@ export async function fetchPropertyLiveContext({
 
 // İBB UKOME taksi tarifesi. Tarifeler periyodik olarak değiştiği için değerler ortam değişkeniyle güncellenebilir;
 // hesaplanan tutar her zaman YAKLAŞIK bir tahmindir, kesin tutarı taksimetre belirler.
-export const UKOME_TAXI_RATES = {
+const UKOME_TAXI_RATES = {
   OPENING_TL: Number(process.env.TAXI_OPENING_TL) || 30,
   PER_KM_TL: Number(process.env.TAXI_PER_KM_TL) || 20,
   MIN_FARE_TL: Number(process.env.TAXI_MIN_FARE_TL) || 100,
@@ -651,7 +651,7 @@ export interface VerifiedPlace {
  * Uses the configured İBB UKOME taxi tariff (UKOME_TAXI_RATES, env-overridable)
  * to compute an APPROXIMATE Turkish Lira estimate (not an exact fare).
  */
-export function checkTaxiFare({
+function checkTaxiFare({
   origin = 'Sultanahmet / Fatih',
   destination = 'Galata / Beyoğlu',
 }: {
@@ -732,7 +732,7 @@ export function checkTaxiFare({
 /**
  * Resolves a requested service string into canonical service ID and checks live availability.
  */
-export function evaluateServiceAvailability(
+function evaluateServiceAvailability(
   rawServiceType: string,
   liveContext?: PropertyLiveContext
 ): {
@@ -801,7 +801,7 @@ export function evaluateServiceAvailability(
  * Verifies if the service is in activeServices and isAvailableNow === true before creating a ticket
  * or emitting `[action:in_stay, service:..., unit:unitName]`.
  */
-export async function createRoomTicket({
+async function createRoomTicket({
   unitId = 'Suite 101',
   hotelId = '',
   hotelName = '',
@@ -975,7 +975,7 @@ export async function createRoomTicket({
  * Platformda ŞU AN YAYINDA olan ilanlarda arama yapar (Firestore canlı katalog).
  * Demo/sabit mekan listesi kullanılmaz; eşleşme yoksa boş döner.
  */
-export async function searchPublishedListingsTool(args: {
+async function searchPublishedListingsTool(args: {
   query?: string;
   category?: string;
   district?: string;
@@ -991,7 +991,7 @@ export async function searchPublishedListingsTool(args: {
 /**
  * Gemini Function Declarations for the 3 Grounding Tools
  */
-export const COMUS_TOOL_DECLARATIONS: FunctionDeclaration[] = [
+const COMUS_TOOL_DECLARATIONS: FunctionDeclaration[] = [
   {
     name: 'checkTaxiFare',
     description:
