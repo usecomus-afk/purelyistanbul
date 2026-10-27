@@ -131,9 +131,6 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
         }
       }
       setPassword('');
-      toast.success(`${currentHotel.name} Yönetim Paneline giriş yapıldı!`, {
-        description: `Hoş geldiniz, ${hotelEmailOrUser.trim()}`
-      });
       setError('');
     } else {
       setError(result.error);

@@ -308,11 +308,10 @@ export function AuthModal({ isOpen, onClose, defaultRole = 'guest', lang: propLa
       }
       XeniosStore.setHotelPortalLoggedIn(true);
       if (typeof window !== 'undefined') localStorage.setItem('xenios_app_role', 'hotel');
-      toast.success(a.hotelLoginSuccess, { description: a.hotelLoginRedirect });
       setTimeout(() => {
         onClose();
         window.location.href = '/hotel-portal';
-      }, 350);
+      }, 200);
       return;
     }
     const inputEmail = email.trim().toLowerCase();
