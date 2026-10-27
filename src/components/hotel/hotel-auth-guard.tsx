@@ -790,11 +790,11 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-luxury-serif text-[18px] font-semibold uppercase tracking-[0.04em] text-[#141414]">
+                    <h3 className="font-luxury-serif text-[18px] font-bold uppercase tracking-[0.04em] text-black">
                       Talep Başarıyla İletildi
                     </h3>
-                    <p className="text-xs text-black font-medium leading-relaxed">
-                      <strong>{forgotEmail}</strong> adresine (hesap kayıtlıysa) şifre sıfırlama talimatı gönderildi.
+                    <p className="text-xs text-black font-semibold leading-relaxed">
+                      <strong className="text-black font-bold">{forgotEmail}</strong> adresine (hesap kayıtlıysa) şifre sıfırlama talimatı gönderildi.
                     </p>
                   </div>
 
