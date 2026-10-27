@@ -1428,11 +1428,11 @@ export function AiChatDrawer({
       }}
     >
       <div
-        className="w-full sm:max-w-lg h-full sm:h-[85vh] max-h-full sm:max-h-[760px] bg-[#FAF8F4] rounded-none sm:rounded-3xl shadow-[0_24px_70px_rgba(34,31,28,0.35)] border-0 sm:border sm:border-[#D8CBB8] flex flex-col overflow-hidden overscroll-none relative text-[#221F1C]"
+        className="w-full sm:max-w-lg h-full sm:h-[85vh] max-h-full sm:max-h-[760px] bg-[#FAF8F4] rounded-t-[28px] sm:rounded-[28px] shadow-[0_24px_70px_rgba(34,31,28,0.35)] border-t-[1.5px] sm:border-[1.5px] border-[rgba(230,185,75,0.55)] flex flex-col overflow-hidden overscroll-none relative text-[#221F1C]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. HEADER: Minimalist title "Comus • Local Guardian & Concierge" with online green indicator */}
-        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b border-[#D8CBB8] touch-none">
+        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b border-[rgba(230,185,75,0.45)] touch-none">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <ComusGlowingAvatar size="md" />
             <div className="min-w-0 flex-1">
@@ -1548,7 +1548,7 @@ export function AiChatDrawer({
                         type="button"
                         disabled={isStreaming}
                         onClick={() => handleSend(chip)}
-                        className="px-3.5 py-2.5 rounded-2xl bg-[#FFFDF9] hover:bg-gradient-to-r hover:from-[#9E7B42] hover:to-[#7D5E2A] hover:text-white text-[#221F1C] border border-[#C59B38]/65 hover:border-[#9E7B42] text-[12px] font-semibold text-left leading-snug transition-all duration-150 cursor-pointer shadow-2xs flex items-center justify-between gap-2 disabled:opacity-50"
+                        className="px-3.5 py-2.5 rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] hover:bg-gradient-to-r hover:from-[#9E7B42] hover:to-[#7D5E2A] hover:text-white text-[#221F1C] border-[1.5px] border-[rgba(230,185,75,0.55)] hover:border-[#9E7B42] text-[12px] font-semibold text-left leading-snug transition-all duration-150 cursor-pointer shadow-xs flex items-center justify-between gap-2 disabled:opacity-50"
                       >
                         <span className="flex-1">{chip}</span>
                         <ArrowRight className="w-3.5 h-3.5 shrink-0 opacity-70" />
@@ -1565,7 +1565,7 @@ export function AiChatDrawer({
                         key={act.raw}
                         type="button"
                         onClick={() => handleActionCardClick(act)}
-                        className="w-full group rounded-2xl bg-gradient-to-r from-[#FFFDF7] via-[#F7EFE0] to-[#EFE2C8] hover:from-[#FAF2E1] hover:to-[#E8D5B2] text-[#221F1C] p-3.5 border border-[#C59B38]/65 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between gap-3 text-left cursor-pointer"
+                        className="w-full group rounded-2xl bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] hover:bg-[rgba(245,215,130,0.32)] text-[#221F1C] p-3.5 border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-xs hover:shadow-md transition-all duration-200 flex items-center justify-between gap-3 text-left cursor-pointer"
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
@@ -1624,7 +1624,7 @@ export function AiChatDrawer({
         {/* INTERACTIVE IN-STAY / TRANSFER ACTION SUB-MODAL OVERLAY */}
         {activeActionModal && (
           <div className="absolute inset-0 z-30 bg-[#221F1C]/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
-            <div className="w-full max-w-md bg-[#FAF8F4] rounded-2xl border border-[#D8CBB8] shadow-2xl p-5 space-y-4 text-[#221F1C]">
+            <div className="luxury-service-card w-full max-w-md bg-[#FAF8F4]/95 backdrop-blur-[18px] rounded-[28px] border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-2xl p-5 space-y-4 text-[#221F1C]">
               <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B6220]">
@@ -1946,14 +1946,14 @@ export function AiChatDrawer({
             e.preventDefault();
             handleSend();
           }}
-          className="p-3 pb-[max(0.85rem,calc(0.5rem+env(safe-area-inset-bottom,20px)))] bg-[#FAF8F4] border-t border-[#DFD5C5] flex items-center gap-2 shrink-0 touch-none"
+          className="p-3 pb-[max(0.85rem,calc(0.5rem+env(safe-area-inset-bottom,20px)))] bg-[#FAF8F4] border-t border-[rgba(230,185,75,0.45)] flex items-center gap-2 shrink-0 touch-none"
         >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={ui.inputPlaceholder}
-            className="flex-1 text-[13px] px-4 py-3 rounded-2xl border border-[#C4B8A4] bg-[#FFFDF9] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9E7B42]/40 focus:border-[#9E7B42] text-[#221F1C] placeholder:text-[#78716C] transition"
+            className="flex-1 text-[13px] px-4 py-3 rounded-2xl border-[1.5px] border-[rgba(230,185,75,0.55)] bg-[#FFFDF9] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9E7B42]/40 focus:border-[#9E7B42] text-[#221F1C] placeholder:text-[#78716C] transition"
           />
           <button
             type="submit"

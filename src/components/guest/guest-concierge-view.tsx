@@ -763,9 +763,9 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
               className="luxury-service-card relative w-full max-w-lg p-5 sm:p-6 space-y-4 animate-in zoom-in-95 text-[#141414]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-[#D8CBB8] pb-3">
+              <div className="flex items-center justify-between border-b border-[rgba(230,185,75,0.45)] pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#FAF8F4] border border-[#C4B8A4] flex items-center justify-center text-[#8E7252] shadow-sm">
+                  <div className="w-9 h-9 rounded-xl gilded-icon-plinth flex items-center justify-center text-[#8E7252] shadow-sm">
                     <Bell className="w-4 h-4 stroke-[1.75]" />
                   </div>
                   <div>
@@ -777,7 +777,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
                 </div>
                 <button 
                   onClick={() => setShowRequestsModal(false)} 
-                  className="w-7 h-7 rounded-full bg-[#FAF8F4] border border-[#C4B8A4] hover:bg-[#EFE8DA] text-[#141414] flex items-center justify-center text-xs font-bold cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-[rgba(245,215,130,0.22)] border border-[rgba(230,185,75,0.55)] hover:bg-[rgba(245,215,130,0.4)] text-[#141414] flex items-center justify-center text-xs font-bold cursor-pointer"
                 >
                   ✕
                 </button>

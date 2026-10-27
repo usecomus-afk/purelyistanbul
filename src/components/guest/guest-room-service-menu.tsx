@@ -511,9 +511,9 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   };
 
   return (
-    <div className="flex flex-col h-[84vh] bg-[#F7F3EA] rounded-[24px] border-[1.5px] border-[#C4B8A4] overflow-hidden relative shadow-2xl text-[#141414]">
+    <div className="luxury-service-card flex flex-col h-[84vh] bg-[#F7F3EA]/95 backdrop-blur-[18px] rounded-[28px] border-[1.5px] border-[rgba(230,185,75,0.55)] overflow-hidden relative shadow-2xl text-[#141414]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[#C4B8A4] z-10 shrink-0">
+      <div className="flex items-center justify-between p-4 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[rgba(230,185,75,0.45)] z-10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="shrink-0">
             <LuxuryServiceIcon serviceKey="roomservice" className="w-11 h-11" />
@@ -523,7 +523,7 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
             <p className="font-luxury-sans text-[11px] text-[#5C4938] font-medium">{hotel.name} · {t.room} {roomNumber}</p>
           </div>
         </div>
-        <button onClick={onClose} className="w-8 h-8 text-[#141414] font-bold bg-[#FAF8F4] hover:bg-[#EFE8DA] border border-[#C4B8A4] rounded-full flex items-center justify-center transition cursor-pointer">
+        <button onClick={onClose} className="w-8 h-8 text-[#141414] font-bold bg-[rgba(245,215,130,0.22)] hover:bg-[rgba(245,215,130,0.4)] border border-[rgba(230,185,75,0.55)] rounded-full flex items-center justify-center transition cursor-pointer">
           ✕
         </button>
       </div>

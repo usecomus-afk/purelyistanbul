@@ -242,7 +242,7 @@ export function GuestTabBar({
 
   return (
     <nav
-      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0.5rem))] backdrop-blur-xl border-t border-[rgba(224,184,102,0.52)] ${
+      className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[99999] px-3 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0.5rem))] backdrop-blur-xl border-t border-[rgba(230,185,75,0.55)] ${
         isHidden ? 'is-hidden opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
       }`}
       style={{
@@ -257,7 +257,7 @@ export function GuestTabBar({
           'linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(248, 238, 218, 0.38) 100%)',
         backdropFilter: 'blur(18px) saturate(140%)',
         WebkitBackdropFilter: 'blur(18px) saturate(140%)',
-        borderTop: '1px solid rgba(224, 184, 102, 0.52)',
+        borderTop: '1.5px solid rgba(230, 185, 75, 0.55)',
         boxShadow: 'inset 0 1.5px 2px rgba(255, 255, 255, 0.72), 0 -8px 26px rgba(32, 26, 18, 0.08)',
       }}
     >
