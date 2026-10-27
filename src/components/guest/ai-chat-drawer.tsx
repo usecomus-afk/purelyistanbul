@@ -1432,7 +1432,7 @@ export function AiChatDrawer({
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. HEADER: Minimalist title "Comus • Local Guardian & Concierge" with online green indicator */}
-        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b border-[rgba(230,185,75,0.45)] touch-none">
+        <header className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 bg-gradient-to-r from-[#FAF7F0] via-[#F5EFE4] to-[#EDE3D2] text-[#221F1C] flex items-center justify-between gap-3 shrink-0 border-b-[1.5px] border-[rgba(230,185,75,0.55)] touch-none">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <ComusGlowingAvatar size="md" />
             <div className="min-w-0 flex-1">
@@ -1625,7 +1625,7 @@ export function AiChatDrawer({
         {activeActionModal && (
           <div className="absolute inset-0 z-30 bg-[#221F1C]/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
             <div className="luxury-service-card w-full max-w-md bg-[#FAF8F4]/95 backdrop-blur-[18px] rounded-[28px] border-[1.5px] border-[rgba(230,185,75,0.55)] shadow-2xl p-5 space-y-4 text-[#221F1C]">
-              <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
+              <div className="flex items-center justify-between border-b-[1.5px] border-[rgba(230,185,75,0.55)] pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B6220]">
                     {resolvedPropertyName} · {formattedUnitName}
@@ -1946,7 +1946,7 @@ export function AiChatDrawer({
             e.preventDefault();
             handleSend();
           }}
-          className="p-3 pb-[max(0.85rem,calc(0.5rem+env(safe-area-inset-bottom,20px)))] bg-[#FAF8F4] border-t border-[rgba(230,185,75,0.45)] flex items-center gap-2 shrink-0 touch-none"
+          className="p-3 pb-[max(0.85rem,calc(0.5rem+env(safe-area-inset-bottom,20px)))] bg-[#FAF8F4] border-t-[1.5px] border-[rgba(230,185,75,0.55)] flex items-center gap-2 shrink-0 touch-none"
         >
           <input
             type="text"

@@ -381,7 +381,7 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
                 className="luxury-service-card relative w-full max-w-md p-5 sm:p-6 animate-in zoom-in-95 space-y-4 text-[#141414]"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between border-b border-[rgba(230,185,75,0.45)] pb-3">
+                <div className="flex items-center justify-between border-b-[1.5px] border-[rgba(230,185,75,0.55)] pb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl gilded-icon-plinth p-1 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
                       {renderServiceVisual(selectedService, "w-10 h-10")}

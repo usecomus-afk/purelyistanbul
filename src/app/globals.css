@@ -177,7 +177,7 @@ p {
 
 /* Raised 3D Gilded Medallion Plinth inside Service Modules */
 .gilded-icon-plinth {
-  background: rgba(245, 215, 130, 0.26);
+  background: rgba(245, 215, 130, 0.22);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1.5px solid rgba(230, 185, 75, 0.55);
@@ -212,7 +212,7 @@ p {
 
 /* Golden Glass Plinth for Custom Uploaded Category Icons */
 .luxury-category-plinth {
-  background: rgba(245, 215, 130, 0.26);
+  background: rgba(245, 215, 130, 0.22);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1.5px solid rgba(230, 185, 75, 0.55);

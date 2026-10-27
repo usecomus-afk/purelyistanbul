@@ -763,7 +763,7 @@ export function GuestConciergeView({ initialHotelId, initialRoomId }: GuestConci
               className="luxury-service-card relative w-full max-w-lg p-5 sm:p-6 space-y-4 animate-in zoom-in-95 text-[#141414]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-[rgba(230,185,75,0.45)] pb-3">
+              <div className="flex items-center justify-between border-b-[1.5px] border-[rgba(230,185,75,0.55)] pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-xl gilded-icon-plinth flex items-center justify-center text-[#8E7252] shadow-sm">
                     <Bell className="w-4 h-4 stroke-[1.75]" />

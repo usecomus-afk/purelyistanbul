@@ -2,8 +2,9 @@ name: Deploy Purely Admin iOS App to TestFlight
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*-admin*'
+      - 'admin-v*'
   workflow_dispatch:
     inputs:
       admin_bundle_id:

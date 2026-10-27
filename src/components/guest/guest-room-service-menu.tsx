@@ -511,12 +511,12 @@ export function GuestRoomServiceMenu({ hotel, roomNumber, lang, onClose }: Props
   };
 
   return (
-    <div className="luxury-service-card flex flex-col h-[84vh] bg-[#F7F3EA]/95 backdrop-blur-[18px] rounded-[28px] border-[1.5px] border-[rgba(230,185,75,0.55)] overflow-hidden relative shadow-2xl text-[#141414]">
+    <div className="luxury-service-card flex flex-col h-[84vh] bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] rounded-[28px] border-[1.5px] border-[rgba(230,185,75,0.55)] overflow-hidden relative shadow-2xl text-[#141414]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-gradient-to-b from-[#FAF8F4] to-[#EDE5D6] border-b border-[rgba(230,185,75,0.45)] z-10 shrink-0">
+      <div className="flex items-center justify-between p-4 bg-[rgba(245,215,130,0.22)] backdrop-blur-[18px] border-b-[1.5px] border-[rgba(230,185,75,0.55)] z-10 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="shrink-0">
-            <LuxuryServiceIcon serviceKey="roomservice" className="w-11 h-11" />
+          <div className="w-12 h-12 rounded-2xl gilded-icon-plinth p-1 flex items-center justify-center shrink-0">
+            <LuxuryServiceIcon serviceKey="roomservice" className="w-10 h-10" />
           </div>
           <div>
             <h3 className="font-luxury-serif text-[17px] font-bold uppercase tracking-[0.04em] text-[#141414]">{ui.title}</h3>
