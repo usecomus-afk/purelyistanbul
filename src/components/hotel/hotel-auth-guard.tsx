@@ -395,7 +395,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                           setForgotSent(false);
                           setForgotEmail(hotelEmailOrUser.includes('@') ? hotelEmailOrUser : '');
                         }}
-                        className="text-[11px] font-semibold text-[#8E7252] hover:text-[#5C4938] hover:underline cursor-pointer transition"
+                        className="text-[11.5px] font-bold text-black hover:text-zinc-800 hover:underline cursor-pointer transition"
                       >
                         Şifremi Unuttum?
                       </button>
@@ -755,16 +755,16 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     <div className="w-12 h-12 rounded-2xl bg-[#F3ECE0] border border-[#C9AE82] text-[#8E7252] flex items-center justify-center shadow-inner">
                       <KeyRound className="w-5 h-5" />
                     </div>
-                    <h3 className="font-luxury-serif text-[18px] font-semibold tracking-[0.04em] uppercase text-[#141414]">
+                    <h3 className="font-luxury-serif text-[18px] font-semibold tracking-[0.04em] uppercase text-black">
                       Şifre Sıfırlama Talebi
                     </h3>
-                    <p className="text-[#5C4938] text-xs leading-relaxed">
+                    <p className="text-black font-medium text-xs leading-relaxed">
                       {currentHotel.name} yetkili hesabınıza ait e-posta adresinizi giriniz.
                     </p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[#2C251E] block">Kayıtlı Yönetici E-Postası</label>
+                    <label className="font-bold text-black block">Kayıtlı Yönetici E-Postası</label>
                     <input
                       type="email"
                       required
@@ -793,7 +793,7 @@ export function HotelAuthGuard({ children }: { children: React.ReactNode }) {
                     <h3 className="font-luxury-serif text-[18px] font-semibold uppercase tracking-[0.04em] text-[#141414]">
                       Talep Başarıyla İletildi
                     </h3>
-                    <p className="text-xs text-[#5C4938] leading-relaxed">
+                    <p className="text-xs text-black font-medium leading-relaxed">
                       <strong>{forgotEmail}</strong> adresine (hesap kayıtlıysa) şifre sıfırlama talimatı gönderildi.
                     </p>
                   </div>
