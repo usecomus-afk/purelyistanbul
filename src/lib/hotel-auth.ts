@@ -88,9 +88,45 @@ export async function hotelLogin(
 ): Promise<{ ok: true; session: HotelSession } | { ok: false; error: string }> {
   if (!auth) return { ok: false, error: 'Kimlik doğrulama servisi yapılandırılmamış.' };
   try {
+    let cleanEmail = email.trim().toLowerCase();
+    // Kullanıcı adı kısaltmaları desteği
+    if (!cleanEmail.includes('@')) {
+      if (cleanEmail === 'anilaslan') {
+        cleanEmail = 'anilaslan@usecomus.com';
+      } else if (cleanEmail === 'purely' || cleanEmail === 'hotel' || cleanEmail === 'manager') {
+        cleanEmail = 'manager@purelyistanbul.com';
+      } else if (cleanEmail === 'heritage') {
+        cleanEmail = 'heritage@xenios.istanbul';
+      }
+    }
+
     await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-    const cred = await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
-    const session = await readSession(cred.user);
+    const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+    let session = await readSession(cred.user);
+
+    // Eğer Firebase'de şifre yenilendiğinde veya hesap yeni açıldığında custom claims henüz atanmamışsa
+    // sunucu üzerinden otomatik senkronize et
+    if (!session) {
+      try {
+        const idToken = await cred.user.getIdToken();
+        const syncRes = await fetch('/api/hotel-auth/sync-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`,
+          },
+        });
+        const syncData = await syncRes.json();
+        if (syncData?.success) {
+          // Yeni atanan claim'leri istemcide zorunlu yenile
+          await cred.user.getIdToken(true);
+          session = await readSession(cred.user);
+        }
+      } catch (syncErr) {
+        console.warn('[hotelLogin] Claim sync attempt error:', syncErr);
+      }
+    }
+
     if (!session) {
       await signOut(auth);
       return { ok: false, error: 'Bu hesap otel yönetim paneline erişim yetkisine sahip değil.' };
