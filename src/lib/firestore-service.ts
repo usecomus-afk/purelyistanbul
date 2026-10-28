@@ -16,7 +16,7 @@ import {
   limit,
   Unsubscribe 
 } from 'firebase/firestore';
-import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner } from './types';
+import { Hotel, Experience, PropertyListing, Booking, Complaint, ServiceRequest, SupplierPartner, B2BLead, MirofishSystemParameters } from './types';
 import { XeniosStore } from './store';
 import { HotelAudioNotification, shouldReceiveStaffRequestAlerts } from './hotel-audio-notification';
 import { normalizeCategoryLabel, type CategoryConfig } from './marketplace/categories';
@@ -31,6 +31,8 @@ export const COLLECTIONS = {
   EXPERIENCES: 'experiences',
   PROPERTIES: 'properties',
   SUPPLIERS: 'suppliers',
+  B2B_LEADS: 'b2b_mirofish_leads',
+  B2B_PARAMS: 'b2b_mirofish_settings',
   SITE_CATEGORIES: 'site_categories',
   MARKETPLACE_LISTINGS: 'marketplace_listings',
   BOOKINGS: 'bookings',
@@ -77,7 +79,39 @@ async function postAdminCatalog(action: string, payload: Record<string, any>): P
 }
 
 const seenRemoteRequestIds = new Set<string>();
-let initialSnapshotSeeded = false;
+let catalogSyncRefCount = 0;
+let catalogSyncCoreUnsub: Unsubscribe | null = null;
+
+interface LiveRequestChannel {
+  subscribers: Set<(requests: ServiceRequest[]) => void>;
+  lastList: ServiceRequest[] | null;
+  lastSignature: string;
+  teardown: () => void;
+}
+const liveRequestChannels = new Map<string, LiveRequestChannel>();
+
+const DEFAULT_HOTEL_ALIASES = ['hotel-heritage-1', 'hotel-1', 'hotel_1'];
+const REST_FALLBACK_INTERVAL_MS = 15_000;
+const REST_MIN_COOLDOWN_MS = 5_000;
+const SNAPSHOT_BOOT_TIMEOUT_MS = 4_000;
+
+function resolveHotelIdFilterList(hotelId: string | null): string[] {
+  if (hotelId && hotelId.trim()) {
+    const trimmed = hotelId.trim();
+    return DEFAULT_HOTEL_ALIASES.includes(trimmed) ? DEFAULT_HOTEL_ALIASES : [trimmed];
+  }
+  const active = (typeof window !== 'undefined' ? XeniosStore.getActiveHotelId() : '') || 'hotel-heritage-1';
+  return DEFAULT_HOTEL_ALIASES.includes(active) ? DEFAULT_HOTEL_ALIASES : [active];
+}
+
+function buildRequestListSignature(list: ServiceRequest[]): string {
+  let sig = `${list.length}`;
+  for (let i = 0; i < list.length; i++) {
+    const r = list[i];
+    sig += `|${r.id}:${r.status}:${r.stage || ''}:${r.updatedAt || ''}:${r.paymentStatus || ''}:${r.notes || ''}`;
+  }
+  return sig;
+}
 
 export const FirestoreService = {
   // 🌐 CATALOG REALTIME SYNC (Experiences, Hotels, Properties, Suppliers -> Web Marketplace + Mobile App)
@@ -262,6 +296,60 @@ export const FirestoreService = {
     }
   },
 
+  async upsertB2BLead(lead: B2BLead): Promise<void> {
+    const now = lead.updatedAt || new Date().toISOString();
+    const stamped = { ...lead, deleted: false, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_b2b_lead', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
+    try {
+      await setDoc(doc(db, COLLECTIONS.B2B_LEADS, lead.id), stripUndefined(stamped));
+    } catch (e) {
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertB2BLead', e);
+    }
+  },
+
+  async deleteB2BLeadRemote(id: string): Promise<void> {
+    const now = new Date().toISOString();
+    const serverOkPromise = postAdminCatalog('delete_b2b_lead', { id });
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
+    try {
+      await setDoc(doc(db, COLLECTIONS.B2B_LEADS, id), {
+        id,
+        deleted: true,
+        updatedAt: now
+      });
+    } catch (e) {
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('deleteB2BLeadRemote', e);
+    }
+  },
+
+  async upsertMirofishParameters(params: MirofishSystemParameters): Promise<void> {
+    const now = new Date().toISOString();
+    const stamped = { ...params, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_mirofish_params', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
+    try {
+      await setDoc(doc(db, COLLECTIONS.B2B_PARAMS, 'system_parameters'), stripUndefined(stamped));
+    } catch (e) {
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertMirofishParameters', e);
+    }
+  },
+
   /** Panelden düzenlenen kategori kaydını (ad, ikon, sıra, gizli/açık) tüm cihazlara yansıtır. */
   async upsertCategory(cfg: CategoryConfig): Promise<void> {
     const normalizedLabel = normalizeCategoryLabel(cfg.label, cfg.label);
@@ -307,9 +395,9 @@ export const FirestoreService = {
     }
     try {
       return onSnapshot(
-        query(collection(db, COLLECTIONS.SITE_CATEGORIES), limit(100)),
+        query(collection(db, COLLECTIONS.SITE_CATEGORIES), limit(50)),
         (snap) => {
-          if (snap.empty) return;
+          if (snap.empty || snap.docChanges().length === 0) return;
           const localMap = new Map(
             XeniosStore.getCategoryOverrides().map((o) => [o.key as string, o])
           );
@@ -335,10 +423,25 @@ export const FirestoreService = {
   /**
    * Subscribes to remote Firestore catalog collections (experiences, hotels, properties, suppliers)
    * and merges remote docs into XeniosStore so both Web and Mobile App stay in real-time sync.
+   * Multiplexed so multiple mounted components share a single underlying set of listeners.
    */
   subscribeToCatalogSync(): Unsubscribe {
     if (!db || !isFirebaseConfigured || typeof window === 'undefined') {
       return () => {};
+    }
+
+    catalogSyncRefCount += 1;
+    if (catalogSyncCoreUnsub) {
+      let active = true;
+      return () => {
+        if (!active) return;
+        active = false;
+        catalogSyncRefCount = Math.max(0, catalogSyncRefCount - 1);
+        if (catalogSyncRefCount === 0 && catalogSyncCoreUnsub) {
+          catalogSyncCoreUnsub();
+          catalogSyncCoreUnsub = null;
+        }
+      };
     }
 
     const unsubs: Unsubscribe[] = [];
@@ -347,15 +450,15 @@ export const FirestoreService = {
       // 1. Experiences listener
       unsubs.push(
         onSnapshot(
-          query(collection(db, COLLECTIONS.EXPERIENCES), limit(250)),
+          query(collection(db, COLLECTIONS.EXPERIENCES), limit(120)),
           (snap) => {
-            if (snap.empty) return;
+            if (snap.empty || snap.docChanges().length === 0) return;
             const remoteMap = new Map<string, Experience>();
-            const remoteDeletedIds: string[] = [];
+            const remoteDeletedIds = new Set<string>();
             snap.forEach((d) => {
               const data = d.data() as Experience & { deleted?: boolean };
               if (data.deleted === true) {
-                remoteDeletedIds.push(d.id);
+                remoteDeletedIds.add(d.id);
                 XeniosStore.markExperienceDeleted(d.id);
               } else {
                 remoteMap.set(d.id, { ...data, id: d.id });
@@ -367,7 +470,7 @@ export const FirestoreService = {
             const mergedMap = new Map<string, Experience>();
 
             remoteMap.forEach((remoteItem, id) => {
-              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              if (localDeletedIds.has(id) || remoteDeletedIds.has(id)) return;
               const localItem = currentMap.get(id);
               if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
                 mergedMap.set(id, localItem);
@@ -377,7 +480,7 @@ export const FirestoreService = {
             });
 
             current.forEach((item) => {
-              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.has(item.id)) {
                 mergedMap.set(item.id, item);
               }
             });
@@ -390,15 +493,15 @@ export const FirestoreService = {
       // 2. Hotels listener
       unsubs.push(
         onSnapshot(
-          query(collection(db, COLLECTIONS.HOTELS), limit(200)),
+          query(collection(db, COLLECTIONS.HOTELS), limit(50)),
           (snap) => {
-            if (snap.empty) return;
+            if (snap.empty || snap.docChanges().length === 0) return;
             const remoteMap = new Map<string, Hotel>();
-            const remoteDeletedIds: string[] = [];
+            const remoteDeletedIds = new Set<string>();
             snap.forEach((d) => {
               const data = d.data() as Hotel & { deleted?: boolean };
               if (data.deleted === true) {
-                remoteDeletedIds.push(d.id);
+                remoteDeletedIds.add(d.id);
                 XeniosStore.markHotelDeleted(d.id);
               } else {
                 remoteMap.set(d.id, { ...data, id: d.id });
@@ -410,7 +513,7 @@ export const FirestoreService = {
             const mergedMap = new Map<string, Hotel>();
 
             remoteMap.forEach((remoteItem, id) => {
-              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              if (localDeletedIds.has(id) || remoteDeletedIds.has(id)) return;
               const localItem = currentMap.get(id);
               const baseItem =
                 localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')
@@ -441,7 +544,7 @@ export const FirestoreService = {
             });
 
             current.forEach((item) => {
-              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.has(item.id)) {
                 mergedMap.set(item.id, item);
               }
             });
@@ -473,15 +576,15 @@ export const FirestoreService = {
       // 3. Properties listener
       unsubs.push(
         onSnapshot(
-          query(collection(db, COLLECTIONS.PROPERTIES), limit(200)),
+          query(collection(db, COLLECTIONS.PROPERTIES), limit(100)),
           (snap) => {
-            if (snap.empty) return;
+            if (snap.empty || snap.docChanges().length === 0) return;
             const remoteMap = new Map<string, PropertyListing>();
-            const remoteDeletedIds: string[] = [];
+            const remoteDeletedIds = new Set<string>();
             snap.forEach((d) => {
               const data = d.data() as PropertyListing & { deleted?: boolean };
               if (data.deleted === true) {
-                remoteDeletedIds.push(d.id);
+                remoteDeletedIds.add(d.id);
                 XeniosStore.markPropertyDeleted(d.id);
               } else {
                 remoteMap.set(d.id, { ...data, id: d.id });
@@ -493,7 +596,7 @@ export const FirestoreService = {
             const mergedMap = new Map<string, PropertyListing>();
 
             remoteMap.forEach((remoteItem, id) => {
-              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              if (localDeletedIds.has(id) || remoteDeletedIds.has(id)) return;
               const localItem = currentMap.get(id);
               if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
                 mergedMap.set(id, localItem);
@@ -503,7 +606,7 @@ export const FirestoreService = {
             });
 
             current.forEach((item) => {
-              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.has(item.id)) {
                 mergedMap.set(item.id, item);
               }
             });
@@ -516,15 +619,15 @@ export const FirestoreService = {
       // 4. Suppliers listener
       unsubs.push(
         onSnapshot(
-          query(collection(db, COLLECTIONS.SUPPLIERS), limit(250)),
+          query(collection(db, COLLECTIONS.SUPPLIERS), limit(120)),
           (snap) => {
-            if (snap.empty) return;
+            if (snap.empty || snap.docChanges().length === 0) return;
             const remoteMap = new Map<string, SupplierPartner>();
-            const remoteDeletedIds: string[] = [];
+            const remoteDeletedIds = new Set<string>();
             snap.forEach((d) => {
               const data = d.data() as SupplierPartner & { deleted?: boolean };
               if (data.deleted === true) {
-                remoteDeletedIds.push(d.id);
+                remoteDeletedIds.add(d.id);
                 XeniosStore.markSupplierDeleted(d.id);
               } else {
                 remoteMap.set(d.id, { ...data, id: d.id });
@@ -536,7 +639,7 @@ export const FirestoreService = {
             const mergedMap = new Map<string, SupplierPartner>();
 
             remoteMap.forEach((remoteItem, id) => {
-              if (localDeletedIds.has(id) || remoteDeletedIds.includes(id)) return;
+              if (localDeletedIds.has(id) || remoteDeletedIds.has(id)) return;
               const localItem = currentMap.get(id);
               if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
                 mergedMap.set(id, localItem);
@@ -546,7 +649,7 @@ export const FirestoreService = {
             });
 
             current.forEach((item) => {
-              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.includes(item.id)) {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.has(item.id)) {
                 mergedMap.set(item.id, item);
               }
             });
@@ -558,20 +661,112 @@ export const FirestoreService = {
 
       // 5. Site categories listener (panelden düzenlenen kategori adı/ikon/sıra/gizlilik)
       unsubs.push(FirestoreService.subscribeToCategoryConfigs());
+
+      // 6. B2B Mirofish Leads listener
+      unsubs.push(
+        onSnapshot(
+          query(collection(db, COLLECTIONS.B2B_LEADS), limit(150)),
+          (snap) => {
+            if (snap.empty || snap.docChanges().length === 0) return;
+            const remoteMap = new Map<string, B2BLead>();
+            const remoteDeletedIds = new Set<string>();
+            snap.forEach((d) => {
+              const data = d.data() as B2BLead & { deleted?: boolean };
+              if (data.deleted === true) {
+                remoteDeletedIds.add(d.id);
+                XeniosStore.markB2BLeadDeleted(d.id);
+              } else {
+                remoteMap.set(d.id, { ...data, id: d.id });
+              }
+            });
+            const localDeletedIds = XeniosStore.getDeletedB2BLeadIds();
+            const current = XeniosStore.getB2BLeads();
+            const currentMap = new Map<string, B2BLead>(current.map((item) => [item.id, item]));
+            const mergedMap = new Map<string, B2BLead>();
+
+            remoteMap.forEach((remoteItem, id) => {
+              if (localDeletedIds.has(id) || remoteDeletedIds.has(id)) return;
+              const localItem = currentMap.get(id);
+              if (localItem && (localItem.updatedAt || '') > (remoteItem.updatedAt || '')) {
+                mergedMap.set(id, localItem);
+              } else {
+                mergedMap.set(id, remoteItem);
+              }
+            });
+
+            current.forEach((item) => {
+              if (!mergedMap.has(item.id) && !localDeletedIds.has(item.id) && !remoteDeletedIds.has(item.id)) {
+                mergedMap.set(item.id, item);
+              }
+            });
+            XeniosStore.saveB2BLeads(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
     } catch (e) {
       console.warn('Catalog realtime subscription error:', e);
     }
 
-    return () => {
+    catalogSyncCoreUnsub = () => {
       unsubs.forEach((u) => u());
+    };
+
+    let active = true;
+    return () => {
+      if (!active) return;
+      active = false;
+      catalogSyncRefCount = Math.max(0, catalogSyncRefCount - 1);
+      if (catalogSyncRefCount === 0 && catalogSyncCoreUnsub) {
+        catalogSyncCoreUnsub();
+        catalogSyncCoreUnsub = null;
+      }
     };
   },
 
-  // 🛎️ LIVE ROOM REQUESTS WITH REALTIME FIRESTORE LISTENER + 3s REST POLLER
+  // 🛎️ LIVE ROOM REQUESTS WITH REALTIME FIRESTORE LISTENER + SMART REST FALLBACK
   subscribeToLiveRequests(
     hotelId: string | null,
     onUpdate: (requests: ServiceRequest[]) => void
   ): Unsubscribe {
+    const targetHotelIds = resolveHotelIdFilterList(hotelId);
+    const channelKey = hotelId ? `explicit:${hotelId}` : `active:${targetHotelIds.join(',')}`;
+
+    const existingChannel = liveRequestChannels.get(channelKey);
+    if (existingChannel) {
+      existingChannel.subscribers.add(onUpdate);
+      if (existingChannel.lastList) {
+        onUpdate(existingChannel.lastList);
+      }
+      return () => {
+        existingChannel.subscribers.delete(onUpdate);
+        if (existingChannel.subscribers.size === 0) {
+          existingChannel.teardown();
+          liveRequestChannels.delete(channelKey);
+        }
+      };
+    }
+
+    const subscribers = new Set<(requests: ServiceRequest[]) => void>([onUpdate]);
+    const targetHotelSet = new Set<string>(targetHotelIds);
+
+    const channel: LiveRequestChannel = {
+      subscribers,
+      lastList: null,
+      lastSignature: '',
+      teardown: () => {},
+    };
+    liveRequestChannels.set(channelKey, channel);
+
+    const notifySubscribers = (filtered: ServiceRequest[]) => {
+      channel.lastList = filtered;
+      channel.subscribers.forEach((cb) => {
+        try {
+          cb(filtered);
+        } catch {}
+      });
+    };
+
     const processRawList = (rawItems: ServiceRequest[]) => {
       const deletedIds = typeof window !== 'undefined' ? XeniosStore.getDeletedRequestIds() : new Set<string>();
       const statusOverrides = typeof window !== 'undefined' ? XeniosStore.getRequestStatusOverrides() : {};
@@ -589,67 +784,126 @@ export const FirestoreService = {
       }
 
       const filtered = hotelId
-        ? list.filter((r) => !r.hotelId || r.hotelId === hotelId)
-        : list;
+        ? list.filter((r) => !r.hotelId || r.hotelId === hotelId || targetHotelSet.has(r.hotelId))
+        : list.filter((r) => !r.hotelId || targetHotelSet.has(r.hotelId));
 
-      filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      filtered.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 
       if (typeof window !== 'undefined') {
         const allowStaffAlert = shouldReceiveStaffRequestAlerts();
-        if (allowStaffAlert && list.length > 0) {
-          const nowMs = Date.now();
-          const alreadyInitialized = HotelAudioNotification.isNotifiedStorageInitialized();
-
-          if (!alreadyInitialized) {
-            HotelAudioNotification.ensureNotifiedStorageInitialized();
-            // Sort oldest-first when firing alerts so newest shows on top
-            const chronological = [...list].sort(
-              (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            );
-            for (const item of chronological) {
-              const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
-              const ageMs = nowMs - createdMs;
-              const isRecentOnFirstBoot = createdMs > 0 && ageMs > -300_000 && ageMs < 180_000;
-              seenRemoteRequestIds.add(item.id);
-              if (isRecentOnFirstBoot && item.status === 'pending' && !HotelAudioNotification.hasNotified(item.id)) {
-                HotelAudioNotification.triggerGuestRequestAlert(item);
-              } else {
-                HotelAudioNotification.markNotified(item.id);
-              }
+        if (allowStaffAlert && filtered.length > 0) {
+          const unseenItems = filtered.filter((item) => !seenRemoteRequestIds.has(item.id));
+          if (unseenItems.length > 0) {
+            const nowMs = Date.now();
+            const alreadyInitialized = HotelAudioNotification.isNotifiedStorageInitialized();
+            if (!alreadyInitialized) {
+              HotelAudioNotification.ensureNotifiedStorageInitialized();
             }
-          } else {
-            const chronological = [...list].sort(
-              (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            );
+            const windowMs = alreadyInitialized ? 30 * 60 * 1000 : 180_000;
+            // Oldest-first when firing alerts so newest shows on top
+            const chronological = [...unseenItems].reverse();
             for (const item of chronological) {
               seenRemoteRequestIds.add(item.id);
-              if (!HotelAudioNotification.hasNotified(item.id)) {
-                const createdMs = item.createdAt ? new Date(item.createdAt).getTime() : 0;
-                const ageMs = nowMs - createdMs;
-                const isWithinActiveWindow = createdMs > 0 && ageMs > -300_000 && ageMs < 30 * 60 * 1000;
-                if (isWithinActiveWindow && item.status === 'pending') {
-                  HotelAudioNotification.triggerGuestRequestAlert(item);
-                } else if (!isWithinActiveWindow || item.status === 'completed' || item.status === 'cancelled') {
-                  HotelAudioNotification.markNotified(item.id);
-                }
+              if (HotelAudioNotification.hasNotified(item.id)) continue;
+              const createdMs = item.createdAt ? Date.parse(item.createdAt) : 0;
+              const ageMs = nowMs - createdMs;
+              const isWithinWindow = createdMs > 0 && ageMs > -300_000 && ageMs < windowMs;
+              if (isWithinWindow && item.status === 'pending') {
+                HotelAudioNotification.triggerGuestRequestAlert(item);
+              } else if (!alreadyInitialized || !isWithinWindow || item.status === 'completed' || item.status === 'cancelled') {
+                HotelAudioNotification.markNotified(item.id);
               }
             }
           }
         }
-
-        XeniosStore.syncRequestsFromRemote(filtered);
       }
 
-      onUpdate(filtered);
+      const nextSignature = buildRequestListSignature(filtered);
+      if (nextSignature === channel.lastSignature && channel.lastList !== null) {
+        return;
+      }
+      channel.lastSignature = nextSignature;
+
+      if (typeof window !== 'undefined') {
+        XeniosStore.syncRequestsFromRemote(filtered);
+      }
+      notifySubscribers(filtered);
     };
 
     let isRestPolling = false;
-    const pollViaRest = async () => {
+    let isSnapshotHealthy = false;
+    let lastRestPollMs = 0;
+    let fallbackPollInterval: number | null = null;
+    let bootTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const parseRestRows = (rows: any[]): ServiceRequest[] => {
+      const parsed: ServiceRequest[] = [];
+      for (const row of rows) {
+        const docObj = row?.document;
+        const fields = docObj?.fields;
+        if (!fields) continue;
+        const docName = String(docObj.name || '');
+        const fallbackId = docName.split('/').pop() || '';
+        const id = fields.id?.stringValue || fallbackId;
+        if (!id) continue;
+        const rawAmt = fields.paymentAmount?.doubleValue ?? fields.paymentAmount?.integerValue;
+        parsed.push({
+          id,
+          hotelId: fields.hotelId?.stringValue || 'hotel-heritage-1',
+          hotelName: fields.hotelName?.stringValue || 'Purely Istanbul Partner Hotel',
+          roomNumber: fields.roomNumber?.stringValue || '101',
+          serviceKey: fields.serviceKey?.stringValue || 'service',
+          serviceTitle: fields.serviceTitle?.stringValue || 'Oda Hizmeti',
+          notes: fields.notes?.stringValue || '',
+          status: (fields.status?.stringValue as ServiceRequest['status']) || 'pending',
+          department: (fields.department?.stringValue as ServiceRequest['department']) || 'Housekeeping',
+          stage: (fields.stage?.stringValue as ServiceRequest['stage']) || 'pending',
+          priority: (fields.priority?.stringValue as ServiceRequest['priority']) || 'standart',
+          createdAt: fields.createdAt?.stringValue || new Date().toISOString(),
+          updatedAt: fields.updatedAt?.stringValue || fields.createdAt?.stringValue || new Date().toISOString(),
+          paymentMethod: (fields.paymentMethod?.stringValue as ServiceRequest['paymentMethod']) || undefined,
+          paymentStatus: (fields.paymentStatus?.stringValue as ServiceRequest['paymentStatus']) || undefined,
+          paymentAmount: rawAmt !== undefined ? Number(rawAmt) : undefined,
+          paymentCurrency: fields.paymentCurrency?.stringValue || undefined,
+          paymentReference: fields.paymentReference?.stringValue || undefined,
+        });
+      }
+      return parsed;
+    };
+
+    const pollViaRest = async (force = false) => {
+      if (isSnapshotHealthy && !force) return;
       if (isRestPolling) return;
       if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+      const now = Date.now();
+      if (!force && now - lastRestPollMs < REST_MIN_COOLDOWN_MS) return;
+
       isRestPolling = true;
+      lastRestPollMs = now;
       try {
-        const res = await fetch(
+        const whereClause =
+          targetHotelIds.length === 1
+            ? {
+                fieldFilter: {
+                  field: { fieldPath: 'hotelId' },
+                  op: 'EQUAL',
+                  value: { stringValue: targetHotelIds[0] },
+                },
+              }
+            : {
+                fieldFilter: {
+                  field: { fieldPath: 'hotelId' },
+                  op: 'IN',
+                  value: {
+                    arrayValue: {
+                      values: targetHotelIds.map((hid) => ({ stringValue: hid })),
+                    },
+                  },
+                },
+              };
+
+        let res = await fetch(
           'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery',
           {
             method: 'POST',
@@ -658,47 +912,35 @@ export const FirestoreService = {
             body: JSON.stringify({
               structuredQuery: {
                 from: [{ collectionId: COLLECTIONS.REQUESTS }],
-                orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
-                limit: 60,
+                where: whereClause,
+                limit: 35,
               },
             }),
           }
         );
+
+        if (!res.ok) {
+          res = await fetch(
+            'https://firestore.googleapis.com/v1/projects/xenios-prod-c55cd/databases/(default)/documents:runQuery',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              cache: 'no-store',
+              body: JSON.stringify({
+                structuredQuery: {
+                  from: [{ collectionId: COLLECTIONS.REQUESTS }],
+                  orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+                  limit: 35,
+                },
+              }),
+            }
+          );
+        }
+
         if (!res.ok) return;
         const rows = await res.json();
         if (!Array.isArray(rows)) return;
-        const parsed: ServiceRequest[] = [];
-        for (const row of rows) {
-          const docObj = row?.document;
-          const fields = docObj?.fields;
-          if (!fields) continue;
-          const docName = String(docObj.name || '');
-          const fallbackId = docName.split('/').pop() || '';
-          const id = fields.id?.stringValue || fallbackId;
-          if (!id) continue;
-          const rawAmt = fields.paymentAmount?.doubleValue ?? fields.paymentAmount?.integerValue;
-          parsed.push({
-            id,
-            hotelId: fields.hotelId?.stringValue || 'hotel-heritage-1',
-            hotelName: fields.hotelName?.stringValue || 'Purely Istanbul Partner Hotel',
-            roomNumber: fields.roomNumber?.stringValue || '101',
-            serviceKey: fields.serviceKey?.stringValue || 'service',
-            serviceTitle: fields.serviceTitle?.stringValue || 'Oda Hizmeti',
-            notes: fields.notes?.stringValue || '',
-            status: (fields.status?.stringValue as ServiceRequest['status']) || 'pending',
-            department: (fields.department?.stringValue as ServiceRequest['department']) || 'Housekeeping',
-            stage: (fields.stage?.stringValue as ServiceRequest['stage']) || 'pending',
-            priority: (fields.priority?.stringValue as ServiceRequest['priority']) || 'standart',
-            createdAt: fields.createdAt?.stringValue || new Date().toISOString(),
-            updatedAt: fields.updatedAt?.stringValue || fields.createdAt?.stringValue || new Date().toISOString(),
-            paymentMethod: (fields.paymentMethod?.stringValue as ServiceRequest['paymentMethod']) || undefined,
-            paymentStatus: (fields.paymentStatus?.stringValue as ServiceRequest['paymentStatus']) || undefined,
-            paymentAmount: rawAmt !== undefined ? Number(rawAmt) : undefined,
-            paymentCurrency: fields.paymentCurrency?.stringValue || undefined,
-            paymentReference: fields.paymentReference?.stringValue || undefined,
-          });
-        }
-        processRawList(parsed);
+        processRawList(parseRestRows(rows));
       } catch {
         // Ignore transient network errors during background/foreground transitions
       } finally {
@@ -706,73 +948,157 @@ export const FirestoreService = {
       }
     };
 
-    const unsubs: Array<() => void> = [];
+    const stopRestFallback = () => {
+      if (bootTimeoutId !== null) {
+        clearTimeout(bootTimeoutId);
+        bootTimeoutId = null;
+      }
+      if (fallbackPollInterval !== null && typeof window !== 'undefined') {
+        window.clearInterval(fallbackPollInterval);
+        fallbackPollInterval = null;
+      }
+    };
+
+    const startRestFallback = () => {
+      if (isSnapshotHealthy || typeof window === 'undefined') return;
+      pollViaRest();
+      if (fallbackPollInterval === null) {
+        fallbackPollInterval = window.setInterval(() => {
+          if (!isSnapshotHealthy) {
+            pollViaRest();
+          }
+        }, REST_FALLBACK_INTERVAL_MS);
+      }
+    };
+
+    const unsubs: Array<() => void> = [stopRestFallback];
 
     if (typeof window !== 'undefined') {
-      pollViaRest();
-      const pollInterval = window.setInterval(pollViaRest, 3000);
-      const onWake = () => {
-        pollViaRest();
+      const localInitial = XeniosStore.getRequests();
+      if (localInitial.length > 0) {
+        const filteredLocal = hotelId
+          ? localInitial.filter((r) => !r.hotelId || r.hotelId === hotelId || targetHotelSet.has(r.hotelId))
+          : localInitial.filter((r) => !r.hotelId || targetHotelSet.has(r.hotelId));
+        channel.lastList = filteredLocal;
+        channel.lastSignature = buildRequestListSignature(filteredLocal);
+        notifySubscribers(filteredLocal);
+      }
+
+      const handleLocalUpdate = () => {
+        const reqs = XeniosStore.getRequests();
+        const filtered = hotelId
+          ? reqs.filter((r) => !r.hotelId || r.hotelId === hotelId || targetHotelSet.has(r.hotelId))
+          : reqs.filter((r) => !r.hotelId || targetHotelSet.has(r.hotelId));
+        const sig = buildRequestListSignature(filtered);
+        if (sig !== channel.lastSignature) {
+          channel.lastSignature = sig;
+          notifySubscribers(filtered);
+        }
       };
-      window.addEventListener('focus', onWake);
-      window.addEventListener('pageshow', onWake);
-      window.addEventListener('online', onWake);
-      const onVis = () => {
-        if (document.visibilityState === 'visible') {
+      window.addEventListener('xenios_requests_updated', handleLocalUpdate);
+      unsubs.push(() => window.removeEventListener('xenios_requests_updated', handleLocalUpdate));
+
+      const onWake = () => {
+        if (!isSnapshotHealthy) {
           pollViaRest();
         }
       };
+      const onVis = () => {
+        if (document.visibilityState === 'visible' && !isSnapshotHealthy) {
+          pollViaRest();
+        }
+      };
+      window.addEventListener('focus', onWake);
+      window.addEventListener('online', onWake);
       document.addEventListener('visibilitychange', onVis);
 
       unsubs.push(() => {
-        window.clearInterval(pollInterval);
         window.removeEventListener('focus', onWake);
-        window.removeEventListener('pageshow', onWake);
         window.removeEventListener('online', onWake);
         document.removeEventListener('visibilitychange', onVis);
       });
     }
 
     if (!db || !isFirebaseConfigured) {
-      const handler = () => {
-        const reqs = XeniosStore.getRequests();
-        const filtered = hotelId ? reqs.filter((r) => !r.hotelId || r.hotelId === hotelId) : reqs;
-        onUpdate(filtered);
+      startRestFallback();
+      channel.teardown = () => unsubs.forEach((u) => u());
+      return () => {
+        channel.subscribers.delete(onUpdate);
+        if (channel.subscribers.size === 0) {
+          channel.teardown();
+          liveRequestChannels.delete(channelKey);
+        }
       };
-      if (typeof window !== 'undefined') {
-        window.addEventListener('xenios_requests_updated', handler);
-        unsubs.push(() => window.removeEventListener('xenios_requests_updated', handler));
-      }
-      handler();
-      return () => unsubs.forEach((u) => u());
     }
+
+    // Only activate REST fallback if Firestore onSnapshot doesn't deliver within boot timeout
+    bootTimeoutId = setTimeout(() => {
+      if (!isSnapshotHealthy) {
+        startRestFallback();
+      }
+    }, SNAPSHOT_BOOT_TIMEOUT_MS);
 
     try {
       const colRef = collection(db, COLLECTIONS.REQUESTS);
-      const q = query(colRef, limit(200));
+      const q =
+        targetHotelIds.length === 1
+          ? query(colRef, where('hotelId', '==', targetHotelIds[0]), limit(40))
+          : query(colRef, where('hotelId', 'in', targetHotelIds), limit(40));
 
+      const handleSnapshotDocs = (snapshot: any) => {
+        isSnapshotHealthy = true;
+        stopRestFallback();
+        const items: ServiceRequest[] = [];
+        snapshot.forEach((d: any) => {
+          const rawData = d.data() as any;
+          items.push({ id: d.id, ...rawData });
+        });
+        processRawList(items);
+      };
+
+      let fallbackSnapshotUnsub: Unsubscribe | null = null;
       const unsubSnapshot = onSnapshot(
         q,
-        (snapshot) => {
-          const items: ServiceRequest[] = [];
-          snapshot.forEach((d) => {
-            const rawData = d.data() as any;
-            items.push({ id: d.id, ...rawData });
-          });
-          processRawList(items);
-        },
+        handleSnapshotDocs,
         (err) => {
-          console.error('Firestore onSnapshot error:', err);
-          pollViaRest();
+          console.warn('Scoped Firestore onSnapshot fallback:', err?.code || err);
+          if (!fallbackSnapshotUnsub && db) {
+            try {
+              fallbackSnapshotUnsub = onSnapshot(
+                query(colRef, orderBy('createdAt', 'desc'), limit(40)),
+                handleSnapshotDocs,
+                () => {
+                  isSnapshotHealthy = false;
+                  startRestFallback();
+                }
+              );
+              return;
+            } catch {}
+          }
+          isSnapshotHealthy = false;
+          startRestFallback();
         }
       );
-      unsubs.push(unsubSnapshot);
+      unsubs.push(() => {
+        unsubSnapshot();
+        if (fallbackSnapshotUnsub) fallbackSnapshotUnsub();
+      });
     } catch (e) {
-      console.error('Firestore subscription failed, relying on REST poller:', e);
+      console.warn('Firestore subscription failed, relying on REST fallback:', e);
+      isSnapshotHealthy = false;
+      startRestFallback();
     }
 
-    return () => {
+    channel.teardown = () => {
       unsubs.forEach((u) => u());
+    };
+
+    return () => {
+      channel.subscribers.delete(onUpdate);
+      if (channel.subscribers.size === 0) {
+        channel.teardown();
+        liveRequestChannels.delete(channelKey);
+      }
     };
   },
 
@@ -929,10 +1255,8 @@ export const FirestoreService = {
     })();
 
     // Ensure both Firestore persistence and WhatsApp / Push API dispatch complete reliably
-    const restPromise = Promise.all([saveViaRest(), notifyApiPromise]);
-
     if (!db || !isFirebaseConfigured) {
-      await restPromise;
+      await Promise.all([saveViaRest(), notifyApiPromise]);
       return local;
     }
 
@@ -941,13 +1265,12 @@ export const FirestoreService = {
       await Promise.all([
         Promise.race([
           setDoc(doc(colRef, local.id), payload),
-          saveViaRest(),
           new Promise((_, reject) => setTimeout(() => reject(new Error('setDoc timeout')), 2500)),
         ]).catch(() => saveViaRest()),
         notifyApiPromise,
       ]);
     } catch {
-      await restPromise;
+      await Promise.all([saveViaRest(), notifyApiPromise]);
     }
     return local;
   },
@@ -994,8 +1317,6 @@ export const FirestoreService = {
       }
     };
 
-    const restPromise = patchViaRest();
-
     if (db && isFirebaseConfigured) {
       try {
         const docRef = doc(db, COLLECTIONS.REQUESTS, id);
@@ -1008,10 +1329,10 @@ export const FirestoreService = {
           })
         );
       } catch {
-        await restPromise;
+        await patchViaRest();
       }
     } else {
-      await restPromise;
+      await patchViaRest();
     }
     return updatedLocal;
   },
@@ -1150,7 +1471,8 @@ export const FirestoreService = {
 
     try {
       const colRef = collection(db, COLLECTIONS.BOOKINGS);
-      const q = query(colRef, limit(200));
+      const q = query(colRef, limit(50));
+      let lastBookingSig = '';
       return onSnapshot(
         q,
         (snapshot) => {
@@ -1162,8 +1484,11 @@ export const FirestoreService = {
           for (const b of XeniosStore.getBookings()) mergedMap.set(b.id, b);
           for (const b of remote) mergedMap.set(b.id, b);
           const merged = Array.from(mergedMap.values()).sort(
-            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            (a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')
           );
+          const nextSig = merged.map((b) => `${b.id}:${b.status}:${b.createdAt || ''}`).join('|');
+          if (nextSig === lastBookingSig) return;
+          lastBookingSig = nextSig;
           onUpdate(merged);
         },
         () => {

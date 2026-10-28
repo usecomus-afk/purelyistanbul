@@ -540,3 +540,93 @@ export interface HotelPartnerApplication {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface MirofishSystemParameters {
+  marketCoveragePercent: number;
+  annualForeignTouristsRange: string;
+  simulationCeilingUnits: number;
+  boutiqueHotelRange: string;
+  pmcCompanyRange: string;
+  b2bTargetActorsMax: number;
+  phase1PilotPartnersTarget: number;
+  phase1PilotUnitsTarget: number;
+  phase1MarketPenetrationPercent: number;
+  cacCostEuro: number;
+  averageBasketEuro: number;
+  supplierPayoutPercent: number;
+  supplierPayoutEuroOnAvg: number;
+  platformCommissionPercent: number;
+  platformCommissionEuroOnAvg: number;
+  b2bPartnerPassivePercent: number;
+  b2bPartnerPassiveEuroOnAvg: number;
+  annualPremiumListingFeeEuro: number;
+}
+
+export type B2BLeadRoleType =
+  | 'Konaklama Partneri (Arz)'
+  | 'Küratörlü Hizmet Tedarikçisi (Revenue Node)';
+
+export type B2BLeadStage =
+  | 'Keşfedildi'
+  | 'İlk Temas Kuruldu'
+  | 'İletişim Doğrulandı'
+  | 'Saha Randevusu'
+  | 'Pilot Sözleşme';
+
+export interface B2BLeadSource {
+  title: string;
+  url: string;
+}
+
+export interface B2BAgentPitch {
+  whatsappMessage: string;
+  emailSubject: string;
+  emailBody: string;
+  fieldScript: string;
+  financialSummary: string;
+  language: 'tr' | 'en';
+  tone: string;
+  generatedAt: string;
+}
+
+export interface B2BLead {
+  id: string;
+  name: string;
+  roleType: B2BLeadRoleType | string;
+  category: string;
+  district: string;
+  neighborhood: string;
+  unitCount: number;
+  unitLabel: string;
+  phone: string;
+  whatsappReady: boolean;
+  email: string;
+  website: string;
+  instagram?: string;
+  address: string;
+  decisionMakerRole: string;
+  decisionMakerName?: string;
+  legalShieldStatus: string;
+  listingChannels: string[];
+  estimatedMonthlyEuroVolume: number;
+  partnerOrSupplierNetEuro: number;
+  platformCommissionEuro: number;
+  annualListingFeeEuro: number;
+  stage: B2BLeadStage | string;
+  fieldNotes: string;
+  pitchAngle: string;
+  sources: B2BLeadSource[];
+  verifiedAt: string;
+  lastAgentPitch?: B2BAgentPitch;
+  onboardedToLiveId?: string;
+  updatedAt?: string;
+  deleted?: boolean;
+}
+
+export interface B2BMirofishDataset {
+  project: string;
+  exportedAt: string;
+  mirofishSystemParameters: MirofishSystemParameters;
+  totalCount: number;
+  suppliers: B2BLead[];
+}

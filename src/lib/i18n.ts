@@ -1852,62 +1852,90 @@ export const MARKETPLACE_CATEGORY_TRANSLATIONS: Record<string, Record<Language, 
   }
 };
 
+const categoryTitleCache = new Map<string, string>();
+const LEADING_INDEX_RE = /^[0-9]+\.\s*/;
+
 export function getLocalizedCategoryTitle(catKeyOrLabel: string, lang: Language): string {
+  const cacheKey = `${lang}:${catKeyOrLabel}`;
+  const cached = categoryTitleCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const t = getT(lang);
-  if (catKeyOrLabel === 'all') return t.allCategories;
-  if (MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel]) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel][lang] || MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel].en;
+  if (catKeyOrLabel === 'all') {
+    categoryTitleCache.set(cacheKey, t.allCategories);
+    return t.allCategories;
   }
-  const cleaned = catKeyOrLabel.replace(/^[0-9]+\.\s*/, '');
+  const direct = MARKETPLACE_CATEGORY_TRANSLATIONS[catKeyOrLabel];
+  if (direct) {
+    const val = direct[lang] || direct.en;
+    categoryTitleCache.set(cacheKey, val);
+    return val;
+  }
+  const cleaned = catKeyOrLabel.replace(LEADING_INDEX_RE, '');
   const lower = cleaned.toLowerCase();
+  let result = cleaned;
   if (lower.includes('bosphorus') || lower.includes('boğaz') || lower.includes('yat') || lower.includes('boat cruise')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-1'][lang];
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-1'][lang];
+  } else if (lower.includes('historic') || lower.includes('tarih') || lower.includes('müze') || lower.includes('museum') || lower.includes('fast-track')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-2'][lang];
+  } else if (lower.includes('culinary') || lower.includes('street food') || lower.includes('gastro') || lower.includes('gurme')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-3'][lang];
+  } else if (lower.includes('hamam') || lower.includes('hammam') || lower.includes('turkish bath') || lower.includes('spa')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-4'][lang];
+  } else if (lower.includes('dervish') || lower.includes('semazen') || lower.includes('sanat') || lower.includes('arts &')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-5'][lang];
+  } else if (lower.includes('photo') || lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('costume')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-6'][lang];
+  } else if (lower.includes('transfer') || lower.includes('vip airport')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-7'][lang];
+  } else if (lower.includes('shopping') || lower.includes('bazaar') || lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('artisan')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-8'][lang];
+  } else if (lower.includes('breakfast') || lower.includes('catering') || lower.includes('restoran') || lower.includes('restaurant')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-9'][lang];
+  } else if (lower.includes('laundry') || lower.includes('garment') || lower.includes('çamaşır')) {
+    result = MARKETPLACE_CATEGORY_TRANSLATIONS['cat-10'][lang];
+  } else if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) {
+    result = t.categoriesList.aesthetic?.title || cleaned;
+  } else if (lower.includes('günübirlik') || lower.includes('şehir dışı') || lower.includes('day trip')) {
+    result = t.categoriesList.dayTrips?.title || cleaned;
+  } else if (lower.includes('gece hayatı') || lower.includes('pub crawl') || lower.includes('nightlife')) {
+    result = t.categoriesList.nightlife?.title || cleaned;
+  } else if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence') || lower.includes('family')) {
+    result = t.categoriesList.family?.title || cleaned;
+  } else if (lower.includes('kültür') || lower.includes('miras') || lower.includes('cultural heritage')) {
+    result = t.categoriesList.culture.title;
+  } else if (lower.includes('macera') || lower.includes('doğa') || lower.includes('adventure')) {
+    result = t.categoriesList.adventure.title;
+  } else if (lower.includes('yatırım') || lower.includes('invest')) {
+    result = t.categoriesList.invest.title;
   }
-  if (lower.includes('historic') || lower.includes('tarih') || lower.includes('müze') || lower.includes('museum') || lower.includes('fast-track')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-2'][lang];
-  }
-  if (lower.includes('culinary') || lower.includes('street food') || lower.includes('gastro') || lower.includes('gurme')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-3'][lang];
-  }
-  if (lower.includes('hamam') || lower.includes('hammam') || lower.includes('turkish bath') || lower.includes('spa')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-4'][lang];
-  }
-  if (lower.includes('dervish') || lower.includes('semazen') || lower.includes('sanat') || lower.includes('arts &')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-5'][lang];
-  }
-  if (lower.includes('photo') || lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('costume')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-6'][lang];
-  }
-  if (lower.includes('transfer') || lower.includes('vip airport')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-7'][lang];
-  }
-  if (lower.includes('shopping') || lower.includes('bazaar') || lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('artisan')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-8'][lang];
-  }
-  if (lower.includes('breakfast') || lower.includes('catering') || lower.includes('restoran') || lower.includes('restaurant')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-9'][lang];
-  }
-  if (lower.includes('laundry') || lower.includes('garment') || lower.includes('çamaşır')) {
-    return MARKETPLACE_CATEGORY_TRANSLATIONS['cat-10'][lang];
-  }
-  if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik')) return t.categoriesList.aesthetic?.title || cleaned;
-  if (lower.includes('günübirlik') || lower.includes('şehir dışı') || lower.includes('day trip')) return t.categoriesList.dayTrips?.title || cleaned;
-  if (lower.includes('gece hayatı') || lower.includes('pub crawl') || lower.includes('nightlife')) return t.categoriesList.nightlife?.title || cleaned;
-  if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence') || lower.includes('family')) return t.categoriesList.family?.title || cleaned;
-  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('cultural heritage')) return t.categoriesList.culture.title;
-  if (lower.includes('macera') || lower.includes('doğa') || lower.includes('adventure')) return t.categoriesList.adventure.title;
-  if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
-  return cleaned;
+
+  categoryTitleCache.set(cacheKey, result);
+  return result;
 }
 
-const VALID_LANGUAGES: Language[] = ['tr', 'en', 'ar', 'ru', 'de', 'fr'];
+const VALID_LANGUAGES_SET = new Set<Language>(['tr', 'en', 'ar', 'ru', 'de', 'fr']);
+let cachedBrowserLang: Language | null = null;
+let langListenersBound = false;
 
 export function detectBrowserLanguage(): Language {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('xenios_lang') as Language | null;
-    if (saved && VALID_LANGUAGES.includes(saved)) {
-      return saved;
+    if (!langListenersBound) {
+      langListenersBound = true;
+      const invalidateLang = () => {
+        cachedBrowserLang = null;
+      };
+      window.addEventListener('xenios_lang_changed', invalidateLang);
+      window.addEventListener('storage', invalidateLang);
     }
+    if (cachedBrowserLang) return cachedBrowserLang;
+    try {
+      const saved = localStorage.getItem('xenios_lang') as Language | null;
+      if (saved && VALID_LANGUAGES_SET.has(saved)) {
+        cachedBrowserLang = saved;
+        return saved;
+      }
+    } catch {}
   }
   return 'en';
 }

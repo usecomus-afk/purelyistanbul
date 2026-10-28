@@ -37,53 +37,6 @@ function normalizeToIsoDate(raw?: string): string {
 const kbsRecordsStore = new Map<string, KbsGuestRecord>();
 const moduleSettingsStore = new Map<string, KbsModuleSettings>();
 
-// Seed default demonstration records
-function ensureKbsSeedData() {
-  if (kbsRecordsStore.size === 0) {
-    const demoRecords: KbsGuestRecord[] = [
-      {
-        id: 'kbs_rec_01',
-        hotel_id: 'hotel_pera',
-        hotel_name: 'Pera Palace Hotel',
-        room_number: '304',
-        first_name: 'ALEX',
-        last_name: 'MERCER',
-        document_type: 'PASSPORT',
-        document_number: 'C4489102',
-        nationality: 'USA',
-        birth_date: '1992-05-14',
-        gender: 'MALE',
-        check_in_date: '2026-08-22 14:00',
-        check_out_date: '2026-08-26 11:00',
-        created_source: 'GUEST_PWA',
-        status: 'VERIFIED',
-        document_image_url: 'https://storage.usecomus.com/kbs/passport_304.jpg',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 'kbs_rec_02',
-        hotel_id: 'hotel_pera',
-        hotel_name: 'Pera Palace Hotel',
-        room_number: '305',
-        first_name: 'SOPHIE',
-        last_name: 'MULLER',
-        document_type: 'PASSPORT',
-        document_number: 'T2208194',
-        nationality: 'DEU',
-        birth_date: '1995-11-20',
-        gender: 'FEMALE',
-        check_in_date: '2026-08-22 15:30',
-        check_out_date: '2026-08-25 12:00',
-        created_source: 'GUEST_PWA',
-        status: 'VERIFIED',
-        created_at: new Date().toISOString()
-      }
-    ];
-
-    demoRecords.forEach(r => kbsRecordsStore.set(r.id, r));
-  }
-}
-
 /**
  * Pasaport Altındaki MRZ (Machine Readable Zone) Çizgilerini Ayrıştıran Fonksiyon
  * ICAO 9303 Standardı (TD3 Pasaport: 2 Satır x 44 Karakter veya TD1 Kimlik)
@@ -340,7 +293,6 @@ Return ONLY a valid JSON object with this exact structure:
    * 2. Misafir KBS Kaydı Kaydetme
    */
   static saveKbsRecord(record: KbsGuestRecord): KbsGuestRecord {
-    ensureKbsSeedData();
     kbsRecordsStore.set(record.id, record);
     console.log(`[KBS RECORD SAVED] ID: ${record.id} | ${record.first_name} ${record.last_name} (Room ${record.room_number})`);
     return record;
@@ -350,7 +302,6 @@ Return ONLY a valid JSON object with this exact structure:
    * 3. KBS Kayıtlarını Listele
    */
   static getKbsRecords(hotelId?: string): KbsGuestRecord[] {
-    ensureKbsSeedData();
     const list = Array.from(kbsRecordsStore.values()).sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
@@ -367,7 +318,6 @@ Return ONLY a valid JSON object with this exact structure:
    * 4. EGM KBS Uyumlu XML Toplu İndirme Dosyası (exportKbsBatchXml)
    */
   static exportKbsBatchXml(hotelId: string = 'hotel_pera', facilityCode: string = 'EGM_34_PERA', date?: string): string {
-    ensureKbsSeedData();
     const records = this.getKbsRecords(hotelId).filter(r => r.status !== 'EXPIRED');
     const targetDate = date || new Date().toISOString().split('T')[0];
 
@@ -400,7 +350,6 @@ Return ONLY a valid JSON object with this exact structure:
    * 5. EGM KBS Uyumlu CSV Toplu İndirme Dosyası (exportKbsBatchCsv)
    */
   static exportKbsBatchCsv(hotelId: string = 'hotel_pera'): string {
-    ensureKbsSeedData();
     const records = this.getKbsRecords(hotelId).filter(r => r.status !== 'EXPIRED');
 
     const headers = [
@@ -440,13 +389,13 @@ Return ONLY a valid JSON object with this exact structure:
     purgedCount: number;
     purgedRecordIds: string[];
   } {
-    ensureKbsSeedData();
     const now = Date.now();
     const maxAgeMs = retentionDays * 24 * 60 * 60 * 1000;
     const purgedRecordIds: string[] = [];
 
     for (const [id, record] of kbsRecordsStore.entries()) {
-      const recordAge = now - new Date(record.created_at).getTime();
+      const recDate = record.created_at || record.check_out_date || record.check_in_date;
+      const recordAge = recDate ? now - new Date(recDate).getTime() : 0;
 
       if (recordAge >= maxAgeMs || record.status === 'EXPIRED') {
         // Mask document number (e.g. "C44****02")

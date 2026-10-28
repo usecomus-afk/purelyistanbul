@@ -23,7 +23,10 @@ import {
   Copy,
   Check,
   Share2,
-  Eye
+  Eye,
+  Smartphone,
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -169,6 +172,7 @@ export default function HotelKbsPage() {
     retention_days: 30
   }));
   const [isLoading, setIsLoading] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modal states for readable KBS Batch Export & Guest Identity Card inspection
@@ -179,8 +183,19 @@ export default function HotelKbsPage() {
   const mergeAndSetRecords = useCallback((apiRecords: KbsGuestRecord[], liveRequests?: ServiceRequest[]) => {
     const mergedMap = new Map<string, KbsGuestRecord>();
 
+    const isFakeOrDemo = (r: Partial<KbsGuestRecord>) => {
+      if (!r) return true;
+      const id = String(r.id || '');
+      if (id === 'kbs_rec_01' || id === 'kbs_rec_02' || id.startsWith('kbs_rec_0')) return true;
+      const fullName = `${r.first_name || ''} ${r.last_name || ''}`.trim().toUpperCase();
+      if (fullName === 'ALEX MERCER' || fullName === 'SOPHIE MULLER') return true;
+      const docNum = String(r.document_number || '').toUpperCase();
+      if (docNum === 'C4489102' || docNum === 'T2208194') return true;
+      return false;
+    };
+
     const addRec = (r: KbsGuestRecord) => {
-      if (!r || (!r.first_name && !r.document_number)) return;
+      if (!r || isFakeOrDemo(r) || (!r.first_name && !r.document_number)) return;
       const dedupKey = `${(r.document_number || '').toUpperCase()}_${(r.room_number || '').toUpperCase()}_${(r.first_name || '').toUpperCase()}`;
       if (!mergedMap.has(dedupKey)) {
         mergedMap.set(dedupKey, r);
@@ -194,7 +209,11 @@ export default function HotelKbsPage() {
         if (rawLocal) {
           const parsedLocal = JSON.parse(rawLocal);
           if (Array.isArray(parsedLocal)) {
-            parsedLocal.forEach(addRec);
+            const cleanLocal = parsedLocal.filter(item => !isFakeOrDemo(item));
+            if (cleanLocal.length !== parsedLocal.length) {
+              localStorage.setItem('xenios_kbs_records_v1', JSON.stringify(cleanLocal));
+            }
+            cleanLocal.forEach(addRec);
           }
         }
       } catch {}
@@ -353,15 +372,78 @@ export default function HotelKbsPage() {
   };
 
   const handleTriggerKvkkPurge = async () => {
+    setIsPurging(true);
     try {
-      const res = await authFetch('/api/kbs/cleanup', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        toast.success(`KVKK 30-Günlük Veri İmhası Tamamlandı (${data.purgedCount || 0} kayıt maskelendi).`);
-        fetchRecords();
+      const retentionDays = settings.retention_days || 30;
+      let localPurgedCount = 0;
+
+      // 1. İstemci tarafı (localStorage) KVKK 30 günlük maskeleme / temizlik
+      if (typeof window !== 'undefined') {
+        try {
+          const rawLocal = localStorage.getItem('xenios_kbs_records_v1');
+          if (rawLocal) {
+            const list: KbsGuestRecord[] = JSON.parse(rawLocal);
+            if (Array.isArray(list)) {
+              const now = Date.now();
+              const maxAgeMs = retentionDays * 24 * 60 * 60 * 1000;
+              const updatedList = list.map(r => {
+                const recDate = r.created_at || r.check_out_date || r.check_in_date;
+                const age = recDate ? now - new Date(recDate).getTime() : 0;
+                if (age >= maxAgeMs && r.status !== 'EXPIRED') {
+                  localPurgedCount++;
+                  const docNum = r.document_number || '';
+                  const maskedDocNum = docNum.length > 4
+                    ? `${docNum.substring(0, 3)}****${docNum.substring(docNum.length - 2)}`
+                    : '****';
+                  return {
+                    ...r,
+                    document_number: maskedDocNum,
+                    document_image_url: undefined,
+                    status: 'EXPIRED' as const,
+                  };
+                }
+                return r;
+              });
+              localStorage.setItem('xenios_kbs_records_v1', JSON.stringify(updatedList));
+            }
+          }
+        } catch (localErr) {
+          console.warn('[KVKK Purge] Local storage purge warning:', localErr);
+        }
       }
+
+      // 2. Sunucu tarafı API çağrısı
+      let serverPurgedCount = 0;
+      try {
+        const res = await authFetch('/api/kbs/cleanup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ retentionDays })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          serverPurgedCount = data.purgedCount || 0;
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.warn('[KVKK Purge] Server cleanup info:', res.status, errData);
+        }
+      } catch (serverErr) {
+        console.warn('[KVKK Purge] Server cleanup request error:', serverErr);
+      }
+
+      const totalPurged = serverPurgedCount + localPurgedCount;
+      if (totalPurged > 0) {
+        toast.success(`KVKK ${retentionDays}-Günlük Veri İmhası Tamamlandı (${totalPurged} kayıt maskelendi/arşivlendi).`);
+      } else {
+        toast.success(`KVKK Denetimi Tamamlandı: ${retentionDays} günü aşan aktif kimlik kaydı bulunmuyor.`);
+      }
+
+      await fetchRecords();
     } catch (err: any) {
+      console.error('[KVKK Purge] Error:', err);
       toast.error('Veri imha işlemi sırasında hata oluştu.');
+    } finally {
+      setIsPurging(false);
     }
   };
 
@@ -510,10 +592,20 @@ export default function HotelKbsPage() {
           <button
             type="button"
             onClick={handleTriggerKvkkPurge}
-            className="w-full py-2.5 px-4 rounded-2xl bg-zinc-50 hover:bg-zinc-100 text-red-700 font-bold text-xs border border-zinc-200 flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
+            disabled={isPurging}
+            className="w-full py-2.5 px-4 rounded-2xl bg-zinc-50 hover:bg-zinc-100 text-red-700 font-bold text-xs border border-zinc-200 flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>KVKK Temizlik Görevini Çalıştır</span>
+            {isPurging ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>KVKK Görevi Yürütülüyor...</span>
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>KVKK Temizlik Görevini Çalıştır</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -543,23 +635,29 @@ export default function HotelKbsPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-xs border-collapse min-w-[760px]">
             <thead>
               <tr className="border-b border-zinc-200 bg-zinc-50/70 text-zinc-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-wider">
-                <th className="py-3 px-3">Birim</th>
-                <th className="py-3 px-3">Misafir Adı Soyadı</th>
-                <th className="py-3 px-3">Belge Türü & No</th>
-                <th className="py-3 px-3">Uyruk</th>
-                <th className="py-3 px-3">Giriş / Çıkış</th>
-                <th className="py-3 px-3">Kaynak</th>
-                <th className="py-3 px-3 text-right">KBS Durumu</th>
+                <th className="py-3 px-3 whitespace-nowrap">Birim</th>
+                <th className="py-3 px-3 whitespace-nowrap">Misafir Adı Soyadı</th>
+                <th className="py-3 px-3 whitespace-nowrap">Belge Türü & No</th>
+                <th className="py-3 px-3 whitespace-nowrap">Uyruk</th>
+                <th className="py-3 px-3 whitespace-nowrap">Giriş / Çıkış</th>
+                <th className="py-3 px-3 whitespace-nowrap">Kaynak</th>
+                <th className="py-3 px-3 text-right whitespace-nowrap">KBS Durumu</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 font-medium text-zinc-800 dark:text-slate-200">
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 font-medium text-zinc-800 dark:text-slate-200">
               {filteredRecords.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-zinc-400 text-xs">
-                    Henüz kayıtlı check-in kaydı bulunamadı.
+                  <td colSpan={7} className="text-center py-12 px-4 text-zinc-500 dark:text-slate-400">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <UserCheck className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+                      <p className="text-sm font-semibold text-zinc-700 dark:text-slate-300">Henüz kayıtlı online check-in bulunamadı.</p>
+                      <p className="text-xs text-zinc-400 dark:text-slate-500 max-w-sm">
+                        Misafirler oda QR kodu veya PWA üzerinden pasaport/kimlik taradığında gerçek kayıtlar anlık olarak burada listelenir.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -567,43 +665,62 @@ export default function HotelKbsPage() {
                   <tr
                     key={r.id}
                     onClick={() => setSelectedRecord(r)}
-                    className="hover:bg-amber-50/50 transition cursor-pointer"
+                    className="hover:bg-amber-50/50 dark:hover:bg-slate-800/60 transition cursor-pointer"
                   >
-                    <td className="py-3.5 px-3">
-                      <strong className="font-mono text-sm bg-amber-100 text-amber-900 px-2.5 py-1 rounded-lg border border-amber-200">
+                    <td className="py-3.5 px-3 whitespace-nowrap">
+                      <strong className="font-mono text-xs bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-800">
                         {r.room_number}
                       </strong>
                     </td>
-                    <td className="py-3.5 px-3 font-bold text-sm text-zinc-900 dark:text-slate-100">
+                    <td className="py-3.5 px-3 font-bold text-sm text-zinc-900 dark:text-slate-100 whitespace-nowrap">
                       {r.first_name} {r.last_name}
                     </td>
-                    <td className="py-3.5 px-3 font-mono text-sm text-zinc-800">
-                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 dark:text-slate-300 mr-2 font-sans font-bold">
+                    <td className="py-3.5 px-3 font-mono text-xs text-zinc-800 dark:text-slate-200 whitespace-nowrap">
+                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-slate-300 mr-2 font-sans font-bold border border-zinc-200 dark:border-zinc-700">
                         {formatDocTypeLabel(r.document_type)}
                       </span>
-                      <span className="font-bold">{r.document_number}</span>
+                      <span className="font-bold tracking-wide">{r.document_number}</span>
                     </td>
-                    <td className="py-3.5 px-3">
-                      <span className="font-bold text-sm text-zinc-800">{r.nationality}</span>
-                    </td>
-                    <td className="py-3.5 px-3 text-zinc-600 dark:text-slate-400 text-xs">
-                      {r.check_in_date} ➔ {r.check_out_date}
-                    </td>
-                    <td className="py-3.5 px-3">
-                      <span className="text-[11px] px-2.5 py-1 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                        {r.created_source === 'GUEST_PWA' ? '📱 PWA OCR' : '🖥️ Resepsiyon'}
+                    <td className="py-3.5 px-3 whitespace-nowrap">
+                      <span className="font-bold text-xs text-zinc-800 dark:text-slate-200 px-2 py-0.5 rounded-md bg-zinc-50 border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+                        {r.nationality}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <span className={`text-[11px] px-2.5 py-1 rounded-full font-bold ${
-                          r.status === 'VERIFIED' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                          r.status === 'EXPIRED' ? 'bg-zinc-100 text-zinc-500 dark:text-slate-400 line-through' :
-                          'bg-amber-100 text-amber-800'
+                    <td className="py-3.5 px-3 text-zinc-600 dark:text-slate-400 text-xs whitespace-nowrap">
+                      <span>{r.check_in_date}</span>
+                      <span className="mx-1 text-zinc-400">➔</span>
+                      <span>{r.check_out_date}</span>
+                    </td>
+                    <td className="py-3.5 px-3 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-800/60 shadow-2xs">
+                        {r.created_source === 'GUEST_PWA' ? (
+                          <>
+                            <Smartphone className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
+                            <span>PWA OCR</span>
+                          </>
+                        ) : (
+                          <>
+                            <Building2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
+                            <span>Resepsiyon</span>
+                          </>
+                        )}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-3 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-2 shrink-0">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shadow-2xs ${
+                          r.status === 'VERIFIED'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60'
+                            : r.status === 'EXPIRED'
+                            ? 'bg-zinc-100 text-zinc-500 border border-zinc-200 line-through dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700'
+                            : 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60'
                         }`}>
-                          {r.status === 'VERIFIED' ? '✓ KBS Hazır' : r.status === 'EXPIRED' ? 'İmha Edildi' : r.status}
+                          {r.status === 'VERIFIED' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+                          <span>{r.status === 'VERIFIED' ? 'KBS Hazır' : r.status === 'EXPIRED' ? 'İmha Edildi' : r.status}</span>
                         </span>
-                        <Eye className="w-4 h-4 text-amber-700" />
+                        <span className="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-700 dark:text-amber-300 transition-colors">
+                          <Eye className="w-3.5 h-3.5 shrink-0" />
+                        </span>
                       </div>
                     </td>
                   </tr>

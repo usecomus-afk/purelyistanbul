@@ -163,6 +163,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    if (action === 'upsert_b2b_lead' && payload?.id) {
+      await adminDb.collection('b2b_mirofish_leads').doc(String(payload.id)).set(
+        stripUndefined({
+          ...payload,
+          deleted: false,
+          updatedAt: payload.updatedAt || now,
+        })
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    if (action === 'delete_b2b_lead' && payload?.id) {
+      const id = String(payload.id);
+      await adminDb.collection('b2b_mirofish_leads').doc(id).set({
+        id,
+        deleted: true,
+        updatedAt: now,
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    if (action === 'upsert_mirofish_params' && payload) {
+      await adminDb.collection('b2b_mirofish_settings').doc('system_parameters').set(
+        stripUndefined({
+          ...payload,
+          updatedAt: now,
+        })
+      );
+      return NextResponse.json({ ok: true });
+    }
+
     return NextResponse.json({ ok: false, error: 'Unsupported action' }, { status: 400 });
   } catch (err: any) {
     console.warn('[api/admin/catalog] error:', err);

@@ -2135,26 +2135,64 @@ const EXP_TRANSLATIONS: Record<string, Partial<Record<Language, ExpTranslation>>
   },
 };
 
+const DURATION_LABELS: Record<Exclude<Language, 'en'>, { hours: string; hour: string; min: string }> = {
+  tr: { hours: 'Saat', hour: 'Saat', min: 'Dk' },
+  ar: { hours: 'ساعات', hour: 'ساعة', min: 'دقيقة' },
+  ru: { hours: 'ч.', hour: 'ч.', min: 'мин.' },
+  de: { hours: 'Std.', hour: 'Std.', min: 'Min.' },
+  fr: { hours: 'Heures', hour: 'Heure', min: 'Min' },
+};
+const ONE_HOUR_RE = /\b1\s*Hours?\b/gi;
+const HOURS_RE = /\bHours\b/gi;
+const HOUR_RE = /\bHour\b/gi;
+const MIN_RE = /\bMin\b/gi;
+const durationCache = new Map<string, string>();
+
 export function localizeDuration(rawDuration: string, lang: Language): string {
   if (!rawDuration || lang === 'en') return rawDuration;
-  const labels: Record<Exclude<Language, 'en'>, { hours: string; hour: string; min: string }> = {
-    tr: { hours: 'Saat', hour: 'Saat', min: 'Dk' },
-    ar: { hours: 'ساعات', hour: 'ساعة', min: 'دقيقة' },
-    ru: { hours: 'ч.', hour: 'ч.', min: 'мин.' },
-    de: { hours: 'Std.', hour: 'Std.', min: 'Min.' },
-    fr: { hours: 'Heures', hour: 'Heure', min: 'Min' },
-  };
-  const l = labels[lang];
-  return rawDuration
-    .replace(/\b1\s*Hours?\b/gi, `1 ${l.hour}`)
-    .replace(/\bHours\b/gi, l.hours)
-    .replace(/\bHour\b/gi, l.hour)
-    .replace(/\bMin\b/gi, l.min);
+  const cacheKey = `${lang}:${rawDuration}`;
+  const cached = durationCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const l = DURATION_LABELS[lang];
+  const result = rawDuration
+    .replace(ONE_HOUR_RE, `1 ${l.hour}`)
+    .replace(HOURS_RE, l.hours)
+    .replace(HOUR_RE, l.hour)
+    .replace(MIN_RE, l.min);
+  durationCache.set(cacheKey, result);
+  return result;
 }
 
-export function getLocalizedExperience(exp: Experience, lang: Language) {
+interface LocalizedExperienceResult {
+  title: string;
+  agentNote: string;
+  desc: string;
+  provider?: string;
+  cuisine?: string;
+  priceLevel?: string;
+  specialties?: string[];
+  location: string;
+  duration: string;
+}
+
+const localizedExpCache = new WeakMap<Experience, Map<Language, { stamp: string; value: LocalizedExperienceResult }>>();
+
+export function getLocalizedExperience(exp: Experience, lang: Language): LocalizedExperienceResult {
+  let langMap = localizedExpCache.get(exp);
+  const stamp = `${exp.updatedAt || ''}:${exp.title}:${exp.duration}`;
+  if (langMap) {
+    const entry = langMap.get(lang);
+    if (entry && entry.stamp === stamp) {
+      return entry.value;
+    }
+  } else {
+    langMap = new Map();
+    localizedExpCache.set(exp, langMap);
+  }
+
   const trOverride = EXP_TRANSLATIONS[exp.id]?.[lang];
-  return {
+  const value: LocalizedExperienceResult = {
     title: trOverride?.title || exp.title,
     agentNote: trOverride?.agentNote || exp.agentNote,
     desc: trOverride?.agentNote || exp.desc || exp.agentNote,
@@ -2165,34 +2203,64 @@ export function getLocalizedExperience(exp: Experience, lang: Language) {
     location: trOverride?.location || exp.location,
     duration: localizeDuration(exp.duration, lang),
   };
+  langMap.set(lang, { stamp, value });
+  return value;
 }
 
+const expCategoryTagCache = new Map<string, string>();
+
 export function getLocalizedExperienceCategoryTag(exp: Experience, lang: Language): string {
+  const cacheKey = `${lang}:${exp.id}:${exp.categoryKey || ''}:${exp.categoryTag || ''}:${exp.category || ''}`;
+  const cached = expCategoryTagCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const t = getT(lang);
+  let result: string;
   if (exp.categoryKey) {
     const isRest = exp.category.toLowerCase().includes('restoran') || exp.id.startsWith('rest-');
-    if (isRest) return t.categoriesList.restaurants.title;
-    return getLocalizedCategoryTitle(exp.categoryKey, lang);
+    result = isRest ? t.categoriesList.restaurants.title : getLocalizedCategoryTitle(exp.categoryKey, lang);
+    expCategoryTagCache.set(cacheKey, result);
+    return result;
   }
   const raw = exp.categoryTag || (exp.category.includes('.') ? exp.category.split('.')[1].trim() : exp.category);
   const lower = raw.toLowerCase();
-  if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik') || exp.categoryTag === 'Aesthetic') return t.categoriesList.aesthetic?.title || raw;
-  if (lower.includes('restoran')) return t.categoriesList.restaurants.title;
-  if (lower.includes('boğaz') || lower.includes('yat') || lower.includes('bosphorus')) return t.categoriesList.bosphorus.title;
-  if (lower.includes('tarih') || lower.includes('müze') || lower.includes('heritage') || lower.includes('mystic')) return t.categoriesList.history.title;
-  if (lower.includes('gastro') || lower.includes('gurme') || lower.includes('foodie')) return t.categoriesList.gastronomy.title;
-  if (lower.includes('günübirlik') || lower.includes('şehir dışı')) return (t.categoriesList as any).dayTrips?.title || raw;
-  if (lower.includes('transfer') || lower.includes('vip')) return t.categoriesList.transfer.title;
-  if (lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('photo')) return t.categoriesList.photo.title;
-  if (lower.includes('gece hayatı') || lower.includes('pub crawl')) return (t.categoriesList as any).nightlife?.title || raw;
-  if (lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('shopping')) return t.categoriesList.shopping.title;
-  if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) return (t.categoriesList as any).family?.title || raw;
-  if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('art')) return t.categoriesList.art.title;
-  if (lower.includes('kültür') || lower.includes('miras') || lower.includes('culture')) return t.categoriesList.culture.title;
-  if (lower.includes('macera') || lower.includes('doğa')) return t.categoriesList.adventure.title;
-  if (lower.includes('hamam') || lower.includes('spa') || lower.includes('wellness')) return t.categoriesList.hamam.title;
-  if (lower.includes('yatırım') || lower.includes('invest')) return t.categoriesList.invest.title;
-  return getLocalizedCategoryTitle(raw, lang);
+  if (lower.includes('estetik') || lower.includes('aesthetic') || lower.includes('güzellik') || exp.categoryTag === 'Aesthetic') {
+    result = t.categoriesList.aesthetic?.title || raw;
+  } else if (lower.includes('restoran')) {
+    result = t.categoriesList.restaurants.title;
+  } else if (lower.includes('boğaz') || lower.includes('yat') || lower.includes('bosphorus')) {
+    result = t.categoriesList.bosphorus.title;
+  } else if (lower.includes('tarih') || lower.includes('müze') || lower.includes('heritage') || lower.includes('mystic')) {
+    result = t.categoriesList.history.title;
+  } else if (lower.includes('gastro') || lower.includes('gurme') || lower.includes('foodie')) {
+    result = t.categoriesList.gastronomy.title;
+  } else if (lower.includes('günübirlik') || lower.includes('şehir dışı')) {
+    result = (t.categoriesList as any).dayTrips?.title || raw;
+  } else if (lower.includes('transfer') || lower.includes('vip')) {
+    result = t.categoriesList.transfer.title;
+  } else if (lower.includes('fotoğraf') || lower.includes('kostüm') || lower.includes('photo')) {
+    result = t.categoriesList.photo.title;
+  } else if (lower.includes('gece hayatı') || lower.includes('pub crawl')) {
+    result = (t.categoriesList as any).nightlife?.title || raw;
+  } else if (lower.includes('alışveriş') || lower.includes('çarşı') || lower.includes('shopping')) {
+    result = t.categoriesList.shopping.title;
+  } else if (lower.includes('aile') || lower.includes('çocuk') || lower.includes('eğlence')) {
+    result = (t.categoriesList as any).family?.title || raw;
+  } else if (lower.includes('semazen') || lower.includes('sanat') || lower.includes('art')) {
+    result = t.categoriesList.art.title;
+  } else if (lower.includes('kültür') || lower.includes('miras') || lower.includes('culture')) {
+    result = t.categoriesList.culture.title;
+  } else if (lower.includes('macera') || lower.includes('doğa')) {
+    result = t.categoriesList.adventure.title;
+  } else if (lower.includes('hamam') || lower.includes('spa') || lower.includes('wellness')) {
+    result = t.categoriesList.hamam.title;
+  } else if (lower.includes('yatırım') || lower.includes('invest')) {
+    result = t.categoriesList.invest.title;
+  } else {
+    result = getLocalizedCategoryTitle(raw, lang);
+  }
+  expCategoryTagCache.set(cacheKey, result);
+  return result;
 }
 
 export interface ExperienceUiLabels {

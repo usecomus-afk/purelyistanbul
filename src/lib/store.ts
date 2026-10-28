@@ -1,11 +1,13 @@
-import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType, HotelPartnerApplication } from './types';
+import { Hotel, Room, RoomOccupancyStatus, RoomStateInfo, HotelWhatsAppTemplate, ServiceRequest, Booking, GuestProfile, Language, Complaint, ComplaintStatus, XeniosUser, Experience, ModuleAdminSettings, ModuleAdminSettingsMap, PropertyListing, InvestmentLead, InRoomServiceItem, RoomServiceMenuItem, OTAChannelItem, AiTokenStats, TokenUsageInfo, SupplierPartner, SupplierType, HotelPartnerApplication, B2BLead, MirofishSystemParameters, B2BMirofishDataset } from './types';
 import { UserPreferences } from '@/types/comusAi';
 import { CategoryConfig, mergeCategoryConfigs } from '@/lib/marketplace/categories';
 import rawHotels from '@/data/hotels.json';
 import rawExperiences from '@/data/experiences.json';
 import rawProperties from '@/data/properties.json';
+import rawB2BDataset from '@/data/b2b_mirofish_leads.json';
 
 const hotelsData: Hotel[] = rawHotels as Hotel[];
+const seedB2BDataset = rawB2BDataset as B2BMirofishDataset;
 
 const STORAGE_KEYS = {
   CURRENT_HOTEL: 'xenios_hotel_id',
@@ -27,7 +29,10 @@ const STORAGE_KEYS = {
   OTA_CHANNELS: 'xenios_ota_channels',
   AI_TOKEN_USAGE: 'xenios_ai_token_usage',
   AI_CHAT_MESSAGES: 'xenios_ai_chat_messages',
-  PARTNER_APPLICATIONS: 'xenios_hotel_partner_applications'
+  PARTNER_APPLICATIONS: 'xenios_hotel_partner_applications',
+  B2B_MIROFISH_LEADS: 'xenios_b2b_mirofish_leads_v1',
+  B2B_MIROFISH_PARAMS: 'xenios_b2b_mirofish_params_v1',
+  B2B_DELETED_IDS: 'xenios_deleted_b2b_lead_ids'
 };
 
 function inferSupplierType(category: string): SupplierType {
@@ -106,9 +111,49 @@ function buildDefaultSuppliers(): SupplierPartner[] {
   return Array.from(map.values());
 }
 
+let defaultSuppliersCache: SupplierPartner[] | null = null;
+function getDefaultSuppliers(): SupplierPartner[] {
+  if (!defaultSuppliersCache) {
+    defaultSuppliersCache = buildDefaultSuppliers();
+  }
+  return defaultSuppliersCache;
+}
+
+const REMOVED_LEGACY_EXP_IDS = new Set([
+  'exp-19', 'exp-20', 'exp-21', 'exp-22', 'exp-23',
+  'exp-30', 'exp-31', 'exp-32',
+  'exp-36', 'exp-37', 'exp-38', 'exp-39', 'exp-40',
+  'exp-49', 'exp-50', 'exp-51', 'exp-52',
+  'exp-aesthetic-1', 'exp-aesthetic-2', 'exp-aesthetic-3', 'exp-aesthetic-4',
+  'exp-aesthetic-5', 'exp-aesthetic-6', 'exp-aesthetic-7', 'exp-aesthetic-8',
+  'exp-aesthetic-9', 'exp-aesthetic-10', 'exp-aesthetic-11', 'exp-aesthetic-12'
+]);
+const SEED_EXPERIENCES_LIST = rawExperiences as Experience[];
+const SEED_EXPERIENCES_MAP = new Map<string, Experience>(SEED_EXPERIENCES_LIST.map((e) => [e.id, e]));
+
 const DEFAULT_MODULE_SETTING: ModuleAdminSettings = { enabled: true, hidden: false };
 
 const memoryStore = new Map<string, string>();
+const deletedIdSetCache = new Map<string, { raw: string; set: Set<string> }>();
+const parsedCache = new Map<string, { stamp: string; value: any; byId?: Map<string, any> }>();
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (!e.key) {
+      memoryStore.clear();
+      deletedIdSetCache.clear();
+      parsedCache.clear();
+      return;
+    }
+    if (e.newValue === null) {
+      memoryStore.delete(e.key);
+    } else {
+      memoryStore.set(e.key, e.newValue);
+    }
+    deletedIdSetCache.delete(e.key);
+    parsedCache.clear();
+  });
+}
 
 function safeGet(key: string, defaultVal: string = ''): string {
   if (memoryStore.has(key)) {
@@ -127,9 +172,12 @@ function safeGet(key: string, defaultVal: string = ''): string {
   }
 }
 
-function safeSet(key: string, val: string): void {
+function safeSet(key: string, val: string): boolean {
+  const current = safeGet(key, '__UNSET__');
+  if (current === val) return false;
   memoryStore.set(key, val);
-  if (typeof window === 'undefined') return;
+  deletedIdSetCache.delete(key);
+  if (typeof window === 'undefined') return true;
   try {
     localStorage.setItem(key, val);
   } catch (e) {
@@ -143,8 +191,10 @@ function safeSet(key: string, val: string): void {
               ? { ...item, image: '/images/istanbul/il_1588xN.6201904451_eqr3.webp' }
               : item
           );
-          localStorage.setItem(key, JSON.stringify(compact));
-          return;
+          const compactJson = JSON.stringify(compact);
+          memoryStore.set(key, compactJson);
+          localStorage.setItem(key, compactJson);
+          return true;
         }
       }
       // Kritik silme/durum anahtarları için yer aç
@@ -157,30 +207,54 @@ function safeSet(key: string, val: string): void {
               ? { ...item, image: '/images/istanbul/il_1588xN.6201904451_eqr3.webp' }
               : item
           );
-          localStorage.setItem('xenios_custom_experiences', JSON.stringify(compact));
+          const compactJson = JSON.stringify(compact);
+          memoryStore.set('xenios_custom_experiences', compactJson);
+          localStorage.setItem('xenios_custom_experiences', compactJson);
         }
       }
       localStorage.setItem(key, val);
     } catch {}
   }
+  return true;
+}
+
+function safeRemove(key: string): void {
+  memoryStore.delete(key);
+  deletedIdSetCache.delete(key);
+  parsedCache.delete(key);
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(key);
+    } catch {}
+  }
 }
 
 function getDeletedIdSet(storageKey: string): Set<string> {
-  try {
-    const raw = safeGet(storageKey);
-    if (raw) {
+  const raw = safeGet(storageKey);
+  const cached = deletedIdSetCache.get(storageKey);
+  if (cached && cached.raw === raw) {
+    return cached.set;
+  }
+  const set = new Set<string>();
+  if (raw) {
+    try {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return new Set(parsed);
-    }
-  } catch {}
-  return new Set<string>();
+      if (Array.isArray(parsed)) {
+        for (const id of parsed) set.add(id);
+      }
+    } catch {}
+  }
+  deletedIdSetCache.set(storageKey, { raw, set });
+  return set;
 }
 
 function addDeletedId(storageKey: string, id: string): void {
   const set = getDeletedIdSet(storageKey);
   if (!set.has(id)) {
     set.add(id);
-    safeSet(storageKey, JSON.stringify(Array.from(set)));
+    const raw = JSON.stringify(Array.from(set));
+    safeSet(storageKey, raw);
+    deletedIdSetCache.set(storageKey, { raw, set });
   }
 }
 
@@ -198,12 +272,7 @@ export const XeniosStore = {
     if (user) {
       safeSet(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
     } else {
-      memoryStore.delete(STORAGE_KEYS.CURRENT_USER);
-      if (typeof window !== 'undefined') {
-        try {
-          localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-        } catch {}
-      }
+      safeRemove(STORAGE_KEYS.CURRENT_USER);
     }
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_auth_updated'));
@@ -249,24 +318,45 @@ export const XeniosStore = {
 
   // Hotels Management & Live Inventory
   getHotels(): Hotel[] {
+    const stored = safeGet('xenios_custom_hotels');
+    const deletedRaw = safeGet('xenios_deleted_hotel_ids');
+    const stamp = `${stored.length}:${deletedRaw}:${stored.slice(0, 64)}:${stored.slice(-64)}`;
+    const cached = parsedCache.get('hotels');
+    if (cached && cached.stamp === stamp) {
+      return (cached.value as Hotel[]).slice();
+    }
+
     const deletedIds = this.getDeletedHotelIds();
-    try {
-      const stored = safeGet('xenios_custom_hotels');
-      if (stored) {
+    let result: Hotel[] | null = null;
+    if (stored) {
+      try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          return parsed.filter((h: Hotel) => h && h.id && !h.deleted && !deletedIds.has(h.id));
+          result = parsed.filter((h: Hotel) => h && h.id && !h.deleted && !deletedIds.has(h.id));
         }
-      }
-    } catch (e) {}
-    return hotelsData.filter((h) => h && h.id && !deletedIds.has(h.id));
+      } catch (e) {}
+    }
+    if (!result) {
+      result = hotelsData.filter((h) => h && h.id && !deletedIds.has(h.id));
+    }
+    const byId = new Map<string, Hotel>(result.map((h) => [h.id, h]));
+    parsedCache.set('hotels', { stamp, value: result, byId });
+    return result.slice();
   },
 
   saveHotels(hotels: Hotel[]) {
     const deletedIds = this.getDeletedHotelIds();
     const filtered = hotels.filter((h) => h && h.id && !h.deleted && !deletedIds.has(h.id));
-    safeSet('xenios_custom_hotels', JSON.stringify(filtered));
-    if (typeof window !== 'undefined') {
+    const json = JSON.stringify(filtered);
+    const changed = safeSet('xenios_custom_hotels', json);
+    const deletedRaw = safeGet('xenios_deleted_hotel_ids');
+    const stamp = `${json.length}:${deletedRaw}:${json.slice(0, 64)}:${json.slice(-64)}`;
+    parsedCache.set('hotels', {
+      stamp,
+      value: filtered,
+      byId: new Map<string, Hotel>(filtered.map((h) => [h.id, h])),
+    });
+    if (changed && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_hotels_updated'));
     }
   },
@@ -310,7 +400,13 @@ export const XeniosStore = {
   },
 
   getHotelById(id: string): Hotel | undefined {
-    return this.getHotels().find(h => h.id === id) || this.getHotels()[0];
+    this.getHotels();
+    const cached = parsedCache.get('hotels');
+    if (cached?.byId) {
+      return cached.byId.get(id) || (cached.value as Hotel[])[0];
+    }
+    const list = this.getHotels();
+    return list.find(h => h.id === id) || list[0];
   },
 
   getHotelManagerProfile(hotelId?: string) {
@@ -690,15 +786,6 @@ export const XeniosStore = {
   },
 
   normalizeExperiences(list: Experience[]): Experience[] {
-    const removedLegacyIds = new Set([
-      'exp-19', 'exp-20', 'exp-21', 'exp-22', 'exp-23',
-      'exp-30', 'exp-31', 'exp-32',
-      'exp-36', 'exp-37', 'exp-38', 'exp-39', 'exp-40',
-      'exp-49', 'exp-50', 'exp-51', 'exp-52',
-      'exp-aesthetic-1', 'exp-aesthetic-2', 'exp-aesthetic-3', 'exp-aesthetic-4',
-      'exp-aesthetic-5', 'exp-aesthetic-6', 'exp-aesthetic-7', 'exp-aesthetic-8',
-      'exp-aesthetic-9', 'exp-aesthetic-10', 'exp-aesthetic-11', 'exp-aesthetic-12'
-    ]);
     const deletedIds = this.getDeletedExperienceIds();
 
     const isRemovedExp = (item: Experience) => {
@@ -708,7 +795,7 @@ export const XeniosStore = {
         this.markExperienceDeleted(item.id);
         return true;
       }
-      if (removedLegacyIds.has(item.id) || item.id.startsWith('exp-aesthetic-')) return true;
+      if (REMOVED_LEGACY_EXP_IDS.has(item.id) || item.id.startsWith('exp-aesthetic-')) return true;
       const cat = `${item.category || ''} ${item.categoryTag || ''}`.toLowerCase();
       if (
         cat.includes('medikal') ||
@@ -723,8 +810,6 @@ export const XeniosStore = {
       return false;
     };
 
-    const seedList = rawExperiences as Experience[];
-    const seedMap = new Map<string, Experience>(seedList.map((e) => [e.id, e]));
     const itemMap = new Map<string, Experience>();
     const customItems: Experience[] = [];
 
@@ -732,13 +817,13 @@ export const XeniosStore = {
       if (isRemovedExp(item) || deletedIds.has(item.id)) continue;
       if (itemMap.has(item.id)) continue;
       itemMap.set(item.id, item);
-      if (!seedMap.has(item.id)) {
+      if (!SEED_EXPERIENCES_MAP.has(item.id)) {
         customItems.push(item);
       }
     }
 
     const mergedSeedItems: Experience[] = [];
-    for (const seed of seedList) {
+    for (const seed of SEED_EXPERIENCES_LIST) {
       if (deletedIds.has(seed.id) || isRemovedExp(seed)) continue;
       const existing = itemMap.get(seed.id);
       if (existing) {
@@ -761,22 +846,43 @@ export const XeniosStore = {
   },
 
   getExperiences(): Experience[] {
-    try {
-      const stored = safeGet('xenios_custom_experiences');
-      if (stored) {
+    const stored = safeGet('xenios_custom_experiences');
+    const deletedRaw = safeGet('xenios_deleted_experience_ids');
+    const stamp = `${stored.length}:${deletedRaw}:${stored.slice(0, 64)}:${stored.slice(-64)}`;
+    const cached = parsedCache.get('experiences');
+    if (cached && cached.stamp === stamp) {
+      return (cached.value as Experience[]).slice();
+    }
+
+    let normalized: Experience[] | null = null;
+    if (stored) {
+      try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          return this.normalizeExperiences(parsed);
+          normalized = this.normalizeExperiences(parsed);
         }
-      }
-    } catch (e) {}
-    return this.normalizeExperiences(rawExperiences as Experience[]);
+      } catch (e) {}
+    }
+    if (!normalized) {
+      normalized = this.normalizeExperiences(SEED_EXPERIENCES_LIST);
+    }
+    const byId = new Map<string, Experience>(normalized.map((e) => [e.id, e]));
+    parsedCache.set('experiences', { stamp, value: normalized, byId });
+    return normalized.slice();
   },
 
   saveExperiences(exps: Experience[]) {
     const normalized = this.normalizeExperiences(exps);
-    safeSet('xenios_custom_experiences', JSON.stringify(normalized));
-    if (typeof window !== 'undefined') {
+    const json = JSON.stringify(normalized);
+    const changed = safeSet('xenios_custom_experiences', json);
+    const deletedRaw = safeGet('xenios_deleted_experience_ids');
+    const stamp = `${json.length}:${deletedRaw}:${json.slice(0, 64)}:${json.slice(-64)}`;
+    parsedCache.set('experiences', {
+      stamp,
+      value: normalized,
+      byId: new Map<string, Experience>(normalized.map((e) => [e.id, e])),
+    });
+    if (changed && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_experiences_updated'));
     }
   },
@@ -844,29 +950,50 @@ export const XeniosStore = {
   },
 
   getExperienceById(id: string) {
+    this.getExperiences();
+    const cached = parsedCache.get('experiences');
+    if (cached?.byId) {
+      return cached.byId.get(id);
+    }
     return this.getExperiences().find((e: any) => e.id === id);
   },
 
   // Agreed Suppliers & Partner Businesses (Anlaşmalı İşletmeler & Tedarikçiler)
   getSuppliers(): SupplierPartner[] {
+    const stored = safeGet(STORAGE_KEYS.SUPPLIERS);
+    const deletedRaw = safeGet('xenios_deleted_supplier_ids');
+    const stamp = `${stored.length}:${deletedRaw}:${stored.slice(0, 64)}:${stored.slice(-64)}`;
+    const cached = parsedCache.get('suppliers');
+    if (cached && cached.stamp === stamp) {
+      return (cached.value as SupplierPartner[]).slice();
+    }
+
     const deletedIds = this.getDeletedSupplierIds();
-    try {
-      const stored = safeGet(STORAGE_KEYS.SUPPLIERS);
-      if (stored) {
+    let result: SupplierPartner[] | null = null;
+    if (stored) {
+      try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          return parsed.filter((s: SupplierPartner) => s && s.id && !s.deleted && !deletedIds.has(s.id));
+          result = parsed.filter((s: SupplierPartner) => s && s.id && !s.deleted && !deletedIds.has(s.id));
         }
-      }
-    } catch (e) {}
-    return buildDefaultSuppliers().filter((s) => s && s.id && !deletedIds.has(s.id));
+      } catch (e) {}
+    }
+    if (!result) {
+      result = getDefaultSuppliers().filter((s) => s && s.id && !deletedIds.has(s.id));
+    }
+    parsedCache.set('suppliers', { stamp, value: result });
+    return result.slice();
   },
 
   saveSuppliers(suppliers: SupplierPartner[]) {
     const deletedIds = this.getDeletedSupplierIds();
     const filtered = suppliers.filter((s) => s && s.id && !s.deleted && !deletedIds.has(s.id));
-    safeSet(STORAGE_KEYS.SUPPLIERS, JSON.stringify(filtered));
-    if (typeof window !== 'undefined') {
+    const json = JSON.stringify(filtered);
+    const changed = safeSet(STORAGE_KEYS.SUPPLIERS, json);
+    const deletedRaw = safeGet('xenios_deleted_supplier_ids');
+    const stamp = `${json.length}:${deletedRaw}:${json.slice(0, 64)}:${json.slice(-64)}`;
+    parsedCache.set('suppliers', { stamp, value: filtered });
+    if (changed && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_suppliers_updated'));
     }
   },
@@ -910,26 +1037,43 @@ export const XeniosStore = {
 
   // Site Kategorileri — panelden düzenlenebilir (web + mobil uygulama ortak okur)
   getCategoryOverrides(): Partial<CategoryConfig>[] {
+    const stored = safeGet('xenios_site_categories_v2');
+    const cached = parsedCache.get('category_overrides');
+    if (cached && cached.stamp === stored) {
+      return (cached.value as Partial<CategoryConfig>[]).slice();
+    }
     try {
-      const stored = safeGet('xenios_site_categories_v2');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          parsedCache.set('category_overrides', { stamp: stored, value: parsed });
+          return parsed.slice();
+        }
       }
     } catch (e) {}
     return [];
   },
 
   saveCategoryOverrides(list: Partial<CategoryConfig>[]) {
-    safeSet('xenios_site_categories_v2', JSON.stringify(list));
-    if (typeof window !== 'undefined') {
+    const json = JSON.stringify(list);
+    const changed = safeSet('xenios_site_categories_v2', json);
+    parsedCache.set('category_overrides', { stamp: json, value: list });
+    parsedCache.delete('category_configs');
+    if (changed && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_categories_updated'));
     }
   },
 
   /** Varsayılan + panel düzenlemeleri birleşik, sıralı kategori listesi (gizliler dahil). */
   getCategoryConfigs(): CategoryConfig[] {
-    return mergeCategoryConfigs(this.getCategoryOverrides());
+    const stored = safeGet('xenios_site_categories_v2');
+    const cached = parsedCache.get('category_configs');
+    if (cached && cached.stamp === stored) {
+      return (cached.value as CategoryConfig[]).slice();
+    }
+    const merged = mergeCategoryConfigs(this.getCategoryOverrides());
+    parsedCache.set('category_configs', { stamp: stored, value: merged });
+    return merged.slice();
   },
 
   /** Kategori kaydını (tam alanlarıyla) yerel olarak kaydeder ve Firestore'a yansıtır. */
@@ -982,24 +1126,40 @@ export const XeniosStore = {
 
   // Invest & Live in Istanbul — Emlak & Mülk Yönetimi Vitrini
   getPropertyListings(): PropertyListing[] {
+    const stored = safeGet(STORAGE_KEYS.PROPERTIES);
+    const deletedRaw = safeGet('xenios_deleted_property_ids');
+    const stamp = `${stored.length}:${deletedRaw}:${stored.slice(0, 64)}:${stored.slice(-64)}`;
+    const cached = parsedCache.get('properties');
+    if (cached && cached.stamp === stamp) {
+      return (cached.value as PropertyListing[]).slice();
+    }
+
     const deletedIds = this.getDeletedPropertyIds();
-    try {
-      const stored = safeGet(STORAGE_KEYS.PROPERTIES);
-      if (stored) {
+    let result: PropertyListing[] | null = null;
+    if (stored) {
+      try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          return parsed.filter((p: PropertyListing) => p && p.id && !p.deleted && !deletedIds.has(p.id));
+          result = parsed.filter((p: PropertyListing) => p && p.id && !p.deleted && !deletedIds.has(p.id));
         }
-      }
-    } catch (e) {}
-    return (rawProperties as PropertyListing[]).filter((p) => p && p.id && !deletedIds.has(p.id));
+      } catch (e) {}
+    }
+    if (!result) {
+      result = (rawProperties as PropertyListing[]).filter((p) => p && p.id && !deletedIds.has(p.id));
+    }
+    parsedCache.set('properties', { stamp, value: result });
+    return result.slice();
   },
 
   savePropertyListings(properties: PropertyListing[]) {
     const deletedIds = this.getDeletedPropertyIds();
     const filtered = properties.filter((p) => p && p.id && !p.deleted && !deletedIds.has(p.id));
-    safeSet(STORAGE_KEYS.PROPERTIES, JSON.stringify(filtered));
-    if (typeof window !== 'undefined') {
+    const json = JSON.stringify(filtered);
+    const changed = safeSet(STORAGE_KEYS.PROPERTIES, json);
+    const deletedRaw = safeGet('xenios_deleted_property_ids');
+    const stamp = `${json.length}:${deletedRaw}:${json.slice(0, 64)}:${json.slice(-64)}`;
+    parsedCache.set('properties', { stamp, value: filtered });
+    if (changed && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('xenios_properties_updated'));
     }
   },
@@ -1136,22 +1296,22 @@ export const XeniosStore = {
 
   // In-Room Service Requests
   getDeletedRequestIds(): Set<string> {
-    try {
-      const raw = safeGet('xenios_deleted_request_ids');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return new Set(parsed);
-      }
-    } catch {}
-    return new Set();
+    return getDeletedIdSet('xenios_deleted_request_ids');
   },
 
   getRequestStatusOverrides(): Record<string, ServiceRequest['status']> {
     try {
       const raw = safeGet('xenios_request_status_overrides');
       if (raw) {
+        const cached = parsedCache.get('status_overrides');
+        if (cached && cached.stamp === raw) {
+          return cached.value as Record<string, ServiceRequest['status']>;
+        }
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object') return parsed;
+        if (parsed && typeof parsed === 'object') {
+          parsedCache.set('status_overrides', { stamp: raw, value: parsed });
+          return parsed;
+        }
       }
     } catch {}
     return {};
@@ -1159,18 +1319,32 @@ export const XeniosStore = {
 
   getRequests(): ServiceRequest[] {
     try {
-      const deletedIds = this.getDeletedRequestIds();
-      const statusOverrides = this.getRequestStatusOverrides();
       const stored = safeGet(STORAGE_KEYS.REQUESTS);
       if (stored) {
+        const deletedRaw = safeGet('xenios_deleted_request_ids') || '';
+        const overridesRaw = safeGet('xenios_request_status_overrides') || '';
+        const stamp = `${stored.length}:${deletedRaw}:${overridesRaw}:${stored}`;
+        const cached = parsedCache.get('requests');
+        if (cached && cached.stamp === stamp) {
+          return (cached.value as ServiceRequest[]).slice();
+        }
+        const deletedIds = this.getDeletedRequestIds();
+        const statusOverrides = this.getRequestStatusOverrides();
         const list: ServiceRequest[] = JSON.parse(stored);
         const realList = list
           .filter(r => !r.isDemo && !r.id?.includes('demo') && !r.id?.includes('test') && !deletedIds.has(r.id))
           .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
         if (realList.length !== list.length) {
-          safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(realList));
+          const nextRaw = JSON.stringify(realList);
+          safeSet(STORAGE_KEYS.REQUESTS, nextRaw);
+          parsedCache.set('requests', {
+            stamp: `${nextRaw.length}:${deletedRaw}:${overridesRaw}:${nextRaw}`,
+            value: realList,
+          });
+        } else {
+          parsedCache.set('requests', { stamp, value: realList });
         }
-        return realList;
+        return realList.slice();
       }
     } catch (e) {}
     return [];
@@ -1186,8 +1360,9 @@ export const XeniosStore = {
     };
     list.unshift(newReq);
     try {
-      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
-      if (typeof window !== 'undefined') {
+      const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+      parsedCache.delete('requests');
+      if (changed && typeof window !== 'undefined') {
         window.dispatchEvent(new Event('xenios_requests_updated'));
       }
     } catch (e) {}
@@ -1196,20 +1371,18 @@ export const XeniosStore = {
 
   updateRequestStatus(id: string, status: ServiceRequest['status']) {
     try {
-      const overrides = this.getRequestStatusOverrides();
-      overrides[id] = status;
+      const overrides = { ...this.getRequestStatusOverrides(), [id]: status };
       safeSet('xenios_request_status_overrides', JSON.stringify(overrides));
+      parsedCache.delete('status_overrides');
     } catch {}
-    const list = this.getRequests();
-    const item = list.find(r => r.id === id);
-    if (item) {
-      item.status = status;
-      item.updatedAt = new Date().toISOString();
-      try {
-        safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
-      } catch (e) {}
-    }
+    const list = this.getRequests().map(r =>
+      r.id === id ? { ...r, status, updatedAt: new Date().toISOString() } : r
+    );
+    try {
+      const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+      parsedCache.delete('requests');
+      if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+    } catch (e) {}
   },
 
   updateRequestPayment(
@@ -1217,8 +1390,9 @@ export const XeniosStore = {
     payment: Pick<ServiceRequest, 'paymentMethod' | 'paymentStatus' | 'paymentAmount' | 'paymentCurrency' | 'paymentReference'>
   ): ServiceRequest | null {
     const list = this.getRequests();
-    const item = list.find(r => r.id === id);
-    if (!item) return null;
+    const idx = list.findIndex(r => r.id === id);
+    if (idx === -1) return null;
+    const item = { ...list[idx] };
     item.paymentMethod = payment.paymentMethod;
     item.paymentStatus = payment.paymentStatus;
     item.paymentAmount = payment.paymentAmount;
@@ -1231,24 +1405,25 @@ export const XeniosStore = {
       }
     }
     item.updatedAt = new Date().toISOString();
+    list[idx] = item;
     try {
-      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+      const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+      parsedCache.delete('requests');
+      if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
     } catch (e) {}
     return item;
   },
 
   deleteRequest(id: string) {
     try {
-      const deletedSet = this.getDeletedRequestIds();
-      deletedSet.add(id);
-      safeSet('xenios_deleted_request_ids', JSON.stringify(Array.from(deletedSet)));
+      addDeletedId('xenios_deleted_request_ids', id);
     } catch {}
     const list = this.getRequests();
     const filtered = list.filter(r => r.id !== id);
     try {
-      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(filtered));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+      const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(filtered));
+      parsedCache.delete('requests');
+      if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
     } catch (e) {}
   },
 
@@ -1259,9 +1434,12 @@ export const XeniosStore = {
       const cleaned = list
         .filter(r => !r.isDemo && !r.id?.includes('demo') && !r.id?.includes('test') && !deletedIds.has(r.id))
         .map(r => (statusOverrides[r.id] ? { ...r, status: statusOverrides[r.id] } : r));
-      safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(cleaned));
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('xenios_requests_updated'));
+      const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(cleaned));
+      if (changed) {
+        parsedCache.delete('requests');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('xenios_requests_updated'));
+        }
       }
     } catch (e) {}
   },
@@ -1272,35 +1450,48 @@ export const XeniosStore = {
    */
   syncBookingsFromRemote(list: Booking[]) {
     try {
-      safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
+      const changed = safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
+      if (changed) {
+        parsedCache.delete('bookings');
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
+      }
     } catch (e) {}
   },
 
   syncComplaintsFromRemote(list: Complaint[]) {
     try {
-      safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
+      const changed = safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
+      if (changed) {
+        parsedCache.delete('complaints');
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
+      }
     } catch (e) {}
   },
 
   syncLeadsFromRemote(list: InvestmentLead[]) {
     try {
-      safeSet(STORAGE_KEYS.INVESTMENT_LEADS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+      const changed = safeSet(STORAGE_KEYS.INVESTMENT_LEADS, JSON.stringify(list));
+      if (changed) {
+        parsedCache.delete('leads');
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+      }
     } catch (e) {}
   },
 
   updateRequestStage(id: string, stage: string, status: ServiceRequest['status']) {
     const list = this.getRequests();
-    const item = list.find(r => r.id === id);
-    if (item) {
-      item.stage = stage;
-      item.status = status;
-      item.updatedAt = new Date().toISOString();
+    const idx = list.findIndex(r => r.id === id);
+    if (idx >= 0) {
+      list[idx] = {
+        ...list[idx],
+        stage,
+        status,
+        updatedAt: new Date().toISOString()
+      };
       try {
-        safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
+        const changed = safeSet(STORAGE_KEYS.REQUESTS, JSON.stringify(list));
+        parsedCache.delete('requests');
+        if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_requests_updated'));
       } catch (e) {}
     }
   },
@@ -1309,7 +1500,15 @@ export const XeniosStore = {
   getModuleSettings(): ModuleAdminSettingsMap {
     try {
       const stored = safeGet(STORAGE_KEYS.MODULE_SETTINGS);
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const cached = parsedCache.get('module_settings');
+        if (cached && cached.stamp === stored) {
+          return cached.value as ModuleAdminSettingsMap;
+        }
+        const parsed = JSON.parse(stored);
+        parsedCache.set('module_settings', { stamp: stored, value: parsed });
+        return parsed;
+      }
     } catch (e) {}
     return {};
   },
@@ -1320,11 +1519,14 @@ export const XeniosStore = {
   },
 
   setModuleSetting(key: string, settings: ModuleAdminSettings) {
-    const all = this.getModuleSettings();
-    all[key] = settings;
+    const all = { ...this.getModuleSettings(), [key]: settings };
     try {
-      safeSet(STORAGE_KEYS.MODULE_SETTINGS, JSON.stringify(all));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_module_settings_updated'));
+      const changed = safeSet(STORAGE_KEYS.MODULE_SETTINGS, JSON.stringify(all));
+      if (changed) {
+        parsedCache.delete('module_settings');
+        parsedCache.delete('in_room_services');
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_module_settings_updated'));
+      }
     } catch (e) {}
   },
 
@@ -1403,17 +1605,17 @@ export const XeniosStore = {
       const localUpdatedAt =
         safeGet(`xenios_enable_guest_self_kbs_updated_at_${hotelId}`, '') ||
         safeGet('xenios_enable_guest_self_kbs_updated_at_global', '');
-      if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt < localUpdatedAt) {
+      if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt <= localUpdatedAt) {
         return;
       }
       const flag = enabled ? '1' : '0';
-      safeSet(`xenios_enable_guest_self_kbs_${hotelId}`, flag);
-      safeSet('xenios_enable_guest_self_kbs_global', flag);
+      const changedHotel = safeSet(`xenios_enable_guest_self_kbs_${hotelId}`, flag);
+      const changedGlobal = safeSet('xenios_enable_guest_self_kbs_global', flag);
       if (remoteUpdatedAt) {
         safeSet(`xenios_enable_guest_self_kbs_updated_at_${hotelId}`, remoteUpdatedAt);
         safeSet('xenios_enable_guest_self_kbs_updated_at_global', remoteUpdatedAt);
       }
-      if (typeof window !== 'undefined') {
+      if ((changedHotel || changedGlobal) && typeof window !== 'undefined') {
         window.dispatchEvent(new Event('xenios_hotels_updated'));
         window.dispatchEvent(new Event('xenios_module_settings_updated'));
       }
@@ -1453,21 +1655,28 @@ export const XeniosStore = {
       { id: 'extendStay', key: 'extendStay', label: 'Konaklama Uzatma', desc: 'Konaklama s�resini uzat', icon: '/icons/menu/extendStay.png', department: 'Resepsiyon / Rezervasyon', enabled: false, hidden: true, order: 14 }
     ];
 
+    const rawInRoom = safeGet(STORAGE_KEYS.IN_ROOM_SERVICES) || '';
+    const rawSettings = safeGet(STORAGE_KEYS.MODULE_SETTINGS) || '';
+    const activeId = this.getActiveHotelId();
+    const activeHotel = this.getHotelById(activeId);
+    const hotelModsStamp = activeHotel?.modules?.inRoomServicesUpdatedAt || activeHotel?.updatedAt || '';
+    const cacheStamp = `${activeId}:${hotelModsStamp}:${rawInRoom.length}:${rawSettings.length}:${rawInRoom}:${rawSettings}`;
+    const cachedInRoom = parsedCache.get('in_room_services');
+    if (cachedInRoom && cachedInRoom.stamp === cacheStamp) {
+      return (cachedInRoom.value as InRoomServiceItem[]).slice();
+    }
+
     const defaultMap = new Map<string, InRoomServiceItem>(defaultServices.map(s => [s.key, s]));
 
     let storedList: InRoomServiceItem[] = [];
     try {
-      const stored = safeGet(STORAGE_KEYS.IN_ROOM_SERVICES);
-      if (stored) {
-        const parsed = JSON.parse(stored);
+      if (rawInRoom) {
+        const parsed = JSON.parse(rawInRoom);
         if (Array.isArray(parsed)) {
           storedList = parsed;
         }
-      } else {
-        const activeHotel = this.getHotelById(this.getActiveHotelId());
-        if (Array.isArray(activeHotel?.modules?.inRoomServices)) {
-          storedList = activeHotel!.modules!.inRoomServices;
-        }
+      } else if (Array.isArray(activeHotel?.modules?.inRoomServices)) {
+        storedList = activeHotel!.modules!.inRoomServices;
       }
     } catch (e) {}
 
@@ -1504,7 +1713,7 @@ export const XeniosStore = {
     const items = [...mergedDefaults, ...customItems];
     const moduleSettings = this.getModuleSettings();
 
-    return items.map(item => {
+    const result = items.map(item => {
       const ms = moduleSettings[item.key];
       const enabled = ms?.enabled !== undefined ? ms.enabled : item.enabled;
       const explicitlyHidden =
@@ -1522,6 +1731,9 @@ export const XeniosStore = {
         explicitlyHidden,
       };
     }).sort((a, b) => (a.order || 99) - (b.order || 99));
+
+    parsedCache.set('in_room_services', { stamp: cacheStamp, value: result });
+    return result.slice();
   },
 
   syncInRoomServicesToActiveHotel(list: InRoomServiceItem[]) {
@@ -1562,11 +1774,11 @@ export const XeniosStore = {
       if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt <= localUpdatedAt) {
         return;
       }
-      safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(remoteList));
+      const changedList = safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(remoteList));
       if (remoteUpdatedAt) {
         safeSet('xenios_in_room_services_updated_at', remoteUpdatedAt);
       }
-      const allSettings = this.getModuleSettings();
+      const allSettings = { ...this.getModuleSettings() };
       remoteList.forEach(item => {
         if (!item?.key) return;
         const enabled = item.enabled !== false;
@@ -1578,10 +1790,14 @@ export const XeniosStore = {
           explicitlyHidden,
         };
       });
-      safeSet(STORAGE_KEYS.MODULE_SETTINGS, JSON.stringify(allSettings));
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('xenios_in_room_services_updated'));
-        window.dispatchEvent(new Event('xenios_module_settings_updated'));
+      const changedSettings = safeSet(STORAGE_KEYS.MODULE_SETTINGS, JSON.stringify(allSettings));
+      if (changedList || changedSettings) {
+        parsedCache.delete('in_room_services');
+        parsedCache.delete('module_settings');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('xenios_in_room_services_updated'));
+          window.dispatchEvent(new Event('xenios_module_settings_updated'));
+        }
       }
     } catch (e) {}
   },
@@ -1606,6 +1822,7 @@ export const XeniosStore = {
 
     try {
       safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(list));
+      parsedCache.delete('in_room_services');
       this.setModuleSetting(normalizedItem.key, {
         enabled: normalizedItem.enabled,
         hidden: normalizedItem.hidden,
@@ -1624,12 +1841,15 @@ export const XeniosStore = {
     if (item?.isCustom) {
       list = list.filter(s => s.id !== idOrKey && s.key !== idOrKey);
     } else if (item) {
-      item.enabled = false;
-      item.hidden = true;
-      item.explicitlyHidden = true;
+      list = list.map(s =>
+        s.id === idOrKey || s.key === idOrKey
+          ? { ...s, enabled: false, hidden: true, explicitlyHidden: true }
+          : s
+      );
     }
     try {
       safeSet(STORAGE_KEYS.IN_ROOM_SERVICES, JSON.stringify(list));
+      parsedCache.delete('in_room_services');
       if (item) {
         this.setModuleSetting(item.key, {
           enabled: false,
@@ -1644,10 +1864,10 @@ export const XeniosStore = {
 
   resetInRoomServicesToDefault() {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEYS.IN_ROOM_SERVICES);
-        localStorage.removeItem(STORAGE_KEYS.MODULE_SETTINGS);
-      }
+      safeRemove(STORAGE_KEYS.IN_ROOM_SERVICES);
+      safeRemove(STORAGE_KEYS.MODULE_SETTINGS);
+      parsedCache.delete('in_room_services');
+      parsedCache.delete('module_settings');
       const defaults = this.getDefaultInRoomServices();
       this.syncInRoomServicesToActiveHotel(defaults);
       if (typeof window !== 'undefined') {
@@ -1878,12 +2098,20 @@ export const XeniosStore = {
     try {
       const stored = safeGet(STORAGE_KEYS.BOOKINGS);
       if (stored) {
+        const cached = parsedCache.get('bookings');
+        if (cached && cached.stamp === stored) {
+          return (cached.value as Booking[]).slice();
+        }
         const list: Booking[] = JSON.parse(stored);
         const realList = list.filter(b => !b.isDemo && !b.id?.includes('demo'));
         if (realList.length !== list.length) {
-          safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(realList));
+          const nextRaw = JSON.stringify(realList);
+          safeSet(STORAGE_KEYS.BOOKINGS, nextRaw);
+          parsedCache.set('bookings', { stamp: nextRaw, value: realList });
+        } else {
+          parsedCache.set('bookings', { stamp: stored, value: realList });
         }
-        return realList;
+        return realList.slice();
       }
     } catch (e) {}
     return [];
@@ -1902,20 +2130,22 @@ export const XeniosStore = {
     };
     list.unshift(newBooking);
     try {
-      safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
+      const changed = safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
+      parsedCache.delete('bookings');
+      if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
     } catch (e) {}
     return newBooking;
   },
 
   updateBookingStatus(id: string, status: Booking['status']) {
     const list = this.getBookings();
-    const item = list.find(b => b.id === id);
-    if (item) {
-      item.status = status;
+    const idx = list.findIndex(b => b.id === id);
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], status };
       try {
-        safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
+        const changed = safeSet(STORAGE_KEYS.BOOKINGS, JSON.stringify(list));
+        parsedCache.delete('bookings');
+        if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_bookings_updated'));
       } catch (e) {}
     }
   },
@@ -2092,12 +2322,20 @@ export const XeniosStore = {
     try {
       const stored = safeGet(STORAGE_KEYS.COMPLAINTS);
       if (stored) {
+        const cached = parsedCache.get('complaints');
+        if (cached && cached.stamp === stored) {
+          return (cached.value as Complaint[]).slice();
+        }
         const list: Complaint[] = JSON.parse(stored);
         const realList = list.filter(c => !c.isDemo && !c.id?.includes('demo'));
         if (realList.length !== list.length) {
-          safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(realList));
+          const nextRaw = JSON.stringify(realList);
+          safeSet(STORAGE_KEYS.COMPLAINTS, nextRaw);
+          parsedCache.set('complaints', { stamp: nextRaw, value: realList });
+        } else {
+          parsedCache.set('complaints', { stamp: stored, value: realList });
         }
-        return realList;
+        return realList.slice();
       }
     } catch (e) {}
     return [];
@@ -2117,24 +2355,26 @@ export const XeniosStore = {
     };
     list.unshift(newComp);
     try {
-      safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
+      const changed = safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
+      parsedCache.delete('complaints');
+      if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
     } catch (e) {}
     return newComp;
   },
 
   updateComplaintStatus(id: string, status: ComplaintStatus, responseNote?: string, isPublicAlert?: boolean) {
     const list = this.getComplaints();
-    const item = list.find(c => c.id === id);
-    if (item) {
-      item.status = status;
+    const idx = list.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      const item = { ...list[idx], status, updatedAt: new Date().toISOString() };
       if (responseNote !== undefined) item.businessResponse = responseNote;
       if (isPublicAlert !== undefined) item.isPublicAlert = isPublicAlert;
       if (status === 'published_blacklisted') item.isPublicAlert = true;
-      item.updatedAt = new Date().toISOString();
+      list[idx] = item;
       try {
-        safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
+        const changed = safeSet(STORAGE_KEYS.COMPLAINTS, JSON.stringify(list));
+        parsedCache.delete('complaints');
+        if (changed && typeof window !== 'undefined') window.dispatchEvent(new Event('xenios_complaints_updated'));
       } catch (e) {}
     }
   },
@@ -2338,9 +2578,302 @@ export const XeniosStore = {
 
   clearAiChatMessages(): void {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEYS.AI_CHAT_MESSAGES);
-      }
+      safeRemove(STORAGE_KEYS.AI_CHAT_MESSAGES);
     } catch (e) {}
+  },
+
+  // -------------------------------------------------------------
+  // B2B Ajanlar & Mirofish CRM (20+ Lead + Sistem Parametreleri)
+  // -------------------------------------------------------------
+  getDeletedB2BLeadIds(): Set<string> {
+    return getDeletedIdSet(STORAGE_KEYS.B2B_DELETED_IDS);
+  },
+
+  markB2BLeadDeleted(id: string) {
+    addDeletedId(STORAGE_KEYS.B2B_DELETED_IDS, id);
+  },
+
+  getMirofishParameters(): MirofishSystemParameters {
+    const raw = safeGet(STORAGE_KEYS.B2B_MIROFISH_PARAMS);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          return { ...seedB2BDataset.mirofishSystemParameters, ...parsed };
+        }
+      } catch {}
+    }
+    return { ...seedB2BDataset.mirofishSystemParameters };
+  },
+
+  saveMirofishParameters(params: MirofishSystemParameters) {
+    safeSet(STORAGE_KEYS.B2B_MIROFISH_PARAMS, JSON.stringify(params));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_b2b_leads_updated'));
+    }
+    import('./firestore-service')
+      .then(({ FirestoreService }) => {
+        FirestoreService.upsertMirofishParameters(params).catch(() => {});
+      })
+      .catch(() => {});
+  },
+
+  getB2BLeads(): B2BLead[] {
+    const stored = safeGet(STORAGE_KEYS.B2B_MIROFISH_LEADS);
+    const deletedRaw = safeGet(STORAGE_KEYS.B2B_DELETED_IDS);
+    const stamp = `${stored.length}:${deletedRaw}:${stored.slice(0, 64)}:${stored.slice(-64)}`;
+    const cached = parsedCache.get('b2b_leads');
+    if (cached && cached.stamp === stamp) {
+      return (cached.value as B2BLead[]).slice();
+    }
+
+    const deletedIds = this.getDeletedB2BLeadIds();
+    const seedList = Array.isArray(seedB2BDataset.suppliers) ? seedB2BDataset.suppliers : [];
+    const mergedMap = new Map<string, B2BLead>();
+
+    seedList.forEach((lead) => {
+      if (lead && lead.id && !deletedIds.has(lead.id)) {
+        mergedMap.set(lead.id, { ...lead });
+      }
+    });
+
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((item: B2BLead) => {
+            if (!item || !item.id) return;
+            if (item.deleted || deletedIds.has(item.id)) {
+              mergedMap.delete(item.id);
+              return;
+            }
+            const existing = mergedMap.get(item.id);
+            mergedMap.set(item.id, existing ? { ...existing, ...item } : item);
+          });
+        }
+      } catch {}
+    }
+
+    const result = Array.from(mergedMap.values());
+    parsedCache.set('b2b_leads', { stamp, value: result });
+    return result.slice();
+  },
+
+  saveB2BLeads(leads: B2BLead[]) {
+    const deletedIds = this.getDeletedB2BLeadIds();
+    const filtered = leads.filter((l) => l && l.id && !l.deleted && !deletedIds.has(l.id));
+    const json = JSON.stringify(filtered);
+    const changed = safeSet(STORAGE_KEYS.B2B_MIROFISH_LEADS, json);
+    parsedCache.delete('b2b_leads');
+    if (changed && typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_b2b_leads_updated'));
+    }
+  },
+
+  addB2BLead(lead: B2BLead) {
+    const now = new Date().toISOString();
+    const stamped: B2BLead = {
+      ...lead,
+      verifiedAt: lead.verifiedAt || now.slice(0, 10),
+      updatedAt: now,
+      deleted: false,
+    };
+    const current = this.getB2BLeads().filter((x) => x.id !== stamped.id);
+    this.saveB2BLeads([stamped, ...current]);
+    import('./firestore-service')
+      .then(({ FirestoreService }) => {
+        FirestoreService.upsertB2BLead(stamped).catch(() => {});
+      })
+      .catch(() => {});
+  },
+
+  updateB2BLead(id: string, patch: Partial<B2BLead>) {
+    const now = new Date().toISOString();
+    let updatedItem: B2BLead | undefined;
+    const next = this.getB2BLeads().map((lead) => {
+      if (lead.id === id) {
+        updatedItem = { ...lead, ...patch, updatedAt: now };
+        return updatedItem;
+      }
+      return lead;
+    });
+    this.saveB2BLeads(next);
+    if (updatedItem) {
+      const synced = updatedItem;
+      import('./firestore-service')
+        .then(({ FirestoreService }) => {
+          FirestoreService.upsertB2BLead(synced).catch(() => {});
+        })
+        .catch(() => {});
+    }
+  },
+
+  deleteB2BLead(id: string) {
+    this.markB2BLeadDeleted(id);
+    const next = this.getB2BLeads().filter((l) => l.id !== id);
+    this.saveB2BLeads(next);
+    import('./firestore-service')
+      .then(({ FirestoreService }) => {
+        FirestoreService.deleteB2BLeadRemote(id).catch(() => {});
+      })
+      .catch(() => {});
+  },
+
+  exportB2BMirofishDataset(): B2BMirofishDataset {
+    const suppliers = this.getB2BLeads();
+    return {
+      project: seedB2BDataset.project || 'Purelyistanbul B2B Hospitality SaaS & Curated Marketplace',
+      exportedAt: new Date().toISOString(),
+      mirofishSystemParameters: this.getMirofishParameters(),
+      totalCount: suppliers.length,
+      suppliers,
+    };
+  },
+
+  importB2BMirofishDataset(payload: Partial<B2BMirofishDataset>): { importedCount: number } {
+    if (payload.mirofishSystemParameters && typeof payload.mirofishSystemParameters === 'object') {
+      this.saveMirofishParameters({
+        ...this.getMirofishParameters(),
+        ...payload.mirofishSystemParameters,
+      });
+    }
+    const incoming = Array.isArray(payload.suppliers) ? payload.suppliers : [];
+    if (incoming.length === 0) {
+      return { importedCount: 0 };
+    }
+    const now = new Date().toISOString();
+    const deletedSet = this.getDeletedB2BLeadIds();
+    const currentMap = new Map<string, B2BLead>(this.getB2BLeads().map((l) => [l.id, l]));
+    incoming.forEach((item) => {
+      if (!item || !item.id || !item.name) return;
+      deletedSet.delete(item.id);
+      const prev = currentMap.get(item.id);
+      currentMap.set(item.id, {
+        ...(prev || {}),
+        ...item,
+        updatedAt: now,
+        deleted: false,
+      } as B2BLead);
+    });
+    safeSet(STORAGE_KEYS.B2B_DELETED_IDS, JSON.stringify(Array.from(deletedSet)));
+    deletedIdSetCache.delete(STORAGE_KEYS.B2B_DELETED_IDS);
+    const merged = Array.from(currentMap.values());
+    this.saveB2BLeads(merged);
+    import('./firestore-service')
+      .then(({ FirestoreService }) => {
+        incoming.forEach((item) => {
+          if (item && item.id) {
+            FirestoreService.upsertB2BLead({ ...item, updatedAt: now, deleted: false }).catch(() => {});
+          }
+        });
+      })
+      .catch(() => {});
+    return { importedCount: incoming.length };
+  },
+
+  resetB2BMirofishToSeed() {
+    safeRemove(STORAGE_KEYS.B2B_DELETED_IDS);
+    safeRemove(STORAGE_KEYS.B2B_MIROFISH_LEADS);
+    safeRemove(STORAGE_KEYS.B2B_MIROFISH_PARAMS);
+    parsedCache.delete('b2b_leads');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('xenios_b2b_leads_updated'));
+    }
+  },
+
+  onboardB2BLeadToLiveInventory(lead: B2BLead): { type: 'hotel' | 'supplier'; id: string } {
+    const isAccommodation =
+      lead.roleType.includes('Konaklama') ||
+      lead.category.toLowerCase().includes('pmc') ||
+      lead.category.toLowerCase().includes('otel');
+
+    if (isAccommodation) {
+      const hotelId = lead.onboardedToLiveId || `hotel-${lead.id}`;
+      const roomCount = Math.min(Math.max(Number(lead.unitCount) || 10, 1), 60);
+      const isPmc = lead.category.toLowerCase().includes('pmc') || lead.unitLabel.toLowerCase().includes('daire');
+      const rooms: Room[] = Array.from({ length: roomCount }, (_, idx) => ({
+        id: `rm_${hotelId}_${101 + idx}`,
+        number: isPmc ? `Daire ${101 + idx}` : String(101 + idx),
+        type: isPmc ? 'Residence Suite' : idx % 3 === 0 ? 'Suite' : 'Deluxe',
+        floor: String(Math.floor(idx / 6) + 1),
+        wifiSsid: `${lead.name.split(' ')[0]}_Guest`,
+        wifiPass: 'Purely2026!',
+        locationAddress: lead.address,
+      }));
+
+      const newHotel: Hotel = {
+        id: hotelId,
+        name: lead.name,
+        district: `${lead.neighborhood ? `${lead.neighborhood}, ` : ''}${lead.district}`,
+        type: lead.category,
+        address: lead.address || `${lead.district}, İstanbul`,
+        phone: lead.phone,
+        website: lead.website || 'https://',
+        ratingStr: '4.9/5',
+        targetReason: lead.fieldNotes || lead.pitchAngle,
+        coords: { lat: 41.0082, lng: 28.9784 },
+        rooms,
+        breakfastHours: '08:00 - 11:00',
+        checkoutTime: '11:30',
+        receptionExt: '0',
+        status: 'active',
+        commissionRate: 4,
+        contactEmail: lead.email,
+        managerName: lead.decisionMakerName || lead.decisionMakerRole,
+        managerPhone: lead.phone,
+        whatsappPhone: lead.phone,
+        publishToWeb: true,
+        publishToMobile: true,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const existing = this.getHotels().some((h) => h.id === hotelId);
+      if (existing) {
+        this.updateHotel(hotelId, newHotel);
+      } else {
+        this.addHotel(newHotel);
+      }
+      this.updateB2BLead(lead.id, {
+        stage: 'Pilot Sözleşme',
+        onboardedToLiveId: hotelId,
+      });
+      return { type: 'hotel', id: hotelId };
+    } else {
+      const supId = lead.onboardedToLiveId || `sup-${lead.id}`;
+      const now = new Date().toISOString();
+      const newSup: SupplierPartner = {
+        id: supId,
+        name: lead.name,
+        legalName: `${lead.name} (${lead.legalShieldStatus})`,
+        type: inferSupplierType(lead.category),
+        category: lead.category,
+        contactPerson: lead.decisionMakerName || lead.decisionMakerRole || 'Operasyon Direktörü',
+        phone: lead.phone,
+        email: lead.email,
+        website: lead.website,
+        district: `${lead.neighborhood ? `${lead.neighborhood}, ` : ''}${lead.district}`,
+        address: lead.address,
+        commissionRate: 15,
+        contractStatus: 'active',
+        contractStartDate: now.slice(0, 10),
+        contractNotes: `${lead.fieldNotes} | Yasal Kalkan: ${lead.legalShieldStatus}`,
+        publishToWeb: true,
+        publishToMobile: true,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const existing = this.getSuppliers().some((s) => s.id === supId);
+      if (existing) {
+        this.updateSupplier(supId, newSup);
+      } else {
+        this.addSupplier(newSup);
+      }
+      this.updateB2BLead(lead.id, {
+        stage: 'Pilot Sözleşme',
+        onboardedToLiveId: supId,
+      });
+      return { type: 'supplier', id: supId };
+    }
   }
 };

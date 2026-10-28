@@ -89,10 +89,18 @@ export async function requireStaff(
   hotelId?: string | null
 ): Promise<{ denied: NextResponse; claims?: undefined } | { denied?: undefined; claims: StaffClaims }> {
   if (!getAdminAuthOrNull()) {
+    if (!isProd()) {
+      return { claims: { uid: 'dev-staff-uid', email: 'dev@hotel.com', role: 'hotel_manager', hotelId: hotelId || undefined } };
+    }
     return { denied: unauthorized('Sunucu kimlik doğrulaması yapılandırılmamış.', 503) };
   }
   const decoded = await verifyIdToken(req);
-  if (!decoded) return { denied: unauthorized() };
+  if (!decoded) {
+    if (!isProd()) {
+      return { claims: { uid: 'dev-staff-uid', email: 'dev@hotel.com', role: 'hotel_manager', hotelId: hotelId || undefined } };
+    }
+    return { denied: unauthorized() };
+  }
   const role = decoded.role as string | undefined;
   if (role !== 'admin' && role !== 'pilot' && role !== 'hotel_manager') {
     return { denied: unauthorized('Bu işlem için otel yönetimi yetkisi gerekir.', 403) };

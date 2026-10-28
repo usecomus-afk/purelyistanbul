@@ -1,0 +1,766 @@
+{
+  "project": "Purelyistanbul B2B Hospitality SaaS & Curated Marketplace",
+  "exportedAt": "2026-10-27T22:54:56.216Z",
+  "mirofishSystemParameters": {
+    "marketCoveragePercent": 74,
+    "annualForeignTouristsRange": "3.7M – 4.4M",
+    "simulationCeilingUnits": 50000,
+    "boutiqueHotelRange": "980 – 1.180 Tesis (~20.000 – 24.000 Oda)",
+    "pmcCompanyRange": "360 – 440 Şirket (~26.500 – 31.000 Daire/Süit)",
+    "b2bTargetActorsMax": 1400,
+    "phase1PilotPartnersTarget": 50,
+    "phase1PilotUnitsTarget": 12500,
+    "phase1MarketPenetrationPercent": 25,
+    "cacCostEuro": 0,
+    "averageBasketEuro": 58,
+    "supplierPayoutPercent": 85,
+    "supplierPayoutEuroOnAvg": 49.3,
+    "platformCommissionPercent": 11,
+    "platformCommissionEuroOnAvg": 6.38,
+    "b2bPartnerPassivePercent": 4,
+    "b2bPartnerPassiveEuroOnAvg": 2.32,
+    "annualPremiumListingFeeEuro": 500
+  },
+  "totalCount": 20,
+  "suppliers": [
+    {
+      "id": "lead-pmc-missafir",
+      "name": "Missafir (İstanbul Portföy Operasyonları)",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Beyoğlu",
+      "neighborhood": "Galata · Cihangir · Karaköy",
+      "unitCount": 380,
+      "unitLabel": "Daire",
+      "phone": "+90 850 532 82 50",
+      "whatsappReady": true,
+      "email": "info@missafir.com",
+      "website": "https://www.missafir.com",
+      "instagram": "@missafircom",
+      "address": "Maslak Mah. AOS 55. Sok. 42 Maslak, Sarıyer / Beyoğlu Saha Ofisi",
+      "decisionMakerRole": "Operasyon & Misafir Deneyimi Direktörü",
+      "decisionMakerName": "Portföy Operasyon Ekibi",
+      "legalShieldStatus": "Resmi Vergi Levhalı Kurumsal PMC · Turizm Konutu Uyumlu",
+      "listingChannels": [
+        "Airbnb Pro",
+        "Booking.com",
+        "Homes & Villas by Marriott",
+        "Doğrudan Kanal"
+      ],
+      "estimatedMonthlyEuroVolume": 28400,
+      "partnerOrSupplierNetEuro": 1136,
+      "platformCommissionEuro": 3124,
+      "annualListingFeeEuro": 0,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Beyoğlu, Beşiktaş ve Kadıköy genelinde yüzlerce kısa/orta dönem daire yönetiyor. Tek sözleşmeyle 380+ kapıya lazer kesim ahşap QR stand indirme kaldıracı sağlar.",
+      "pitchAngle": "Sıfır operasyonel yük ile yönettiğiniz her dairede uyanan yabancı turiste Comus AI concierge sunup toplam sepet üzerinden %4 net pasif gelir (B2B faturalı) paylaşımı.",
+      "sources": [
+        {
+          "title": "Missafir Resmi Web Sitesi",
+          "url": "https://www.missafir.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-pmc-blueground",
+      "name": "Blueground Turkey (İstanbul Gayrimenkul Yönetimi)",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Şişli",
+      "neighborhood": "Nişantaşı · Bomonti · Karaköy",
+      "unitCount": 450,
+      "unitLabel": "Daire",
+      "phone": "+90 212 900 39 59",
+      "whatsappReady": false,
+      "email": "istanbul@theblueground.com",
+      "website": "https://www.theblueground.com/furnished-apartments-istanbul-turkey",
+      "instagram": "@blueground",
+      "address": "Esentepe Mah. Büyükdere Cad. Levent 199, Şişli / İstanbul",
+      "decisionMakerRole": "General Manager Turkey / Guest Experience Lead",
+      "legalShieldStatus": "Kurumsal A.Ş. · Kontratlı Rezidans & Daire Portföyü",
+      "listingChannels": [
+        "Blueground App",
+        "Booking.com",
+        "Kurumsal Expat Ağı"
+      ],
+      "estimatedMonthlyEuroVolume": 36500,
+      "partnerOrSupplierNetEuro": 1460,
+      "platformCommissionEuro": 4015,
+      "annualListingFeeEuro": 0,
+      "stage": "Keşfedildi",
+      "fieldNotes": "Nişantaşı, Bomonti, Cihangir ve Moda bölgelerinde yüksek bütçeli yabancı expat ve iş turistlerine eşyalı daire kiralıyor. Kuru temizleme ve VIP transfer talebi çok yüksek.",
+      "pitchAngle": "Uzun ve orta dönem yabancı misafirlerinizin oda içi kuru temizleme, havalimanı VIP transfer ve Boğaz yat taleplerini Comus AI ile otonom karşılayıp %4 gelir ortaklığı.",
+      "sources": [
+        {
+          "title": "Blueground Istanbul Portfolio",
+          "url": "https://www.theblueground.com/furnished-apartments-istanbul-turkey"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-pmc-homesberg",
+      "name": "Homesberg Property Management",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Beyoğlu",
+      "neighborhood": "Cihangir · Galata · Taksim",
+      "unitCount": 115,
+      "unitLabel": "Daire",
+      "phone": "+90 532 418 74 90",
+      "whatsappReady": true,
+      "email": "hello@homesberg.com",
+      "website": "https://www.homesberg.com",
+      "instagram": "@homesberg",
+      "address": "Kuloğlu Mah. Turnacıbaşı Cad. Cihangir, Beyoğlu / İstanbul",
+      "decisionMakerRole": "Kurucu Ortak (Co-Founder)",
+      "legalShieldStatus": "Resmi Vergi Levhalı PMC · TÜRSAB & Turizm Konutu Uyumlu",
+      "listingChannels": [
+        "Airbnb Superhost",
+        "Booking.com",
+        "VRBO"
+      ],
+      "estimatedMonthlyEuroVolume": 11200,
+      "partnerOrSupplierNetEuro": 448,
+      "platformCommissionEuro": 1232,
+      "annualListingFeeEuro": 0,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Faz-1 pilot için ideal büyüklükte çevik PMC. Cihangir ve Galata bölgesindeki dairelerinde Y-Z kuşağı ve dijital göçebe turist yoğunluğu çok yüksek.",
+      "pitchAngle": "Misafirlerinizin gece/sabah WhatsApp üzerinden sorduğu \"nerede kahvaltı yapılır, havalimanına nasıl giderim\" sorularını oda içi QR ile Comus AI devralsın, size %4 net gelir kalsın.",
+      "sources": [
+        {
+          "title": "Homesberg Official",
+          "url": "https://www.homesberg.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-pmc-galatastay",
+      "name": "The Galata Suites & Boutique Apartments Management",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Beyoğlu",
+      "neighborhood": "Galata · Serdar-ı Ekrem",
+      "unitCount": 64,
+      "unitLabel": "Daire",
+      "phone": "+90 212 245 68 12",
+      "whatsappReady": true,
+      "email": "reservations@galataapartments.com",
+      "website": "https://www.booking.com",
+      "instagram": "@galatasuitesistanbul",
+      "address": "Şahkulu Mah. Serdar-ı Ekrem Cad. Galata, Beyoğlu / İstanbul",
+      "decisionMakerRole": "İşletme Sahibi & Portföy Yöneticisi",
+      "legalShieldStatus": "Bütünleşik Bina Turizm Konutu Ruhsatlı · Kurumsal Vergi Levhalı",
+      "listingChannels": [
+        "Booking.com",
+        "Airbnb",
+        "Expedia"
+      ],
+      "estimatedMonthlyEuroVolume": 6800,
+      "partnerOrSupplierNetEuro": 272,
+      "platformCommissionEuro": 748,
+      "annualListingFeeEuro": 0,
+      "stage": "İlk Temas Kuruldu",
+      "fieldNotes": "Serdar-ı Ekrem ve Galata Kulesi çevresinde 6 ayrı tarihi apartmanda toplam 64 süit daire işletiyor. Resepsiyonsuz binalarda fiziksel QR stand doğrudan concierge boşluğunu dolduruyor.",
+      "pitchAngle": "Resepsiyon personeli olmayan apartman süitlerinizde ahşap QR standımız 7/24 çok dilli AI resepsiyonist görevi görür, her satıştan %4 pasif gelir üretir.",
+      "sources": [
+        {
+          "title": "Galata Boutique Suites Listing",
+          "url": "https://www.booking.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-hotel-whitehouse",
+      "name": "White House Hotel Istanbul",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "Butik Otel (10-35 Oda)",
+      "district": "Fatih",
+      "neighborhood": "Sultanahmet",
+      "unitCount": 22,
+      "unitLabel": "Oda",
+      "phone": "+90 212 527 27 00",
+      "whatsappReady": true,
+      "email": "info@whitehousehotelistanbul.com",
+      "website": "https://www.whitehousehotelistanbul.com",
+      "instagram": "@whitehousehotelistanbul",
+      "address": "Alemdar Mah. Çatalçeşme Sok. No:21 Sultanahmet, Fatih / İstanbul",
+      "decisionMakerRole": "Otel Genel Müdürü",
+      "legalShieldStatus": "Kültür ve Turizm Bakanlığı İşletme Belgeli",
+      "listingChannels": [
+        "Booking.com",
+        "TripAdvisor #1 Boutique",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 4200,
+      "partnerOrSupplierNetEuro": 168,
+      "platformCommissionEuro": 462,
+      "annualListingFeeEuro": 0,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Sultanahmet bölgesinin en yüksek puanlı 22 odalı butik oteli. Yabancı turistlerin %90+ kısmı scam-free transfer ve doğrulanmış tur arayışında.",
+      "pitchAngle": "Odalarınızdaki komodin üzerinde şık lazer kesim ahşap stand ile misafirlerinize kendi dillerinde güvenilir deneyim sunarken sıfır eforla %4 kurumsal gelir.",
+      "sources": [
+        {
+          "title": "White House Hotel Istanbul",
+          "url": "https://www.whitehousehotelistanbul.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-hotel-empresszoe",
+      "name": "Hotel Empress Zoe",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "Butik Otel (10-35 Oda)",
+      "district": "Fatih",
+      "neighborhood": "Sultanahmet · Cankurtaran",
+      "unitCount": 25,
+      "unitLabel": "Oda",
+      "phone": "+90 212 518 25 04",
+      "whatsappReady": true,
+      "email": "info@emzoe.com",
+      "website": "https://www.emzoe.com",
+      "instagram": "@hotelempresszoe",
+      "address": "Cankurtaran Mah. Akbıyık Cad. Adliye Sok. No:10 Sultanahmet, Fatih / İstanbul",
+      "decisionMakerRole": "Tesis Yöneticisi",
+      "legalShieldStatus": "Turizm İşletme Belgeli Butik Otel",
+      "listingChannels": [
+        "Doğrudan Web",
+        "Booking.com",
+        "Tablet Hotels"
+      ],
+      "estimatedMonthlyEuroVolume": 3900,
+      "partnerOrSupplierNetEuro": 156,
+      "platformCommissionEuro": 429,
+      "annualListingFeeEuro": 0,
+      "stage": "Keşfedildi",
+      "fieldNotes": "Amerikalı ve Avrupalı kültür turistlerinin tercih ettiği karakterli 25 odalı tarihi butik otel. Döviz harcama kapasitesi yüksek.",
+      "pitchAngle": "Geleneksel broşür karmaşası yerine otelin tarihi dokusuna uygun ahşap QR stand ile misafir memnuniyeti ve %4 net pasif gelir.",
+      "sources": [
+        {
+          "title": "Hotel Empress Zoe Official",
+          "url": "https://www.emzoe.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-hotel-bankhotel-vault",
+      "name": "Sub Karaköy Boutique Hotel",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "Butik Otel (10-35 Oda)",
+      "district": "Beyoğlu",
+      "neighborhood": "Karaköy",
+      "unitCount": 20,
+      "unitLabel": "Oda",
+      "phone": "+90 212 243 00 05",
+      "whatsappReady": true,
+      "email": "info@subkarakoy.com",
+      "website": "https://www.subkarakoy.com",
+      "instagram": "@subkarakoy",
+      "address": "Azapkapı Mah. Tersane Cad. Kardeşim Sok. No:30 Karaköy, Beyoğlu / İstanbul",
+      "decisionMakerRole": "Otel Müdürü",
+      "legalShieldStatus": "Turizm İşletme Belgeli · Kurumsal A.Ş.",
+      "listingChannels": [
+        "Booking.com",
+        "Expedia",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 3600,
+      "partnerOrSupplierNetEuro": 144,
+      "platformCommissionEuro": 396,
+      "annualListingFeeEuro": 0,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Karaköy tasarım odaklı 20 odalı butik otel. Genç ve teknolojiye yatkın yabancı turist profili, QR kullanım oranı çok yüksek.",
+      "pitchAngle": "Faz-1 Karaköy pilot ağımızda odalarınıza özel numaralandırılmış QR stand yerleştirimi ve anlık Stripe/B2B hakediş takibi.",
+      "sources": [
+        {
+          "title": "Sub Karaköy Official",
+          "url": "https://www.subkarakoy.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-hotel-anima",
+      "name": "Anima Istanbul Boutique Hotel",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "Butik Otel (10-35 Oda)",
+      "district": "Fatih",
+      "neighborhood": "Sirkeci · Gülhane",
+      "unitCount": 19,
+      "unitLabel": "Oda",
+      "phone": "+90 212 514 04 34",
+      "whatsappReady": true,
+      "email": "info@animaistanbul.com",
+      "website": "https://www.animaistanbul.com",
+      "instagram": "@animaistanbulhotel",
+      "address": "Hobyar Mah. Ankara Cad. Sirkeci, Fatih / İstanbul",
+      "decisionMakerRole": "Genel Müdür",
+      "legalShieldStatus": "Turizm İşletme Belgeli",
+      "listingChannels": [
+        "Booking.com",
+        "Agoda",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 3300,
+      "partnerOrSupplierNetEuro": 132,
+      "platformCommissionEuro": 363,
+      "annualListingFeeEuro": 0,
+      "stage": "Keşfedildi",
+      "fieldNotes": "Sirkeci lokasyonunda 19 odalı tasarım butik otel. Marmaray ve tarihi yarımada kesişiminde.",
+      "pitchAngle": "Sirkeci bölgesindeki turistlerin en çok ihtiyaç duyduğu sabit fiyatlı havalimanı transferi ve Boğaz turunu oda içinden Comus AI ile çözün.",
+      "sources": [
+        {
+          "title": "Anima Istanbul",
+          "url": "https://www.animaistanbul.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-hotel-bosphorus-palace",
+      "name": "Corner Hot Bosphorus Boutique Hotel",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "Butik Otel (10-35 Oda)",
+      "district": "Beşiktaş",
+      "neighborhood": "Ortaköy",
+      "unitCount": 18,
+      "unitLabel": "Oda",
+      "phone": "+90 212 259 12 00",
+      "whatsappReady": true,
+      "email": "info@cornerhot.com",
+      "website": "https://www.cornerhot.com",
+      "instagram": "@cornerhotortakoy",
+      "address": "Mecidiye Mah. Muallim Naci Cad. Ortaköy, Beşiktaş / İstanbul",
+      "decisionMakerRole": "İşletme Müdürü",
+      "legalShieldStatus": "Turizm İşletme Belgeli",
+      "listingChannels": [
+        "Booking.com",
+        "Expedia",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 4800,
+      "partnerOrSupplierNetEuro": 192,
+      "platformCommissionEuro": 528,
+      "annualListingFeeEuro": 0,
+      "stage": "Saha Randevusu",
+      "fieldNotes": "Ortaköy Camii ve Boğaz hattında 18 odalı butik otel. Konukları VIP yat ve Boğaz kahvaltısı için en yüksek sepet ortalamasına sahip.",
+      "pitchAngle": "Ortaköy misafirlerinizin yüksek sepetli VIP yat ve özel şoförlü araç siparişlerinden %4 kurumsal pasif gelir.",
+      "sources": [
+        {
+          "title": "Corner Hot Ortaköy",
+          "url": "https://www.cornerhot.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-pmc-modasuites",
+      "name": "Moda Palas & Caferağa Suites PMC",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Kadıköy",
+      "neighborhood": "Moda · Caferağa · Yeldeğirmeni",
+      "unitCount": 52,
+      "unitLabel": "Daire",
+      "phone": "+90 216 348 91 20",
+      "whatsappReady": true,
+      "email": "contact@modasuitesistanbul.com",
+      "website": "https://www.airbnb.com",
+      "instagram": "@modasuitesistanbul",
+      "address": "Caferağa Mah. Moda Cad. Kadıköy / İstanbul",
+      "decisionMakerRole": "Portföy Yöneticisi",
+      "legalShieldStatus": "Kurumsal Ltd. Şti. · Turizm Amaçlı Kiralama İzin Belgeli",
+      "listingChannels": [
+        "Airbnb Superhost",
+        "Booking.com"
+      ],
+      "estimatedMonthlyEuroVolume": 5100,
+      "partnerOrSupplierNetEuro": 204,
+      "platformCommissionEuro": 561,
+      "annualListingFeeEuro": 0,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Kadıköy Moda ve Yeldeğirmeni bölgesinde 52 bağımsız daireyi yöneten yerel PMC. Bağımsız gezgin ve dijital göçebe ağırlıklı.",
+      "pitchAngle": "Anadolu yakasında kalan yabancı turistlerin Sabiha Gökçen / İstanbul Havalimanı transferlerini ve yerel gastronomi keşiflerini otonomlaştırın.",
+      "sources": [
+        {
+          "title": "Moda Suites Portfolio",
+          "url": "https://www.airbnb.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-pmc-nisantasiresidence",
+      "name": "Valikonağı & Bomonti Luxury Suites Management",
+      "roleType": "Konaklama Partneri (Arz)",
+      "category": "PMC (Profesyonel Mülk Yönetimi)",
+      "district": "Şişli",
+      "neighborhood": "Nişantaşı · Teşvikiye · Bomonti",
+      "unitCount": 85,
+      "unitLabel": "Daire",
+      "phone": "+90 212 231 84 60",
+      "whatsappReady": true,
+      "email": "booking@nisantasiluxurysuites.com",
+      "website": "https://www.booking.com",
+      "instagram": "@nisantasiluxurysuites",
+      "address": "Teşvikiye Mah. Valikonağı Cad. Şişli / İstanbul",
+      "decisionMakerRole": "Kurucu & Genel Koordinatör",
+      "legalShieldStatus": "Resmi Vergi Levhalı · Rezidans İşletme Ruhsatlı",
+      "listingChannels": [
+        "Booking.com",
+        "Agoda",
+        "Sağlık Turizmi Acenteleri"
+      ],
+      "estimatedMonthlyEuroVolume": 11800,
+      "partnerOrSupplierNetEuro": 472,
+      "platformCommissionEuro": 1298,
+      "annualListingFeeEuro": 0,
+      "stage": "Keşfedildi",
+      "fieldNotes": "Nişantaşı ve Bomonti bölgesinde sağlık/estetik turizmi ve Körfez/Avrupa ailelerinin kaldığı 85 geniş rezidans dairesi.",
+      "pitchAngle": "Arapça, İngilizce, Rusça ve Almanca bilen Comus AI ile rezidans misafirlerinize 7/24 oda içi VIP şoför, kuru temizleme ve gurme paket servisi.",
+      "sources": [
+        {
+          "title": "Nişantaşı Luxury Suites",
+          "url": "https://www.booking.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-aloette-transfer",
+      "name": "ProGo / AloTech VIP Airport Transfer Fleet",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "VIP Transfer (D2 Belgeli)",
+      "district": "Şişli",
+      "neighborhood": "Tüm 5 Çekirdek İlçe (IST & SAW)",
+      "unitCount": 65,
+      "unitLabel": "VIP Araç",
+      "phone": "+90 850 255 07 76",
+      "whatsappReady": true,
+      "email": "kurumsal@progo.com.tr",
+      "website": "https://www.progo.com.tr",
+      "instagram": "@progotransfer",
+      "address": "Esentepe Mah. Büyükdere Cad. Şişli / İstanbul",
+      "decisionMakerRole": "B2B İş Geliştirme & Filo Direktörü",
+      "legalShieldStatus": "Ulaştırma Bakanlığı D2 Yetki Belgeli · TÜRSAB A Grubu Acente",
+      "listingChannels": [
+        "Doğrudan API",
+        "Kurumsal B2B",
+        "Otel Konsiyerj Ağı"
+      ],
+      "estimatedMonthlyEuroVolume": 18500,
+      "partnerOrSupplierNetEuro": 15725,
+      "platformCommissionEuro": 2035,
+      "annualListingFeeEuro": 500,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "D2 belgeli Mercedes Vito VIP filosu. Yasal kalkan mimarisi için tam uyumlu. WhatsApp API iş emriyle 15 dakikada araç ataması yapabiliyor.",
+      "pitchAngle": "GetYourGuide/Viator %25-%30 komisyonu yerine Purelyistanbul kapalı ağında %85 net hakediş + 12.500 odaya doğrudan erişim (€500/yıl sabit ağ bedeli).",
+      "sources": [
+        {
+          "title": "ProGo VIP Transfer Official",
+          "url": "https://www.progo.com.tr"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-istanbulshuttleport",
+      "name": "Istanbul Shuttle Port & Luxury Chauffeur",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "VIP Transfer (D2 Belgeli)",
+      "district": "Fatih",
+      "neighborhood": "Sultanahmet · Sirkeci · Beyoğlu",
+      "unitCount": 40,
+      "unitLabel": "VIP Araç",
+      "phone": "+90 212 518 09 90",
+      "whatsappReady": true,
+      "email": "info@istanbulshuttleport.com",
+      "website": "https://www.istanbulshuttleport.com",
+      "instagram": "@istanbulshuttleport",
+      "address": "Küçük Ayasofya Mah. Sultanahmet, Fatih / İstanbul",
+      "decisionMakerRole": "Operasyon Müdürü",
+      "legalShieldStatus": "D2 Yetki Belgeli & TÜRSAB A Grubu (#9842)",
+      "listingChannels": [
+        "Viator",
+        "GetYourGuide",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 14200,
+      "partnerOrSupplierNetEuro": 12070,
+      "platformCommissionEuro": 1562,
+      "annualListingFeeEuro": 500,
+      "stage": "Saha Randevusu",
+      "fieldNotes": "Tarihi yarımada ve Beyoğlu otellerine hakim, İngilizce bilen şoför kadrosuna sahip 40 araçlık VIP filo.",
+      "pitchAngle": "OTA platformlarına verdiğiniz %28 komisyonu %11 seviyesine çekin; oda içi QR koddan gelen yüksek marjlı direkt iş emirlerini WhatsApp üzerinden anında alın.",
+      "sources": [
+        {
+          "title": "Istanbul Shuttle Port",
+          "url": "https://www.istanbulshuttleport.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-zoe-yacht",
+      "name": "Zoe Yacht Bosphorus Private Cruises",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Boğaz VIP Yat & Tekne",
+      "district": "Beşiktaş",
+      "neighborhood": "Bebek · Kuruçeşme · Karaköy İskelesi",
+      "unitCount": 6,
+      "unitLabel": "Yat",
+      "phone": "+90 212 227 59 79",
+      "whatsappReady": true,
+      "email": "info@zoeyacht.com",
+      "website": "https://www.zoeyacht.com",
+      "instagram": "@zoeyachtistanbul",
+      "address": "Kuruçeşme / Bebek İskelesi, Beşiktaş / İstanbul",
+      "decisionMakerRole": "Kurucu & Rezervasyon Direktörü",
+      "legalShieldStatus": "Deniz Turizmi İşletme Belgeli & TÜRSAB A Grubu",
+      "listingChannels": [
+        "Doğrudan Web",
+        "TripAdvisor",
+        "Lüks Otel Konsiyerj"
+      ],
+      "estimatedMonthlyEuroVolume": 24000,
+      "partnerOrSupplierNetEuro": 20400,
+      "platformCommissionEuro": 2640,
+      "annualListingFeeEuro": 500,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Beşiktaş, Karaköy ve Sultanahmet otellerinden iskelesine ücretsiz transfer sağlayan 1-12 kişilik özel Boğaz yat turları. Ortalama sepet €280-€450.",
+      "pitchAngle": "Yüksek sepetli özel yat turlarınızda yabancı acente kesintilerini ortadan kaldırıp %85 net hakedişle 5 çekirdek ilçedeki butik otel ve lüks dairelere doğrudan erişim.",
+      "sources": [
+        {
+          "title": "Zoe Yacht Istanbul",
+          "url": "https://www.zoeyacht.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-bosphorusyacht",
+      "name": "Boğazda Yat Kiralama (Bosphorus VIP Yacht Fleet)",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Boğaz VIP Yat & Tekne",
+      "district": "Beşiktaş",
+      "neighborhood": "Arnavutköy · Bebek · Ortaköy",
+      "unitCount": 14,
+      "unitLabel": "Yat",
+      "phone": "+90 532 250 63 95",
+      "whatsappReady": true,
+      "email": "rezervasyon@bogazdayat.com",
+      "website": "https://www.bogazdayat.com",
+      "instagram": "@bogazdayatkiralama",
+      "address": "Arnavutköy Sahil Hattı, Beşiktaş / İstanbul",
+      "decisionMakerRole": "Filo Operasyon Yöneticisi",
+      "legalShieldStatus": "Ticari Yat Ruhsatlı · Resmi Faturalı İşletme",
+      "listingChannels": [
+        "Doğrudan Web",
+        "Instagram",
+        "Acente Ağı"
+      ],
+      "estimatedMonthlyEuroVolume": 19600,
+      "partnerOrSupplierNetEuro": 16660,
+      "platformCommissionEuro": 2156,
+      "annualListingFeeEuro": 500,
+      "stage": "İlk Temas Kuruldu",
+      "fieldNotes": "Saatlik ve gün batımı VIP yat organizasyonlarında hızlı WhatsApp onay mekanizması var. Comus AI anlık ifa (Adım 5) için tam uyumlu.",
+      "pitchAngle": "Beşiktaş ve Beyoğlu dairelerinde kalan turistlerin gün batımı yat talebini aracı komisyoncular olmadan %85 net gelirle doğrudan filonuza yönlendiriyoruz.",
+      "sources": [
+        {
+          "title": "Boğazda Yat Kiralama",
+          "url": "https://www.bogazdayat.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-yummy-walks",
+      "name": "Culinary Backstreets / Yummy Istanbul Gastronomi Turları",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Özel Tur & Deneyim (A Grubu TÜRSAB)",
+      "district": "Kadıköy",
+      "neighborhood": "Moda · Kadıköy Çarşı · Karaköy",
+      "unitCount": 120,
+      "unitLabel": "Kapasite",
+      "phone": "+90 212 252 62 56",
+      "whatsappReady": true,
+      "email": "istanbul@culinarybackstreets.com",
+      "website": "https://www.culinarybackstreets.com",
+      "instagram": "@culinarybackstreets",
+      "address": "Asmalımescit / Kadıköy Saha Operasyonu, İstanbul",
+      "decisionMakerRole": "İstanbul Operasyon Direktörü",
+      "legalShieldStatus": "A Grubu TÜRSAB Lisanslı Seyahat Acentesi (1618 Sayılı Kanun Uyumlu)",
+      "listingChannels": [
+        "Doğrudan Web",
+        "Viator",
+        "GetYourGuide"
+      ],
+      "estimatedMonthlyEuroVolume": 16400,
+      "partnerOrSupplierNetEuro": 13940,
+      "platformCommissionEuro": 1804,
+      "annualListingFeeEuro": 500,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Kadıköy, Beyoğlu ve Fatih sokak lezzetleri & kültür yürüyüşlerinde en prestijli lisanslı operatörlerden biri. Turist başına €95-€130 sepet.",
+      "pitchAngle": "1618 sayılı kanuna tam uyumlu alt tedarikçi ibrazı ile odasında uyanan nitelikli turisti %85 hakedişle doğrudan turlarınıza dahil edin.",
+      "sources": [
+        {
+          "title": "Culinary Backstreets Istanbul",
+          "url": "https://www.culinarybackstreets.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-guidedistanbul",
+      "name": "Guided Istanbul Tours (A Grubu TÜRSAB)",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Özel Tur & Deneyim (A Grubu TÜRSAB)",
+      "district": "Fatih",
+      "neighborhood": "Sultanahmet · Balat · Ayasofya",
+      "unitCount": 200,
+      "unitLabel": "Kapasite",
+      "phone": "+90 541 971 21 89",
+      "whatsappReady": true,
+      "email": "info@guidedistanbultours.com",
+      "website": "https://www.guidedistanbultours.com",
+      "instagram": "@guidedistanbultours",
+      "address": "Alemdar Mah. Divanyolu Cad. Sultanahmet, Fatih / İstanbul",
+      "decisionMakerRole": "Kurucu Rehber & Acente Sahibi",
+      "legalShieldStatus": "TÜRSAB A Grubu Seyahat Acentesi · Lisanslı Profesyonel Rehber Ağı",
+      "listingChannels": [
+        "GetYourGuide",
+        "Viator",
+        "TripAdvisor",
+        "Doğrudan Web"
+      ],
+      "estimatedMonthlyEuroVolume": 15200,
+      "partnerOrSupplierNetEuro": 12920,
+      "platformCommissionEuro": 1672,
+      "annualListingFeeEuro": 500,
+      "stage": "Pilot Sözleşme",
+      "fieldNotes": "Skip-the-line müze, Balat yürüyüşü ve özel rehberlik hizmetlerinde anlık WhatsApp iş emri kabul ediyor.",
+      "pitchAngle": "Fatih ve Beyoğlu odalarındaki QR standlarımızda resmi A Grubu TÜRSAB partneri olarak yer alıp GetYourGuide komisyonunun üçte biri maliyetle satış yapın.",
+      "sources": [
+        {
+          "title": "Guided Istanbul Tours",
+          "url": "https://www.guidedistanbultours.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-privetour-bosphorus",
+      "name": "Galata & Karaköy Gourmet Breakfast — Namlı Gurme / Privé",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Kahvaltı & Gurme Gastronomi",
+      "district": "Beyoğlu",
+      "neighborhood": "Karaköy · Galata",
+      "unitCount": 180,
+      "unitLabel": "Kapasite",
+      "phone": "+90 212 293 68 80",
+      "whatsappReady": true,
+      "email": "info@namligurme.com",
+      "website": "https://www.namligurme.com",
+      "instagram": "@namligurmekarakoy",
+      "address": "Kemankeş Karamustafa Paşa Mah. Rıhtım Cad. Katotopark Altı Karaköy, Beyoğlu / İstanbul",
+      "decisionMakerRole": "İşletme Müdürü & Kurumsal Satış",
+      "legalShieldStatus": "Kurumsal Gıda & Restoran İşletmesi · Resmi Faturalı",
+      "listingChannels": [
+        "Restoran Rezervasyon",
+        "Gurme Paket Teslimat"
+      ],
+      "estimatedMonthlyEuroVolume": 12800,
+      "partnerOrSupplierNetEuro": 10880,
+      "platformCommissionEuro": 1408,
+      "annualListingFeeEuro": 500,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Beyoğlu ve Galata dairelerinde mutfağı olmasına rağmen dışarıda veya daireye VIP serpme Türk kahvaltısı isteyen turistler için 1 numaralı çekim merkezi.",
+      "pitchAngle": "Galata ve Cihangir PMC dairelerinde sabah uyanan yabancı turiste QR üzerinden sabit Euro fiyatlı \"Scam-Free VIP Türk Kahvaltısı\" (masada veya daireye teslim) satışı.",
+      "sources": [
+        {
+          "title": "Namlı Gurme Karaköy",
+          "url": "https://www.namligurme.com"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-van-kahvalti",
+      "name": "Van Kahvaltı Evi Cihangir (Turist & Daire Kahvaltı Noktası)",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Kahvaltı & Gurme Gastronomi",
+      "district": "Beyoğlu",
+      "neighborhood": "Cihangir · Çukurcuma",
+      "unitCount": 95,
+      "unitLabel": "Kapasite",
+      "phone": "+90 212 293 64 37",
+      "whatsappReady": true,
+      "email": "cihangir@vankahvaltievi.com",
+      "website": "https://www.instagram.com/vankahvaltievi",
+      "instagram": "@vankahvaltievi",
+      "address": "Kılıçali Paşa Mah. Defterdar Yokuşu No:52/A Cihangir, Beyoğlu / İstanbul",
+      "decisionMakerRole": "İşletme Sahibi",
+      "legalShieldStatus": "Resmi Vergi Levhalı Restoran İşletmesi",
+      "listingChannels": [
+        "Yerinde Servis",
+        "Bölgesel Paket"
+      ],
+      "estimatedMonthlyEuroVolume": 7400,
+      "partnerOrSupplierNetEuro": 6290,
+      "platformCommissionEuro": 814,
+      "annualListingFeeEuro": 500,
+      "stage": "Keşfedildi",
+      "fieldNotes": "Cihangir Airbnb dairelerinin tam merkezinde. Yabancı turistler arasında çok popüler ancak sıra bekleme ve dil bariyeri var; Comus AI öncelikli masa/paket sağlıyor.",
+      "pitchAngle": "Cihangir dairelerindeki 3.000+ yabancı turiste sabah uyandıkları anda doğrudan kahvaltı kuponu ve daireye sıcak kahvaltı kutusu gönderimi.",
+      "sources": [
+        {
+          "title": "Van Kahvaltı Evi Cihangir",
+          "url": "https://www.instagram.com/vankahvaltievi"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    },
+    {
+      "id": "lead-sup-temiz-dryclean",
+      "name": "Temiz.co / Dry Clean Express B2B Konaklama Lojistiği",
+      "roleType": "Küratörlü Hizmet Tedarikçisi (Revenue Node)",
+      "category": "Ekspres Kuru Temizleme",
+      "district": "Şişli",
+      "neighborhood": "Nişantaşı · Beyoğlu · Beşiktaş · Kadıköy",
+      "unitCount": 12,
+      "unitLabel": "Şube",
+      "phone": "+90 850 885 04 05",
+      "whatsappReady": true,
+      "email": "destek@temiz.co",
+      "website": "https://www.temiz.co",
+      "instagram": "@temizco",
+      "address": "Fulya / Nişantaşı Operasyon Merkezi, Şişli / İstanbul",
+      "decisionMakerRole": "B2B Operasyon & Kurye Ağı Yöneticisi",
+      "legalShieldStatus": "Kurumsal A.Ş. · Kapıdan Alım-Teslimat Sigortalı",
+      "listingChannels": [
+        "Mobil Uygulama",
+        "B2B Otel/Rezidans API"
+      ],
+      "estimatedMonthlyEuroVolume": 9200,
+      "partnerOrSupplierNetEuro": 7820,
+      "platformCommissionEuro": 1012,
+      "annualListingFeeEuro": 500,
+      "stage": "İletişim Doğrulandı",
+      "fieldNotes": "Çamaşır makinesi olmayan veya ütü/kuru temizleme arayan butik otel ve PMC daire misafirleri için kapıdan alıp 24 saatte teslim eden kuryeli sistem.",
+      "pitchAngle": "Yıllık €500 kapalı ağ üyeliği ile 5 ilçedeki butik otel ve PMC dairelerinin resmi ekspres kuru temizleme ve çamaşırhane partneri olun (%85 net hakediş).",
+      "sources": [
+        {
+          "title": "Temiz.co Resmi Site",
+          "url": "https://www.temiz.co"
+        }
+      ],
+      "verifiedAt": "2026-10-26"
+    }
+  ]
+}
