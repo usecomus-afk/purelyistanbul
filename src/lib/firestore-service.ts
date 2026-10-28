@@ -350,6 +350,23 @@ export const FirestoreService = {
     }
   },
 
+  async upsertPlatformModules(disabledModules: string[]): Promise<void> {
+    const now = new Date().toISOString();
+    const stamped = { disabledModules, updatedAt: now };
+    const serverOkPromise = postAdminCatalog('upsert_platform_modules', stamped);
+
+    if (!db || !isFirebaseConfigured) {
+      await serverOkPromise;
+      return;
+    }
+    try {
+      await setDoc(doc(db, COLLECTIONS.B2B_PARAMS, 'platform_modules'), stripUndefined(stamped));
+    } catch (e) {
+      const serverOk = await serverOkPromise;
+      if (!serverOk) reportSyncError('upsertPlatformModules', e);
+    }
+  },
+
   /** Panelden düzenlenen kategori kaydını (ad, ikon, sıra, gizli/açık) tüm cihazlara yansıtır. */
   async upsertCategory(cfg: CategoryConfig): Promise<void> {
     const normalizedLabel = normalizeCategoryLabel(cfg.label, cfg.label);
@@ -700,6 +717,26 @@ export const FirestoreService = {
               }
             });
             XeniosStore.saveB2BLeads(Array.from(mergedMap.values()));
+          },
+          () => {}
+        )
+      );
+
+      // 7. Platform Modules listener (PurelyAdmin -> PurelyIstanbul App, PWA & Web)
+      unsubs.push(
+        onSnapshot(
+          doc(db, COLLECTIONS.B2B_PARAMS, 'platform_modules'),
+          (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data() as { disabledModules?: string[] };
+            if (Array.isArray(data?.disabledModules)) {
+              try {
+                localStorage.setItem('purely_disabled_modules', JSON.stringify(data.disabledModules));
+                window.dispatchEvent(
+                  new CustomEvent('purely_modules_updated', { detail: { disabledModules: data.disabledModules } })
+                );
+              } catch {}
+            }
           },
           () => {}
         )

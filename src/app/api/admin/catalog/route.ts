@@ -194,6 +194,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    if (action === 'upsert_platform_modules' && payload) {
+      await adminDb.collection('b2b_mirofish_settings').doc('platform_modules').set(
+        stripUndefined({
+          disabledModules: Array.isArray(payload.disabledModules) ? payload.disabledModules : [],
+          updatedAt: now,
+        })
+      );
+      return NextResponse.json({ ok: true });
+    }
+
     return NextResponse.json({ ok: false, error: 'Unsupported action' }, { status: 400 });
   } catch (err: any) {
     console.warn('[api/admin/catalog] error:', err);

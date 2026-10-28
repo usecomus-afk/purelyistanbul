@@ -2,10 +2,8 @@ name: Build purelyİstanbul iOS App (.ipa for Sideloadly)
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - 'v*'
+      - 'v*-ipa*'
   workflow_dispatch:
     inputs:
       server_url:

@@ -151,6 +151,37 @@ platform :ios do
 
     app_record = Spaceship::ConnectAPI::App.find(admin_bundle_id)
     if app_record
+      begin
+        internal_group = app_record.get_beta_groups.find { |g| g.is_internal_group }
+        if internal_group.nil?
+          UI.message("Creating Internal Testing group for #{admin_bundle_id}...")
+          internal_group = app_record.create_beta_group(
+            group_name: "Purely Admin Team",
+            is_internal_group: true,
+            has_access_to_all_builds: true
+          )
+          UI.success("Created Internal Testing group: #{internal_group.name}")
+        end
+        users = Spaceship::ConnectAPI::User.all
+        users.each do |u|
+          begin
+            Spaceship::ConnectAPI.post_beta_tester_assignment_to_beta_groups(
+              beta_group_ids: [internal_group.id],
+              attributes: {
+                email: u.email,
+                firstName: u.first_name,
+                lastName: u.last_name
+              }
+            )
+            UI.success("Assigned internal tester #{u.email} to #{internal_group.name}")
+          rescue => tester_err
+            UI.message("Tester #{u.email} note: #{tester_err.message}")
+          end
+        end
+      rescue => bg_err
+        UI.message("Internal BetaGroup setup note: #{bg_err.message}")
+      end
+
       upload_to_testflight(
         api_key: api_key,
         ipa: "./build/PurelyAdmin.ipa",

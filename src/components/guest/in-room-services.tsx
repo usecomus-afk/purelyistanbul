@@ -61,6 +61,15 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
   const [selectedService, setSelectedService] = useState<InRoomServiceItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moduleSettings, setModuleSettings] = useState<ModuleAdminSettingsMap>(() => XeniosStore.getModuleSettings());
+  const [disabledModules, setDisabledModules] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem('purely_disabled_modules');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Custom Service Form State
   const [customOption, setCustomOption] = useState('');
@@ -79,16 +88,22 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     const refresh = () => {
       setServices(XeniosStore.getInRoomServices());
       setModuleSettings(XeniosStore.getModuleSettings());
+      try {
+        const raw = localStorage.getItem('purely_disabled_modules');
+        if (raw) setDisabledModules(JSON.parse(raw));
+      } catch {}
     };
     refresh();
     window.addEventListener('xenios_in_room_services_updated', refresh);
     window.addEventListener('xenios_module_settings_updated', refresh);
     window.addEventListener('xenios_hotels_updated', refresh);
+    window.addEventListener('purely_modules_updated', refresh);
     window.addEventListener('storage', refresh);
     return () => {
       window.removeEventListener('xenios_in_room_services_updated', refresh);
       window.removeEventListener('xenios_module_settings_updated', refresh);
       window.removeEventListener('xenios_hotels_updated', refresh);
+      window.removeEventListener('purely_modules_updated', refresh);
       window.removeEventListener('storage', refresh);
     };
   }, [hotel?.id]);
@@ -299,7 +314,24 @@ export function InRoomServices({ hotel, roomNumber, lang }: InRoomServicesProps)
     );
   };
 
-  const activeServices = services.filter((item) => !item.hidden && item.enabled !== false);
+  const activeServices = services.filter((item) => {
+    if (item.hidden || item.enabled === false) return false;
+    if (disabledModules.includes('mod-dining') && (item.key === 'roomservice' || item.key === 'breakfast')) {
+      return false;
+    }
+    if (disabledModules.includes('mod-transfer') && item.key === 'taxi') {
+      return false;
+    }
+    if (
+      disabledModules.includes('mod-housekeeping') &&
+      item.key !== 'roomservice' &&
+      item.key !== 'breakfast' &&
+      item.key !== 'taxi'
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="w-full max-w-full box-border touch-pan-y">

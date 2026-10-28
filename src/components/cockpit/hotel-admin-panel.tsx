@@ -427,13 +427,14 @@ export function HotelAdminPanel() {
 
               <div className="pt-3 border-t border-amber-100 space-y-2">
                 <div className="flex items-center gap-1.5">
-                  <Link
-                    href={`/hotel-portal?hotelId=${hotel.id}`}
-                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 text-[11px] font-bold border border-amber-300 flex items-center justify-center gap-1 transition"
+                  <button
+                    type="button"
+                    onClick={() => setManagingRoomsHotel(hotel)}
+                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 text-[11px] font-bold border border-amber-300 flex items-center justify-center gap-1 transition cursor-pointer"
                   >
-                    <span>Otel Kokpiti</span>
-                    <ArrowUpRight className="w-3 h-3" />
-                  </Link>
+                    <DoorOpen className="w-3.5 h-3.5" />
+                    <span>Oda &amp; PWA Yönet</span>
+                  </button>
                   <Link
                     href={`/qr-generator?hotelId=${hotel.id}`}
                     className="py-1.5 px-2.5 rounded-xl bg-zinc-100 hover:bg-amber-50 text-zinc-700 border border-zinc-200 text-[11px] font-semibold flex items-center gap-1 transition"

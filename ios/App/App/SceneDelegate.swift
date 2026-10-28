@@ -109,7 +109,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ?? Bundle.main.url(forResource: "splash-intro", withExtension: "mp4")
 
         let isAdminApp = Bundle.main.bundleIdentifier?.contains("purelyadmin") == true
-        if !isAdminApp, let win = self.window, let videoURL = videoURL {
+        if isAdminApp {
+            let adminGuardScript = """
+            try {
+                window.__PURELY_ADMIN_APP__ = true;
+                sessionStorage.setItem('purely_splash_v8_played', 'true');
+                sessionStorage.setItem('purely_splash_played', 'true');
+                var p = window.location.pathname || '';
+                if (p === '/' || p === '' || p.indexOf('/stay') === 0 || p.indexOf('/hotel') === 0 || p.indexOf('/guest') === 0) {
+                    window.location.replace('/admin');
+                }
+            } catch(e) {}
+            """
+            let adminUserScript = WKUserScript(source: adminGuardScript, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+            bridgeVC.webView?.configuration.userContentController.addUserScript(adminUserScript)
+            bridgeVC.webView?.evaluateJavaScript(adminGuardScript, completionHandler: nil)
+        } else if let win = self.window, let videoURL = videoURL {
             let scriptSource = "try { sessionStorage.setItem('purely_splash_v8_played', 'true'); sessionStorage.setItem('purely_splash_v7_played', 'true'); sessionStorage.setItem('purely_splash_v6_played', 'true'); sessionStorage.setItem('purely_splash_played', 'true'); window.__PURELY_NATIVE_VIDEO_SPLASH_V8__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH_V7__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH_V6__ = true; window.__PURELY_NATIVE_VIDEO_SPLASH__ = true; } catch(e) {}"
             let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             bridgeVC.webView?.configuration.userContentController.addUserScript(userScript)

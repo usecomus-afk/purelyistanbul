@@ -22,6 +22,7 @@ import {
   InvestmentLead,
   BookingStatus,
   PilotDistrictKey,
+  InRoomServiceItem,
 } from "@/lib/types";
 import {
   PILOT_DISTRICTS,
@@ -354,8 +355,9 @@ export default function AdminPage() {
     return () => window.removeEventListener("xenios_categories_updated", refresh);
   }, []);
 
-  // Module toggles (persisted in localStorage for instant UI feedback)
+  // Module toggles (persisted in localStorage & Firestore for instant remote sync)
   const [disabledModules, setDisabledModules] = useState<string[]>([]);
+  const [inRoomServices, setInRoomServices] = useState<InRoomServiceItem[]>([]);
   const [paymentConfig, setPaymentConfig] = useState<PaymentGatewayConfig>(DEFAULT_PAYMENT_CONFIG);
 
   // 1. Force Light Mode & Unlock Document Scroll on Mount
@@ -382,6 +384,22 @@ export default function AdminPage() {
         setPaymentConfig({ ...DEFAULT_PAYMENT_CONFIG, ...JSON.parse(savedPay) });
       }
     } catch {}
+
+    const handleModulesRemoteUpdate = () => {
+      try {
+        const raw = localStorage.getItem("purely_disabled_modules");
+        if (raw) setDisabledModules(JSON.parse(raw));
+      } catch {}
+    };
+    const handleInRoomRemoteUpdate = () => {
+      setInRoomServices(XeniosStore.getInRoomServices());
+    };
+    window.addEventListener("purely_modules_updated", handleModulesRemoteUpdate);
+    window.addEventListener("xenios_in_room_services_updated", handleInRoomRemoteUpdate);
+    return () => {
+      window.removeEventListener("purely_modules_updated", handleModulesRemoteUpdate);
+      window.removeEventListener("xenios_in_room_services_updated", handleInRoomRemoteUpdate);
+    };
   }, []);
 
   const handleSavePaymentConfig = async () => {
@@ -451,6 +469,7 @@ export default function AdminPage() {
     setBookings(XeniosStore.getBookings());
     setServiceRequests(XeniosStore.getRequests());
     setInvestmentLeads(XeniosStore.getInvestmentLeads());
+    setInRoomServices(XeniosStore.getInRoomServices());
   };
 
   useEffect(() => {
@@ -592,7 +611,6 @@ export default function AdminPage() {
     }
 
     XeniosStore.setMasterAdminLoggedIn(true);
-    XeniosStore.setHotelPortalLoggedIn(true);
     XeniosStore.setUser({
       id: "usr-anilaslan",
       name: result.name || "Anıl Aslan",
@@ -611,7 +629,7 @@ export default function AdminPage() {
 
     setIsAuth(true);
     refreshAllData();
-    toast.success("Purelyİstanbul Yönetim Masasına hoş geldiniz!");
+    toast.success("PurelyAdmin Yönetim Masasına hoş geldiniz!");
   };
 
   const handleLogout = () => {
@@ -636,9 +654,10 @@ export default function AdminPage() {
         ...htls.map((item) => FirestoreService.upsertHotel(item)),
         ...sups.map((item) => FirestoreService.upsertSupplier(item)),
         FirestoreService.pushLocalCategoryConfigs(),
+        FirestoreService.upsertPlatformModules(disabledModules),
       ]);
       toast.success(
-        "Tüm katalog purelyistanbul.com Web, iOS App ve PWA ile senkronize edildi!"
+        "Tüm katalog ve modül ayarları purelyistanbul.com Web, iOS App ve PWA ile senkronize edildi!"
       );
     } catch {
       toast.error("Senkronizasyon sırasında bir hata oluştu.");
@@ -876,8 +895,26 @@ export default function AdminPage() {
     setDisabledModules(next);
     try {
       localStorage.setItem("purely_disabled_modules", JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent("purely_modules_updated", { detail: { disabledModules: next } }));
     } catch {}
-    toast.success("Mobil App & PWA modül durumu güncellendi.");
+    FirestoreService.upsertPlatformModules(next).catch(() => {});
+    toast.success("Purelyİstanbul iOS App & PWA modül durumu buluta kaydedildi ve canlıya yansıtıldı.");
+  };
+
+  const handleToggleInRoomService = (item: InRoomServiceItem) => {
+    const nextEnabled = item.enabled === false;
+    XeniosStore.saveInRoomService({
+      ...item,
+      enabled: nextEnabled,
+      hidden: !nextEnabled,
+      explicitlyHidden: !nextEnabled,
+    });
+    setInRoomServices(XeniosStore.getInRoomServices());
+    toast.success(
+      nextEnabled
+        ? `"${item.label}" hizmeti iOS App & Otel PWA ekranında aktifleştirildi.`
+        : `"${item.label}" hizmeti iOS App & Otel PWA ekranından gizlendi.`
+    );
   };
 
   // Filtered Listings
@@ -1043,12 +1080,13 @@ export default function AdminPage() {
         <div className="admin-safe-top-mask" aria-hidden="true" />
         {/* Top Minimalist Nav */}
         <header className="max-w-5xl w-full mx-auto flex flex-wrap items-center justify-between gap-2">
-          <Link href="/" translate="no" className="notranslate comus-logo">
-            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">istanbul</span>
-          </Link>
-          <Link href="/" className="comus-btn-ghost text-xs sm:text-sm py-2 px-3">
-            <span translate="no" className="notranslate">purelyistanbul.com</span>&apos;a Dön →
-          </Link>
+          <div translate="no" className="notranslate comus-logo">
+            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">admin</span>
+          </div>
+          <span className="comus-badge">
+            <span className="comus-badge-dot" />
+            Merkezi Kanal &amp; Uygulama Yönetimi
+          </span>
         </header>
 
         {/* Center Editorial Login Card */}
@@ -1057,15 +1095,14 @@ export default function AdminPage() {
             <div className="text-center space-y-3">
               <div className="comus-badge mx-auto">
                 <span className="comus-badge-dot" />
-                Merkezi Yönetim Masası
+                PurelyAdmin Yönetim Uygulaması
               </div>
               <h1 className="comus-serif text-3xl sm:text-4xl font-light text-[#2C2C1A] leading-tight">
-                <span translate="no" className="notranslate">Purelyİstanbul</span> için <br />
-                <em className="italic text-[#3B6D11]">sade ve akıllı</em> yönetim
+                <span translate="no" className="notranslate">PurelyAdmin</span> ile <br />
+                <em className="italic text-[#3B6D11]">tüm kanalları</em> uzaktan yönetin
               </h1>
               <p className="text-sm text-[#6B6B55] font-light leading-relaxed">
-                <span translate="no" className="notranslate">purelyistanbul.com</span> Web Sitesi, iOS App ve Otel İçi PWA&apos;yı
-                tek ekrandan yönetmek için giriş yapın.
+                Bağımsız yönetim masası üzerinden <span translate="no" className="notranslate">purelyistanbul.com</span> Web Sitesi, Purelyİstanbul iOS App ve Otel İçi PWA&apos;yı kontrol etmek için giriş yapın.
               </p>
             </div>
 
@@ -1287,11 +1324,11 @@ export default function AdminPage() {
       <div className="px-6 py-5 border-b border-[#C8C4B0]/70 flex items-center justify-between shrink-0">
         <div>
           <Link href="/admin" translate="no" className="notranslate comus-logo block">
-            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">istanbul</span>
+            <span translate="no" className="notranslate">purely</span><span translate="no" className="notranslate">admin</span>
           </Link>
           <div className="flex items-center gap-1.5 mt-0.5">
             <p className="text-[11px] text-[#6B6B55] tracking-wide">
-              Merkezi Operasyon Paneli
+              App, PWA &amp; Web Yönetim Masası
             </p>
           </div>
         </div>
@@ -1375,43 +1412,50 @@ export default function AdminPage() {
           );
         })}
 
-        {/* Direct Links to Live Surfaces */}
+        {/* Remote Channel Control Shortcuts (No direct link to guest app) */}
         <div className="pt-4 mt-4 border-t border-[#C8C4B0]/60 space-y-1.5">
           <div className="px-2.5 py-1 text-[10px] font-medium uppercase tracking-widest text-[#6B6B55]">
-            Canlı Ekranlar &amp; Araçlar
+            Yönetilen Platform Kanalları
           </div>
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition"
+          <button
+            type="button"
+            onClick={() => {
+              switchTab("channels");
+              setChannelSubTab("matrix");
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition cursor-pointer"
           >
             <span className="flex items-center gap-2.5">
               <Globe className="w-3.5 h-3.5 text-[#3B6D11]" />
-              purelyistanbul.com Web Vitrin
+              purelyistanbul.com Web Yönetimi
             </span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
-          <Link
-            href="/hotel?h=1&r=304"
-            target="_blank"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition"
+            <span className="text-[10px] text-[#3B6D11] font-semibold">Yönet</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              switchTab("channels");
+              setChannelSubTab("modules");
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition cursor-pointer"
           >
             <span className="flex items-center gap-2.5">
               <Smartphone className="w-3.5 h-3.5 text-[#C1622F]" />
-              iOS App &amp; Otel PWA Önizleme
+              Purelyİstanbul iOS App &amp; PWA
             </span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
-          <Link
-            href="/hotel-portal"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition"
+            <span className="text-[10px] text-[#C1622F] font-semibold">Modüller</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => switchTab("hotels")}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition cursor-pointer"
           >
             <span className="flex items-center gap-2.5">
               <HotelIcon className="w-3.5 h-3.5 text-[#3B6D11]" />
-              Partner Otel Yönetim Paneli
+              Partner Oteller &amp; Oda QR
             </span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
+            <span className="text-[10px] text-[#3B6D11] font-semibold">Yönet</span>
+          </button>
           <Link
             href="/qr-generator"
             className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-[#6B6B55] hover:bg-[#F6F1E8] hover:text-[#3B6D11] transition"
@@ -1782,13 +1826,16 @@ export default function AdminPage() {
                       >
                         Vitrin İlanlarını Seç →
                       </button>
-                      <Link
-                        href="/"
-                        target="_blank"
-                        className="text-xs text-[#6B6B55] hover:text-[#2C2C1A] flex items-center gap-1"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("channels");
+                          setChannelSubTab("marketplace");
+                        }}
+                        className="text-xs text-[#6B6B55] hover:text-[#2C2C1A] flex items-center gap-1 cursor-pointer"
                       >
-                        Siteyi Aç <ExternalLink className="w-3 h-3" />
-                      </Link>
+                        Web Onayları ({pendingMarketplaceListings.length}) →
+                      </button>
                     </div>
                   </div>
 
@@ -1833,13 +1880,16 @@ export default function AdminPage() {
                       >
                         iOS Modüllerini Yönet →
                       </button>
-                      <Link
-                        href="/hotel?h=1&r=304"
-                        target="_blank"
-                        className="text-xs text-[#6B6B55] hover:text-[#2C2C1A] flex items-center gap-1"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("channels");
+                          setChannelSubTab("matrix");
+                        }}
+                        className="text-xs text-[#6B6B55] hover:text-[#2C2C1A] flex items-center gap-1 cursor-pointer"
                       >
-                        Uygulamayı Önizle <ExternalLink className="w-3 h-3" />
-                      </Link>
+                        Mobil İlanlar ({mobileActiveCount}) →
+                      </button>
                     </div>
                   </div>
 
@@ -2293,15 +2343,15 @@ export default function AdminPage() {
 
               {/* SUBTAB 2: IOS APP & PWA MODULES */}
               {channelSubTab === "modules" && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="comus-card space-y-2">
                     <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
-                      iOS App &amp; Otel İçi PWA Hizmet Modülleri
+                      iOS App &amp; Otel İçi PWA Ana Modülleri (Uzaktan Bulut Kontrolü)
                     </h3>
                     <p className="text-xs text-[#6B6B55]">
-                      Misafirlerin mobil uygulamada ve otel odasındaki QR PWA
-                      ekranında gördüğü ana hizmet kartlarını buradan
-                      yönetebilirsiniz.
+                      PurelyAdmin üzerinden açıp kapattığınız modüller Firestore üzerinden gerçek zamanlı olarak{" "}
+                      <strong>Purelyİstanbul iOS App</strong>, <strong>Otel İçi Misafir PWA</strong> ve{" "}
+                      <strong>purelyistanbul.com Web</strong> ekranlarına anında yansır.
                     </p>
                   </div>
 
@@ -2359,6 +2409,68 @@ export default function AdminPage() {
                         </div>
                       );
                     })}
+                  </div>
+
+                  {/* Oda İçi Hizmet Kartları (16 Hizmet Kartı) Uzaktan Yönetimi */}
+                  <div className="comus-card space-y-4">
+                    <div className="border-b border-[#C8C4B0]/60 pb-3">
+                      <div className="text-[11px] uppercase tracking-widest text-[#3B6D11] font-semibold">
+                        Purelyİstanbul iOS App &amp; Otel PWA Oda Hizmetleri
+                      </div>
+                      <h3 className="comus-serif text-2xl font-normal text-[#2C2C1A]">
+                        Oda İçi Hizmet Kartlarını Uzaktan Aç / Kapat
+                      </h3>
+                      <p className="text-xs text-[#6B6B55]">
+                        Purelyİstanbul iOS uygulamasında ve otel odası QR PWA ekranında misafirlere sunulan hizmet kartlarını tek dokunuşla açıp kapatabilirsiniz.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {inRoomServices.map((srv) => {
+                        const isActive = srv.enabled !== false && !srv.hidden;
+                        return (
+                          <div
+                            key={srv.id || srv.key}
+                            className={`p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition ${
+                              isActive
+                                ? "bg-[#FFFCFA] border-[#C8C4B0]"
+                                : "bg-[#EDE8DE]/70 border-[#C8C4B0] opacity-80"
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-sm font-semibold text-[#2C2C1A] truncate">
+                                  {srv.label}
+                                </span>
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0 ${
+                                    isActive
+                                      ? "bg-[#EAF3DE] text-[#3B6D11] border-[#C0DD97]"
+                                      : "bg-[#F3E3D8] text-[#9C4E24] border-[#E5C4B0]"
+                                  }`}
+                                >
+                                  {isActive ? "Açık" : "Gizli"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[#6B6B55] line-clamp-2">
+                                {srv.desc} • <strong>{srv.department}</strong>
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleInRoomService(srv)}
+                              className={`min-h-[40px] w-full rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                                isActive
+                                  ? "bg-[#F6F1E8] hover:bg-[#F3E3D8] text-[#9C4E24] border-[#C8C4B0]"
+                                  : "bg-[#3B6D11] hover:bg-[#27500A] text-white border-[#3B6D11]"
+                              }`}
+                            >
+                              {isActive ? "App & PWA'dan Gizle" : "App & PWA'da Göster"}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
@@ -3142,9 +3254,6 @@ export default function AdminPage() {
                   <Link href="/qr-generator" className="comus-btn-primary flex-1 sm:flex-initial">
                     <QrCode className="w-4 h-4 shrink-0" />
                     <span>Toplu Oda QR Kod Yazdır →</span>
-                  </Link>
-                  <Link href="/hotel-portal" className="comus-btn-ghost flex-1 sm:flex-initial">
-                    <span>Otel Paneline Geç ↗</span>
                   </Link>
                 </div>
               </div>

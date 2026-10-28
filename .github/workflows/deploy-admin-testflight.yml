@@ -39,6 +39,7 @@ jobs:
           BUNDLE_ID: ${{ inputs.admin_bundle_id || 'com.usecomus.purelyadmin.R8LQC6KZG8' }}
         run: |
           npm run build
+          rm -f capacitor.config.ts
           node -e "
             const fs = require('fs');
             const bundleId = process.env.BUNDLE_ID || 'com.usecomus.purelyadmin.R8LQC6KZG8';

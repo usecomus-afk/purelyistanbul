@@ -12,10 +12,16 @@ import { marketplaceFont } from "@/lib/marketplace/font";
 export default function RootPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isNative, setIsNative] = useState(false);
+  const [isAdminApp, setIsAdminApp] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     const w = window as any;
+    if (w.__PURELY_ADMIN_APP__) {
+      setIsAdminApp(true);
+      window.location.replace("/admin");
+      return;
+    }
+    setIsMounted(true);
     const native =
       Capacitor.isNativePlatform() ||
       !!w.Capacitor?.isNativePlatform?.() ||
@@ -34,6 +40,14 @@ export default function RootPage() {
       } catch {}
     }
   }, []);
+
+  if (isAdminApp) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-[#F6F1E8]">
+        <div className="w-8 h-8 rounded-full border-2 border-[#3B6D11] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   // 1. Yalnızca cihaza kurulu Native iOS IPA uygulaması açıldığında konsiyerj gelir (purelyistanbul.com Ana Ekrana Ekle'de normal web sitesi açılır)
   if (isMounted && isNative) {
