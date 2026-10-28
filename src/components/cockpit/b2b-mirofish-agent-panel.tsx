@@ -75,6 +75,10 @@ const CATEGORY_OPTIONS = [
   "Ekspres Kuru Temizleme",
 ];
 
+const AI_STUDIO_APP_URL =
+  process.env.NEXT_PUBLIC_AI_STUDIO_AGENT_URL ||
+  "https://purelyistanbul-ajan.ai.studio";
+
 type SubView = "crm" | "discovery_agent" | "pitch_agent" | "mirofish_sim";
 
 interface B2BMirofishAgentPanelProps {
@@ -85,6 +89,7 @@ export function B2BMirofishAgentPanel({
   onNavigateToLiveTab,
 }: B2BMirofishAgentPanelProps) {
   const [subView, setSubView] = useState<SubView>("crm");
+  const [showEmbeddedStudio, setShowEmbeddedStudio] = useState<boolean>(false);
   const [leads, setLeads] = useState<B2BLead[]>([]);
   const [params, setParams] = useState<MirofishSystemParameters>(() =>
     XeniosStore.getMirofishParameters()
@@ -585,6 +590,31 @@ export function B2BMirofishAgentPanel({
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               type="button"
+              onClick={() => setShowEmbeddedStudio((prev) => !prev)}
+              className={`min-h-[44px] px-3.5 py-2 rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer ${
+                showEmbeddedStudio
+                  ? "bg-[#27500A] text-white border-[#27500A]"
+                  : "bg-[#EAF3DE] hover:bg-[#d8ebc2] text-[#27500A] border-[#C0DD97]"
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>
+                {showEmbeddedStudio
+                  ? "Panelde AI Studio'yu Gizle"
+                  : "AI Studio Ekranını Gömülü Aç"}
+              </span>
+            </button>
+            <a
+              href={AI_STUDIO_APP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-[#F6F1E8] hover:bg-[#EDE8DE] text-[#2C2C1A] border border-[#C8C4B0] text-xs font-semibold inline-flex items-center gap-1.5 transition"
+            >
+              <ExternalLink className="w-4 h-4 text-[#3B6D11]" />
+              <span>purelyistanbul-ajan.ai.studio</span>
+            </a>
+            <button
+              type="button"
               onClick={() => setIsJsonImportOpen(true)}
               className="min-h-[44px] px-3.5 py-2 rounded-xl bg-[#F6F1E8] hover:bg-[#EDE8DE] text-[#2C2C1A] border border-[#C8C4B0] text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer"
             >
@@ -609,6 +639,42 @@ export function B2BMirofishAgentPanel({
             </button>
           </div>
         </div>
+
+        {/* Embedded AI Studio Applet View (purelyistanbul-ajan.ai.studio) */}
+        {showEmbeddedStudio && (
+          <div className="rounded-2xl border border-[#C0DD97] bg-[#F6F1E8]/60 overflow-hidden space-y-2 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#27500A]">
+                <span className="w-2 h-2 rounded-full bg-[#3B6D11] animate-pulse" />
+                <span>Canlı Bağlantı: {AI_STUDIO_APP_URL}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={AI_STUDIO_APP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-[#3B6D11] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Tam Pencere / iOS Safari&apos;de Aç</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+            <div className="w-full h-[640px] rounded-xl overflow-hidden border border-[#C8C4B0] bg-white">
+              <iframe
+                src={AI_STUDIO_APP_URL}
+                title="Purelyistanbul B2B AI Studio Ajanı"
+                className="w-full h-full border-0"
+                allow="clipboard-read; clipboard-write"
+              />
+            </div>
+            <p className="text-[11px] text-[#6B6B55] px-1">
+              Not: iOS üzerinde Google oturumu çerez koruması nedeniyle gömülü çerçeve giriş isterse sağ üstteki{" "}
+              <strong>Tam Pencere / iOS Safari&apos;de Aç</strong> bağlantısını veya aşağıdaki{" "}
+              <strong>Gemini API doğrudan bağlı yerel modülleri</strong> kullanabilirsiniz.
+            </p>
+          </div>
+        )}
 
         {/* Mirofish Phase-1 Executive KPI Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

@@ -39,6 +39,7 @@ import { ListingEditorModal } from "@/components/dashboard/listing-editor-modal"
 import { ListingSlotManager } from "@/components/dashboard/listing-slot-manager";
 import { authFetch } from "@/lib/auth-fetch";
 import { SupplierAdminPanel } from "@/components/cockpit/supplier-admin-panel";
+import { B2BMirofishAgentPanel } from "@/components/cockpit/b2b-mirofish-agent-panel";
 import { PropertyAdminPanel } from "@/components/cockpit/property-admin-panel";
 import { HotelAdminPanel } from "@/components/cockpit/hotel-admin-panel";
 import { PartnerApplicationsPanel } from "@/components/cockpit/partner-applications-panel";
@@ -88,10 +89,12 @@ import {
   TrendingUp,
   Percent,
   Wallet,
+  Bot,
 } from "lucide-react";
 
 type DashboardTab =
   | "overview"
+  | "b2b-agent"
   | "channels"
   | "listings"
   | "categories"
@@ -1197,6 +1200,13 @@ export default function AdminPage() {
       icon: LayoutGrid,
     },
     {
+      id: "b2b-agent",
+      label: "B2B AI Ajan & CRM",
+      shortLabel: "B2B Ajan",
+      sublabel: "purelyistanbul-ajan.ai.studio",
+      icon: Bot,
+    },
+    {
       id: "channels",
       label: "Web, iOS App & PWA",
       shortLabel: "Kanallar",
@@ -1594,6 +1604,42 @@ export default function AdminPage() {
                           <div className="text-[11px] text-[#525240] font-medium truncate">Oda &amp; Masa QR</div>
                         </div>
                       </Link>
+                    </div>
+
+                    {/* B2B AI Studio Agent Quick Launch Card for PurelyAdmin iOS App */}
+                    <div className="mt-2.5 p-3 rounded-xl bg-[#EAF3DE]/80 border border-[#C0DD97] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-[#3B6D11] text-white flex items-center justify-center shrink-0">
+                          <Bot className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs sm:text-sm font-bold text-[#1E1E12] truncate">
+                            Purelyistanbul B2B AI Studio Ajanı &amp; Mirofish CRM
+                          </div>
+                          <div className="text-[11px] text-[#27500A] truncate">
+                            purelyistanbul-ajan.ai.studio · Gemini API Bağlı · 5 Çekirdek İlçe Keşif &amp; Pitch
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => switchTab("b2b-agent")}
+                          className="min-h-[44px] flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-[#3B6D11] hover:bg-[#27500A] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Ajan Masasını Aç</span>
+                        </button>
+                        <a
+                          href="https://purelyistanbul-ajan.ai.studio"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="min-h-[44px] px-3 py-2 rounded-xl bg-white hover:bg-[#F6F1E8] text-[#2C2C1A] border border-[#C8C4B0] text-xs font-semibold inline-flex items-center justify-center gap-1 transition"
+                        >
+                          <span>AI Studio</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-[#3B6D11]" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -4097,6 +4143,15 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* =========================================================
+              TAB: B2B AI STUDIO AJAN & MIROFISH CRM
+          ========================================================= */}
+          {activeTab === "b2b-agent" && (
+            <B2BMirofishAgentPanel
+              onNavigateToLiveTab={(tab) => switchTab(tab)}
+            />
           )}
         </main>
 
