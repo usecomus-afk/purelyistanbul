@@ -94,7 +94,7 @@ export async function POST(req: Request) {
             emailVerified: true,
           });
         }
-        await adminAuth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
+        try { await adminAuth.setCustomUserClaims(userRecord.uid, { role: 'admin' }); } catch (claimErr) { console.error('[admin-login] Admin claim yazilamadi:', claimErr); }
         try {
           customToken = await adminAuth.createCustomToken(userRecord.uid, { role: 'admin' });
         } catch (tokenErr) {

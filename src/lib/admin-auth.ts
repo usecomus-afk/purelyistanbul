@@ -65,7 +65,8 @@ export async function establishAdminFirebaseSession(opts: {
 
   const email = opts.email.trim().toLowerCase();
   try {
-    await signInWithEmailAndPassword(auth, email, opts.password);
+    const cred = await signInWithEmailAndPassword(auth, email, opts.password);
+    await cred.user.getIdToken(true).catch(() => {});
     return true;
   } catch (err: any) {
     const code: string = err?.code || '';
