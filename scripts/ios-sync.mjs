@@ -28,7 +28,7 @@ const admin = {
   ...guest,
   appId: ADMIN_BUNDLE_ID,
   appName: 'Purely Admin',
-  server: { url: `${BASE_URL}/admin`, cleartext: true, allowNavigation: ['*'] },
+  server: { url: `${BASE_URL}/admin`, cleartext: true, allowNavigation: ['*'], errorPath: 'offline.html' },
   ios: { contentInset: 'never', backgroundColor: '#F6F1E8', preferredContentMode: 'mobile' },
 };
 mkdirSync('ios/App/Admin', { recursive: true });

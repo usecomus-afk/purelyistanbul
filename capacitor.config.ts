@@ -8,6 +8,7 @@ const config: CapacitorConfig = {
     url: process.env.CAPACITOR_SERVER_URL || 'https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app',
     cleartext: true,
     allowNavigation: ['*'],
+    errorPath: 'offline.html',
   },
   ios: {
     contentInset: 'never',

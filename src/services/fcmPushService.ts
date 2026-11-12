@@ -194,13 +194,14 @@ export class FcmPushService {
    */
   static async sendNativePushNotification(params: {
     deviceToken: string;
+    bundleId?: string;
     title: string;
     body: string;
     subtitle?: string;
     dataPayload?: Record<string, string>;
     badgeCount?: number;
   }): Promise<FcmPushResult> {
-    const { deviceToken, title, body, subtitle, dataPayload = {}, badgeCount = 1 } = params;
+    const { deviceToken, bundleId, title, body, subtitle, dataPayload = {}, badgeCount = 1 } = params;
     const now = new Date().toISOString();
     const apnsPayload = this.buildApnsPayload({ title, body, subtitle, badgeCount, dataPayload });
 
@@ -208,7 +209,7 @@ export class FcmPushService {
     const apnsKeyId = process.env.APNS_KEY_ID;
     const apnsTeamId = process.env.APNS_TEAM_ID;
     const apnsAuthKey = process.env.APNS_AUTH_KEY || process.env.APNS_P8_KEY;
-    const apnsBundleId = process.env.APNS_BUNDLE_ID || 'com.usecomus.olympus';
+    const apnsBundleId = bundleId || process.env.APNS_BUNDLE_ID || 'com.usecomus.olympus';
     const isHexApnsToken = /^[a-fA-F0-9]{64,200}$/.test(deviceToken.trim());
 
     if (apnsKeyId && apnsTeamId && apnsAuthKey && isHexApnsToken) {

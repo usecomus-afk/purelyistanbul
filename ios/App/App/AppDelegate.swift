@@ -75,6 +75,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             "platform": "ios",
             "role": isAdminApp ? "admin" : "staff"
         ]
+        if let bundleId = Bundle.main.bundleIdentifier {
+            // The server uses this as the apns-topic; each app has its own bundle ID.
+            payload["bundleId"] = bundleId
+        }
         if let hotelId = hotelId, !hotelId.isEmpty {
             payload["hotelId"] = hotelId
         }
@@ -270,7 +274,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let rootVC = scene.windows.first?.rootViewController as? CAPBridgeViewController {
                 let isAdminApp = Bundle.main.bundleIdentifier?.contains("purelyadmin") == true
-                let targetPath = isAdminApp ? "/admin" : "/hotel-portal/requests"
+                let userInfo = response.notification.request.content.userInfo
+                var targetPath = isAdminApp ? "/admin" : "/hotel-portal/requests"
+                // Remote pushes carry the page to open; accept same-site paths only.
+                if !isAdminApp, let pushPath = userInfo["url"] as? String,
+                   pushPath.hasPrefix("/"), !pushPath.hasPrefix("//"),
+                   pushPath.rangeOfCharacter(from: CharacterSet(charactersIn: "'\"\\<>\n\r")) == nil {
+                    targetPath = pushPath
+                }
                 rootVC.webView?.evaluateJavaScript("window.location.href = '\(targetPath)';", completionHandler: nil)
             }
         }
