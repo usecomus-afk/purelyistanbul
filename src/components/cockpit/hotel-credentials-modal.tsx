@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { KeyRound, Loader2, Trash2, Save, X, Eye, EyeOff, Wand2 } from 'lucide-react';
 import { authFetch } from '@/lib/auth-fetch';
@@ -155,8 +156,8 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
   const inputCls =
     'w-full min-h-[44px] rounded-xl border border-zinc-300 bg-white px-3 text-base sm:text-sm text-zinc-900 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30';
 
-  return (
-    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Giriş bilgileri">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Giriş bilgileri">
       <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white text-zinc-900 shadow-xl">
         <div className="flex items-center justify-between gap-3 p-4 border-b border-zinc-200 sticky top-0 bg-white">
           <div className="min-w-0">
@@ -239,6 +240,7 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
