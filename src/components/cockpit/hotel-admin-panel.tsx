@@ -5,6 +5,7 @@ import { XeniosStore } from '@/lib/store';
 import { Hotel, Room } from '@/lib/types';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { HotelCredentialsModal } from './hotel-credentials-modal';
 import { PartnerApplicationsPanel } from './partner-applications-panel';
 import {
   Building2,
@@ -105,6 +106,7 @@ export function HotelAdminPanel() {
 
   // Room Drawer / Modal state
   const [managingRoomsHotel, setManagingRoomsHotel] = useState<Hotel | null>(null);
+  const [credentialsHotel, setCredentialsHotel] = useState<Hotel | null>(null);
   const [newRoomNum, setNewRoomNum] = useState('');
   const [newRoomType, setNewRoomType] = useState('Deluxe Oda');
   const [newRoomFloor, setNewRoomFloor] = useState('1. Kat');
@@ -446,6 +448,13 @@ export function HotelAdminPanel() {
 
                 <div className="flex items-center gap-1.5">
                   <button
+                    type="button"
+                    onClick={() => setCredentialsHotel(hotel)}
+                    className="min-h-[44px] py-1.5 px-2.5 rounded-xl bg-zinc-100 hover:bg-amber-50 text-zinc-800 text-[11px] font-semibold border border-zinc-200 flex items-center justify-center gap-1 transition cursor-pointer"
+                  >
+                    Giriş Bilgileri
+                  </button>
+                  <button
                     onClick={() => openEdit(hotel)}
                     className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-zinc-800 text-[11px] font-semibold border border-amber-200/80 flex items-center justify-center gap-1 transition cursor-pointer"
                   >
@@ -487,6 +496,7 @@ export function HotelAdminPanel() {
       )}
 
       {/* Room Inventory Modal */}
+      {credentialsHotel && <HotelCredentialsModal hotel={credentialsHotel} onClose={() => setCredentialsHotel(null)} />}
       {managingRoomsHotel && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
           <div className="bg-white dark:bg-slate-900 border border-amber-200 rounded-3xl max-w-xl w-full p-4 sm:p-6 space-y-4 max-h-[88dvh] overflow-y-auto shadow-2xl">
