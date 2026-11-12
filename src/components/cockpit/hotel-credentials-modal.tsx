@@ -158,18 +158,28 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Giriş bilgileri">
-      <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white text-zinc-900 shadow-xl">
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-zinc-200 sticky top-0 bg-white">
+      <div className="w-full sm:max-w-lg max-h-[82dvh] sm:max-h-[90dvh] flex flex-col rounded-t-2xl sm:rounded-2xl bg-white text-zinc-900 shadow-xl overflow-hidden">
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-zinc-200 bg-white shrink-0">
           <div className="min-w-0">
             <h3 className="font-bold text-sm flex items-center gap-1.5"><KeyRound className="w-4 h-4 text-amber-600 shrink-0" /> Panel Giriş Bilgileri</h3>
             <p className="text-xs text-zinc-600 truncate">{hotel.name}</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Kapat" className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-zinc-100 cursor-pointer">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="submit"
+              form="hotel-credentials-form"
+              disabled={saving}
+              className="min-h-[44px] px-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-black text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            >
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Kaydet
+            </button>
+            <button type="button" onClick={onClose} aria-label="Kapat" className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-zinc-100 cursor-pointer">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 overflow-y-auto flex-1">
           {needsReauth && (
             <form onSubmit={handleReauth} className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2">
               <p className="text-xs font-semibold text-amber-900">Yönetici oturumunuzun süresi dolmuş. Devam etmek için yönetici şifrenizi tekrar girin.</p>
@@ -211,7 +221,7 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
             )}
           </section>
 
-          <form onSubmit={handleSave} className="space-y-3">
+          <form id="hotel-credentials-form" onSubmit={handleSave} className="space-y-3">
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-zinc-600">Giriş bilgisi oluştur / güncelle</h4>
             <label className="block text-xs font-medium text-zinc-700">E-posta
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputCls} mt-1`} autoComplete="off" />
@@ -231,13 +241,14 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
               </div>
             </label>
             <p className="text-[11px] text-zinc-600">Güncellemede eski oturumlar kapatılır; otel yeni parola ile yeniden giriş yapar. Yönetici/pilot e-postaları değiştirilemez.</p>
-            <div className="sticky bottom-0 -mx-4 -mb-4 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-zinc-200 flex justify-end gap-2">
-              <button type="button" onClick={onClose} className="min-h-[44px] px-4 rounded-xl border border-zinc-300 text-xs font-semibold cursor-pointer">Kapat</button>
-              <button type="submit" disabled={saving} className="min-h-[44px] px-5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-black text-xs font-bold flex items-center gap-1.5 cursor-pointer">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Kaydet
-              </button>
-            </div>
           </form>
+        </div>
+
+        <div className="p-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white border-t border-zinc-200 flex justify-end gap-2 shrink-0">
+          <button type="button" onClick={onClose} className="min-h-[44px] px-4 rounded-xl border border-zinc-300 text-xs font-semibold cursor-pointer">Kapat</button>
+          <button type="submit" form="hotel-credentials-form" disabled={saving} className="min-h-[44px] px-5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-black text-xs font-bold flex items-center gap-1.5 cursor-pointer">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Kaydet
+          </button>
         </div>
       </div>
     </div>,

@@ -42,7 +42,10 @@ export async function POST(req: Request) {
     const db = getAdminDbOrNull();
     if (db) {
       try {
-        const hotelSnap = await db.collection('hotels').where('email', '==', email).limit(1).get();
+        let hotelSnap = await db.collection('hotels').where('contactEmail', '==', email).limit(1).get();
+        if (hotelSnap.empty) {
+          hotelSnap = await db.collection('hotels').where('email', '==', email).limit(1).get();
+        }
         if (!hotelSnap.empty) {
           assignedHotelId = hotelSnap.docs[0].id;
         }

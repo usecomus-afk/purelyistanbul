@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import { XeniosStore } from '@/lib/store';
 import { Hotel, Room } from '@/lib/types';
 import Link from 'next/link';
@@ -44,6 +45,7 @@ type HotelDraft = {
   commissionRate: number;
   managerName: string;
   contactEmail: string;
+  loginPassword?: string;
   publishToWeb: boolean;
   publishToMobile: boolean;
 };
@@ -66,6 +68,7 @@ const EMPTY_HOTEL_DRAFT: HotelDraft = {
   commissionRate: 15,
   managerName: '',
   contactEmail: '',
+  loginPassword: '',
   publishToWeb: true,
   publishToMobile: true
 };
@@ -89,6 +92,7 @@ function hotelToDraft(h: Hotel): HotelDraft {
     commissionRate: h.commissionRate ?? 15,
     managerName: h.managerName || '',
     contactEmail: h.contactEmail || '',
+    loginPassword: '',
     publishToWeb: h.publishToWeb ?? false,
     publishToMobile: h.publishToMobile !== false
   };
@@ -200,6 +204,24 @@ export function HotelAdminPanel() {
     };
 
     XeniosStore.addHotel(created);
+    if (created.contactEmail && draft.loginPassword && draft.loginPassword.length >= 8) {
+      authFetch('/api/admin/hotel-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: created.contactEmail,
+          password: draft.loginPassword,
+          hotelId: created.id,
+          displayName: created.managerName,
+        }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d?.success) toast.success('Otel paneli giriş hesabı da oluşturuldu.');
+          else if (d?.error) toast.error(d.error);
+        })
+        .catch(() => {});
+    }
     toast.success(`"${created.name}" (${generatedRooms.length} oda) eklendi ve canlıya alındı.`);
     setIsNewOpen(false);
     setDraft(EMPTY_HOTEL_DRAFT);
@@ -244,6 +266,25 @@ export function HotelAdminPanel() {
       publishToWeb: editDraft.publishToWeb,
       publishToMobile: editDraft.publishToMobile
     });
+
+    if (editDraft.contactEmail.trim() && editDraft.loginPassword && editDraft.loginPassword.length >= 8) {
+      authFetch('/api/admin/hotel-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: editDraft.contactEmail.trim(),
+          password: editDraft.loginPassword,
+          hotelId: editingHotel.id,
+          displayName: editDraft.managerName.trim() || undefined,
+        }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d?.success) toast.success('Otel paneli giriş bilgileri güncellendi.');
+          else if (d?.error) toast.error(d.error);
+        })
+        .catch(() => {});
+    }
 
     toast.success(`"${editDraft.name}" güncellendi ve senkronize edildi.`);
     setEditingHotel(null);
@@ -687,6 +728,19 @@ function HotelFormModal({
                 value={draft.contactEmail}
                 onChange={(e) => setDraft({ ...draft, contactEmail: e.target.value })}
                 placeholder="mudur@otel.com"
+                className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl text-zinc-900"
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] font-bold text-zinc-600 block mb-1">Otel Paneli Giriş Şifresi (en az 8 karakter, değiştirmek için girin)</label>
+              <input
+                type="password"
+                minLength={8}
+                value={draft.loginPassword || ''}
+                onChange={(e) => setDraft({ ...draft, loginPassword: e.target.value })}
+                placeholder="Yeni şifre belirleyin (boş bırakılırsa değişmez)"
+                autoComplete="new-password"
                 className="w-full px-3 py-2 bg-amber-50/40 border border-amber-200/80 rounded-xl text-zinc-900"
               />
             </div>
