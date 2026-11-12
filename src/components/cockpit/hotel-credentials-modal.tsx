@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { KeyRound, Loader2, Trash2, Save, X, Eye, EyeOff, Wand2 } from 'lucide-react';
 import { authFetch } from '@/lib/auth-fetch';
+import { adminLogin, establishAdminFirebaseSession } from '@/lib/admin-auth';
+import { XeniosStore } from '@/lib/store';
 
 type HotelAccount = {
   uid: string;
@@ -36,6 +38,45 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [needsReauth, setNeedsReauth] = useState(false);
+  const [adminEmail, setAdminEmail] = useState(XeniosStore.getUser()?.email || '');
+  const [adminPw, setAdminPw] = useState('');
+  const [adminTotp, setAdminTotp] = useState('');
+  const [need2FA, setNeed2FA] = useState(false);
+  const [reauthBusy, setReauthBusy] = useState(false);
+
+  const handleReauth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setReauthBusy(true);
+    try {
+      const result = await adminLogin(adminEmail, adminPw, adminTotp);
+      if (result.require2FA) {
+        setNeed2FA(true);
+        toast.info(result.error || 'Doğrulama kodunu girin.');
+        return;
+      }
+      if (!result.success) {
+        toast.error(result.error || 'Giriş yapılamadı.');
+        return;
+      }
+      const ok = await establishAdminFirebaseSession({
+        email: result.email || adminEmail,
+        password: adminPw,
+        customToken: result.customToken,
+      });
+      if (!ok) {
+        toast.error('Bulut oturumu açılamadı. Lütfen panelden çıkış yapıp tekrar giriş yapın.');
+        return;
+      }
+      setAdminPw('');
+      setAdminTotp('');
+      setNeedsReauth(false);
+      toast.success('Oturum yenilendi.');
+      load();
+    } finally {
+      setReauthBusy(false);
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -44,6 +85,7 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
       const res = await authFetch('/api/admin/hotel-users');
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) {
+        if (res.status === 401) setNeedsReauth(true);
         setLoadError(data.error || `Hesaplar yüklenemedi (HTTP ${res.status}).`);
         setAccounts([]);
         return;
@@ -75,6 +117,7 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) {
+        if (res.status === 401) setNeedsReauth(true);
         toast.error(data.error || `Kaydedilemedi (HTTP ${res.status}).`);
         return;
       }
@@ -126,6 +169,17 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
         </div>
 
         <div className="p-4 space-y-4">
+          {needsReauth && (
+            <form onSubmit={handleReauth} className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2">
+              <p className="text-xs font-semibold text-amber-900">Yönetici oturumunuzun süresi dolmuş. Devam etmek için yönetici şifrenizi tekrar girin.</p>
+              <input type="email" required value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} placeholder="Yönetici e-postası" className={inputCls} autoComplete="username" />
+              <input type="password" required value={adminPw} onChange={(e) => setAdminPw(e.target.value)} placeholder="Yönetici şifresi" className={inputCls} autoComplete="current-password" />
+              {need2FA && <input type="text" inputMode="numeric" maxLength={6} value={adminTotp} onChange={(e) => setAdminTotp(e.target.value)} placeholder="6 haneli doğrulama kodu" className={inputCls} />}
+              <button type="submit" disabled={reauthBusy} className="min-h-[44px] w-full rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-black text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                {reauthBusy && <Loader2 className="w-4 h-4 animate-spin" />} Oturumu yenile
+              </button>
+            </form>
+          )}
           <section>
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Mevcut hesaplar</h4>
             {loading ? (
@@ -176,7 +230,7 @@ export function HotelCredentialsModal({ hotel, onClose }: Props) {
               </div>
             </label>
             <p className="text-[11px] text-zinc-600">Güncellemede eski oturumlar kapatılır; otel yeni parola ile yeniden giriş yapar. Yönetici/pilot e-postaları değiştirilemez.</p>
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="sticky bottom-0 -mx-4 -mb-4 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-zinc-200 flex justify-end gap-2">
               <button type="button" onClick={onClose} className="min-h-[44px] px-4 rounded-xl border border-zinc-300 text-xs font-semibold cursor-pointer">Kapat</button>
               <button type="submit" disabled={saving} className="min-h-[44px] px-5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-black text-xs font-bold flex items-center gap-1.5 cursor-pointer">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Kaydet
