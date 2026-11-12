@@ -17,6 +17,7 @@ export interface ApnsPayload {
     sound: string;
     badge: number;
     'mutable-content'?: number;
+    'interruption-level'?: 'passive' | 'active' | 'time-sensitive' | 'critical';
     'content-available'?: number;
   };
   [key: string]: any;
@@ -169,8 +170,10 @@ export class FcmPushService {
     subtitle?: string;
     badgeCount?: number;
     dataPayload?: Record<string, string>;
+    /** Staff alerts: wake the screen and play sound even under Focus / Scheduled Summary. */
+    timeSensitive?: boolean;
   }): ApnsPayload {
-    const { title, body, subtitle, badgeCount = 1, dataPayload = {} } = params;
+    const { title, body, subtitle, badgeCount = 1, dataPayload = {}, timeSensitive = false } = params;
     const alertObj: { title: string; subtitle?: string; body: string } = {
       title,
       body,
@@ -184,6 +187,7 @@ export class FcmPushService {
         alert: alertObj,
         sound: 'default',
         badge: badgeCount,
+        ...(timeSensitive ? { 'interruption-level': 'time-sensitive' as const } : {}),
       },
       ...dataPayload,
     };
@@ -200,10 +204,11 @@ export class FcmPushService {
     subtitle?: string;
     dataPayload?: Record<string, string>;
     badgeCount?: number;
+    timeSensitive?: boolean;
   }): Promise<FcmPushResult> {
-    const { deviceToken, bundleId, title, body, subtitle, dataPayload = {}, badgeCount = 1 } = params;
+    const { deviceToken, bundleId, title, body, subtitle, dataPayload = {}, badgeCount = 1, timeSensitive = false } = params;
     const now = new Date().toISOString();
-    const apnsPayload = this.buildApnsPayload({ title, body, subtitle, badgeCount, dataPayload });
+    const apnsPayload = this.buildApnsPayload({ title, body, subtitle, badgeCount, dataPayload, timeSensitive });
 
     // A. Direct Apple APNs HTTP/2 Delivery via .p8 Auth Key (when APNs hex token + .p8 credentials exist)
     const apnsKeyId = process.env.APNS_KEY_ID;
@@ -244,6 +249,9 @@ export class FcmPushService {
             timestamp: now,
           };
         }
+        console.warn(
+          `[APNs] Rejected for ${deviceToken.trim().substring(0, 8)}... topic=${apnsBundleId} status=${apnsRes.status ?? '-'} reason=${apnsRes.reason ?? '-'}`
+        );
       }
     }
 

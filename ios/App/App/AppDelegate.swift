@@ -228,6 +228,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.body = body
         content.sound = UNNotificationSound.default
         content.badge = 1
+        if #available(iOS 15.0, *) {
+            // Guest requests are staff alerts: break through Focus and Scheduled Summary.
+            content.interruptionLevel = .timeSensitive
+        }
 
         let request = UNNotificationRequest(identifier: id.isEmpty ? UUID().uuidString : id, content: content, trigger: nil)
 

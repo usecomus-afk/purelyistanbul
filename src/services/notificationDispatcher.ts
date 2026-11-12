@@ -284,6 +284,7 @@ export class NotificationDispatcher {
           const pushRes = await FcmPushService.sendNativePushNotification({
             deviceToken: token,
             bundleId: target.bundleId,
+            timeSensitive: targetRole === 'staff',
             title,
             body,
             subtitle,
