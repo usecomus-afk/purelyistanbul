@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="robots" content="noindex">
+<title>Offline</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #F6F1E7; color: #2A2622;
+    font: 17px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: env(safe-area-inset-top) 28px env(safe-area-inset-bottom);
+    text-align: center; -webkit-user-select: none; user-select: none;
+  }
+  main { max-width: 320px; }
+  svg { width: 56px; height: 56px; color: #B39A6B; }
+  h1 { font-size: 22px; font-weight: 600; margin: 18px 0 8px; }
+  p { margin: 0 0 26px; color: #6B6258; }
+  button {
+    appearance: none; border: 0; border-radius: 14px; width: 100%;
+    padding: 15px 20px; font: inherit; font-weight: 600;
+    background: #2A2622; color: #F6F1E7;
+  }
+  button:active { opacity: .7; }
+  button[disabled] { opacity: .5; }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M2 8.8a15 15 0 0 1 4.2-2.7M10.7 5.1A15 15 0 0 1 22 8.8M5 12.9a10 10 0 0 1 5.2-2.7M14.5 10.6a10 10 0 0 1 4.5 2.3M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/>
+  </svg>
+  <h1 id="t">No connection</h1>
+  <p id="d">Check your internet connection and try again.</p>
+  <button id="b" type="button">Try again</button>
+</main>
+<script>
+(function () {
+  var BASE = 'https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app';
+  var tr = (navigator.language || '').toLowerCase().indexOf('tr') === 0;
+  if (tr) {
+    document.documentElement.lang = 'tr';
+    document.getElementById('t').textContent = 'Bağlantı yok';
+    document.getElementById('d').textContent = 'İnternet bağlantınızı kontrol edip tekrar deneyin.';
+    document.getElementById('b').textContent = 'Tekrar dene';
+  }
+  var btn = document.getElementById('b');
+  function retry() {
+    btn.disabled = true;
+    setTimeout(function () { btn.disabled = false; }, 4000);
+    window.location.replace(BASE + (window.__PURELY_ADMIN_APP__ ? '/admin' : '/'));
+  }
+  btn.addEventListener('click', retry);
+  window.addEventListener('online', retry);
+})();
+</script>
+</body>
+</html>

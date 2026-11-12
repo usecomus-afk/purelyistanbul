@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     const result = await NotificationDispatcher.registerDevice({
       deviceToken: token,
       apnsToken: body.apnsToken || (!body.webPushSubscription && body.platform === 'ios' ? token : undefined),
+      bundleId: typeof body.bundleId === 'string' && /^[A-Za-z0-9.-]{3,155}$/.test(body.bundleId) ? body.bundleId : undefined,
       platform: body.platform,
       userId: body.userId,
       role: body.role || 'staff',

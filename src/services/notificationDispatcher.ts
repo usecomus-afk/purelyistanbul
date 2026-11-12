@@ -35,6 +35,8 @@ export interface WebPushSubscriptionJSON {
 export interface UserDeviceDTO {
   deviceToken: string;
   apnsToken?: string;
+  /** iOS bundle ID of the installing app; used as the apns-topic. */
+  bundleId?: string;
   platform: 'ios' | 'android' | 'web';
   userId?: string;
   role: 'guest' | 'staff' | 'admin';
@@ -281,6 +283,7 @@ export class NotificationDispatcher {
           if (!token) return;
           const pushRes = await FcmPushService.sendNativePushNotification({
             deviceToken: token,
+            bundleId: target.bundleId,
             title,
             body,
             subtitle,

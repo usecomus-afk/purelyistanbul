@@ -6,6 +6,7 @@
   "server": {
     "url": "https://purelyistanbul--xenios-prod-c55cd.us-central1.hosted.app",
     "cleartext": false,
+    "errorPath": "offline.html",
     "androidScheme": "https"
   },
   "plugins": {

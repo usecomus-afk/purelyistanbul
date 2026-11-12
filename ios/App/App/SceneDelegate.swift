@@ -78,6 +78,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.webView?.scrollView.contentInsetAdjustmentBehavior = .never
         bridgeVC.webView?.scrollView.contentInset = .zero
         bridgeVC.webView?.scrollView.scrollIndicatorInsets = .zero
+        // Native navigation feel: edge-swipe back/forward, no Safari-style link previews.
+        bridgeVC.webView?.allowsBackForwardNavigationGestures = true
+        bridgeVC.webView?.allowsLinkPreview = false
 
         // Register custom plugin on storyboard-instantiated CAPBridgeViewController as well
         bridgeVC.bridge?.registerPluginInstance(XeniosNotificationPlugin())
